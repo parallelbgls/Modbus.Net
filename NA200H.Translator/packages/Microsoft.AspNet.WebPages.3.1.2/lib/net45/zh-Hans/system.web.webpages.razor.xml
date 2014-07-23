@@ -1,0 +1,294 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<doc>
+  <assembly>
+    <name>System.Web.WebPages.Razor</name>
+  </assembly>
+  <members>
+    <member name="T:System.Web.WebPages.Razor.CompilingPathEventArgs">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。表示包含事件数据的编译路径的基类。</summary>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.CompilingPathEventArgs.#ctor(System.String,System.Web.WebPages.Razor.WebPageRazorHost)">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。初始化 <see cref="T:System.Web.WebPages.Razor.CompilingPathEventArgs" /> 类的新实例。</summary>
+      <param name="virtualPath">虚拟路径的字符串。</param>
+      <param name="host">网页 Razor 的主机。</param>
+    </member>
+    <member name="P:System.Web.WebPages.Razor.CompilingPathEventArgs.Host">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。获取或设置网页 Razor 的主机。</summary>
+      <returns>网页 Razor 的主机。</returns>
+    </member>
+    <member name="P:System.Web.WebPages.Razor.CompilingPathEventArgs.VirtualPath">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。获取网页的虚拟路径。</summary>
+      <returns>网页的虚拟路径。</returns>
+    </member>
+    <member name="T:System.Web.WebPages.Razor.PreApplicationStartCode">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。</summary>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.PreApplicationStartCode.Start">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。</summary>
+    </member>
+    <member name="T:System.Web.WebPages.Razor.RazorBuildProvider">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。表示 Razor 的生成提供程序。</summary>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.RazorBuildProvider.#ctor">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。初始化 <see cref="T:System.Web.WebPages.Razor.RazorBuildProvider" /> 类的新实例。</summary>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.RazorBuildProvider.AddVirtualPathDependency(System.String)">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。将虚拟路径依赖关系添加到集合中。</summary>
+      <param name="dependency">要添加的虚拟路径依赖关系。</param>
+    </member>
+    <member name="P:System.Web.WebPages.Razor.RazorBuildProvider.AssemblyBuilder">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。获取 Razor 环境的程序集生成器。</summary>
+      <returns>程序集生成器。</returns>
+    </member>
+    <member name="P:System.Web.WebPages.Razor.RazorBuildProvider.CodeCompilerType">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。获取 Razor 环境的编译器设置。</summary>
+    </member>
+    <member name="E:System.Web.WebPages.Razor.RazorBuildProvider.CodeGenerationCompleted">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。在代码生成完成时发生。</summary>
+    </member>
+    <member name="E:System.Web.WebPages.Razor.RazorBuildProvider.CodeGenerationStarted">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。在代码生成启动时发生。</summary>
+    </member>
+    <member name="E:System.Web.WebPages.Razor.RazorBuildProvider.CompilingPath">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。在使用新的虚拟路径编译时发生。</summary>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.RazorBuildProvider.CreateHost">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。根据 Web 配置创建 Razor 引擎主机实例。</summary>
+      <returns>Razor 引擎主机实例。</returns>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.RazorBuildProvider.GenerateCode(System.Web.Compilation.AssemblyBuilder)">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。使用提供的程序集生成器生成代码。</summary>
+      <param name="assemblyBuilder">程序集生成器。</param>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.RazorBuildProvider.GetGeneratedType(System.CodeDom.Compiler.CompilerResults)">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。获取所生成代码的类型。</summary>
+      <returns>所生成代码的类型。</returns>
+      <param name="results">代码编译的结果。</param>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.RazorBuildProvider.GetHostFromConfig">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。根据 Web 配置创建 Razor 引擎主机实例。</summary>
+      <returns>Razor 引擎主机实例。</returns>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.RazorBuildProvider.InternalOpenReader">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。打开内部文本读取器。</summary>
+      <returns>内部文本读取器。</returns>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.RazorBuildProvider.OnBeforeCompilePath(System.Web.WebPages.Razor.CompilingPathEventArgs)">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。引发 CompilingPath 事件。</summary>
+      <param name="args">为 CompilingPath 事件提供的数据。</param>
+    </member>
+    <member name="P:System.Web.WebPages.Razor.RazorBuildProvider.VirtualPath">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。获取源代码的虚拟路径。</summary>
+      <returns>源代码的虚拟路径。</returns>
+    </member>
+    <member name="P:System.Web.WebPages.Razor.RazorBuildProvider.VirtualPathDependencies">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。获取依赖项的虚拟路径的集合。</summary>
+      <returns>依赖项的虚拟路径的集合。</returns>
+    </member>
+    <member name="T:System.Web.WebPages.Razor.WebCodeRazorHost">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。表示网页的 Web 代码 Razor 主机。</summary>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.WebCodeRazorHost.#ctor(System.String)">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。初始化 <see cref="T:System.Web.WebPages.Razor.WebCodeRazorHost" /> 类的新实例。</summary>
+      <param name="virtualPath">虚拟路径。</param>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.WebCodeRazorHost.#ctor(System.String,System.String)">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。初始化 <see cref="T:System.Web.WebPages.Razor.WebCodeRazorHost" /> 类的新实例。</summary>
+      <param name="virtualPath">虚拟路径。</param>
+      <param name="physicalPath">物理路径。</param>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.WebCodeRazorHost.GetClassName(System.String)">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。返回该实例的类名。</summary>
+      <returns>该实例的类名。</returns>
+      <param name="virtualPath">虚拟路径。</param>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.WebCodeRazorHost.PostProcessGeneratedCode(System.Web.Razor.Generator.CodeGeneratorContext)">
+      <summary>生成 Web 代码 Razor 主机的后处理代码。</summary>
+      <param name="context">生成器代码上下文。</param>
+    </member>
+    <member name="T:System.Web.WebPages.Razor.WebPageRazorHost">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。表示网页中的 Razor 主机。</summary>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.WebPageRazorHost.#ctor(System.String)">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。使用指定的虚拟文件路径初始化 <see cref="T:System.Web.WebPages.Razor.WebPageRazorHost" /> 类的新实例。</summary>
+      <param name="virtualPath">虚拟文件路径。</param>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.WebPageRazorHost.#ctor(System.String,System.String)">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。使用指定的虚拟和物理文件路径初始化 <see cref="T:System.Web.WebPages.Razor.WebPageRazorHost" /> 类的新实例。</summary>
+      <param name="virtualPath">虚拟文件路径。</param>
+      <param name="physicalPath">物理文件路径。</param>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.WebPageRazorHost.AddGlobalImport(System.String)">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。在网页上添加全局导入。</summary>
+      <param name="ns">通知服务名称。</param>
+    </member>
+    <member name="P:System.Web.WebPages.Razor.WebPageRazorHost.CodeLanguage">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。获取 <see cref="T:System.Web.Razor.RazorCodeLanguage" />。</summary>
+      <returns>
+        <see cref="T:System.Web.Razor.RazorCodeLanguage" />。</returns>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.WebPageRazorHost.CreateMarkupParser">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。创建标记分析器。</summary>
+      <returns>标记分析器。</returns>
+    </member>
+    <member name="P:System.Web.WebPages.Razor.WebPageRazorHost.DefaultBaseClass">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。获取或设置 DefaultBaseClass 的值。</summary>
+      <returns>DefaultBaseClass 的值。</returns>
+    </member>
+    <member name="P:System.Web.WebPages.Razor.WebPageRazorHost.DefaultClassName">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。获取或设置默认类的名称。</summary>
+      <returns>默认类的名称。</returns>
+    </member>
+    <member name="P:System.Web.WebPages.Razor.WebPageRazorHost.DefaultDebugCompilation">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。获取或设置一个指示调试编译是否设置为默认值的值。</summary>
+      <returns>如果调试编译设置为默认值，则为 true；否则为 false。</returns>
+    </member>
+    <member name="P:System.Web.WebPages.Razor.WebPageRazorHost.DefaultPageBaseClass">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。获取或设置默认页的基类。</summary>
+      <returns>默认页的基类。</returns>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.WebPageRazorHost.GetClassName(System.String)">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。检索指定网页所属的类的名称。</summary>
+      <returns>指定网页所属的类的名称。</returns>
+      <param name="virtualPath">虚拟文件路径。</param>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.WebPageRazorHost.GetCodeLanguage">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。获取在网页中指定的代码语言。</summary>
+      <returns>在网页中指定的代码语言。</returns>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.WebPageRazorHost.GetGlobalImports">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。获取网页的全局导入。</summary>
+      <returns>网页的全局导入。</returns>
+    </member>
+    <member name="P:System.Web.WebPages.Razor.WebPageRazorHost.InstrumentedSourceFilePath">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。获取或设置检测到的源文件的文件路径。</summary>
+      <returns>检测到的源文件的文件路径。</returns>
+    </member>
+    <member name="P:System.Web.WebPages.Razor.WebPageRazorHost.IsSpecialPage">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。获取一个值，该值指示网页是否为特殊页。</summary>
+      <returns>如果网页是特殊页，则为 true；否则为 false。</returns>
+    </member>
+    <member name="P:System.Web.WebPages.Razor.WebPageRazorHost.PhysicalPath">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。获取 Razor 主机的物理文件系统路径。</summary>
+      <returns>Razor 主机的物理文件系统路径。</returns>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.WebPageRazorHost.PostProcessGeneratedCode(System.Web.Razor.Generator.CodeGeneratorContext)">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。获取处理之后生成的代码。</summary>
+      <param name="context">
+        <see cref="T:System.Web.Razor.Generator.CodeGeneratorContext" />。</param>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.WebPageRazorHost.RegisterSpecialFile(System.String,System.String)">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。使用指定文件名和基类型名称注册特殊文件。</summary>
+      <param name="fileName">文件名。</param>
+      <param name="baseTypeName">基类型名称。</param>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.WebPageRazorHost.RegisterSpecialFile(System.String,System.Type)">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。使用指定文件名和基类型注册特殊文件。</summary>
+      <param name="fileName">文件名。</param>
+      <param name="baseType">基文件的类型。</param>
+    </member>
+    <member name="P:System.Web.WebPages.Razor.WebPageRazorHost.VirtualPath">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。获取虚拟文件路径。</summary>
+      <returns>虚拟文件路径。</returns>
+    </member>
+    <member name="T:System.Web.WebPages.Razor.WebRazorHostFactory">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。创建主机文件的实例。</summary>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.WebRazorHostFactory.#ctor">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。初始化 <see cref="T:System.Web.WebPages.Razor.WebRazorHostFactory" /> 类的新实例。</summary>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.WebRazorHostFactory.ApplyConfigurationToHost(System.Web.WebPages.Razor.Configuration.RazorPagesSection,System.Web.WebPages.Razor.WebPageRazorHost)">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。从配置文件加载服务描述信息并将这些信息应用到主机。</summary>
+      <param name="config">配置。</param>
+      <param name="host">网页 Razor 主机。</param>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.WebRazorHostFactory.CreateDefaultHost(System.String)">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。使用指定的虚拟路径创建默认主机。</summary>
+      <returns>默认主机。</returns>
+      <param name="virtualPath">文件的虚拟路径。</param>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.WebRazorHostFactory.CreateDefaultHost(System.String,System.String)">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。使用指定的虚拟路径和物理路径创建默认主机。</summary>
+      <returns>默认主机。</returns>
+      <param name="virtualPath">文件的虚拟路径。</param>
+      <param name="physicalPath">物理文件系统路径。</param>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.WebRazorHostFactory.CreateHost(System.String,System.String)">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。创建 Razor 主机。</summary>
+      <returns>Razor 主机。</returns>
+      <param name="virtualPath">目标文件的虚拟路径。</param>
+      <param name="physicalPath">目标文件的物理路径。</param>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.WebRazorHostFactory.CreateHostFromConfig(System.String)">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。创建配置中的主机。</summary>
+      <returns>配置中的主机。</returns>
+      <param name="virtualPath">目标文件的虚拟路径。</param>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.WebRazorHostFactory.CreateHostFromConfig(System.String,System.String)">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。创建配置中的主机。</summary>
+      <returns>配置中的主机。</returns>
+      <param name="virtualPath">文件的虚拟路径。</param>
+      <param name="physicalPath">物理文件系统路径。</param>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.WebRazorHostFactory.CreateHostFromConfig(System.Web.WebPages.Razor.Configuration.RazorWebSectionGroup,System.String)">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。创建配置中的主机。</summary>
+      <returns>配置中的主机。</returns>
+      <param name="config">配置。</param>
+      <param name="virtualPath">文件的虚拟路径。</param>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.WebRazorHostFactory.CreateHostFromConfig(System.Web.WebPages.Razor.Configuration.RazorWebSectionGroup,System.String,System.String)">
+      <summary>此类型/成员支持 .NET Framework 基础结构，不能在代码中直接使用。创建配置中的主机。</summary>
+      <returns>配置中的主机。</returns>
+      <param name="config">配置。</param>
+      <param name="virtualPath">文件的虚拟路径。</param>
+      <param name="physicalPath">物理文件系统路径。</param>
+    </member>
+    <member name="T:System.Web.WebPages.Razor.Configuration.HostSection">
+      <summary>为 host 配置部分提供配置系统支持。</summary>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.Configuration.HostSection.#ctor">
+      <summary>初始化 <see cref="T:System.Web.WebPages.Razor.Configuration.HostSection" /> 类的新实例。</summary>
+    </member>
+    <member name="P:System.Web.WebPages.Razor.Configuration.HostSection.FactoryType">
+      <summary>获取或设置宿主工厂。</summary>
+      <returns>宿主工厂。</returns>
+    </member>
+    <member name="F:System.Web.WebPages.Razor.Configuration.HostSection.SectionName">
+      <summary>表示 Razor 宿主环境的配置部分的名称。</summary>
+    </member>
+    <member name="T:System.Web.WebPages.Razor.Configuration.RazorPagesSection">
+      <summary>为 pages 配置部分提供配置系统支持。</summary>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.Configuration.RazorPagesSection.#ctor">
+      <summary>初始化 <see cref="T:System.Web.WebPages.Razor.Configuration.RazorPagesSection" /> 类的新实例。</summary>
+    </member>
+    <member name="P:System.Web.WebPages.Razor.Configuration.RazorPagesSection.Namespaces">
+      <summary>获取或设置要添加到当前应用程序的 Web Pages 页的命名空间的集合。</summary>
+      <returns>命名空间的集合。</returns>
+    </member>
+    <member name="P:System.Web.WebPages.Razor.Configuration.RazorPagesSection.PageBaseType">
+      <summary>获取或设置页基类型类的名称。</summary>
+      <returns>页基类型类的名称。</returns>
+    </member>
+    <member name="F:System.Web.WebPages.Razor.Configuration.RazorPagesSection.SectionName">
+      <summary>表示 Razor 页配置部分的名称。</summary>
+    </member>
+    <member name="T:System.Web.WebPages.Razor.Configuration.RazorWebSectionGroup">
+      <summary>为 system.web.webPages.razor 配置部分提供配置系统支持。</summary>
+    </member>
+    <member name="M:System.Web.WebPages.Razor.Configuration.RazorWebSectionGroup.#ctor">
+      <summary>初始化 <see cref="T:System.Web.WebPages.Razor.Configuration.RazorWebSectionGroup" /> 类的新实例。</summary>
+    </member>
+    <member name="F:System.Web.WebPages.Razor.Configuration.RazorWebSectionGroup.GroupName">
+      <summary>表示 Razor Web 部分的配置部分的名称。包含静态的只读字符串“system.web.webPages.razor”。</summary>
+    </member>
+    <member name="P:System.Web.WebPages.Razor.Configuration.RazorWebSectionGroup.Host">
+      <summary>获取或设置 system.web.webPages.razor 部分组的 host 值。</summary>
+      <returns>主机值。</returns>
+    </member>
+    <member name="P:System.Web.WebPages.Razor.Configuration.RazorWebSectionGroup.Pages">
+      <summary>获取或设置 system.web.webPages.razor 部分的 pages 元素的值。</summary>
+      <returns>pages 元素的值。</returns>
+    </member>
+  </members>
+</doc>
