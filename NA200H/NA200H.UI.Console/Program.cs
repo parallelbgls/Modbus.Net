@@ -12,16 +12,17 @@ namespace NA200H.UI.ConsoleApp
     {
         static void Main(string[] args)
         {
-            A a= new A();
-            a.Do();
-        }
-    }
-
-    public class A
-    {
-        public void Do()
-        {
             BaseProtocal wrapper = new ModbusTcpProtocal();
+
+            object[] inputObjects = new object[]{(byte)0x11,(byte)0x01,(short)0x13,(short)0x25};
+            byte[] outputBytes = wrapper.SendReceive(inputObjects);
+            for (int i = 0; i < outputBytes.Length; i++)
+            {
+                Console.WriteLine(outputBytes[i]);
+            }
+            Console.WriteLine();
+            Console.Read();
+            Console.Read();
 
             ReadCoilStatusModbusProtocal.ReadCoilStatusInputStruct readCoilStatusInputStruct = new ReadCoilStatusModbusProtocal.ReadCoilStatusInputStruct(0x11, "Q20", 0x25);
             ReadCoilStatusModbusProtocal.ReadCoilStatusOutputStruct readCoilStatusOutputStruct = (ReadCoilStatusModbusProtocal.ReadCoilStatusOutputStruct)wrapper.SendReceive(wrapper["ReadCoilStatusModbusProtocal"], readCoilStatusInputStruct);
@@ -31,9 +32,10 @@ namespace NA200H.UI.ConsoleApp
             }
             Console.WriteLine();
             Console.Read();
+            Console.Read();
 
             ReadInputStatusModbusProtocal.ReadInputStatusInputStruct readInputStatusInputStruct = new ReadInputStatusModbusProtocal.ReadInputStatusInputStruct(0x11, "I20", 0x25);
-            ReadInputStatusModbusProtocal.ReadInputStatusOutputStruct readInputStatusOutputStruct = (ReadInputStatusModbusProtocal.ReadInputStatusOutputStruct)wrapper.SendReceive(wrapper["ReadInputStatusModbusProtocal"],readInputStatusInputStruct);
+            ReadInputStatusModbusProtocal.ReadInputStatusOutputStruct readInputStatusOutputStruct = (ReadInputStatusModbusProtocal.ReadInputStatusOutputStruct)wrapper.SendReceive(wrapper["ReadInputStatusModbusProtocal"], readInputStatusInputStruct);
             for (int i = 0; i < readInputStatusOutputStruct.InputStatus.Length; i++)
             {
                 Console.WriteLine(readInputStatusOutputStruct.InputStatus[i]);
@@ -43,7 +45,7 @@ namespace NA200H.UI.ConsoleApp
             Console.Read();
 
             ReadHoldRegisterModbusProtocal.ReadHoldRegisterInputStruct readHoldRegisterInputStruct = new ReadHoldRegisterModbusProtocal.ReadHoldRegisterInputStruct(0x11, "MW1", 8);
-            ReadHoldRegisterModbusProtocal.ReadHoldRegisterOutputStruct readHoldRegisterOutputStruct = (ReadHoldRegisterModbusProtocal.ReadHoldRegisterOutputStruct)wrapper.SendReceive(wrapper["ReadHoldRegisterModbusProtocal"],readHoldRegisterInputStruct);
+            ReadHoldRegisterModbusProtocal.ReadHoldRegisterOutputStruct readHoldRegisterOutputStruct = (ReadHoldRegisterModbusProtocal.ReadHoldRegisterOutputStruct)wrapper.SendReceive(wrapper["ReadHoldRegisterModbusProtocal"], readHoldRegisterInputStruct);
             for (int i = 0; i < readHoldRegisterOutputStruct.HoldRegisterStatus.Length; i++)
             {
                 Console.WriteLine(readHoldRegisterOutputStruct.HoldRegisterStatus[i]);
@@ -86,7 +88,7 @@ namespace NA200H.UI.ConsoleApp
             Console.Read();
             Console.Read();
 
-            WriteMultiCoilModbusProtocal.WriteMultiCoilInputStruct writeMultiCoilInputStruct = new WriteMultiCoilModbusProtocal.WriteMultiCoilInputStruct(0x11, "Q20", new bool[]{true, false, true, true, false, false, true, true, true, false});
+            WriteMultiCoilModbusProtocal.WriteMultiCoilInputStruct writeMultiCoilInputStruct = new WriteMultiCoilModbusProtocal.WriteMultiCoilInputStruct(0x11, "Q20", new bool[] { true, false, true, true, false, false, true, true, true, false });
             WriteMultiCoilModbusProtocal.WriteMultiCoilOutputStruct writeMultiCoilOutputStruct = (WriteMultiCoilModbusProtocal.WriteMultiCoilOutputStruct)wrapper.SendReceive(wrapper["WriteMultiCoilModbusProtocal"], writeMultiCoilInputStruct);
             Console.WriteLine(writeMultiCoilOutputStruct.StartAddress);
             Console.WriteLine(writeMultiCoilOutputStruct.WriteCount);
@@ -94,7 +96,7 @@ namespace NA200H.UI.ConsoleApp
             Console.Read();
             Console.Read();
 
-            WriteMultiRegisterModbusProtocal.WriteMultiRegisterInputStruct writeMultiRegisterInputStruct = new WriteMultiRegisterModbusProtocal.WriteMultiRegisterInputStruct(0x11, "MW2", new ushort[]{0x000A,0x0102});
+            WriteMultiRegisterModbusProtocal.WriteMultiRegisterInputStruct writeMultiRegisterInputStruct = new WriteMultiRegisterModbusProtocal.WriteMultiRegisterInputStruct(0x11, "MW2", new ushort[] { 0x000A, 0x0102 });
             WriteMultiRegisterModbusProtocal.WriteMultiRegisterOutputStruct writeMultiRegisterOutputStruct = (WriteMultiRegisterModbusProtocal.WriteMultiRegisterOutputStruct)wrapper.SendReceive(wrapper["WriteMultiRegisterModbusProtocal"], writeMultiRegisterInputStruct);
             Console.WriteLine(writeMultiRegisterOutputStruct.StartAddress);
             Console.WriteLine(writeMultiRegisterOutputStruct.WriteCount);
