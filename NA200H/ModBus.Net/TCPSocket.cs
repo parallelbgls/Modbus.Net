@@ -21,7 +21,7 @@ namespace ModBus.Net
     ///     Socket收发类
     ///     作者：本类来源于CSDN，并由罗圣（Chris L.）根据实际需要修改
     /// </summary>
-    public class TCPSocket : IDisposable
+    public class TcpSocket : IDisposable
     {
         public delegate void ErrorShutdownEventHandler(object sender, EventArgs e);
 
@@ -38,7 +38,7 @@ namespace ModBus.Net
         public int m_sendCount = 0;
         private TcpClient m_socketClient;
 
-        public TCPSocket(string ipaddress, int port, bool isAsync)
+        public TcpSocket(string ipaddress, int port, bool isAsync)
         {
             host = ipaddress;
             this.port = port;
