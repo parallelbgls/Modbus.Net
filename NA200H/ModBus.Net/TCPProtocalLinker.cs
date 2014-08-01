@@ -6,15 +6,12 @@ namespace ModBus.Net
 {
     public class TcpProtocalLinker : ProtocalLinker
     {
-        private static TcpSocket _socket;
+        private TcpSocket _socket;
 
          
         public TcpProtocalLinker()
         {
-            if (_socket == null)
-            {
-                _socket = new TcpSocket(ConfigurationManager.IP, int.Parse(ConfigurationManager.Port), false);
-            }
+            _socket = new TcpSocket(ConfigurationManager.IP, int.Parse(ConfigurationManager.Port), false);
         }
 
         public override byte[] SendReceive(byte[] content)
