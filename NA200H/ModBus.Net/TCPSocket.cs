@@ -31,7 +31,7 @@ namespace ModBus.Net
         private readonly string host;
 
         // 2MB 的接收缓冲区，目的是一次接收完服务器发回的消息
-        private readonly byte[] m_receiveBuffer = new byte[200000];
+        private readonly byte[] m_receiveBuffer = new byte[1024];
         private readonly int port;
         public int m_errorCount = 0;
         public int m_receiveCount = 0;

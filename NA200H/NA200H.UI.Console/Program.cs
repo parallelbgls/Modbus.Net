@@ -12,10 +12,15 @@ namespace NA200H.UI.ConsoleApp
     {
         static void Main(string[] args)
         {
+            //先初始化一个协议转换器，这里构造Modbus/Tcp协议。
             BaseProtocal wrapper = new ModbusTcpProtocal();
 
+            //调用方法一：手动构造
+            //第一步：先生成一个输入信息的object数组
             object[] inputObjects = new object[]{(byte)0x11,(byte)0x01,(short)0x13,(short)0x25};
+            //第二步：向仪器发送这个信息，并接收信息
             byte[] outputBytes = wrapper.SendReceive(inputObjects);
+            //第三步：输出信息
             for (int i = 0; i < outputBytes.Length; i++)
             {
                 Console.WriteLine(outputBytes[i]);
@@ -24,8 +29,12 @@ namespace NA200H.UI.ConsoleApp
             Console.Read();
             Console.Read();
 
+            //调用方法二：自动构造
+            //第一步：先生成一个输入结构体，然后向这个结构体中填写数据
             ReadCoilStatusModbusProtocal.ReadCoilStatusInputStruct readCoilStatusInputStruct = new ReadCoilStatusModbusProtocal.ReadCoilStatusInputStruct(0x11, "Q20", 0x25);
+            //第二步：再生成一个输出结构体，执行相应协议的发送指令，并将输出信息自动转换到输出结构体中
             ReadCoilStatusModbusProtocal.ReadCoilStatusOutputStruct readCoilStatusOutputStruct = (ReadCoilStatusModbusProtocal.ReadCoilStatusOutputStruct)wrapper.SendReceive(wrapper["ReadCoilStatusModbusProtocal"], readCoilStatusInputStruct);
+            //第三步：读取这个输出结构体的信息。
             for (int i = 0; i < readCoilStatusOutputStruct.CoilStatus.Length; i++)
             {
                 Console.WriteLine(readCoilStatusOutputStruct.CoilStatus[i]);

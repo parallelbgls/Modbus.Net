@@ -4,26 +4,29 @@ using System.Linq;
 
 namespace ModBus.Net
 {
-    public class TcpProtocalLinker : ProtocalLinker
+    public abstract class TcpProtocalLinker : ProtocalLinker
     {
+        /// <summary>
+        /// 连接对象
+        /// </summary>
         private TcpSocket _socket;
-
-         
-        public TcpProtocalLinker()
+        
+        protected TcpProtocalLinker()
         {
+            //初始化连对象
             _socket = new TcpSocket(ConfigurationManager.IP, int.Parse(ConfigurationManager.Port), false);
         }
 
         public override byte[] SendReceive(byte[] content)
         {
+            //接收数据
             byte[] receiveBytes = BytesDecact(_socket.SendMsg(BytesExtend(content)));
-            if (receiveBytes[1] > 127)
-            {
-                string message;
-                throw new ModbusProtocalErrorException(receiveBytes[2]);
-            }
+            //容错处理
+            if (!CheckRight(content)) return null;
+            //返回数据
             return receiveBytes;
         }
+
 
         public override bool SendOnly(byte[] content)
         {
@@ -31,34 +34,7 @@ namespace ModBus.Net
         }
 
     }
-
-    public abstract class ProtocalLinkerBytesExtend
-    {
-        public abstract byte[] BytesExtend(byte[] content);
-
-        public abstract byte[] BytesDecact(byte[] content);
-    }
-
-    public class TcpProtocalLinkerBytesExtend : ProtocalLinkerBytesExtend
-    {
-        public override byte[] BytesExtend(byte[] content)
-        {
-            byte[] newFormat = new byte[6 + content.Length];
-            int tag = 0;
-            ushort leng = (ushort)content.Length;
-            Array.Copy(ValueHelper.Instance.GetBytes(tag), 0, newFormat, 0, 4);
-            Array.Copy(ValueHelper.Instance.GetBytes(leng), 0, newFormat, 4, 2);
-            Array.Copy(content, 0, newFormat, 6, content.Length);
-            return newFormat;
-        }
-
-        public override byte[] BytesDecact(byte[] content)
-        {
-            byte[] newContent = new byte[content.Length - 6];
-            Array.Copy(content, 6, newContent, 0, newContent.Length);
-            return newContent;
-        }
-    }
+    
 
     public class ProtocalErrorException : Exception
     {

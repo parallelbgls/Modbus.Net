@@ -23,6 +23,9 @@ namespace ModBus.Net
         
     }
 
+    /// <summary>
+    /// 读线圈状态
+    /// </summary>
     public class ReadCoilStatusModbusProtocal : ProtocalUnit
     {
         public override byte[] Format(InputStruct message)
@@ -91,6 +94,9 @@ namespace ModBus.Net
         }
     }
 
+    /// <summary>
+    /// 读输入状态协
+    /// </summary>
     public class ReadInputStatusModbusProtocal : ProtocalUnit
     {
         public override byte[] Format(InputStruct message)
@@ -161,6 +167,9 @@ namespace ModBus.Net
         }
     }
 
+    /// <summary>
+    /// 读保持型寄存器
+    /// </summary>
     public class ReadHoldRegisterModbusProtocal : ProtocalUnit
     {
         public override byte[] Format(InputStruct message)
@@ -224,6 +233,9 @@ namespace ModBus.Net
         }
     }
 
+    /// <summary>
+    /// 读输入型寄存器
+    /// </summary>
     public class ReadInputRegisterModbusProtocal : ProtocalUnit
     {
         public override byte[] Format(InputStruct message)
@@ -347,6 +359,9 @@ namespace ModBus.Net
         }
     }
 
+    /// <summary>
+    /// 读单个线圈状态
+    /// </summary>
     public class WriteOneCoilModbusProtocal : ProtocalUnit
     {
         public override byte[] Format(InputStruct message)
@@ -406,6 +421,9 @@ namespace ModBus.Net
         }
     }
 
+    /// <summary>
+    /// 写单个寄存器状态
+    /// </summary>
     public class WriteOneRegisterModbusProtocal : ProtocalUnit
     {
         public override byte[] Format(InputStruct message)
@@ -463,6 +481,9 @@ namespace ModBus.Net
         }
     }
 
+    /// <summary>
+    /// 写多个线圈状态
+    /// </summary>
     public class WriteMultiCoilModbusProtocal : ProtocalUnit
     {
         public override byte[] Format(InputStruct message)
@@ -537,6 +558,9 @@ namespace ModBus.Net
         }
     }
 
+    /// <summary>
+    /// 写多个寄存器状态
+    /// </summary>
     public class WriteMultiRegisterModbusProtocal : ProtocalUnit
     {
         public override byte[] Format(InputStruct message)
@@ -602,6 +626,9 @@ namespace ModBus.Net
         }
     }
 
+    /// <summary>
+    /// 读系统时间
+    /// </summary>
     public class GetSystemTimeModbusProtocal : ProtocalUnit
     {
         public override byte[] Format(InputStruct message)
@@ -668,6 +695,9 @@ namespace ModBus.Net
         }
     }
 
+    /// <summary>
+    /// 写系统时间
+    /// </summary>
     public class SetSystemTimeModbusProtocal : ProtocalUnit
     {
         public override byte[] Format(InputStruct message)

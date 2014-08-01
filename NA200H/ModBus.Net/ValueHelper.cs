@@ -2,20 +2,29 @@
 
 namespace ModBus.Net
 {
+    /// <summary>
+    /// 值与字节数组之间转换的辅助类，这是一个Singleton类
+    /// 作者：罗圣（Chris L.）
+    /// </summary>
     public class ValueHelper
     {
+        
         protected static bool _littleEndian = false;
 
         protected ValueHelper()
         {
         }
 
+        /// <summary>
+        /// 协议中的内容构造是否小端的，默认是大端构造协议。
+        /// </summary>
         public static bool LittleEndian
         {
             get { return _littleEndian; }
             set
             {
                 _littleEndian = value;
+                //这里需要重点说明，因为.net默认是小端构造法，所以目标协议是大端的话反而需要调用小端构造协议，把小端反转为大端。
                 _Instance = LittleEndian ? new ValueHelper() : new LittleEndianValueHelper();
             }
         }

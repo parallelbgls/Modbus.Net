@@ -49,7 +49,9 @@
       <DependentUpon>ConfigurationManager.resx</DependentUpon>
     </Compile>
     <Compile Include="IProtocalFormatting.cs" />
+    <Compile Include="ModbusTcpProtocalLinker.cs" />
     <Compile Include="ProtocalLinker.cs" />
+    <Compile Include="ProtocalLinkerBytesExtend.cs" />
     <Compile Include="ProtocalUnit.cs" />
     <Compile Include="ModbusProtocal.cs" />
     <Compile Include="ModbusTCPProtocal.cs" />

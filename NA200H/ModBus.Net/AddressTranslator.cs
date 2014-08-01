@@ -2,6 +2,9 @@
 
 namespace ModBus.Net
 {
+    /// <summary>
+    /// 数据单元翻译器
+    /// </summary>
     public abstract class AddressTranslator
     {
         protected static AddressTranslator _instance;
@@ -10,6 +13,9 @@ namespace ModBus.Net
         public abstract ushort AddressTranslate(string address);
     }
 
+    /// <summary>
+    /// NA200H数据单元翻译器
+    /// </summary>
     public class AddressTranslatorNA200H : AddressTranslator
     {
         private AddressTranslatorNA200H()
