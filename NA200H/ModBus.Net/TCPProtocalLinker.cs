@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ModBus.Net
@@ -7,6 +8,7 @@ namespace ModBus.Net
     {
         private static TcpSocket _socket;
 
+         
         public TcpProtocalLinker()
         {
             if (_socket == null)
@@ -17,7 +19,13 @@ namespace ModBus.Net
 
         public override byte[] SendReceive(byte[] content)
         {
-            return BytesDecact(_socket.SendMsg(BytesExtend(content)));
+            byte[] receiveBytes = BytesDecact(_socket.SendMsg(BytesExtend(content)));
+            if (receiveBytes[1] > 127)
+            {
+                string message;
+                throw new ModbusProtocalErrorException(receiveBytes[2]);
+            }
+            return receiveBytes;
         }
 
         public override bool SendOnly(byte[] content)
@@ -52,6 +60,33 @@ namespace ModBus.Net
             byte[] newContent = new byte[content.Length - 6];
             Array.Copy(content, 6, newContent, 0, newContent.Length);
             return newContent;
+        }
+    }
+
+    public class ProtocalErrorException : Exception
+    {
+        public ProtocalErrorException(string message):base(message)
+        {
+            
+        }
+    }
+
+    public class ModbusProtocalErrorException : ProtocalErrorException
+    {
+        public int ErrorMessageNumber { get; private set; }
+        private static readonly Dictionary<int, string> ProtocalErrorDictionary = new Dictionary<int, string>()
+        {
+            {1, "ILLEGAL_FUNCTION"},
+            {2, "ILLEGAL_DATA_ACCESS"},
+            {3, "ILLEGAL_DATA_VALUE"},
+            {4, "SLAVE_DEVICE_FAILURE"},
+            {5, "ACKNOWLWDGE"},
+            {6, "SLAVE_DEVICE_BUSY"},
+        };
+
+        public ModbusProtocalErrorException(int messageNumber) : base(ProtocalErrorDictionary[messageNumber])
+        {
+            ErrorMessageNumber = messageNumber;
         }
     }
 }
