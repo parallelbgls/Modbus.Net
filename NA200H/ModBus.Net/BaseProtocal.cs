@@ -42,6 +42,12 @@ namespace ModBus.Net
             Protocals.Add(linkProtocal.GetType().Name, linkProtocal);
         }
 
+        public virtual byte[] SendReceive(params object[] content)
+        {
+            int t;
+            return _protocalLinker.SendReceive(ProtocalUnit.TranslateContent(content));
+        }
+
         public virtual OutputStruct SendReceive(ProtocalUnit unit, params object[] content)
         {
             int t = 0;
