@@ -22,7 +22,7 @@ namespace ModBus.Net
             //接收数据
             byte[] receiveBytes = BytesDecact(_socket.SendMsg(BytesExtend(content)));
             //容错处理
-            if (!CheckRight(content)) return null;
+            if (!CheckRight(receiveBytes)) return null;
             //返回数据
             return receiveBytes;
         }
