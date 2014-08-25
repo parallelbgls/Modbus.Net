@@ -50,6 +50,7 @@
     </Compile>
     <Compile Include="IProtocalFormatting.cs" />
     <Compile Include="ModbusTcpProtocalLinker.cs" />
+    <Compile Include="Prodave\ProdavePackLv1.cs" />
     <Compile Include="ProtocalLinker.cs" />
     <Compile Include="ProtocalLinkerBytesExtend.cs" />
     <Compile Include="ProtocalUnit.cs" />

@@ -17,6 +17,11 @@ namespace ModBus.Net
             _socket = new TcpSocket(ConfigurationManager.IP, int.Parse(ConfigurationManager.Port), false);
         }
 
+        protected TcpProtocalLinker(string IP)
+        {
+            _socket = new TcpSocket(IP, int.Parse(ConfigurationManager.Port), false);
+        }
+
         public override byte[] SendReceive(byte[] content)
         {
             //接收数据

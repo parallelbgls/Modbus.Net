@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ModBus.Net
 {
-    class ModbusTcpProtocalLinker : TcpProtocalLinker
+    public class ModbusTcpProtocalLinker : TcpProtocalLinker
     {
         public override bool CheckRight(byte[] content)
         {
@@ -15,6 +15,16 @@ namespace ModBus.Net
                 throw new ModbusProtocalErrorException(content[2]);
             }
             return true;
+        }
+
+        public ModbusTcpProtocalLinker() : base()
+        {
+            
+        }
+
+        public ModbusTcpProtocalLinker(string IP) : base(IP)
+        {
+            
         }
     }
 }

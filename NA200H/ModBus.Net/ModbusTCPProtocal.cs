@@ -12,5 +12,10 @@ namespace ModBus.Net
         {
             _protocalLinker = new ModbusTcpProtocalLinker();
         }
+
+        public ModbusTcpProtocal(string IP)
+        {
+            _protocalLinker = new ModbusTcpProtocalLinker(IP);
+        }
     }
 }
