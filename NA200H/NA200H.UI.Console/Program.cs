@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using ModBus.Net;
 using System.Reflection;
-using ModBus.Net.Prodave;
 
 namespace NA200H.UI.ConsoleApp
 {
