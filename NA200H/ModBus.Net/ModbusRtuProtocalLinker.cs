@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ModBus.Net
 {
-    class ModbusComProtocalLinker : ComProtocalLinker
+    class ModbusRtuProtocalLinker : RtuProtocalLinker
     {
         public override bool CheckRight(byte[] content)
         {
@@ -21,12 +21,12 @@ namespace ModBus.Net
             return true;
         }
 
-        public ModbusComProtocalLinker() : base()
+        public ModbusRtuProtocalLinker() : base()
         {
             
         }
 
-        public ModbusComProtocalLinker(string com) : base(com)
+        public ModbusRtuProtocalLinker(string com) : base(com)
         {
             
         }

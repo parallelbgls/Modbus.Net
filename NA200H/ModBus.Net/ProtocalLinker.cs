@@ -7,7 +7,7 @@ namespace ModBus.Net
     /// </summary>
     public abstract class ProtocalLinker
     {
-        protected Connector _baseConnector;
+        protected BaseConnector _baseConnector;
 
         /// <summary>
         /// 发送并接收数据

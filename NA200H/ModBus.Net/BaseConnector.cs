@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ModBus.Net
 {
-    public abstract class Connector
+    public abstract class BaseConnector
     {
         public abstract bool Connect();
         public abstract bool Disconnect();

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ModBus.Net
 {
-    public class ComConnector : Connector, IDisposable
+    public class ComConnector : BaseConnector, IDisposable
     {
         private SerialPort serialPort1 = new SerialPort();
 

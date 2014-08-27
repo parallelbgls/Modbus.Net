@@ -13,12 +13,12 @@ namespace ModBus.Net
         protected TcpProtocalLinker()
         {
             //初始化连对象
-            _baseConnector = new TcpSocket(ConfigurationManager.IP, int.Parse(ConfigurationManager.Port), false);
+            _baseConnector = new TcpConnector(ConfigurationManager.IP, int.Parse(ConfigurationManager.Port), false);
         }
 
         protected TcpProtocalLinker(string ip)
         {
-            _baseConnector = new TcpSocket(ip, int.Parse(ConfigurationManager.Port), false);
+            _baseConnector = new TcpConnector(ip, int.Parse(ConfigurationManager.Port), false);
         }
     }   
 }

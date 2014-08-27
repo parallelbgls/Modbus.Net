@@ -88,7 +88,7 @@ namespace NA200H.UI.ConsoleApp
             */
 
             //先初始化一个协议转换器，这里构造Modbus/Rtu协议。
-            BaseProtocal wrapper = new ModbusComProtocal();
+            BaseProtocal wrapper = new ModbusRtuProtocal();
 
             //调用方法一：手动构造
             //第一步：先生成一个输入信息的object数组

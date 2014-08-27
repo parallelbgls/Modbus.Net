@@ -44,17 +44,17 @@
     <Compile Include="AddressTranslator.cs" />
     <Compile Include="BaseProtocal.cs" />
     <Compile Include="ComConnector.cs" />
-    <Compile Include="ComProtocalLinker.cs" />
+    <Compile Include="RtuProtocalLinker.cs" />
     <Compile Include="ConfigurationManager.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ConfigurationManager.resx</DependentUpon>
     </Compile>
-    <Compile Include="Connector.cs" />
+    <Compile Include="BaseConnector.cs" />
     <Compile Include="CRC16.cs" />
     <Compile Include="IProtocalFormatting.cs" />
-    <Compile Include="ModbusComProtocal.cs" />
-    <Compile Include="ModbusComProtocalLinker.cs" />
+    <Compile Include="ModbusRtuProtocal.cs" />
+    <Compile Include="ModbusRtuProtocalLinker.cs" />
     <Compile Include="ModbusTcpProtocalLinker.cs" />
     <Compile Include="ProtocalLinker.cs" />
     <Compile Include="ProtocalLinkerBytesExtend.cs" />
@@ -62,7 +62,7 @@
     <Compile Include="ModbusProtocal.cs" />
     <Compile Include="ModbusTcpProtocal.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TcpSocket.cs">
+    <Compile Include="TcpConnector.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="TcpProtocalLinker.cs" />
