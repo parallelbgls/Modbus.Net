@@ -1,13 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NA200H.UI.ConsoleApp", "NA200H.UI.Console\NA200H.UI.ConsoleApp.csproj", "{D06F6A34-93F6-4139-B485-8F5686E4E2C9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModBus.Net", "ModBus.Net\ModBus.Net.csproj", "{124EBEF2-8960-4447-84CF-1D683B1EF7CC}"
-EndProject
-Project("{F088123C-0E9E-452A-89E6-6BA2F21D5CAC}") = "ModBus.Net.Modeling", "ModBus.Net.Modeling\ModBus.Net.Modeling.modelproj", "{FA929E21-544C-444E-B18D-184E98B427C6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NA200H.UI.WPF", "NA200H.UI.WPF\NA200H.UI.WPF.csproj", "{78916B03-C910-468E-B593-667A3EFF68BE}"
 EndProject
@@ -25,10 +23,6 @@ Global
 		{124EBEF2-8960-4447-84CF-1D683B1EF7CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{124EBEF2-8960-4447-84CF-1D683B1EF7CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{124EBEF2-8960-4447-84CF-1D683B1EF7CC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FA929E21-544C-444E-B18D-184E98B427C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FA929E21-544C-444E-B18D-184E98B427C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FA929E21-544C-444E-B18D-184E98B427C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FA929E21-544C-444E-B18D-184E98B427C6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{78916B03-C910-468E-B593-667A3EFF68BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{78916B03-C910-468E-B593-667A3EFF68BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{78916B03-C910-468E-B593-667A3EFF68BE}.Release|Any CPU.ActiveCfg = Release|Any CPU

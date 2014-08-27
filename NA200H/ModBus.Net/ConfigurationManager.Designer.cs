@@ -61,6 +61,15 @@ namespace ModBus.Net {
         }
         
         /// <summary>
+        ///   查找类似 COM3 的本地化字符串。
+        /// </summary>
+        internal static string COM {
+            get {
+                return ResourceManager.GetString("COM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 192.168.3.247 的本地化字符串。
         /// </summary>
         internal static string IP {

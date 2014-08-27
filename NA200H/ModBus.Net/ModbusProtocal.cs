@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 public enum ModbusProtocalReg
 {
@@ -781,5 +782,36 @@ namespace ModBus.Net
             public ushort WriteCount { get; private set; }
         }
 
+    }
+
+    public class ProtocalErrorException : Exception
+    {
+        public ProtocalErrorException(string message)
+            : base(message)
+        {
+
+        }
+    }
+
+    public class ModbusProtocalErrorException : ProtocalErrorException
+    {
+        public int ErrorMessageNumber { get; private set; }
+        private static readonly Dictionary<int, string> ProtocalErrorDictionary = new Dictionary<int, string>()
+        {
+            {1, "ILLEGAL_FUNCTION"},
+            {2, "ILLEGAL_DATA_ACCESS"},
+            {3, "ILLEGAL_DATA_VALUE"},
+            {4, "SLAVE_DEVICE_FAILURE"},
+            {5, "ACKNOWLWDGE"},
+            {6, "SLAVE_DEVICE_BUSY"},
+            {500, "TCP_ILLEGAL_LENGTH"},
+            {501, "RTU_ILLEGAL_CRC"},
+        };
+
+        public ModbusProtocalErrorException(int messageNumber)
+            : base(ProtocalErrorDictionary[messageNumber])
+        {
+            ErrorMessageNumber = messageNumber;
+        }
     }
 }

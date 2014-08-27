@@ -7,19 +7,32 @@ namespace ModBus.Net
     /// </summary>
     public abstract class ProtocalLinker
     {
+        protected Connector _baseConnector;
+
         /// <summary>
         /// 发送并接收数据
         /// </summary>
         /// <param name="content">发送协议的内容</param>
         /// <returns>接收协议的内容</returns>
-        public abstract byte[] SendReceive(byte[] content);
+        public virtual byte[] SendReceive(byte[] content)
+        {
+            //接收数据
+            byte[] receiveBytes = _baseConnector.SendMsg(BytesExtend(content));
+            //容错处理
+            if (!CheckRight(receiveBytes)) return null;
+            //返回数据
+            return BytesDecact(receiveBytes);
+        }
 
         /// <summary>
         /// 仅发送数据
         /// </summary>
         /// <param name="content">发送协议的内容</param>
         /// <returns>协议是否正确发送</returns>
-        public abstract bool SendOnly(byte[] content);
+        public virtual bool SendOnly(byte[] content)
+        {
+            return _baseConnector.SendMsgWithoutReturn(BytesExtend(content));
+        }
 
         /// <summary>
         /// 检查接收的数据是否正确

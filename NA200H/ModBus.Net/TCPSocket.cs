@@ -21,7 +21,7 @@ namespace ModBus.Net
     ///     Socket收发类
     ///     作者：本类来源于CSDN，并由罗圣（Chris L.）根据实际需要修改
     /// </summary>
-    public class TcpSocket : IDisposable
+    public class TcpSocket : Connector, IDisposable
     {
         public delegate void ErrorShutdownEventHandler(object sender, EventArgs e);
 
@@ -70,7 +70,7 @@ namespace ModBus.Net
             }
         }
 
-        public bool Connect()
+        public override bool Connect()
         {
             if (m_socketClient != null)
             {
@@ -99,23 +99,25 @@ namespace ModBus.Net
             }
         }
 
-        public void Disconnect()
+        public override bool Disconnect()
         {
             lock (this)
             {
                 if (m_socketClient == null)
                 {
-                    return;
+                    return true;
                 }
 
                 try
                 {
                     m_socketClient.Close();
                     AddInfo("client disconnected successfully.");
+                    return true;
                 }
                 catch (Exception err)
                 {
                     AddInfo("client disconnected exception: " + err.Message);
+                    return false;
                 }
                 finally
                 {
@@ -134,7 +136,7 @@ namespace ModBus.Net
         /// </summary>
         /// <param name="message">发送的信息</param>
         /// <returns>是否发送成功</returns>
-        public bool SendMsgWithoutReturn(byte[] message)
+        public override bool SendMsgWithoutReturn(byte[] message)
         {
             byte[] datagram = message;
 
@@ -159,7 +161,7 @@ namespace ModBus.Net
         /// </summary>
         /// <param name="message">发送的数据</param>
         /// <returns>是否发送成功</returns>
-        public byte[] SendMsg(byte[] message)
+        public override byte[] SendMsg(byte[] message)
         {
             byte[] datagram = message;
 

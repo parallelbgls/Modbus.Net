@@ -13,9 +13,9 @@ namespace ModBus.Net
             _protocalLinker = new ModbusTcpProtocalLinker();
         }
 
-        public ModbusTcpProtocal(string IP)
+        public ModbusTcpProtocal(string ip)
         {
-            _protocalLinker = new ModbusTcpProtocalLinker(IP);
+            _protocalLinker = new ModbusTcpProtocalLinker(ip);
         }
     }
 }

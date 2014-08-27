@@ -51,4 +51,26 @@ namespace ModBus.Net
             return newContent;
         }
     }
+
+    public class ModbusComProtocalLinkerBytesExtend : ProtocalLinkerBytesExtend
+    {
+        public override byte[] BytesExtend(byte[] content)
+        {
+            byte[] crc = new byte[2];
+            //Modbus/Tcp协议扩张，增加CRC校验
+            byte[] newFormat = new byte[content.Length + 2];
+            Crc16.GetInstance().GetCRC(content, ref crc);
+            Array.Copy(content, 0, newFormat, 0, content.Length);
+            Array.Copy(crc, 0, newFormat, newFormat.Length - 2, crc.Length);
+            return newFormat;
+        }
+
+        public override byte[] BytesDecact(byte[] content)
+        {
+            //Modbus/Com协议收缩，抛弃后面1个字节的内容
+            byte[] newContent = new byte[content.Length - 2];
+            Array.Copy(content, 0, newContent, 0, newContent.Length);
+            return newContent;
+        }
+    }
 }

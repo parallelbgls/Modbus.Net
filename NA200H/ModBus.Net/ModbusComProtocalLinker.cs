@@ -6,27 +6,27 @@ using System.Threading.Tasks;
 
 namespace ModBus.Net
 {
-    public class ModbusTcpProtocalLinker : TcpProtocalLinker
+    class ModbusComProtocalLinker : ComProtocalLinker
     {
         public override bool CheckRight(byte[] content)
         {
-            if (content[5] != content.Length - 6)
+            if (!Crc16.GetInstance().CrcEfficacy(content))
             {
-                throw new ModbusProtocalErrorException(500);
+                throw new ModbusProtocalErrorException(501);
             }
-            if (content[7] > 127)
+            if (content[1] > 127)
             {
                 throw new ModbusProtocalErrorException(content[2]);
             }
             return true;
         }
 
-        public ModbusTcpProtocalLinker() : base()
+        public ModbusComProtocalLinker() : base()
         {
             
         }
 
-        public ModbusTcpProtocalLinker(string ip) : base(ip)
+        public ModbusComProtocalLinker(string com) : base(com)
         {
             
         }
