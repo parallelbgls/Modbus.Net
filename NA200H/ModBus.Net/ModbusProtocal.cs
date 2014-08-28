@@ -583,14 +583,14 @@ namespace ModBus.Net
 
         public class WriteMultiRegisterInputStruct : InputStruct
         {
-            public WriteMultiRegisterInputStruct(byte belongAddress, string startAddress, ushort[] writeValue)
+            public WriteMultiRegisterInputStruct(byte belongAddress, string startAddress, object[] writeValue)
             {
                 BelongAddress = belongAddress;
                 FunctionCode = (int)ModbusProtocalReg.WriteMultiRegister;
                 StartAddress = AddressTranslatorNA200H.GetInstance().AddressTranslate(startAddress);
                 WriteCount = (ushort)writeValue.Length;
                 WriteByteCount = (byte)(WriteCount * 2);
-                WriteValue = writeValue.Clone() as ushort[];
+                WriteValue = writeValue.Clone() as object[];
             }
 
             public byte BelongAddress { get; private set; }
@@ -603,7 +603,7 @@ namespace ModBus.Net
 
             public byte WriteByteCount { get; private set; }
 
-            public ushort[] WriteValue { get; private set; }
+            public object[] WriteValue { get; private set; }
         }
 
         public class WriteMultiRegisterOutputStruct : OutputStruct

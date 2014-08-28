@@ -44,6 +44,7 @@
     <Compile Include="AddressTranslator.cs" />
     <Compile Include="BaseProtocal.cs" />
     <Compile Include="ComConnector.cs" />
+    <Compile Include="ModbusUtility.cs" />
     <Compile Include="RtuProtocalLinker.cs" />
     <Compile Include="ConfigurationManager.Designer.cs">
       <AutoGen>True</AutoGen>

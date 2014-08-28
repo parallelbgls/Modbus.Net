@@ -12,15 +12,33 @@ namespace NA200H.UI.WPF
     {
         public MainWindow()
         {
-            InitializeComponent();
-            BaseProtocal wrapper = new ModbusRtuProtocal();
-            ReadHoldRegisterModbusProtocal.ReadHoldRegisterInputStruct readHoldRegisterInputStruct = new ReadHoldRegisterModbusProtocal.ReadHoldRegisterInputStruct(2, "0", 4);
-            ReadHoldRegisterModbusProtocal.ReadHoldRegisterOutputStruct readHoldRegisterOutputStruct = (ReadHoldRegisterModbusProtocal.ReadHoldRegisterOutputStruct)wrapper.SendReceive(wrapper["ReadHoldRegisterModbusProtocal"], readHoldRegisterInputStruct);
-            for (int i = 0; i < readHoldRegisterOutputStruct.HoldRegisterStatus.Length; i++)
-            {
-                Console.WriteLine(readHoldRegisterOutputStruct.HoldRegisterStatus[i]);
-            }
-            Console.Read();
+            InitializeComponent();            
+        }
+
+        private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            ModbusUtility.GetInstance().ModbusType = ModbusType.Rtu;
+            ushort[] getNum = ModbusUtility.GetInstance().ReadHoldRegister(0x02, "0", 4);
+            SetValue(getNum);
+        }
+
+        private void SetValue(ushort[] getNum)
+        {
+            Add1.Text = getNum[0].ToString();
+            Add2.Text = getNum[1].ToString();
+            Add3.Text = getNum[2].ToString();
+            AddAns.Text = getNum[3].ToString();
+        }
+
+        private void Calc_OnClick(object sender, RoutedEventArgs e)
+        {
+            ushort add1 = 0, add2 = 0, add3 = 0;
+            ushort.TryParse(Add1.Text, out add1);
+            ushort.TryParse(Add2.Text, out add2);
+            ushort.TryParse(Add3.Text, out add3);
+            ModbusUtility.GetInstance().WriteMultiRegister(0x02, "0", new object[] {add1, add2, add3});
+            ushort[] getNum = ModbusUtility.GetInstance().ReadHoldRegister(0x02, "0", 4);
+            SetValue(getNum);
         }
     }
 }
