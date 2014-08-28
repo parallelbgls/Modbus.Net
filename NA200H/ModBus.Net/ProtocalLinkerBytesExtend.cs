@@ -52,7 +52,7 @@ namespace ModBus.Net
         }
     }
 
-    public class ModbusComProtocalLinkerBytesExtend : ProtocalLinkerBytesExtend
+    public class ModbusRtuProtocalLinkerBytesExtend : ProtocalLinkerBytesExtend
     {
         public override byte[] BytesExtend(byte[] content)
         {

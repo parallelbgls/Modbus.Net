@@ -90,6 +90,7 @@ namespace NA200H.UI.ConsoleApp
             //先初始化一个协议转换器，这里构造Modbus/Rtu协议。
             BaseProtocal wrapper = new ModbusRtuProtocal();
 
+            /*
             //调用方法一：手动构造
             //第一步：先生成一个输入信息的object数组
             object[] inputObjects = new object[]{(byte)0x02,(byte)0x01,(short)0x00,(short)0x03};
@@ -102,8 +103,15 @@ namespace NA200H.UI.ConsoleApp
             }
             Console.WriteLine();
             Console.Read();
-            Console.Read();
+            Console.Read();*/
 
+            ReadHoldRegisterModbusProtocal.ReadHoldRegisterInputStruct readHoldRegisterInputStruct = new ReadHoldRegisterModbusProtocal.ReadHoldRegisterInputStruct(2, "0", 4);
+            ReadHoldRegisterModbusProtocal.ReadHoldRegisterOutputStruct readHoldRegisterOutputStruct = (ReadHoldRegisterModbusProtocal.ReadHoldRegisterOutputStruct)wrapper.SendReceive(wrapper["ReadHoldRegisterModbusProtocal"], readHoldRegisterInputStruct);
+            for (int i = 0; i < readHoldRegisterOutputStruct.HoldRegisterStatus.Length; i++)
+            {
+                Console.WriteLine(readHoldRegisterOutputStruct.HoldRegisterStatus[i]);
+            }
+            Console.Read();
             /*
             //调用方法二：自动构造
             //第一步：先生成一个输入结构体，然后向这个结构体中填写数据

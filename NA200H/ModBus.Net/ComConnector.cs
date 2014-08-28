@@ -122,6 +122,7 @@ namespace ModBus.Net
             }
 
             byte[] data = new byte[200];
+            Thread.Sleep(100);
             int i = serialPort1.Read(data, 0, serialPort1.BytesToRead);
             byte[] returndata = new byte[i];
             Array.Copy(data, 0, returndata, 0, i);
