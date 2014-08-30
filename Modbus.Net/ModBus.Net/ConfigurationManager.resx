@@ -123,10 +123,4 @@
   <data name="IP" xml:space="preserve">
     <value>192.168.3.247</value>
   </data>
-  <data name="Port" xml:space="preserve">
-    <value>502</value>
-  </data>
-  <data name="SocketTimeOut" xml:space="preserve">
-    <value>1000</value>
-  </data>
 </root>

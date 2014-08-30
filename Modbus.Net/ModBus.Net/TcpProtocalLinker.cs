@@ -10,15 +10,23 @@ namespace ModBus.Net
         /// 连接对象
         /// </summary>
         
-        protected TcpProtocalLinker()
+        protected TcpProtocalLinker() : this(ConfigurationManager.IP)
         {
-            //初始化连对象
-            _baseConnector = new TcpConnector(ConfigurationManager.IP, int.Parse(ConfigurationManager.Port), false);
+            
         }
 
         protected TcpProtocalLinker(string ip)
         {
-            _baseConnector = new TcpConnector(ip, int.Parse(ConfigurationManager.Port), false);
+            int port;
+            if (ConfigurationManager.ResourceManager.GetString("Port") != null && int.TryParse(ConfigurationManager.ResourceManager.GetString("Port"),out port))
+            {
+
+            }
+            else
+            {
+                port = 502;
+            }
+            _baseConnector = new TcpConnector(ip, port, false);
         }
     }   
 }

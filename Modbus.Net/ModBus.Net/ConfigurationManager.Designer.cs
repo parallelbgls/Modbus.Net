@@ -77,23 +77,5 @@ namespace ModBus.Net {
                 return ResourceManager.GetString("IP", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   查找类似 502 的本地化字符串。
-        /// </summary>
-        internal static string Port {
-            get {
-                return ResourceManager.GetString("Port", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 1000 的本地化字符串。
-        /// </summary>
-        internal static string SocketTimeOut {
-            get {
-                return ResourceManager.GetString("SocketTimeOut", resourceCulture);
-            }
-        }
     }
 }
