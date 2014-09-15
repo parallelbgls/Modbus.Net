@@ -10,6 +10,7 @@ namespace NA200H.UI.WPF
     /// </summary>
     public partial class MainWindow : Window
     {
+        private ModbusUtility utility;
         public MainWindow()
         {
             InitializeComponent();            
@@ -17,8 +18,8 @@ namespace NA200H.UI.WPF
 
         private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
-            ModbusUtility.GetInstance().ModbusType = ModbusType.Rtu;
-            ushort[] getNum = ModbusUtility.GetInstance().ReadHoldRegister(0x02, "0", 4);
+            utility = new ModbusUtility((int)ModbusType.Rtu);
+            ushort[] getNum = utility.GetRegisters(0x02, "0", 4);
             SetValue(getNum);
         }
 
@@ -36,8 +37,8 @@ namespace NA200H.UI.WPF
             ushort.TryParse(Add1.Text, out add1);
             ushort.TryParse(Add2.Text, out add2);
             ushort.TryParse(Add3.Text, out add3);
-            ModbusUtility.GetInstance().WriteMultiRegister(0x02, "0", new object[] {add1, add2, add3});
-            ushort[] getNum = ModbusUtility.GetInstance().ReadHoldRegister(0x02, "0", 4);
+            utility.SetRegisters(0x02, "0", new object[] {add1, add2, add3});
+            ushort[] getNum = utility.GetRegisters(0x02, "0", 4);
             SetValue(getNum);
         }
     }

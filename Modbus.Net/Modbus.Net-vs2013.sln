@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModBus.Net", "ModBus.Net\Mo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NA200H.UI.WPF", "NA200H.UI.WPF\NA200H.UI.WPF.csproj", "{78916B03-C910-468E-B593-667A3EFF68BE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossLampControl.WebApi", "CrossLampControl.WebApi\CrossLampControl.WebApi.csproj", "{252FDEE7-8671-46D3-A05B-CB7668804700}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{78916B03-C910-468E-B593-667A3EFF68BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{78916B03-C910-468E-B593-667A3EFF68BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{78916B03-C910-468E-B593-667A3EFF68BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{252FDEE7-8671-46D3-A05B-CB7668804700}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{252FDEE7-8671-46D3-A05B-CB7668804700}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{252FDEE7-8671-46D3-A05B-CB7668804700}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{252FDEE7-8671-46D3-A05B-CB7668804700}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

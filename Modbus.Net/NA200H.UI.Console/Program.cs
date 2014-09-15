@@ -105,19 +105,6 @@ namespace NA200H.UI.ConsoleApp
             Console.Read();
             Console.Read();*/
 
-            ushort[] holdRegArr = ModbusUtility.GetInstance().ReadHoldRegister(0x02, "0", 4);
-            foreach (var holdReg in holdRegArr)
-            {
-                Console.WriteLine(holdReg);
-            }
-            Console.Read();
-            Console.Read();
-
-            Console.WriteLine(ModbusUtility.GetInstance()
-                .WriteMultiRegister(0x02, "0", new object[] {(ushort) 8, (ushort) 9, (ushort) 10}));
-            Console.Read();
-            Console.Read();
-
             /*
             //调用方法二：自动构造
             //第一步：先生成一个输入结构体，然后向这个结构体中填写数据

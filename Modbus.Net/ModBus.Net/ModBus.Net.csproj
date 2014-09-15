@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="AddressTranslator.cs" />
     <Compile Include="BaseProtocal.cs" />
+    <Compile Include="BaseUtility.cs" />
     <Compile Include="ComConnector.cs" />
     <Compile Include="ModbusUtility.cs" />
     <Compile Include="RtuProtocalLinker.cs" />

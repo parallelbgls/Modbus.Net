@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="COM" xml:space="preserve">
-    <value>COM3</value>
+    <value>COM6</value>
   </data>
   <data name="IP" xml:space="preserve">
     <value>192.168.3.247</value>

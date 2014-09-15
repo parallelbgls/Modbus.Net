@@ -10,9 +10,13 @@ public enum ModbusType
 
 namespace ModBus.Net
 {
-    public class ModbusUtility
+    public class ModbusUtility : BaseUtility
     {
         private BaseProtocal _wrapper;
+
+        private string _connectionString;
+
+        public string ConnectionString { get; set; }
 
         private ModbusType _modbusType;
 
@@ -29,30 +33,76 @@ namespace ModBus.Net
                 {
                     case ModbusType.Rtu:
                     {
-                        _wrapper = new ModbusRtuProtocal();
+                        _wrapper = ConnectionString == null ? new ModbusRtuProtocal() : new ModbusRtuProtocal(ConnectionString);
                         break;
                     }
                     case ModbusType.Tcp:
                     {
-                        _wrapper = new ModbusTcpProtocal();
+                        _wrapper = ConnectionString == null ? new ModbusTcpProtocal() : new ModbusTcpProtocal(ConnectionString);
                         break;
                     }
                 }
             }
         }
 
-        private static ModbusUtility _modbusUtility;
-        private ModbusUtility()
+        public ModbusUtility(int connectionType)
         {
-            ModbusType = ModbusType.Rtu;
+            ConnectionString = null;
+            ModbusType = (ModbusType)connectionType;
         }
 
-        public static ModbusUtility GetInstance()
+        public ModbusUtility(string connectionString, int connectionType)
         {
-            return _modbusUtility ?? (_modbusUtility = new ModbusUtility());
+            ConnectionString = connectionString;
+            ModbusType = (ModbusType)connectionType;           
         }
 
-        public ushort[] ReadHoldRegister(byte belongAddress, string startAddress, ushort getCount)
+        public override void SetConnectionString(string connectionString)
+        {
+            ConnectionString = connectionString;
+        }
+
+        public override void SetConnectionType(int connectionType)
+        {
+            ModbusType = (ModbusType) connectionType;
+        }
+
+        public override bool[] GetCoils(byte belongAddress, string startAddress, ushort getCount)
+        {
+            try
+            {
+                var inputStruct = new ReadCoilStatusModbusProtocal.ReadCoilStatusInputStruct(belongAddress, startAddress,
+                getCount);
+                var outputStruct =
+                    _wrapper.SendReceive(_wrapper["ReadCoilStatusModbusProtocal"], inputStruct) as
+                        ReadCoilStatusModbusProtocal.ReadCoilStatusOutputStruct;
+                return outputStruct.CoilStatus;
+            }
+            catch (Exception)
+            {
+                return null;
+            }           
+        }
+
+        public override bool SetCoils(byte belongAddress, string startAddress, bool[] setContents)
+        {
+            try
+            {
+                var inputStruct = new WriteMultiCoilModbusProtocal.WriteMultiCoilInputStruct(belongAddress, startAddress,
+                setContents);
+                var outputStruct =
+                    _wrapper.SendReceive(_wrapper["WriteMultiCoilModbusProtocal"], inputStruct) as
+                        WriteMultiCoilModbusProtocal.WriteMultiCoilOutputStruct;
+                if (outputStruct.WriteCount != setContents.Length) return false;
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }    
+        }
+
+        public override ushort[] GetRegisters(byte belongAddress, string startAddress, ushort getCount)
         {
             try
             {
@@ -65,19 +115,19 @@ namespace ModBus.Net
             catch
             {
                 return null;
-            }     
+            }    
         }
 
-        public bool WriteMultiRegister(byte belongAddress, string startAddress, object[] writeValue)
+        public override bool SetRegisters(byte belongAddress, string startAddress, object[] setContents)
         {
             try
             {
                 var inputStruct = new WriteMultiRegisterModbusProtocal.WriteMultiRegisterInputStruct(belongAddress,
-                    startAddress, writeValue);
+                    startAddress, setContents);
                 var outputStruct =
                     _wrapper.SendReceive(_wrapper["WriteMultiRegisterModbusProtocal"], inputStruct) as
                         WriteMultiRegisterModbusProtocal.WriteMultiRegisterOutputStruct;
-                if (outputStruct.WriteCount != writeValue.Length) return false;
+                if (outputStruct.WriteCount != setContents.Length) return false;
                 return true;
             }
             catch
