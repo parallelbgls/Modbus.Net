@@ -10,6 +10,7 @@ namespace CrossLampControl.WebApi.Models
     {
         public string MainLamp { get; set; }
         public string SubLamp { get; set; }
+        public string StartPause { get; set; }
 
         public Lamp()
         {
@@ -17,10 +18,15 @@ namespace CrossLampControl.WebApi.Models
             SubLamp = LightLamp.Red.ToString();
         }
 
-        public Lamp(LightLamp mLamp, LightLamp sLamp)
+        public void SetLamp(LightLamp mLamp, LightLamp sLamp)
         {
             MainLamp = mLamp.ToString();
             SubLamp = sLamp.ToString();
+        }
+
+        public void SetStart(bool isStart)
+        {
+            StartPause = isStart ? "Start" : "Pause";
         }
     }
 }

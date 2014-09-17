@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Routing;
 using CrossLampControl.WebApi.Models;
 using ModBus.Net;
 
@@ -41,7 +42,9 @@ namespace CrossLampControl.WebApi.Controllers
             {
                 light.SubLamp = LightLamp.Red.ToString();
             }
+            light.SetStart(lamps[6]);
             return light;
         }
+
     }
 }
