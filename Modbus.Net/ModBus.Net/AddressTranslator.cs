@@ -7,9 +7,6 @@ namespace ModBus.Net
     /// </summary>
     public abstract class AddressTranslator
     {
-        protected static AddressTranslator _instance;
-        public Dictionary<string, short> TransDictionary;
-
         public abstract ushort AddressTranslate(string address);
     }
 
@@ -18,6 +15,8 @@ namespace ModBus.Net
     /// </summary>
     public class AddressTranslatorNA200H : AddressTranslator
     {
+        public Dictionary<string, short> TransDictionary;
+
         private AddressTranslatorNA200H()
         {
             TransDictionary = new Dictionary<string, short>();
@@ -36,15 +35,6 @@ namespace ModBus.Net
             TransDictionary.Add("V", 0);
         }
 
-        public static AddressTranslator GetInstance()
-        {
-            if (_instance == null)
-            {
-                _instance = new AddressTranslatorNA200H();
-            }
-            return _instance;
-        }
-
         public override ushort AddressTranslate(string address)
         {
             address = address.ToUpper();
@@ -58,6 +48,19 @@ namespace ModBus.Net
             string head = address.Substring(0, i);
             string tail = address.Substring(i);
             return (ushort) (TransDictionary[head] + ushort.Parse(tail) - 1);
+        }
+    }
+
+    public class AddressTranslatorBase : AddressTranslator
+    {
+        public override ushort AddressTranslate(string address)
+        {
+            ushort num;
+            if (ushort.TryParse(address, out num))
+            {
+                return num;
+            }
+            return 0;
         }
     }
 }

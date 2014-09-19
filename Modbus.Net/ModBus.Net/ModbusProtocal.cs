@@ -61,7 +61,7 @@ namespace ModBus.Net
             {
                 BelongAddress = belongAddress;
                 FunctionCode = (int)ModbusProtocalReg.ReadCoilStatus;
-                StartAddress = AddressTranslatorNA200H.GetInstance().AddressTranslate(startAddress);
+                StartAddress = _addressTranslator.AddressTranslate(startAddress);
                 GetCount = getCount;
             }
 
@@ -133,7 +133,7 @@ namespace ModBus.Net
             {
                 BelongAddress = belongAddress;
                 FunctionCode = (int)ModbusProtocalReg.ReadInputStatus;
-                StartAddress = AddressTranslatorNA200H.GetInstance().AddressTranslate(startAddress);
+                StartAddress = _addressTranslator.AddressTranslate(startAddress);
                 GetCount = getCount;
             }
 
@@ -200,7 +200,7 @@ namespace ModBus.Net
             {
                 BelongAddress = belongAddress;
                 FunctionCode = (int)ModbusProtocalReg.ReadHoldRegister;
-                StartAddress = AddressTranslatorNA200H.GetInstance().AddressTranslate(startAddress);
+                StartAddress = _addressTranslator.AddressTranslate(startAddress);
                 GetCount = getCount;
             }
 
@@ -326,7 +326,7 @@ namespace ModBus.Net
             {
                 BelongAddress = belongAddress;
                 FunctionCode = (int)ModbusProtocalReg.ReadInputRegister;
-                StartAddress = AddressTranslatorNA200H.GetInstance().AddressTranslate(startAddress);
+                StartAddress = _addressTranslator.AddressTranslate(startAddress);
                 GetCount = getCount;
             }
 
@@ -388,7 +388,7 @@ namespace ModBus.Net
             {
                 BelongAddress = belongAddress;
                 FunctionCode = (int)ModbusProtocalReg.WriteOneCoil;
-                StartAddress = AddressTranslatorNA200H.GetInstance().AddressTranslate(startAddress);
+                StartAddress = _addressTranslator.AddressTranslate(startAddress);
                 WriteValue = writeValue;
             }
 
@@ -449,7 +449,7 @@ namespace ModBus.Net
             {
                 BelongAddress = belongAddress;
                 FunctionCode = (int)ModbusProtocalReg.WriteOneRegister;
-                StartAddress = AddressTranslatorNA200H.GetInstance().AddressTranslate(startAddress);
+                StartAddress = _addressTranslator.AddressTranslate(startAddress);
                 WriteValue = writeValue;
             }
             public byte BelongAddress { get; private set; }
@@ -509,7 +509,7 @@ namespace ModBus.Net
             {
                 BelongAddress = belongAddress;
                 FunctionCode = (int)ModbusProtocalReg.WriteMultiCoil;
-                StartAddress = AddressTranslatorNA200H.GetInstance().AddressTranslate(startAddress);
+                StartAddress = _addressTranslator.AddressTranslate(startAddress);
                 WriteCount = (ushort)writeValue.Length;
                 WriteByteCount = WriteCount % 8 > 0 ? (byte)(WriteCount / 8 + 1) : (byte)(WriteCount / 8);
                 WriteValue = new byte[WriteByteCount];
@@ -587,7 +587,7 @@ namespace ModBus.Net
             {
                 BelongAddress = belongAddress;
                 FunctionCode = (int)ModbusProtocalReg.WriteMultiRegister;
-                StartAddress = AddressTranslatorNA200H.GetInstance().AddressTranslate(startAddress);
+                StartAddress = _addressTranslator.AddressTranslate(startAddress);
                 WriteCount = (ushort)writeValue.Length;
                 WriteByteCount = (byte)(WriteCount * 2);
                 WriteValue = writeValue.Clone() as object[];
