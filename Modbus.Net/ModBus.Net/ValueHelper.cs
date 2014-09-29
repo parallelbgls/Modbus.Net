@@ -167,6 +167,7 @@ namespace ModBus.Net
                 t[i] = temp%2 > 0;
                 temp /= 2;
             }
+            pos += 1;
             return t;
         }
 
@@ -378,7 +379,7 @@ namespace ModBus.Net
             return translation.ToArray();
         }
 
-        public bool GetBit(ushort number, int pos)
+        public bool GetBit(ushort number, ref int pos)
         {           
             if (pos < 0 && pos > 15) throw new IndexOutOfRangeException();
             int ans = number % 2;
@@ -389,6 +390,7 @@ namespace ModBus.Net
                 number /= 2;
                 i--;
             }
+            pos += 1;
             return ans > 0;
         }
 
@@ -531,6 +533,7 @@ namespace ModBus.Net
                 t[8 - i] = temp%2 > 0;
                 temp /= 2;
             }
+            pos += 1;
             return t;
         }
 
