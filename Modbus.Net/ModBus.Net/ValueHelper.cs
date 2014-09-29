@@ -501,7 +501,7 @@ namespace ModBus.Net
         public override ulong GetULong(byte[] data, ref int pos)
         {
             Array.Reverse(data, pos, 8);
-            ulong t = BitConverter.ToUInt64(data, 0);
+            ulong t = BitConverter.ToUInt64(data, pos);
             pos += 8;
             return t;
         }
@@ -509,7 +509,7 @@ namespace ModBus.Net
         public override float GetFloat(byte[] data, ref int pos)
         {
             Array.Reverse(data, pos, 4);
-            float t = BitConverter.ToSingle(data, 0);
+            float t = BitConverter.ToSingle(data, pos);
             pos += 4;
             return t;
         }
@@ -517,7 +517,7 @@ namespace ModBus.Net
         public override double GetDouble(byte[] data, ref int pos)
         {
             Array.Reverse(data, pos, 8);
-            double t = BitConverter.ToDouble(data, 0);
+            double t = BitConverter.ToDouble(data, pos);
             pos += 8;
             return t;
         }
