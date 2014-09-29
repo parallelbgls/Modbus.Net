@@ -85,6 +85,7 @@ namespace ModBus.Net
             }
             catch
             {
+                serialPort1.Close();
                 return null;
             }
         }
@@ -116,19 +117,26 @@ namespace ModBus.Net
 
         public byte[] ReadMsg()
         {
-            if (!serialPort1.IsOpen)
+            try
             {
-                serialPort1.Open();
+                if (!serialPort1.IsOpen)
+                {
+                    serialPort1.Open();
+                }
+
+                byte[] data = new byte[200];
+                Thread.Sleep(100);
+                int i = serialPort1.Read(data, 0, serialPort1.BytesToRead);
+                byte[] returndata = new byte[i];
+                Array.Copy(data, 0, returndata, 0, i);
+                serialPort1.Close();
+                return returndata;
             }
-
-            byte[] data = new byte[200];
-            Thread.Sleep(100);
-            int i = serialPort1.Read(data, 0, serialPort1.BytesToRead);
-            byte[] returndata = new byte[i];
-            Array.Copy(data, 0, returndata, 0, i);
-            serialPort1.Close();
-            return returndata;
-
+            catch (Exception)
+            {
+                serialPort1.Close();
+                return null;
+            }     
         }
 
         #endregion

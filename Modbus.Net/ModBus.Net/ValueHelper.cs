@@ -11,7 +11,7 @@ namespace ModBus.Net
     /// </summary>
     public class ValueHelper
     {
-        
+
         protected static bool _littleEndian = false;
 
         protected ValueHelper()
@@ -95,7 +95,7 @@ namespace ModBus.Net
             return BitConverter.GetBytes(value);
         }
 
-        public byte GetByte(byte[] data, ref int pos)
+        public virtual byte GetByte(byte[] data, ref int pos)
         {
             byte t = data[pos];
             pos += 1;
@@ -139,22 +139,34 @@ namespace ModBus.Net
 
         public virtual ulong GetULong(byte[] data, ref int pos)
         {
-            ulong t = BitConverter.ToUInt64(data, 0);
+            ulong t = BitConverter.ToUInt64(data, pos);
             pos += 8;
             return t;
         }
 
         public virtual float GetFloat(byte[] data, ref int pos)
         {
-            float t = BitConverter.ToSingle(data, 0);
+            float t = BitConverter.ToSingle(data, pos);
             pos += 4;
             return t;
         }
 
         public virtual double GetDouble(byte[] data, ref int pos)
         {
-            double t = BitConverter.ToDouble(data, 0);
+            double t = BitConverter.ToDouble(data, pos);
             pos += 8;
+            return t;
+        }
+
+        public virtual bool[] GetBits(byte[] data, ref int pos)
+        {
+            bool[] t = new bool[8];
+            byte temp = data[pos];
+            for (int i = 0; i < 8; i++)
+            {
+                t[i] = temp%2 > 0;
+                temp /= 2;
+            }
             return t;
         }
 
@@ -170,7 +182,7 @@ namespace ModBus.Net
                 {
                     b = true;
                     IEnumerable<object> contentArray =
-                        ArrayList.Adapter((Array)content).ToArray(typeof(object)).OfType<object>();
+                        ArrayList.Adapter((Array) content).ToArray(typeof (object)).OfType<object>();
                     newContentsList.AddRange(contentArray);
                 }
                 else
@@ -182,69 +194,192 @@ namespace ModBus.Net
             if (b) return ObjectArrayToByteArray(newContentsList.ToArray());
             //把参数一个一个翻译为相对应的字节，然后拼成一个队列
             var translateTarget = new List<byte>();
+            bool lastIsBool = false;
+            byte boolToByteTemp = 0;
+            int boolToByteCount = 0;
             foreach (object content in contents)
             {
                 string t = content.GetType().ToString();
-                switch (t)
+                if (t == "System.Boolean")
                 {
-                    case "System.Int16":
+                    if (boolToByteCount >= 8)
                     {
-                        translateTarget.AddRange(Instance.GetBytes((short)content));
-                        break;
+                        translateTarget.Add(boolToByteTemp);
+                        boolToByteCount = 0;
+                        boolToByteTemp = 0;
                     }
-                    case "System.Int32":
+                    lastIsBool = true;
+                    if (_littleEndian)
                     {
-                        translateTarget.AddRange(Instance.GetBytes((int)content));
-                        break;
+                        boolToByteTemp += (byte) ((bool) content ? Math.Pow(2, boolToByteCount) : 0);
                     }
-                    case "System.Int64":
+                    else
                     {
-                        translateTarget.AddRange(Instance.GetBytes((long)content));
-                        break;
+                        boolToByteTemp = (byte) (boolToByteTemp*2 + ((bool) content ? 1 : 0));
                     }
-                    case "System.UInt16":
-                    {
-                        translateTarget.AddRange(Instance.GetBytes((ushort)content));
-                        break;
-                    }
-                    case "System.UInt32":
-                    {
-                        translateTarget.AddRange(Instance.GetBytes((uint)content));
-                        break;
-                    }
-                    case "System.UInt64":
-                    {
-                        translateTarget.AddRange(Instance.GetBytes((ulong)content));
-                        break;
-                    }
-                    case "System.Single":
-                    {
-                        translateTarget.AddRange(Instance.GetBytes((float)content));
-                        break;
-                    }
-                    case "System.Double":
-                    {
-                        translateTarget.AddRange(Instance.GetBytes((double)content));
-                        break;
-                    }
-                    case "System.Byte":
-                    {
-                        translateTarget.AddRange(Instance.GetBytes((byte)content));
-                        break;
-                    }
-                    default:
-                    {
-                        throw new NotImplementedException("没有实现除整数以外的其它转换方式");
-                    }
+                    boolToByteCount++;
                 }
+                else
+                {
+                    if (lastIsBool)
+                    {
+                        translateTarget.Add(boolToByteTemp);
+                        boolToByteCount = 0;
+                        boolToByteTemp = 0;
+                        lastIsBool = false;
+                    }
+                    switch (t)
+                    {
+                        case "System.Int16":
+                            {
+                                translateTarget.AddRange(Instance.GetBytes((short)content));
+                                break;
+                            }
+                        case "System.Int32":
+                            {
+                                translateTarget.AddRange(Instance.GetBytes((int)content));
+                                break;
+                            }
+                        case "System.Int64":
+                            {
+                                translateTarget.AddRange(Instance.GetBytes((long)content));
+                                break;
+                            }
+                        case "System.UInt16":
+                            {
+                                translateTarget.AddRange(Instance.GetBytes((ushort)content));
+                                break;
+                            }
+                        case "System.UInt32":
+                            {
+                                translateTarget.AddRange(Instance.GetBytes((uint)content));
+                                break;
+                            }
+                        case "System.UInt64":
+                            {
+                                translateTarget.AddRange(Instance.GetBytes((ulong)content));
+                                break;
+                            }
+                        case "System.Single":
+                            {
+                                translateTarget.AddRange(Instance.GetBytes((float)content));
+                                break;
+                            }
+                        case "System.Double":
+                            {
+                                translateTarget.AddRange(Instance.GetBytes((double)content));
+                                break;
+                            }
+                        case "System.Byte":
+                            {
+                                translateTarget.AddRange(Instance.GetBytes((byte)content));
+                                break;
+                            }
+                        default:
+                            {
+                                throw new NotImplementedException("没有实现除整数以外的其它转换方式");
+                            }
+                    }
+                }        
             }
             //最后把队列转换为数组
             return translateTarget.ToArray();
         }
 
-        public int GetBit(ushort number, int pos)
+        public object[] ByteArrayToObjectArray(byte[] contents,
+            IEnumerable<KeyValuePair<Type, int>> translateTypeAndCount)
         {
-            
+            List<object> translation = new List<object>();
+            int count = 0;
+            foreach (var translateUnit in translateTypeAndCount)
+            {
+                for (int i = 0; i < translateUnit.Value; i++)
+                {
+                    if (count >= contents.Length) break;
+                    try
+                    {
+                        switch (translateUnit.Key.ToString())
+                        {
+                            case "System.Int16":
+                            {
+                                short value = Instance.GetShort(contents, ref count);
+                                translation.Add(value);
+                                break;
+                            }
+                            case "System.Int32":
+                            {
+                                int value = Instance.GetInt(contents, ref count);
+                                translation.Add(value);
+                                break;
+                            }
+                            case "System.Int64":
+                            {
+                                long value = Instance.GetLong(contents, ref count);
+                                translation.Add(value);
+                                break;
+                            }
+                            case "System.UInt16":
+                            {
+                                ushort value = Instance.GetUShort(contents, ref count);
+                                translation.Add(value);
+                                break;
+                            }
+                            case "System.UInt32":
+                            {
+                                uint value = Instance.GetUInt(contents, ref count);
+                                translation.Add(value);
+                                break;
+                            }
+                            case "System.UInt64":
+                            {
+                                ulong value = Instance.GetULong(contents, ref count);
+                                translation.Add(value);
+                                break;
+                            }
+                            case "System.Single":
+                            {
+                                float value = Instance.GetFloat(contents, ref count);
+                                translation.Add(value);
+                                break;
+                            }
+                            case "System.Double":
+                            {
+                                double value = Instance.GetDouble(contents, ref count);
+                                translation.Add(value);
+                                break;
+                            }
+                            case "System.Byte":
+                            {
+                                byte value = Instance.GetByte(contents, ref count);
+                                translation.Add(value);
+                                break;
+                            }
+                            case "System.Boolean":
+                            {
+                                bool[] value = Instance.GetBits(contents, ref count);
+                                for (int j = 0; j < value.Length; j++)
+                                {
+                                    translation.Add(value[j]);
+                                }
+                                break;
+                            }
+                            default:
+                            {
+                                throw new NotImplementedException("没有实现除整数以外的其它转换方式");
+                            }
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        count = contents.Length;
+                    }
+                }
+            }
+            return translation.ToArray();
+        }
+
+        public bool GetBit(ushort number, int pos)
+        {           
             if (pos < 0 && pos > 15) throw new IndexOutOfRangeException();
             int ans = number % 2;
             int i = 15;
@@ -254,7 +389,30 @@ namespace ModBus.Net
                 number /= 2;
                 i--;
             }
-            return ans;
+            return ans > 0;
+        }
+
+        public ushort SetBit(ushort number, int pos, bool setBit)
+        {
+            int creation = 0;
+            if (setBit)
+            {
+                for (int i = 0; i < 16; i++)
+                {
+                    creation *= 2;
+                    if (i == pos) creation++;
+                }
+                return (ushort) (number | creation);
+            }
+            else
+            {
+                for (int i = 0; i < 16; i++)
+                {
+                    creation *= 2;
+                    if (i != pos) creation++;
+                }
+                return (ushort) (number & creation);
+            }
         }
     }
 
@@ -361,6 +519,18 @@ namespace ModBus.Net
             Array.Reverse(data, pos, 8);
             double t = BitConverter.ToDouble(data, 0);
             pos += 8;
+            return t;
+        }
+
+        public override bool[] GetBits(byte[] data, ref int pos)
+        {
+            bool[] t = new bool[8];
+            byte temp = data[pos];
+            for (int i = 0; i < 8; i++)
+            {
+                t[8 - i] = temp%2 > 0;
+                temp /= 2;
+            }
             return t;
         }
 
