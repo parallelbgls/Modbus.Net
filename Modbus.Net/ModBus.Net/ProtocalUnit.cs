@@ -7,11 +7,11 @@ namespace ModBus.Net
 {
     public abstract class ProtocalUnit : IProtocalFormatting
     {
-        protected static AddressTranslator _addressTranslator = new AddressTranslatorBase();
+        //protected static AddressTranslator _addressTranslator = new AddressTranslatorBase();
 
-        public ProtocalUnit SetAddressTranslator(AddressTranslator addressTranslator)
+        public ProtocalUnit SetAddressTranslator(/*AddressTranslator addressTranslator*/)
         {
-            _addressTranslator = addressTranslator;
+            //_addressTranslator = addressTranslator;
             return this;
         }
 

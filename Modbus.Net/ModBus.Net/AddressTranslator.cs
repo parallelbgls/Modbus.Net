@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Dynamic;
 
 namespace ModBus.Net
 {
@@ -7,6 +8,30 @@ namespace ModBus.Net
     /// </summary>
     public abstract class AddressTranslator
     {
+        protected static AddressTranslator _instance;
+
+        public static AddressTranslator Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    CreateTranslator(new AddressTranslatorBase());
+                }
+                return _instance;
+            }
+            protected set
+            {
+                if (value == null) CreateTranslator(new AddressTranslatorBase());
+                _instance = value;
+            }
+        }
+
+        public static void CreateTranslator(AddressTranslator instance)
+        {
+            Instance = instance;
+        }
+
         public abstract ushort AddressTranslate(string address);
     }
 

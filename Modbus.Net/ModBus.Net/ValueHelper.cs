@@ -379,6 +379,13 @@ namespace ModBus.Net
             return translation.ToArray();
         }
 
+        public T[] ObjectArrayToDestinationArray<T>(object[] contents)
+        {
+            T[] array = new T[contents.Length];
+            Array.Copy(contents,array,contents.Length);
+            return array;
+        }
+
         public bool GetBit(ushort number, ref int pos)
         {           
             if (pos < 0 && pos > 15) throw new IndexOutOfRangeException();

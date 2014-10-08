@@ -10,9 +10,7 @@ namespace ModBus.Net
     {
         public abstract void SetConnectionString(string connectionString);
         public abstract void SetConnectionType(int connectionType);
-        public abstract bool[] GetCoils(byte belongAddress, string startAddress, ushort getCount);
-        public abstract bool SetCoils(byte belongAddress, string startAddress, bool[] setContents);
-        public abstract ushort[] GetRegisters(byte belongAddress, string startAddress, ushort getCount);
-        public abstract bool SetRegisters(byte belongAddress, string startAddress, object[] setContents);
+        public abstract byte[] GetDatas(byte belongAddress, byte functionCode, string startAddress, ushort getCount);
+        public abstract bool SetDatas(byte belongAddress, byte functionCode, string startAddress, object[] setContents);
     }
 }
