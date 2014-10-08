@@ -164,7 +164,7 @@ namespace ModBus.Net
             byte temp = data[pos];
             for (int i = 0; i < 8; i++)
             {
-                t[i] = temp%2 > 0;
+                t[7 - i] = temp%2 > 0;
                 temp /= 2;
             }
             pos += 1;
@@ -386,11 +386,11 @@ namespace ModBus.Net
             return array;
         }
 
-        public bool GetBit(ushort number, ref int pos)
+        public bool GetBit(byte number, ref int pos)
         {           
-            if (pos < 0 && pos > 15) throw new IndexOutOfRangeException();
+            if (pos < 0 && pos > 8) throw new IndexOutOfRangeException();
             int ans = number % 2;
-            int i = 15;
+            int i = 7;
             while (i >= pos)
             {
                 ans = number%2;
@@ -537,7 +537,7 @@ namespace ModBus.Net
             byte temp = data[pos];
             for (int i = 0; i < 8; i++)
             {
-                t[8 - i] = temp%2 > 0;
+                t[i] = temp%2 > 0;
                 temp /= 2;
             }
             pos += 1;

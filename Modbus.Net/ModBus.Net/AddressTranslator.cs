@@ -42,7 +42,7 @@ namespace ModBus.Net
     {
         public Dictionary<string, short> TransDictionary;
 
-        private AddressTranslatorNA200H()
+        public AddressTranslatorNA200H()
         {
             TransDictionary = new Dictionary<string, short>();
             TransDictionary.Add("Q", 0);
