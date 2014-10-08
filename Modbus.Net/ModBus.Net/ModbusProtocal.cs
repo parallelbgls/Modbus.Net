@@ -100,7 +100,7 @@ namespace ModBus.Net
             FunctionCode = (byte)functionCode;
             StartAddress = AddressTranslator.Instance.AddressTranslate(startAddress);
             WriteCount = (ushort)writeValue.Length;
-            WriteByteCount = (byte)(WriteCount * 2);
+            WriteByteCount = 0;
             WriteValue = writeValue.Clone() as object[];
         }
 
@@ -145,8 +145,10 @@ namespace ModBus.Net
         public override byte[] Format(InputStruct message)
         {
             var r_message = (WriteDataInputStruct)message;
-            return Format(r_message.BelongAddress, r_message.FunctionCode,
+            byte[] formattingBytes = Format(r_message.BelongAddress, r_message.FunctionCode,
                 r_message.StartAddress, r_message.WriteCount, r_message.WriteByteCount, r_message.WriteValue);
+            formattingBytes[6] = (byte)(formattingBytes.Length - 7);
+            return formattingBytes;
         }
 
         public override OutputStruct Unformat(byte[] messageBytes, ref int flag)

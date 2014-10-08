@@ -212,11 +212,11 @@ namespace ModBus.Net
                     lastIsBool = true;
                     if (_littleEndian)
                     {
-                        boolToByteTemp += (byte) ((bool) content ? Math.Pow(2, boolToByteCount) : 0);
+                        boolToByteTemp = (byte)(boolToByteTemp * 2 + ((bool)content ? 1 : 0));
                     }
                     else
-                    {
-                        boolToByteTemp = (byte) (boolToByteTemp*2 + ((bool) content ? 1 : 0));
+                    {                       
+                        boolToByteTemp += (byte)((bool)content ? Math.Pow(2, boolToByteCount) : 0);
                     }
                     boolToByteCount++;
                 }
@@ -284,6 +284,10 @@ namespace ModBus.Net
                 }        
             }
             //最后把队列转换为数组
+            if (lastIsBool)
+            {
+                translateTarget.Add(boolToByteTemp);
+            }
             return translateTarget.ToArray();
         }
 
