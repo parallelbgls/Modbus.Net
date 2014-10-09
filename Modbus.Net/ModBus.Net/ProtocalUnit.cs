@@ -64,4 +64,16 @@ namespace ModBus.Net
     public class OutputStruct
     {
     }
+
+    /// <summary>
+    /// 协议错误
+    /// </summary>
+    public class ProtocalErrorException : Exception
+    {
+        public ProtocalErrorException(string message)
+            : base(message)
+        {
+
+        }
+    }
 }

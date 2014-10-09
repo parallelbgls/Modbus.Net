@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace ModBus.Net
 {
-    public abstract class RtuProtocalLinker : ProtocalLinker
+    public abstract class ComProtocalLinker : ProtocalLinker
     {
-        protected RtuProtocalLinker()
+        protected ComProtocalLinker()
         {
             //初始化连对象
             _baseConnector = new ComConnector(ConfigurationManager.COM);
         }
 
-        protected RtuProtocalLinker(string com)
+        protected ComProtocalLinker(string com)
         {
             _baseConnector = new ComConnector(com);
         }

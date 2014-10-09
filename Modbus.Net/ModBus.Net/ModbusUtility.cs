@@ -2,9 +2,18 @@
 using System.Collections;
 using System.Windows.Forms;
 
+/// <summary>
+/// Modbus连接类型
+/// </summary>
 public enum ModbusType
 {
+    /// <summary>
+    /// Rtu连接
+    /// </summary>
     Rtu = 0,
+    /// <summary>
+    /// Tcp连接
+    /// </summary>
     Tcp = 1,
 }
 
@@ -12,11 +21,7 @@ namespace ModBus.Net
 {
     public class ModbusUtility : BaseUtility
     {
-        private BaseProtocal _wrapper;
-
-        private string _connectionString;
-
-        public string ConnectionString { get; set; }
+        protected string ConnectionString { get; set; }
 
         private ModbusType _modbusType;
 
@@ -33,12 +38,12 @@ namespace ModBus.Net
                 {
                     case ModbusType.Rtu:
                     {
-                        _wrapper = ConnectionString == null ? new ModbusRtuProtocal() : new ModbusRtuProtocal(ConnectionString);
+                        Wrapper = ConnectionString == null ? new ModbusRtuProtocal() : new ModbusRtuProtocal(ConnectionString);
                         break;
                     }
                     case ModbusType.Tcp:
                     {
-                        _wrapper = ConnectionString == null ? new ModbusTcpProtocal() : new ModbusTcpProtocal(ConnectionString);
+                        Wrapper = ConnectionString == null ? new ModbusTcpProtocal() : new ModbusTcpProtocal(ConnectionString);
                         break;
                     }
                 }
@@ -73,7 +78,7 @@ namespace ModBus.Net
             {
                 var inputStruct = new ReadDataInputStruct(belongAddress, (ModbusProtocalReadDataFunctionCode)functionCode, startAddress, getCount);
                 var outputStruct =
-                    _wrapper.SendReceive(_wrapper["ReadDataModbusProtocal"], inputStruct) as ReadDataOutputStruct;
+                    Wrapper.SendReceive(Wrapper["ReadDataModbusProtocal"], inputStruct) as ReadDataOutputStruct;
                 return outputStruct.DataValue;
             }
             catch
@@ -89,7 +94,7 @@ namespace ModBus.Net
                 var inputStruct = new WriteDataInputStruct(belongAddress,
                     (ModbusProtocalWriteDataFunctionCode) functionCode, startAddress, setContents);
                 var outputStruct =
-                    _wrapper.SendReceive(_wrapper["WriteDataModbusProtocal"], inputStruct) as
+                    Wrapper.SendReceive(Wrapper["WriteDataModbusProtocal"], inputStruct) as
                         WriteDataOutputStruct;
                 if (outputStruct.WriteCount != setContents.Length) return false;
                 return true;

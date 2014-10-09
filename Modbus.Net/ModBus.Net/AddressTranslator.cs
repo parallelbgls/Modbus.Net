@@ -76,6 +76,9 @@ namespace ModBus.Net
         }
     }
 
+    /// <summary>
+    /// 基本的单元转换器
+    /// </summary>
     public class AddressTranslatorBase : AddressTranslator
     {
         public override ushort AddressTranslate(string address)

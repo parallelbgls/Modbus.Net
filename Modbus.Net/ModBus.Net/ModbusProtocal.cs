@@ -2,18 +2,19 @@
 using System.Collections.Generic;
 using System.Runtime.Remoting.Messaging;
 
-public enum ModbusProtocalFunctionCode
-{
-    
-}
-
-internal enum ModbusProtocalTimeFunctionCode
+/// <summary>
+/// 跟时间有关的功能码
+/// </summary>
+internal enum ModbusProtocalTimeFunctionCode : byte
 {
     GetSystemTime = 3,
     SetSystemTime = 16,
 };
 
-public enum ModbusProtocalReadDataFunctionCode
+/// <summary>
+/// 跟读数据有关的功能码
+/// </summary>
+public enum ModbusProtocalReadDataFunctionCode : byte
 {
     ReadCoilStatus = 1,
     ReadInputStatus = 2,
@@ -21,11 +22,15 @@ public enum ModbusProtocalReadDataFunctionCode
     ReadInputRegister = 4,
 }
 
-public enum ModbusProtocalWriteDataFunctionCode
+/// <summary>
+/// 跟写数据有关的功能码
+/// </summary>
+public enum ModbusProtocalWriteDataFunctionCode : byte
 {
     WriteMultiCoil = 15,
     WriteMultiRegister = 16,
 }
+
 namespace ModBus.Net
 {
     public abstract class ModbusProtocal : BaseProtocal
@@ -33,6 +38,7 @@ namespace ModBus.Net
 
     }
 
+    #region 读PLC数据
     public class ReadDataInputStruct : InputStruct
     {
         public ReadDataInputStruct(byte belongAddress, ModbusProtocalReadDataFunctionCode functionCode, string startAddress, ushort getCount)
@@ -92,6 +98,9 @@ namespace ModBus.Net
         }
     }
 
+    #endregion
+
+    #region 写PLC数据
     public class WriteDataInputStruct : InputStruct
     {
         public WriteDataInputStruct(byte belongAddress, ModbusProtocalWriteDataFunctionCode functionCode, string startAddress, object[] writeValue)
@@ -162,6 +171,9 @@ namespace ModBus.Net
         }
     }
 
+    #endregion
+
+    #region 读PLC时间
     public class GetSystemTimeInputStruct : InputStruct
     {
         public GetSystemTimeInputStruct(byte belongAddress)
@@ -231,6 +243,9 @@ namespace ModBus.Net
         }
     }
 
+    #endregion
+
+    #region 写PLC时间
     public class SetSystemTimeInputStruct : InputStruct
     {
         public SetSystemTimeInputStruct(byte belongAddress, DateTime time)
@@ -317,16 +332,11 @@ namespace ModBus.Net
             return new SetSystemTimeOutputStruct(belongAddress, functionCode, startAddress, writeCount);
         }
     }
+    #endregion
 
-    public class ProtocalErrorException : Exception
-    {
-        public ProtocalErrorException(string message)
-            : base(message)
-        {
-
-        }
-    }
-
+    /// <summary>
+    /// Modbus协议错误表
+    /// </summary>
     public class ModbusProtocalErrorException : ProtocalErrorException
     {
         public int ErrorMessageNumber { get; private set; }

@@ -4,11 +4,11 @@ using System.Linq;
 
 namespace ModBus.Net
 {
+    /// <summary>
+    /// Tcp连接对象
+    /// </summary>
     public abstract class TcpProtocalLinker : ProtocalLinker
     {
-        /// <summary>
-        /// 连接对象
-        /// </summary>
         
         protected TcpProtocalLinker() : this(ConfigurationManager.IP)
         {
@@ -18,6 +18,7 @@ namespace ModBus.Net
         protected TcpProtocalLinker(string ip)
         {
             int port;
+            //是否启用ConfigurationManager里的Port参数
             if (ConfigurationManager.ResourceManager.GetString("Port") != null && int.TryParse(ConfigurationManager.ResourceManager.GetString("Port"),out port))
             {
 

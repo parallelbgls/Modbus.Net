@@ -46,7 +46,7 @@
     <Compile Include="BaseUtility.cs" />
     <Compile Include="ComConnector.cs" />
     <Compile Include="ModbusUtility.cs" />
-    <Compile Include="RtuProtocalLinker.cs" />
+    <Compile Include="ComProtocalLinker.cs" />
     <Compile Include="ConfigurationManager.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

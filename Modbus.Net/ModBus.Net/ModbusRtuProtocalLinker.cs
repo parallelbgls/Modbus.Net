@@ -6,14 +6,16 @@ using System.Threading.Tasks;
 
 namespace ModBus.Net
 {
-    class ModbusRtuProtocalLinker : RtuProtocalLinker
+    class ModbusRtuProtocalLinker : ComProtocalLinker
     {
         public override bool CheckRight(byte[] content)
         {
+            //CRC校验失败
             if (!Crc16.GetInstance().CrcEfficacy(content))
             {
                 throw new ModbusProtocalErrorException(501);
             }
+            //Modbus协议错误
             if (content[1] > 127)
             {
                 throw new ModbusProtocalErrorException(content[2]);
@@ -21,7 +23,7 @@ namespace ModBus.Net
             return true;
         }
 
-        public ModbusRtuProtocalLinker() : base()
+        public ModbusRtuProtocalLinker() : this(ConfigurationManager.COM)
         {
             
         }

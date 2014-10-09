@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace ModBus.Net
 {
+    /// <summary>
+    /// Modbus/Rtu协议
+    /// </summary>
     public class ModbusRtuProtocal : ModbusProtocal
     {
         public ModbusRtuProtocal()

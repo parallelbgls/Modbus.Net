@@ -57,7 +57,7 @@ namespace ModBus.Net
         public override byte[] BytesExtend(byte[] content)
         {
             byte[] crc = new byte[2];
-            //Modbus/Tcp协议扩张，增加CRC校验
+            //Modbus/Rtu协议扩张，增加CRC校验
             byte[] newFormat = new byte[content.Length + 2];
             Crc16.GetInstance().GetCRC(content, ref crc);
             Array.Copy(content, 0, newFormat, 0, content.Length);
@@ -67,7 +67,7 @@ namespace ModBus.Net
 
         public override byte[] BytesDecact(byte[] content)
         {
-            //Modbus/Com协议收缩，抛弃后面1个字节的内容
+            //Modbus/Rtu协议收缩，抛弃后面1个字节的内容
             byte[] newContent = new byte[content.Length - 2];
             Array.Copy(content, 0, newContent, 0, newContent.Length);
             return newContent;

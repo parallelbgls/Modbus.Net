@@ -10,10 +10,12 @@ namespace ModBus.Net
     {
         public override bool CheckRight(byte[] content)
         {
+            //长度校验失败
             if (content[5] != content.Length - 6)
             {
                 throw new ModbusProtocalErrorException(500);
             }
+            //Modbus协议错误
             if (content[7] > 127)
             {
                 throw new ModbusProtocalErrorException(content[2]);
@@ -21,7 +23,7 @@ namespace ModBus.Net
             return true;
         }
 
-        public ModbusTcpProtocalLinker() : base()
+        public ModbusTcpProtocalLinker() : this(ConfigurationManager.IP)
         {
             
         }

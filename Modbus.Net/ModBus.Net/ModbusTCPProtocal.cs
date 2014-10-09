@@ -7,7 +7,6 @@ namespace ModBus.Net
     /// </summary>
     public class ModbusTcpProtocal : ModbusProtocal
     {
-        //将连接器设置为Tcp连接器
         public ModbusTcpProtocal()
         {
             _protocalLinker = new ModbusTcpProtocalLinker();

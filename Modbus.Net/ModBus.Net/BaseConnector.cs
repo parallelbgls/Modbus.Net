@@ -8,9 +8,27 @@ namespace ModBus.Net
 {
     public abstract class BaseConnector
     {
+        /// <summary>
+        /// 连接PLC
+        /// </summary>
+        /// <returns></returns>
         public abstract bool Connect();
+        /// <summary>
+        /// 断开PLC
+        /// </summary>
+        /// <returns></returns>
         public abstract bool Disconnect();
+        /// <summary>
+        /// 无返回发送数据
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public abstract bool SendMsgWithoutReturn(byte[] message);
+        /// <summary>
+        /// 带返回发送数据
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public abstract byte[] SendMsg(byte[] message);
     }
 }
