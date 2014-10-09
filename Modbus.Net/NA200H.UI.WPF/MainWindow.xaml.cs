@@ -47,8 +47,7 @@ namespace NA200H.UI.WPF
             Thread.Sleep(100);
             byte[] getNum = utility.GetDatas(0x02, (byte)ModbusProtocalReadDataFunctionCode.ReadHoldRegister, "10000", 4);
             object[] getNumObjects =
-                ValueHelper.Instance.ByteArrayToObjectArray(getNum,
-                    new List<KeyValuePair<Type, int>>() { { new KeyValuePair<Type, int>(typeof(ushort), 4) } });
+                ValueHelper.Instance.ByteArrayToObjectArray(getNum, new KeyValuePair<Type, int>(typeof(ushort), 4));
             ushort[] getNumUshorts = ValueHelper.Instance.ObjectArrayToDestinationArray<ushort>(getNumObjects);
             SetValue(getNumUshorts);
         }

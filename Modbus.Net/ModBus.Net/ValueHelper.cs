@@ -291,6 +291,11 @@ namespace ModBus.Net
             return translateTarget.ToArray();
         }
 
+        public object[] ByteArrayToObjectArray(byte[] contents, KeyValuePair<Type, int> translateTypeAndCount)
+        {
+            return ByteArrayToObjectArray(contents, new List<KeyValuePair<Type, int>>() {translateTypeAndCount});
+        }
+
         public object[] ByteArrayToObjectArray(byte[] contents,
             IEnumerable<KeyValuePair<Type, int>> translateTypeAndCount)
         {

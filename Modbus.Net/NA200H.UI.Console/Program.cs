@@ -65,7 +65,7 @@ namespace NA200H.UI.ConsoleApp
             bool[] array =
                 ValueHelper.Instance.ObjectArrayToDestinationArray<bool>(
                     ValueHelper.Instance.ByteArrayToObjectArray(readCoilStatusOutputStruct.DataValue,
-                        new List<KeyValuePair<Type, int>>() {new KeyValuePair<Type, int>(typeof (bool), 0x0a)}));
+                        new KeyValuePair<Type, int>(typeof (bool), 0x0a)));
             for (int i = 0; i < array.Length; i++)
             {
                 Console.WriteLine(array[i]);
@@ -79,7 +79,7 @@ namespace NA200H.UI.ConsoleApp
             ushort[] array2 =
                 ValueHelper.Instance.ObjectArrayToDestinationArray<ushort>(
                     ValueHelper.Instance.ByteArrayToObjectArray(readHoldRegisterOutputStruct.DataValue,
-                        new List<KeyValuePair<Type, int>>() {new KeyValuePair<Type, int>(typeof (ushort), 8)}));
+                        new KeyValuePair<Type, int>(typeof (ushort), 8)));
             for (int i = 0; i < array2.Length; i++)
             {
                 Console.WriteLine(array2[i]);
