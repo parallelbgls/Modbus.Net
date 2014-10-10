@@ -21,7 +21,7 @@ namespace CrossLampControl.WebApi.Controllers
             bool[] lamps =
                 ValueHelper.Instance.ObjectArrayToDestinationArray<bool>(
                     ValueHelper.Instance.ByteArrayToObjectArray(lampsbyte,
-                        new KeyValuePair<Type, int>(typeof (bool), 6)));
+                        new KeyValuePair<Type, int>(typeof (bool), 7)));
             if (lamps[0])
             {
                 light.MainLamp = LightLamp.Green.ToString();
@@ -49,6 +49,5 @@ namespace CrossLampControl.WebApi.Controllers
             light.SetStart(lamps[6]);
             return light;
         }
-
     }
 }
