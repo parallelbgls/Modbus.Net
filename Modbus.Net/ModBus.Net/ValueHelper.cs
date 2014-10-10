@@ -494,11 +494,14 @@ namespace ModBus.Net
                             }
                             case "System.Boolean":
                             {
+                                
                                 bool[] value = Instance.GetBits(contents, ref count);
-                                for (int j = 0; j < value.Length; j++)
+                                int k = translateUnit.Value - i < 8 ? translateUnit.Value - i : 8;
+                                for (int j = 0; j < k; j++)
                                 {
                                     translation.Add(value[j]);
                                 }
+                                i += 7;
                                 break;
                             }
                             default:
