@@ -45,6 +45,7 @@
     <Compile Include="BaseProtocal.cs" />
     <Compile Include="BaseUtility.cs" />
     <Compile Include="ComConnector.cs" />
+    <Compile Include="ModbusProtocalLinkerBytesExtend.cs" />
     <Compile Include="ModbusUtility.cs" />
     <Compile Include="ComProtocalLinker.cs" />
     <Compile Include="ConfigurationManager.Designer.cs">
