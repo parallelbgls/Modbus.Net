@@ -15,6 +15,10 @@ namespace ModBus.Net
 
         public AddressTranslator AddressTranslator { get; set; }
 
+        protected BaseUtility()
+        {
+            AddressTranslator = new AddressTranslatorBase();
+        }
         /// <summary>
         /// 设置连接字符串
         /// </summary>
