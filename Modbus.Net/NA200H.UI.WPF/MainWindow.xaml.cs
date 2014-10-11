@@ -21,7 +21,9 @@ namespace NA200H.UI.WPF
         private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
             utility = new ModbusUtility((int) ModbusType.Tcp, "192.168.3.247");
-            byte[] getNum = utility.GetDatas(0x02, (byte) ModbusProtocalReadDataFunctionCode.ReadHoldRegister, "10000", 4);
+            AddressTranslator.CreateTranslator(new AddressTranslatorNA200H());
+            //byte[] getNum = utility.GetDatas(0x02, "03:10000", 8);
+            byte[] getNum = utility.GetDatas(0x02, "NW1", 8);
             object[] getNumObjects =
                 ValueHelper.Instance.ByteArrayToObjectArray(getNum,
                     new List<KeyValuePair<Type, int>>(){{new KeyValuePair<Type, int>(typeof(ushort), 4)}});
@@ -43,9 +45,11 @@ namespace NA200H.UI.WPF
             ushort.TryParse(Add1.Text, out add1);
             ushort.TryParse(Add2.Text, out add2);
             ushort.TryParse(Add3.Text, out add3);
-            utility.SetDatas(0x02, (byte)ModbusProtocalWriteDataFunctionCode.WriteMultiRegister, "10000", new object[] {add1, add2, add3});
+            //utility.SetDatas(0x02, "16:10000", new object[] {add1, add2, add3});
+            utility.SetDatas(0x02, "NW1", new object[] { add1, add2, add3 });
             Thread.Sleep(100);
-            byte[] getNum = utility.GetDatas(0x02, (byte)ModbusProtocalReadDataFunctionCode.ReadHoldRegister, "10000", 4);
+            //byte[] getNum = utility.GetDatas(0x02, "03:10000", 8);
+            byte[] getNum = utility.GetDatas(0x02, "NW1", 8);
             object[] getNumObjects =
                 ValueHelper.Instance.ByteArrayToObjectArray(getNum, new KeyValuePair<Type, int>(typeof(ushort), 4));
             ushort[] getNumUshorts = ValueHelper.Instance.ObjectArrayToDestinationArray<ushort>(getNumObjects);

@@ -26,19 +26,21 @@ namespace ModBus.Net
         /// 获取数据
         /// </summary>
         /// <param name="belongAddress">从站地址</param>
-        /// <param name="functionCode">功能码</param>
         /// <param name="startAddress">开始地址</param>
         /// <param name="getCount">接收个数</param>
         /// <returns>接收到的byte数据</returns>
-        public abstract byte[] GetDatas(byte belongAddress, byte functionCode, string startAddress, ushort getCount);
+        public abstract byte[] GetDatas(byte belongAddress, string startAddress, int getCount);
         /// <summary>
         /// 设置数据
         /// </summary>
         /// <param name="belongAddress">从站地址</param>
-        /// <param name="functionCode">功能码</param>
         /// <param name="startAddress">开始地址</param>
-        /// <param name="setContents">设置个数</param>
+        /// <param name="setContents">设置数据</param>
         /// <returns>是否设置成功</returns>
-        public abstract bool SetDatas(byte belongAddress, byte functionCode, string startAddress, object[] setContents);
+        public abstract bool SetDatas(byte belongAddress, string startAddress, object[] setContents);
+
+        public abstract DateTime GetTime(byte belongAddress);
+
+        public abstract bool SetTime(byte belongAddress, DateTime setTime);
     }
 }

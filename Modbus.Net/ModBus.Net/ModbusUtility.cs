@@ -72,11 +72,11 @@ namespace ModBus.Net
             ModbusType = (ModbusType) connectionType;
         }
 
-        public override byte[] GetDatas(byte belongAddress, byte functionCode, string startAddress, ushort getCount)
+        public override byte[] GetDatas(byte belongAddress, string startAddress, int getCount)
         {
             try
             {
-                var inputStruct = new ReadDataInputStruct(belongAddress, (ModbusProtocalReadDataFunctionCode)functionCode, startAddress, getCount);
+                var inputStruct = new ReadDataInputStruct(belongAddress, startAddress, getCount % 2 == 0 ? (ushort)(getCount / 2) : (ushort)(getCount / 2 + 1));
                 var outputStruct =
                     Wrapper.SendReceive(Wrapper["ReadDataModbusProtocal"], inputStruct) as ReadDataOutputStruct;
                 return outputStruct.DataValue;
@@ -87,12 +87,11 @@ namespace ModBus.Net
             }    
         }
 
-        public override bool SetDatas(byte belongAddress, byte functionCode, string startAddress, object[] setContents)
+        public override bool SetDatas(byte belongAddress, string startAddress, object[] setContents)
         {
             try
             {
-                var inputStruct = new WriteDataInputStruct(belongAddress,
-                    (ModbusProtocalWriteDataFunctionCode) functionCode, startAddress, setContents);
+                var inputStruct = new WriteDataInputStruct(belongAddress, startAddress, setContents);
                 var outputStruct =
                     Wrapper.SendReceive(Wrapper["WriteDataModbusProtocal"], inputStruct) as
                         WriteDataOutputStruct;
@@ -100,6 +99,38 @@ namespace ModBus.Net
                 return true;
             }
             catch
+            {
+                return false;
+            }
+        }
+
+        public override DateTime GetTime(byte belongAddress)
+        {
+            try
+            {
+                var inputStruct = new GetSystemTimeInputStruct(belongAddress);
+                var outputStruct =
+                    Wrapper.SendReceive(Wrapper["GetSystemTimeModbusProtocal"], inputStruct) as
+                        GetSystemTimeOutputStruct;
+                return outputStruct.Time;
+            }
+            catch (Exception)
+            {
+                return DateTime.MinValue;
+            }
+        }
+
+        public override bool SetTime(byte belongAddress, DateTime setTime)
+        {
+            try
+            {
+                var inputStruct = new SetSystemTimeInputStruct(belongAddress, setTime);
+                var outputStruct =
+                    Wrapper.SendReceive(Wrapper["SetSystemTimeModbusProtocal"], inputStruct) as
+                        SetSystemTimeOutputStruct;
+                return outputStruct.WriteCount > 0;
+            }
+            catch (Exception)
             {
                 return false;
             }

@@ -17,7 +17,7 @@ namespace CrossLampControl.WebApi.Controllers
         public Lamp GetLamp()
         {
             Lamp light = new Lamp();
-            byte[] lampsbyte = _utility.GetDatas(2, (byte)ModbusProtocalReadDataFunctionCode.ReadCoilStatus, "0", 6);
+            byte[] lampsbyte = _utility.GetDatas(2, ((byte)ModbusProtocalReadDataFunctionCode.ReadCoilStatus).ToString()+":0", 6);
             bool[] lamps =
                 ValueHelper.Instance.ObjectArrayToDestinationArray<bool>(
                     ValueHelper.Instance.ByteArrayToObjectArray(lampsbyte,

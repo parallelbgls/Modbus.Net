@@ -58,7 +58,7 @@ namespace NA200H.UI.ConsoleApp
             //第一步：先生成一个输入结构体，然后向这个结构体中填写数据
             AddressTranslator.CreateTranslator(new AddressTranslatorNA200H());
 
-            ReadDataInputStruct readCoilStatusInputStruct = new ReadDataInputStruct(0x02, ModbusProtocalReadDataFunctionCode.ReadCoilStatus, "N1", 0x0a);
+            ReadDataInputStruct readCoilStatusInputStruct = new ReadDataInputStruct(0x02, "N1", 0x0a);
             //第二步：再生成一个输出结构体，执行相应协议的发送指令，并将输出信息自动转换到输出结构体中
             ReadDataOutputStruct readCoilStatusOutputStruct = (ReadDataOutputStruct)wrapper.SendReceive(wrapper["ReadDataModbusProtocal"], readCoilStatusInputStruct);
             //第三步：读取这个输出结构体的信息。
@@ -74,7 +74,7 @@ namespace NA200H.UI.ConsoleApp
             Console.Read();
             Console.Read();
 
-            ReadDataInputStruct readHoldRegisterInputStruct = new ReadDataInputStruct(0x02, ModbusProtocalReadDataFunctionCode.ReadHoldRegister, "NW1", 4);
+            ReadDataInputStruct readHoldRegisterInputStruct = new ReadDataInputStruct(0x02, "NW1", 4);
             ReadDataOutputStruct readHoldRegisterOutputStruct = (ReadDataOutputStruct)wrapper.SendReceive(wrapper["ReadDataModbusProtocal"], readHoldRegisterInputStruct);
             ushort[] array2 =
                 ValueHelper.Instance.ObjectArrayToDestinationArray<ushort>(
@@ -88,7 +88,7 @@ namespace NA200H.UI.ConsoleApp
             Console.Read();
             Console.Read();
 
-            WriteDataInputStruct writeMultiCoilInputStruct = new WriteDataInputStruct(0x02, ModbusProtocalWriteDataFunctionCode.WriteMultiCoil, "Q20", new object[] { true, false, true, true, false, false, true, true, true, false });
+            WriteDataInputStruct writeMultiCoilInputStruct = new WriteDataInputStruct(0x02, "Q20", new object[] { true, false, true, true, false, false, true, true, true, false });
             WriteDataOutputStruct writeMultiCoilOutputStruct = (WriteDataOutputStruct)wrapper.SendReceive(wrapper["WriteDataModbusProtocal"], writeMultiCoilInputStruct);
             Console.WriteLine(writeMultiCoilOutputStruct.StartAddress);
             Console.WriteLine(writeMultiCoilOutputStruct.WriteCount);
@@ -96,7 +96,7 @@ namespace NA200H.UI.ConsoleApp
             Console.Read();
             Console.Read();
 
-            WriteDataInputStruct writeMultiRegisterInputStruct = new WriteDataInputStruct(0x02, ModbusProtocalWriteDataFunctionCode.WriteMultiRegister, "NW1", new object[] { (ushort)25, (ushort)18, (ushort)17 });
+            WriteDataInputStruct writeMultiRegisterInputStruct = new WriteDataInputStruct(0x02, "NW1", new object[] { (ushort)25, (ushort)18, (ushort)17 });
             WriteDataOutputStruct writeMultiRegisterOutputStruct = (WriteDataOutputStruct)wrapper.SendReceive(wrapper["WriteDataModbusProtocal"], writeMultiRegisterInputStruct);
             Console.WriteLine(writeMultiRegisterOutputStruct.StartAddress);
             Console.WriteLine(writeMultiRegisterOutputStruct.WriteCount);

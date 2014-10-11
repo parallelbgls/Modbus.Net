@@ -2,6 +2,12 @@
 using System.Collections.Generic;
 using System.Runtime.Remoting.Messaging;
 
+internal enum ModbusProtocalVariableFunctionCode : byte
+{
+    ReadVariable = 20,
+    WriteVariable = 21,
+}
+
 /// <summary>
 /// 跟时间有关的功能码
 /// </summary>
@@ -9,7 +15,7 @@ internal enum ModbusProtocalTimeFunctionCode : byte
 {
     GetSystemTime = 3,
     SetSystemTime = 16,
-};
+}
 
 /// <summary>
 /// 跟读数据有关的功能码
@@ -41,11 +47,12 @@ namespace ModBus.Net
     #region 读PLC数据
     public class ReadDataInputStruct : InputStruct
     {
-        public ReadDataInputStruct(byte belongAddress, ModbusProtocalReadDataFunctionCode functionCode, string startAddress, ushort getCount)
+        public ReadDataInputStruct(byte belongAddress, string startAddress, ushort getCount)
         {
             BelongAddress = belongAddress;
-            FunctionCode = (byte)functionCode;
-            StartAddress = AddressTranslator.Instance.AddressTranslate(startAddress);
+            KeyValuePair<int, int> translateAddress = AddressTranslator.Instance.AddressTranslate(startAddress, true);
+            FunctionCode = (byte)translateAddress.Value;
+            StartAddress = (ushort)translateAddress.Key;
             GetCount = getCount;
         }
 
@@ -103,11 +110,12 @@ namespace ModBus.Net
     #region 写PLC数据
     public class WriteDataInputStruct : InputStruct
     {
-        public WriteDataInputStruct(byte belongAddress, ModbusProtocalWriteDataFunctionCode functionCode, string startAddress, object[] writeValue)
+        public WriteDataInputStruct(byte belongAddress, string startAddress, object[] writeValue)
         {
             BelongAddress = belongAddress;
-            FunctionCode = (byte)functionCode;
-            StartAddress = AddressTranslator.Instance.AddressTranslate(startAddress);
+            KeyValuePair<int, int> translateAddress = AddressTranslator.Instance.AddressTranslate(startAddress, false);
+            FunctionCode = (byte)translateAddress.Value;
+            StartAddress = (ushort)translateAddress.Key;
             WriteCount = (ushort)writeValue.Length;
             WriteByteCount = 0;
             WriteValue = writeValue.Clone() as object[];
