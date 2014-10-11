@@ -16,7 +16,6 @@ namespace ModBus.Net
         /// <returns>数据是否正确接收</returns>
         protected ProtocalLinker _protocalLinker;
 
-
         protected BaseProtocal()
         {
             Protocals = new Dictionary<string, ProtocalUnit>();

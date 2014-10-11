@@ -47,10 +47,10 @@ namespace ModBus.Net
     #region 读PLC数据
     public class ReadDataInputStruct : InputStruct
     {
-        public ReadDataInputStruct(byte belongAddress, string startAddress, ushort getCount)
+        public ReadDataInputStruct(byte belongAddress, string startAddress, ushort getCount, AddressTranslator addressTranslator)
         {
             BelongAddress = belongAddress;
-            KeyValuePair<int, int> translateAddress = AddressTranslator.Instance.AddressTranslate(startAddress, true);
+            KeyValuePair<int, int> translateAddress = addressTranslator.AddressTranslate(startAddress, true);
             FunctionCode = (byte)translateAddress.Value;
             StartAddress = (ushort)translateAddress.Key;
             GetCount = getCount;
@@ -110,10 +110,10 @@ namespace ModBus.Net
     #region 写PLC数据
     public class WriteDataInputStruct : InputStruct
     {
-        public WriteDataInputStruct(byte belongAddress, string startAddress, object[] writeValue)
+        public WriteDataInputStruct(byte belongAddress, string startAddress, object[] writeValue, AddressTranslator addressTranslator)
         {
             BelongAddress = belongAddress;
-            KeyValuePair<int, int> translateAddress = AddressTranslator.Instance.AddressTranslate(startAddress, false);
+            KeyValuePair<int, int> translateAddress = addressTranslator.AddressTranslate(startAddress, false);
             FunctionCode = (byte)translateAddress.Value;
             StartAddress = (ushort)translateAddress.Key;
             WriteCount = (ushort)writeValue.Length;

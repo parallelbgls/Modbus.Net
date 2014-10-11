@@ -76,7 +76,7 @@ namespace ModBus.Net
         {
             try
             {
-                var inputStruct = new ReadDataInputStruct(belongAddress, startAddress, getCount % 2 == 0 ? (ushort)(getCount / 2) : (ushort)(getCount / 2 + 1));
+                var inputStruct = new ReadDataInputStruct(belongAddress, startAddress, getCount % 2 == 0 ? (ushort)(getCount / 2) : (ushort)(getCount / 2 + 1), AddressTranslator);
                 var outputStruct =
                     Wrapper.SendReceive(Wrapper["ReadDataModbusProtocal"], inputStruct) as ReadDataOutputStruct;
                 return outputStruct.DataValue;
@@ -91,7 +91,7 @@ namespace ModBus.Net
         {
             try
             {
-                var inputStruct = new WriteDataInputStruct(belongAddress, startAddress, setContents);
+                var inputStruct = new WriteDataInputStruct(belongAddress, startAddress, setContents, AddressTranslator);
                 var outputStruct =
                     Wrapper.SendReceive(Wrapper["WriteDataModbusProtocal"], inputStruct) as
                         WriteDataOutputStruct;

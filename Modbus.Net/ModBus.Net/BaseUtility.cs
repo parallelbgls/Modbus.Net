@@ -12,6 +12,9 @@ namespace ModBus.Net
         /// 协议收发主体
         /// </summary>
         protected BaseProtocal Wrapper;
+
+        public AddressTranslator AddressTranslator { get; set; }
+
         /// <summary>
         /// 设置连接字符串
         /// </summary>
@@ -39,8 +42,19 @@ namespace ModBus.Net
         /// <returns>是否设置成功</returns>
         public abstract bool SetDatas(byte belongAddress, string startAddress, object[] setContents);
 
+        /// <summary>
+        /// 获取PLC时间
+        /// </summary>
+        /// <param name="belongAddress">从站地址</param>
+        /// <returns>PLC时间</returns>
         public abstract DateTime GetTime(byte belongAddress);
 
+        /// <summary>
+        /// 设置PLC时间
+        /// </summary>
+        /// <param name="belongAddress">从站地址</param>
+        /// <param name="setTime">设置PLC时间</param>
+        /// <returns>设置是否成功</returns>
         public abstract bool SetTime(byte belongAddress, DateTime setTime);
     }
 }

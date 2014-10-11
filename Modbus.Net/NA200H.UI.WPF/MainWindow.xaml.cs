@@ -21,7 +21,7 @@ namespace NA200H.UI.WPF
         private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
             utility = new ModbusUtility((int) ModbusType.Tcp, "192.168.3.247");
-            AddressTranslator.CreateTranslator(new AddressTranslatorNA200H());
+            utility.AddressTranslator = new AddressTranslatorNA200H();
             //byte[] getNum = utility.GetDatas(0x02, "03:10000", 8);
             byte[] getNum = utility.GetDatas(0x02, "NW1", 8);
             object[] getNumObjects =
