@@ -9,6 +9,10 @@ namespace ModBus.Net
     {
         protected BaseConnector _baseConnector;
 
+        public bool IsConnected
+        {
+            get { return _baseConnector.IsConnected; }
+        }
         /// <summary>
         /// 发送并接收数据
         /// </summary>
@@ -16,22 +20,24 @@ namespace ModBus.Net
         /// <returns>接收协议的内容</returns>
         public virtual byte[] SendReceive(byte[] content)
         {
-            //接收数据
-            byte[] receiveBytes = _baseConnector.SendMsg(BytesExtend(content));
-            //容错处理
-            if (!CheckRight(receiveBytes)) return null;
-            //返回数据
-            return BytesDecact(receiveBytes);
+            byte[] extBytes = BytesExtend(content);
+            byte[] receiveBytes = SendReceiveWithoutExtAndDec(extBytes);
+            return receiveBytes == null ? null : BytesDecact(receiveBytes);
         }
 
         /// <summary>
-        /// 仅发送数据
+        /// 发送并接收数据，不进行协议扩展和收缩，用于特殊协议
         /// </summary>
         /// <param name="content">发送协议的内容</param>
-        /// <returns>协议是否正确发送</returns>
-        public virtual bool SendOnly(byte[] content)
+        /// <returns>接收协议的内容</returns>
+        public virtual byte[] SendReceiveWithoutExtAndDec(byte[] content)
         {
-            return _baseConnector.SendMsgWithoutReturn(BytesExtend(content));
+            //发送数据
+            byte[] receiveBytes = _baseConnector.SendMsg(content);
+            //容错处理
+            if (!CheckRight(receiveBytes)) return null;
+            //返回字符
+            return receiveBytes;
         }
 
         /// <summary>

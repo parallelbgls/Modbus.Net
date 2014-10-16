@@ -11,14 +11,13 @@ namespace ModBus.Net
     /// </summary>
     public class ModbusRtuProtocal : ModbusProtocal
     {
-        public ModbusRtuProtocal()
+        public ModbusRtuProtocal() : this(ConfigurationManager.COM)
         {
-            _protocalLinker = new ModbusRtuProtocalLinker();
         }
 
         public ModbusRtuProtocal(string com)
         {
-            _protocalLinker = new ModbusRtuProtocalLinker(com);
+            ProtocalLinker = new ModbusRtuProtocalLinker(com);
         }
     }
 }

@@ -23,12 +23,7 @@ namespace ModBus.Net
             return true;
         }
 
-        public ModbusTcpProtocalLinker() : this(ConfigurationManager.IP)
-        {
-            
-        }
-
-        public ModbusTcpProtocalLinker(string ip) : base(ip)
+        public ModbusTcpProtocalLinker(string ip) : base(ip, 102)
         {
             
         }

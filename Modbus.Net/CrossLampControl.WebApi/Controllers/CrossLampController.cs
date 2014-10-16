@@ -12,16 +12,22 @@ namespace CrossLampControl.WebApi.Controllers
 {
     public class CrossLampController : ApiController
     {
-        ModbusUtility _utility = new ModbusUtility((int)ModbusType.Rtu, "COM3");
+        BaseUtility _utility;
+
+        public CrossLampController()
+        {
+            _utility = new SimenseUtility(SimenseType.Tcp, "192.168.3.241,200");
+            _utility.AddressTranslator = new AddressTranslatorSimense();
+        }
+
         [HttpGet]
         public Lamp GetLamp()
         {
             Lamp light = new Lamp();
-            byte[] lampsbyte = _utility.GetDatas(2, ((byte)ModbusProtocalReadDataFunctionCode.ReadCoilStatus).ToString()+":0", 6);
+            object[] lampsbyte = _utility.GetDatas(2, 0, "Q0", new KeyValuePair<Type, int>(typeof(bool), 7));
             bool[] lamps =
                 ValueHelper.Instance.ObjectArrayToDestinationArray<bool>(
-                    ValueHelper.Instance.ByteArrayToObjectArray(lampsbyte,
-                        new KeyValuePair<Type, int>(typeof (bool), 7)));
+                    lampsbyte);
             if (lamps[0])
             {
                 light.MainLamp = LightLamp.Green.ToString();

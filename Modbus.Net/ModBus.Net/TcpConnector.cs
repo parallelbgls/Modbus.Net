@@ -45,9 +45,9 @@ namespace ModBus.Net
             b_AsyncReceive = isAsync;
         }
 
-        public bool SocketIsConnect
+        public override bool IsConnected
         {
-            get { return m_socketClient != null ? m_socketClient.Connected : false; }
+            get { return m_socketClient != null && m_socketClient.Connected; }
         }
 
         public void Dispose()
@@ -167,7 +167,7 @@ namespace ModBus.Net
 
             try
             {
-                if (!SocketIsConnect)
+                if (!IsConnected)
                 {
                     Connect();
                 }
@@ -255,7 +255,7 @@ namespace ModBus.Net
             {
                 m_socketClient.Client.Shutdown(SocketShutdown.Both);
                 m_socketClient.Client.Close();
-                if (!SocketIsConnect)
+                if (!IsConnected)
                 {
                     if (SocketErrorShutdown != null)
                     {

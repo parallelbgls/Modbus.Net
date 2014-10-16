@@ -12,7 +12,7 @@ namespace NA200H.UI.WPF
     /// </summary>
     public partial class MainWindow : Window
     {
-        private ModbusUtility utility;
+        private BaseUtility utility;
         public MainWindow()
         {
             InitializeComponent();            
@@ -20,14 +20,13 @@ namespace NA200H.UI.WPF
 
         private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
-            utility = new ModbusUtility((int) ModbusType.Tcp, "192.168.3.247");
-            utility.AddressTranslator = new AddressTranslatorNA200H();
-            //byte[] getNum = utility.GetDatas(0x02, "03:10000", 8);
-            byte[] getNum = utility.GetDatas(0x02, "NW1", 8);
-            object[] getNumObjects =
-                ValueHelper.Instance.ByteArrayToObjectArray(getNum,
-                    new List<KeyValuePair<Type, int>>(){{new KeyValuePair<Type, int>(typeof(ushort), 4)}});
-            ushort[] getNumUshorts = ValueHelper.Instance.ObjectArrayToDestinationArray<ushort>(getNumObjects);
+            //utility = new ModbusUtility(ModbusType.Tcp, "192.168.3.247");
+            //utility.AddressTranslator = new AddressTranslatorNA200H();
+            //object[] getNum = utility.GetDatas(0x02, 0x00, "NW1", new KeyValuePair<Type, int>(typeof(ushort), 4));
+            utility = new SimenseUtility(SimenseType.Tcp, "192.168.3.241,200");
+            utility.AddressTranslator = new AddressTranslatorSimense();
+            object[] getNum = utility.GetDatas(0x02, 0x00, "V1", new KeyValuePair<Type, int>(typeof(ushort), 4));
+            ushort[] getNumUshorts = ValueHelper.Instance.ObjectArrayToDestinationArray<ushort>(getNum);
             SetValue(getNumUshorts);
         }
 
@@ -45,14 +44,12 @@ namespace NA200H.UI.WPF
             ushort.TryParse(Add1.Text, out add1);
             ushort.TryParse(Add2.Text, out add2);
             ushort.TryParse(Add3.Text, out add3);
-            //utility.SetDatas(0x02, "16:10000", new object[] {add1, add2, add3});
-            utility.SetDatas(0x02, "NW1", new object[] { add1, add2, add3 });
+            //utility.SetDatas(0x02, 0x00, "NW1", new object[] { add1, add2, add3 });
+            utility.SetDatas(0x02, 0x00, "V1", new object[] { add1, add2, add3 });
             Thread.Sleep(100);
-            //byte[] getNum = utility.GetDatas(0x02, "03:10000", 8);
-            byte[] getNum = utility.GetDatas(0x02, "NW1", 8);
-            object[] getNumObjects =
-                ValueHelper.Instance.ByteArrayToObjectArray(getNum, new KeyValuePair<Type, int>(typeof(ushort), 4));
-            ushort[] getNumUshorts = ValueHelper.Instance.ObjectArrayToDestinationArray<ushort>(getNumObjects);
+            //object[] getNum = utility.GetDatas(0x02, 0x00, "NW1", new KeyValuePair<Type, int>(typeof(ushort), 4));
+            object[] getNum = utility.GetDatas(0x02, 0x00, "V1", new KeyValuePair<Type, int>(typeof(ushort), 4));
+            ushort[] getNumUshorts = ValueHelper.Instance.ObjectArrayToDestinationArray<ushort>(getNum);
             SetValue(getNumUshorts);
         }
     }

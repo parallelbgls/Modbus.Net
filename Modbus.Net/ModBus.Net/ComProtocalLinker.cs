@@ -8,14 +8,14 @@ namespace ModBus.Net
 {
     public abstract class ComProtocalLinker : ProtocalLinker
     {
-        protected ComProtocalLinker()
+        protected ComProtocalLinker() : this(ConfigurationManager.COM)
         {
-            //初始化连对象
-            _baseConnector = new ComConnector(ConfigurationManager.COM);
+
         }
 
         protected ComProtocalLinker(string com)
         {
+            //初始化连对象
             _baseConnector = new ComConnector(com);
         }
     }

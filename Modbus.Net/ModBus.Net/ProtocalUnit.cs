@@ -7,14 +7,6 @@ namespace ModBus.Net
 {
     public abstract class ProtocalUnit : IProtocalFormatting
     {
-        //protected static AddressTranslator _addressTranslator = new AddressTranslatorBase();
-
-        public ProtocalUnit SetAddressTranslator(/*AddressTranslator addressTranslator*/)
-        {
-            //_addressTranslator = addressTranslator;
-            return this;
-        }
-
         /// <summary>
         /// 格式化，将输入结构转换为字节数组
         /// </summary>
@@ -49,6 +41,11 @@ namespace ModBus.Net
         {
             return ValueHelper.Instance.ObjectArrayToByteArray(contents);
         }
+    }
+
+    public abstract class SpecialProtocalUnit : ProtocalUnit
+    {
+        
     }
 
     /// <summary>

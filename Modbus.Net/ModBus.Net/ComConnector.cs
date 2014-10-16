@@ -30,6 +30,11 @@ namespace ModBus.Net
 
         #region 发送接收数据
 
+        public override bool IsConnected
+        {
+            get { return serialPort1 != null && serialPort1.IsOpen; }
+        }
+
         public override bool Connect()
         {
             if (serialPort1 != null)

@@ -12,9 +12,9 @@ namespace NA200H.UI.ConsoleApp
     {
         private static void Main(string[] args)
         {
-            string ip = "192.168.3.247";
+            string ip = "192.168.3.241";
             //先初始化一个协议转换器，这里构造Modbus/Tcp协议。
-            BaseProtocal wrapper = new ModbusTcpProtocal(ip);
+            //BaseProtocal wrapper = new ModbusTcpProtocal(ip);
 
             /*
             try
@@ -53,14 +53,14 @@ namespace NA200H.UI.ConsoleApp
             Console.Read();
             Console.Read();*/
 
-            
+            /*
             //调用方法二：自动构造
             //第一步：先生成一个输入结构体，然后向这个结构体中填写数据
             AddressTranslator addressTranslator = new AddressTranslatorNA200H();
 
-            ReadDataInputStruct readCoilStatusInputStruct = new ReadDataInputStruct(0x02, "N1", 0x0a, addressTranslator);
+            ReadDataModbusInputStruct readCoilStatusInputStruct = new ReadDataModbusInputStruct(0x02, "N1", 0x0a, addressTranslator);
             //第二步：再生成一个输出结构体，执行相应协议的发送指令，并将输出信息自动转换到输出结构体中
-            ReadDataOutputStruct readCoilStatusOutputStruct = (ReadDataOutputStruct)wrapper.SendReceive(wrapper["ReadDataModbusProtocal"], readCoilStatusInputStruct);
+            ReadDataModbusOutputStruct readCoilStatusOutputStruct = (ReadDataModbusOutputStruct)wrapper.SendReceive(wrapper[typeof(ReadDataModbusProtocal)], readCoilStatusInputStruct);
             //第三步：读取这个输出结构体的信息。
             bool[] array =
                 ValueHelper.Instance.ObjectArrayToDestinationArray<bool>(
@@ -74,8 +74,8 @@ namespace NA200H.UI.ConsoleApp
             Console.Read();
             Console.Read();
 
-            ReadDataInputStruct readHoldRegisterInputStruct = new ReadDataInputStruct(0x02, "NW1", 4, addressTranslator);
-            ReadDataOutputStruct readHoldRegisterOutputStruct = (ReadDataOutputStruct)wrapper.SendReceive(wrapper["ReadDataModbusProtocal"], readHoldRegisterInputStruct);
+            ReadDataModbusInputStruct readHoldRegisterInputStruct = new ReadDataModbusInputStruct(0x02, "NW1", 4, addressTranslator);
+            ReadDataModbusOutputStruct readHoldRegisterOutputStruct = (ReadDataModbusOutputStruct)wrapper.SendReceive(wrapper[typeof(ReadDataModbusProtocal)], readHoldRegisterInputStruct);
             ushort[] array2 =
                 ValueHelper.Instance.ObjectArrayToDestinationArray<ushort>(
                     ValueHelper.Instance.ByteArrayToObjectArray(readHoldRegisterOutputStruct.DataValue,
@@ -88,35 +88,77 @@ namespace NA200H.UI.ConsoleApp
             Console.Read();
             Console.Read();
 
-            WriteDataInputStruct writeMultiCoilInputStruct = new WriteDataInputStruct(0x02, "Q20", new object[] { true, false, true, true, false, false, true, true, true, false }, addressTranslator);
-            WriteDataOutputStruct writeMultiCoilOutputStruct = (WriteDataOutputStruct)wrapper.SendReceive(wrapper["WriteDataModbusProtocal"], writeMultiCoilInputStruct);
+            WriteDataModbusInputStruct writeMultiCoilInputStruct = new WriteDataModbusInputStruct(0x02, "Q20", new object[] { true, false, true, true, false, false, true, true, true, false }, addressTranslator);
+            WriteDataModbusOutputStruct writeMultiCoilOutputStruct = (WriteDataModbusOutputStruct)wrapper.SendReceive(wrapper[typeof(WriteDataModbusProtocal)], writeMultiCoilInputStruct);
             Console.WriteLine(writeMultiCoilOutputStruct.StartAddress);
             Console.WriteLine(writeMultiCoilOutputStruct.WriteCount);
             Console.WriteLine();
             Console.Read();
             Console.Read();
 
-            WriteDataInputStruct writeMultiRegisterInputStruct = new WriteDataInputStruct(0x02, "NW1", new object[] { (ushort)25, (ushort)18, (ushort)17 }, addressTranslator);
-            WriteDataOutputStruct writeMultiRegisterOutputStruct = (WriteDataOutputStruct)wrapper.SendReceive(wrapper["WriteDataModbusProtocal"], writeMultiRegisterInputStruct);
+            WriteDataModbusInputStruct writeMultiRegisterInputStruct = new WriteDataModbusInputStruct(0x02, "NW1", new object[] { (ushort)25, (ushort)18, (ushort)17 }, addressTranslator);
+            WriteDataModbusOutputStruct writeMultiRegisterOutputStruct = (WriteDataModbusOutputStruct)wrapper.SendReceive(wrapper[typeof(WriteDataModbusProtocal)], writeMultiRegisterInputStruct);
             Console.WriteLine(writeMultiRegisterOutputStruct.StartAddress);
             Console.WriteLine(writeMultiRegisterOutputStruct.WriteCount);
             Console.WriteLine();
             Console.Read();
             Console.Read();
 
-            GetSystemTimeInputStruct getSystemTimeInputStruct = new GetSystemTimeInputStruct(0x02);
-            GetSystemTimeOutputStruct getSystemTimeOutputStruct = (GetSystemTimeOutputStruct)wrapper.SendReceive(wrapper["GetSystemTimeModbusProtocal"], getSystemTimeInputStruct);
+            GetSystemTimeModbusInputStruct getSystemTimeInputStruct = new GetSystemTimeModbusInputStruct(0x02);
+            GetSystemTimeModbusOutputStruct getSystemTimeOutputStruct = (GetSystemTimeModbusOutputStruct)wrapper.SendReceive(wrapper[typeof(GetSystemTimeModbusProtocal)], getSystemTimeInputStruct);
             Console.WriteLine(getSystemTimeOutputStruct.Time);
             Console.Read();
             Console.Read();
 
-            SetSystemTimeInputStruct setSystemTimeInputStruct = new SetSystemTimeInputStruct(0x02, DateTime.Now);
-            SetSystemTimeOutputStruct setSystemTimeOutputStruct = (SetSystemTimeOutputStruct)wrapper.SendReceive(wrapper["SetSystemTimeModbusProtocal"], setSystemTimeInputStruct);
+            SetSystemTimeModbusInputStruct setSystemTimeInputStruct = new SetSystemTimeModbusInputStruct(0x02, DateTime.Now);
+            SetSystemTimeModbusOutputStruct setSystemTimeOutputStruct = (SetSystemTimeModbusOutputStruct)wrapper.SendReceive(wrapper[typeof(SetSystemTimeModbusProtocal)], setSystemTimeInputStruct);
             Console.WriteLine(setSystemTimeOutputStruct.StartAddress);
             Console.WriteLine(setSystemTimeOutputStruct.WriteCount);
             Console.Read();
             Console.Read();
-            
+            */
+
+            BaseProtocal wrapper = new SimenseTcpProtocal(0x4d57, 0x4d57, 0x0001, 0x0001, 0x03c0, ip);
+            if (!wrapper.ProtocalLinker.IsConnected) return;
+            AddressTranslator addressTranslator = new AddressTranslatorSimense();
+
+            var readRequestSimenseInputStruct = new ReadRequestSimenseInputStruct(0xaacc, SimenseTypeCode.Byte, "V0", 4, addressTranslator);
+            var readRequestSimenseOutputStruct =
+                (ReadRequestSimenseOutputStruct)
+                    wrapper.SendReceive(wrapper[typeof(ReadRequestSimenseProtocal)], readRequestSimenseInputStruct);
+            ushort[] array =
+                ValueHelper.Instance.ObjectArrayToDestinationArray<ushort>(
+                    ValueHelper.Instance.ByteArrayToObjectArray(readRequestSimenseOutputStruct.GetValue,
+                        new KeyValuePair<Type, int>(typeof (ushort), 2)));
+            for (int i = 0; i < array.Length; i++)
+            {
+                Console.WriteLine(array[i]);
+            }
+            Console.Read();
+            Console.Read();
+
+            var writeRequestSimenseInputStruct = new WriteRequestSimenseInputStruct(0xaadd, "V100",
+                new object[] { (ushort)280, (ushort)12, (ushort)56, (ushort)72, (ushort)88, (ushort)525, (ushort)477, (ushort)151, (ushort)52 }, addressTranslator);
+            var writeRequestSimenseOutputStruct =
+                (WriteRequestSimenseOutputStruct)
+                    wrapper.SendReceive(wrapper[typeof(WriteRequestSimenseProtocal)], writeRequestSimenseInputStruct);
+            Console.WriteLine(writeRequestSimenseOutputStruct.AccessResult.ToString());
+            Console.Read();
+            Console.Read();
+
+            var readTimeSimenseInputStruct = new ReadTimeSimenseInputStruct(0xaaee);
+            var readTimeSimenseOutputStruct =
+                (ReadTimeSimenseOutputStruct)
+                    wrapper.SendReceive(wrapper[typeof(ReadTimeSimenseProtocal)], readTimeSimenseInputStruct);
+            Console.WriteLine(readTimeSimenseOutputStruct.DateTime);
+            Console.Read();
+            Console.Read();
+
+            var writeTimeSimenseInputStruct = new WriteTimeSimenseInputStruct(0xaaee, DateTime.Now);
+            var writeTimeSimenseOutputStruct =
+                (WriteTimeSimenseOutputStruct)
+                    wrapper.SendReceive(wrapper[typeof(WriteTimeSimenseProtocal)], writeTimeSimenseInputStruct);
+            Console.WriteLine(writeTimeSimenseOutputStruct.Id2);
         }
     }
 }

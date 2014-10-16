@@ -11,6 +11,19 @@ namespace ModBus.Net
     /// </summary>
     public class ValueHelper
     {
+        public Dictionary<string, double> ByteLength = new Dictionary<string, double>()
+        {
+            {"System.Boolean", 0.125},
+            {"System.Byte", 1},
+            {"System.Int16", 2},
+            {"System.Int32", 4},
+            {"System.Int64", 8},
+            {"System.UInt16", 2},
+            {"System.UInt32", 4},
+            {"System.UInt64", 8},
+            {"System.Single", 4},
+            {"System.Double", 8}
+        };
 
         protected static bool _littleEndian = false;
 

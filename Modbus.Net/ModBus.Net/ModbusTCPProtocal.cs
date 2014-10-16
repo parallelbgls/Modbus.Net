@@ -7,14 +7,13 @@ namespace ModBus.Net
     /// </summary>
     public class ModbusTcpProtocal : ModbusProtocal
     {
-        public ModbusTcpProtocal()
+        public ModbusTcpProtocal() : this(ConfigurationManager.IP)
         {
-            _protocalLinker = new ModbusTcpProtocalLinker();
         }
 
         public ModbusTcpProtocal(string ip)
         {
-            _protocalLinker = new ModbusTcpProtocalLinker(ip);
+            ProtocalLinker = new ModbusTcpProtocalLinker(ip);
         }
     }
 }

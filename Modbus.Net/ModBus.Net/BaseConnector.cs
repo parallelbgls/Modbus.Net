@@ -8,6 +8,7 @@ namespace ModBus.Net
 {
     public abstract class BaseConnector
     {
+        public abstract bool IsConnected { get; }
         /// <summary>
         /// 连接PLC
         /// </summary>

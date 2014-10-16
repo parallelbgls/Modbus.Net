@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,6 +13,7 @@ namespace ModBus.Net
         /// 协议收发主体
         /// </summary>
         protected BaseProtocal Wrapper;
+        public virtual string ConnectionString { get; set; }
 
         public AddressTranslator AddressTranslator { get; set; }
 
@@ -19,11 +21,6 @@ namespace ModBus.Net
         {
             AddressTranslator = new AddressTranslatorBase();
         }
-        /// <summary>
-        /// 设置连接字符串
-        /// </summary>
-        /// <param name="connectionString">连接字符串</param>
-        public abstract void SetConnectionString(string connectionString);
         /// <summary>
         /// 设置连接类型
         /// </summary>
@@ -33,18 +30,43 @@ namespace ModBus.Net
         /// 获取数据
         /// </summary>
         /// <param name="belongAddress">从站地址</param>
+        /// <param name="masterAddress">主站地址</param>
         /// <param name="startAddress">开始地址</param>
-        /// <param name="getCount">接收个数</param>
+        /// <param name="getByteCount">获取类型和个数</param>
         /// <returns>接收到的byte数据</returns>
-        public abstract byte[] GetDatas(byte belongAddress, string startAddress, int getCount);
+        protected abstract byte[] GetDatas(byte belongAddress, byte masterAddress, string startAddress, int getByteCount);
+
+        public virtual object[] GetDatas(byte belongAddress, byte masterAddress, string startAddress,
+            KeyValuePair<Type, int> getTypeAndCount)
+        {
+            string typeName = getTypeAndCount.Key.FullName;
+            double bCount = ValueHelper.Instance.ByteLength[typeName];
+            byte[] getBytes = GetDatas(belongAddress, masterAddress, startAddress, (int)Math.Ceiling(bCount * getTypeAndCount.Value));
+            return ValueHelper.Instance.ByteArrayToObjectArray(getBytes, getTypeAndCount);
+        }
+
+        public virtual object[] GetDatas(byte belongAddress, byte masterAddress, string startAddress,
+            IEnumerable<KeyValuePair<Type, int>> getTypeAndCountList)
+        {
+            int bAllCount = 0;
+            foreach (var getTypeAndCount in getTypeAndCountList)
+            {
+                string typeName = getTypeAndCount.Key.FullName;
+                double bCount = ValueHelper.Instance.ByteLength[typeName];
+                bAllCount += (int)Math.Ceiling(bCount*getTypeAndCount.Value);
+            }
+            byte[] getBytes = GetDatas(belongAddress, masterAddress, startAddress, bAllCount);
+            return ValueHelper.Instance.ByteArrayToObjectArray(getBytes, getTypeAndCountList);
+        }
         /// <summary>
         /// 设置数据
         /// </summary>
         /// <param name="belongAddress">从站地址</param>
+        /// <param name="masterAddress">主站地址</param>
         /// <param name="startAddress">开始地址</param>
         /// <param name="setContents">设置数据</param>
         /// <returns>是否设置成功</returns>
-        public abstract bool SetDatas(byte belongAddress, string startAddress, object[] setContents);
+        public abstract bool SetDatas(byte belongAddress, byte masterAddress, string startAddress, object[] setContents);
 
         /// <summary>
         /// 获取PLC时间

@@ -23,11 +23,6 @@ namespace ModBus.Net
             return true;
         }
 
-        public ModbusRtuProtocalLinker() : this(ConfigurationManager.COM)
-        {
-            
-        }
-
         public ModbusRtuProtocalLinker(string com) : base(com)
         {
             

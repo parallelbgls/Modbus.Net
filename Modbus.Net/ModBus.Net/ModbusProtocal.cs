@@ -11,7 +11,7 @@ internal enum ModbusProtocalVariableFunctionCode : byte
 /// <summary>
 /// 跟时间有关的功能码
 /// </summary>
-internal enum ModbusProtocalTimeFunctionCode : byte
+public enum ModbusProtocalTimeFunctionCode : byte
 {
     GetSystemTime = 3,
     SetSystemTime = 16,
@@ -31,7 +31,7 @@ public enum ModbusProtocalReadDataFunctionCode : byte
 /// <summary>
 /// 跟写数据有关的功能码
 /// </summary>
-public enum ModbusProtocalWriteDataFunctionCode : byte
+internal enum ModbusProtocalWriteDataFunctionCode : byte
 {
     WriteMultiCoil = 15,
     WriteMultiRegister = 16,
@@ -45,9 +45,9 @@ namespace ModBus.Net
     }
 
     #region 读PLC数据
-    public class ReadDataInputStruct : InputStruct
+    public class ReadDataModbusInputStruct : InputStruct
     {
-        public ReadDataInputStruct(byte belongAddress, string startAddress, ushort getCount, AddressTranslator addressTranslator)
+        public ReadDataModbusInputStruct(byte belongAddress, string startAddress, ushort getCount, AddressTranslator addressTranslator)
         {
             BelongAddress = belongAddress;
             KeyValuePair<int, int> translateAddress = addressTranslator.AddressTranslate(startAddress, true);
@@ -65,9 +65,9 @@ namespace ModBus.Net
         public ushort GetCount { get; private set; }
     }
 
-    public class ReadDataOutputStruct : OutputStruct
+    public class ReadDataModbusOutputStruct : OutputStruct
     {
-        public ReadDataOutputStruct(byte belongAddress, byte functionCode,
+        public ReadDataModbusOutputStruct(byte belongAddress, byte functionCode,
             int dataCount, byte[] dataValue)
         {
             BelongAddress = belongAddress;
@@ -89,7 +89,7 @@ namespace ModBus.Net
     {
         public override byte[] Format(InputStruct message)
         {
-            var r_message = (ReadDataInputStruct)message;
+            var r_message = (ReadDataModbusInputStruct)message;
             return Format(r_message.BelongAddress, r_message.FunctionCode,
                 r_message.StartAddress, r_message.GetCount);
         }
@@ -101,16 +101,16 @@ namespace ModBus.Net
             byte dataCount = ValueHelper.Instance.GetByte(messageBytes, ref pos);
             byte[] dataValue = new byte[dataCount];
             Array.Copy(messageBytes, 3, dataValue, 0, dataCount);
-            return new ReadDataOutputStruct(belongAddress, functionCode, dataCount, dataValue);
+            return new ReadDataModbusOutputStruct(belongAddress, functionCode, dataCount, dataValue);
         }
     }
 
     #endregion
 
     #region 写PLC数据
-    public class WriteDataInputStruct : InputStruct
+    public class WriteDataModbusInputStruct : InputStruct
     {
-        public WriteDataInputStruct(byte belongAddress, string startAddress, object[] writeValue, AddressTranslator addressTranslator)
+        public WriteDataModbusInputStruct(byte belongAddress, string startAddress, object[] writeValue, AddressTranslator addressTranslator)
         {
             BelongAddress = belongAddress;
             KeyValuePair<int, int> translateAddress = addressTranslator.AddressTranslate(startAddress, false);
@@ -118,7 +118,7 @@ namespace ModBus.Net
             StartAddress = (ushort)translateAddress.Key;
             WriteCount = (ushort)writeValue.Length;
             WriteByteCount = 0;
-            WriteValue = writeValue.Clone() as object[];
+            WriteValue = writeValue;
         }
 
         public byte BelongAddress { get; private set; }
@@ -134,9 +134,9 @@ namespace ModBus.Net
         public object[] WriteValue { get; private set; }
     }
 
-    public class WriteDataOutputStruct : OutputStruct
+    public class WriteDataModbusOutputStruct : OutputStruct
     {
-        public WriteDataOutputStruct(byte belongAddress, byte functionCode,
+        public WriteDataModbusOutputStruct(byte belongAddress, byte functionCode,
             ushort startAddress, ushort writeCount)
         {
             BelongAddress = belongAddress;
@@ -161,7 +161,7 @@ namespace ModBus.Net
     {
         public override byte[] Format(InputStruct message)
         {
-            var r_message = (WriteDataInputStruct)message;
+            var r_message = (WriteDataModbusInputStruct)message;
             byte[] formattingBytes = Format(r_message.BelongAddress, r_message.FunctionCode,
                 r_message.StartAddress, r_message.WriteCount, r_message.WriteByteCount, r_message.WriteValue);
             formattingBytes[6] = (byte)(formattingBytes.Length - 7);
@@ -174,7 +174,7 @@ namespace ModBus.Net
             byte functionCode = ValueHelper.Instance.GetByte(messageBytes, ref flag);
             ushort startAddress = ValueHelper.Instance.GetUShort(messageBytes, ref flag);
             ushort writeCount = ValueHelper.Instance.GetUShort(messageBytes, ref flag);
-            return new WriteDataOutputStruct(belongAddress, functionCode, startAddress,
+            return new WriteDataModbusOutputStruct(belongAddress, functionCode, startAddress,
                 writeCount);
         }
     }
@@ -182,9 +182,9 @@ namespace ModBus.Net
     #endregion
 
     #region 读PLC时间
-    public class GetSystemTimeInputStruct : InputStruct
+    public class GetSystemTimeModbusInputStruct : InputStruct
     {
-        public GetSystemTimeInputStruct(byte belongAddress)
+        public GetSystemTimeModbusInputStruct(byte belongAddress)
         {
             BelongAddress = belongAddress;
             FunctionCode = (byte)ModbusProtocalTimeFunctionCode.GetSystemTime;
@@ -201,9 +201,9 @@ namespace ModBus.Net
         public ushort GetCount { get; private set; }
     }
 
-    public class GetSystemTimeOutputStruct : OutputStruct
+    public class GetSystemTimeModbusOutputStruct : OutputStruct
     {
-        public GetSystemTimeOutputStruct(byte belongAddress, byte functionCode,
+        public GetSystemTimeModbusOutputStruct(byte belongAddress, byte functionCode,
             byte writeByteCount, ushort year, byte day, byte month, ushort hour, byte second, byte minute,
             ushort millisecond)
         {
@@ -229,7 +229,7 @@ namespace ModBus.Net
     {
         public override byte[] Format(InputStruct message)
         {
-            var r_message = (GetSystemTimeInputStruct)message;
+            var r_message = (GetSystemTimeModbusInputStruct)message;
             return Format(r_message.BelongAddress, r_message.FunctionCode,
                 r_message.StartAddress, r_message.GetCount);
         }
@@ -246,7 +246,7 @@ namespace ModBus.Net
             byte second = ValueHelper.Instance.GetByte(messageBytes, ref flag);
             byte minute = ValueHelper.Instance.GetByte(messageBytes, ref flag);
             ushort millisecond = ValueHelper.Instance.GetUShort(messageBytes, ref flag);
-            return new GetSystemTimeOutputStruct(belongAddress, functionCode, writeByteCount, year, day,
+            return new GetSystemTimeModbusOutputStruct(belongAddress, functionCode, writeByteCount, year, day,
                 month, hour, second, minute, millisecond);
         }
     }
@@ -254,9 +254,9 @@ namespace ModBus.Net
     #endregion
 
     #region 写PLC时间
-    public class SetSystemTimeInputStruct : InputStruct
+    public class SetSystemTimeModbusInputStruct : InputStruct
     {
-        public SetSystemTimeInputStruct(byte belongAddress, DateTime time)
+        public SetSystemTimeModbusInputStruct(byte belongAddress, DateTime time)
         {
             BelongAddress = belongAddress;
             FunctionCode = (byte)ModbusProtocalTimeFunctionCode.SetSystemTime;
@@ -297,9 +297,9 @@ namespace ModBus.Net
         public ushort Millisecond { get; private set; }
     }
 
-    public class SetSystemTimeOutputStruct : OutputStruct
+    public class SetSystemTimeModbusOutputStruct : OutputStruct
     {
-        public SetSystemTimeOutputStruct(byte belongAddress, byte functionCode,
+        public SetSystemTimeModbusOutputStruct(byte belongAddress, byte functionCode,
             ushort startAddress, ushort writeCount)
         {
             BelongAddress = belongAddress;
@@ -324,7 +324,7 @@ namespace ModBus.Net
     {
         public override byte[] Format(InputStruct message)
         {
-            var r_message = (SetSystemTimeInputStruct)message;
+            var r_message = (SetSystemTimeModbusInputStruct)message;
             return Format(r_message.BelongAddress, r_message.FunctionCode,
                 r_message.StartAddress, r_message.WriteCount, r_message.WriteByteCount, r_message.Year,
                 r_message.Day,
@@ -337,7 +337,7 @@ namespace ModBus.Net
             byte functionCode = ValueHelper.Instance.GetByte(messageBytes, ref flag);
             ushort startAddress = ValueHelper.Instance.GetUShort(messageBytes, ref flag);
             ushort writeCount = ValueHelper.Instance.GetUShort(messageBytes, ref flag);
-            return new SetSystemTimeOutputStruct(belongAddress, functionCode, startAddress, writeCount);
+            return new SetSystemTimeModbusOutputStruct(belongAddress, functionCode, startAddress, writeCount);
         }
     }
     #endregion

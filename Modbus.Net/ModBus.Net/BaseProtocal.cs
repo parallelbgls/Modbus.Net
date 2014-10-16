@@ -14,7 +14,7 @@ namespace ModBus.Net
         /// </summary>
         /// <param name="content">需要发送的数据</param>
         /// <returns>数据是否正确接收</returns>
-        protected ProtocalLinker _protocalLinker;
+        public ProtocalLinker ProtocalLinker { get; protected set; }
 
         protected BaseProtocal()
         {
@@ -26,17 +26,18 @@ namespace ModBus.Net
         /// </summary>
         /// <param name="protocalName">协议的类的名称</param>
         /// <returns></returns>
-        public ProtocalUnit this[string protocalName]
+        public ProtocalUnit this[Type type]
         {
             get
             {
+                string protocalName = type.FullName;
                 if (Protocals.ContainsKey(protocalName))
                 {
                     return Protocals[protocalName];
                 }
                 //自动寻找存在的协议并将其加载
                 var protocalUnit =
-                    Assembly.Load("ModBus.Net").CreateInstance("ModBus.Net." + protocalName) as ProtocalUnit;
+                    Assembly.Load("ModBus.Net").CreateInstance(protocalName) as ProtocalUnit;
                 if (protocalUnit == null) throw new InvalidCastException("没有相应的协议内容");
                 Register(protocalUnit);
                 return Protocals[protocalName];
@@ -48,7 +49,7 @@ namespace ModBus.Net
         protected void Register(ProtocalUnit linkProtocal)
         {
             if (linkProtocal == null) return;
-            Protocals.Add(linkProtocal.GetType().Name, linkProtocal);
+            Protocals.Add(linkProtocal.GetType().FullName, linkProtocal);
         }
 
         /// <summary>
@@ -58,8 +59,7 @@ namespace ModBus.Net
         /// <returns></returns>
         public virtual byte[] SendReceive(params object[] content)
         {
-            int t;
-            return _protocalLinker.SendReceive(ProtocalUnit.TranslateContent(content));
+            return ProtocalLinker.SendReceive(ProtocalUnit.TranslateContent(content));
         }
 
         /// <summary>
@@ -71,29 +71,16 @@ namespace ModBus.Net
         public virtual OutputStruct SendReceive(ProtocalUnit unit, InputStruct content)
         {
             int t = 0;
-            return unit.Unformat(_protocalLinker.SendReceive(unit.Format(content)), ref t);
+            //如果为特别处理协议的话，跳过协议扩展收缩
+            if (unit is SpecialProtocalUnit)
+            {
+                return unit.Unformat(ProtocalLinker.SendReceiveWithoutExtAndDec(unit.Format(content)), ref t);
+            }
+            else
+            {
+                return unit.Unformat(ProtocalLinker.SendReceive(unit.Format(content)), ref t);
+            }
         }
 
-        /// <summary>
-        /// 仅发送数据
-        /// </summary>
-        /// <param name="unit"></param>
-        /// <param name="content"></param>
-        /// <returns></returns>
-        public virtual bool SendOnly(ProtocalUnit unit, params object[] content)
-        {
-            return _protocalLinker.SendOnly(unit.Format(content));
-        }
-
-        /// <summary>
-        /// 仅发送数据
-        /// </summary>
-        /// <param name="unit"></param>
-        /// <param name="content"></param>
-        /// <returns></returns>
-        public virtual bool SendOnly(ProtocalUnit unit, InputStruct content)
-        {
-            return _protocalLinker.SendOnly(unit.Format(content));
-        }
     }
 }
