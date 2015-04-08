@@ -1,6 +1,9 @@
 ﻿using System;
+using System.IO;
+using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace ModBus.Net
 {
@@ -23,68 +26,73 @@ namespace ModBus.Net
     /// </summary>
     public class TcpConnector : BaseConnector, IDisposable
     {
-        public delegate void ErrorShutdownEventHandler(object sender, EventArgs e);
 
-        public delegate void ReceiveMessageHandler(object sender, SocketMessageEventArgs e);
+        private readonly string _host;
 
-        private readonly bool b_AsyncReceive = true;
-        private readonly string host;
+        private int _sendCount;
+        private int _receiveCount;
+        private int _errorCount;
+        private NetworkStream _stream;
 
         // 2MB 的接收缓冲区，目的是一次接收完服务器发回的消息
-        private readonly byte[] m_receiveBuffer = new byte[1024];
-        private readonly int port;
-        public int m_errorCount = 0;
-        public int m_receiveCount = 0;
-        public int m_sendCount = 0;
-        private TcpClient m_socketClient;
+        private readonly byte[] _receiveBuffer = new byte[1024];
+        private readonly int _port;
+        private TcpClient _socketClient;
 
-        public TcpConnector(string ipaddress, int port, bool isAsync)
+        public int TimeoutTime { get; set; }
+
+        public TcpConnector(string ipaddress, int port, int timeoutTime)
         {
-            host = ipaddress;
-            this.port = port;
-            b_AsyncReceive = isAsync;
+            _host = ipaddress;
+            _port = port;
+            //TimeoutTime = timeoutTime;
         }
 
         public override bool IsConnected
         {
-            get { return m_socketClient != null && m_socketClient.Connected; }
+            get { return _socketClient != null && _socketClient.Connected; }
         }
 
         public void Dispose()
         {
-            if (m_socketClient != null)
+            if (_socketClient != null)
             {
                 CloseClientSocket();
-                m_socketClient.Client.Dispose();
-            }
-        }
-
-        public event ReceiveMessageHandler MessageReceive;
-        public event ErrorShutdownEventHandler SocketErrorShutdown;
-
-        private void ReceiveMessage(byte[] message)
-        {
-            if (MessageReceive != null)
-            {
-                MessageReceive(this, new SocketMessageEventArgs(message));
+                _socketClient.Client.Dispose();
             }
         }
 
         public override bool Connect()
         {
-            if (m_socketClient != null)
+            return AsyncHelper.RunSync(ConnectAsync);
+        }
+
+        public override async Task<bool> ConnectAsync()
+        {
+            if (_socketClient != null)
             {
                 Disconnect();
             }
-            lock (this)
-            {
                 try
                 {
-                    m_socketClient = new TcpClient(host, port);
-                    m_socketClient.ReceiveTimeout = 10*1000;
-
-                    if (m_socketClient.Connected)
+                    _socketClient = new TcpClient
                     {
+                        SendTimeout = TimeoutTime, 
+                        ReceiveTimeout = TimeoutTime
+                        
+                    };
+
+                    try
+                    {
+                        await _socketClient.ConnectAsync(_host, _port);
+                    }
+                    catch (Exception e)
+                    {
+                        AddInfo("client connected exception: " + e.Message);
+                    }
+                    if (_socketClient.Connected)
+                    {
+                        _stream = _socketClient.GetStream();
                         AddInfo("client connected.");
                         return true;
                     }
@@ -96,33 +104,29 @@ namespace ModBus.Net
                     AddInfo("client connect exception: " + err.Message);
                     return false;
                 }
-            }
         }
 
         public override bool Disconnect()
         {
-            lock (this)
+            if (_socketClient == null)
             {
-                if (m_socketClient == null)
-                {
-                    return true;
-                }
+                return true;
+            }
 
-                try
-                {
-                    m_socketClient.Close();
-                    AddInfo("client disconnected successfully.");
-                    return true;
-                }
-                catch (Exception err)
-                {
-                    AddInfo("client disconnected exception: " + err.Message);
-                    return false;
-                }
-                finally
-                {
-                    m_socketClient = null;
-                }
+            try
+            {
+                _socketClient.Close();
+                AddInfo("client disconnected successfully.");
+                return true;
+            }
+            catch (Exception err)
+            {
+                AddInfo("client disconnected exception: " + err.Message);
+                return false;
+            }
+            finally
+            {
+                _socketClient = null;
             }
         }
 
@@ -131,18 +135,28 @@ namespace ModBus.Net
             Console.WriteLine(message);
         }
 
+        public override bool SendMsgWithoutReturn(byte[] message)
+        {
+            return AsyncHelper.RunSync(() => SendMsgWithoutReturnAsync(message));
+        }
+
         /// <summary>
         ///     发送数据，不需要返回任何值
         /// </summary>
         /// <param name="message">发送的信息</param>
         /// <returns>是否发送成功</returns>
-        public override bool SendMsgWithoutReturn(byte[] message)
+        public override async Task<bool> SendMsgWithoutReturnAsync(byte[] message)
         {
             byte[] datagram = message;
 
             try
             {
-                m_socketClient.Client.Send(datagram);
+                if (!IsConnected)
+                {
+                    await ConnectAsync();
+                }
+                
+                await _stream.WriteAsync(datagram, 0, datagram.Length);
 
                 RefreshSendCount();
                 //this.AddInfo("send text len = " + datagramText.Length.ToString());
@@ -156,12 +170,17 @@ namespace ModBus.Net
             }
         }
 
+        public override byte[] SendMsg(byte[] message)
+        {
+            return AsyncHelper.RunSync(() => SendMsgAsync(message));
+        }
+
         /// <summary>
         ///     发送数据，需要返回
         /// </summary>
         /// <param name="message">发送的数据</param>
         /// <returns>是否发送成功</returns>
-        public override byte[] SendMsg(byte[] message)
+        public override async Task<byte[]> SendMsgAsync(byte[] message)
         {
             byte[] datagram = message;
 
@@ -169,14 +188,16 @@ namespace ModBus.Net
             {
                 if (!IsConnected)
                 {
-                    Connect();
+                    await ConnectAsync();
                 }
-                m_socketClient.Client.Send(datagram);
+
+                var stream = _socketClient.GetStream();
+                await stream.WriteAsync(datagram, 0, datagram.Length);
 
                 RefreshSendCount();
                 //this.AddInfo("send text len = " + datagramText.Length.ToString());
 
-                return Receive();
+                return await ReceiveAsync(stream);
             }
             catch (Exception err)
             {
@@ -186,19 +207,12 @@ namespace ModBus.Net
             }
         }
 
-        public byte[] Receive()
+        protected async Task<byte[]> ReceiveAsync(NetworkStream stream)
         {
             try
             {
+                int len = await stream.ReadAsync(_receiveBuffer, 0, _receiveBuffer.Length);
                 // 异步接收回答
-                if (b_AsyncReceive)
-                {
-                    m_socketClient.Client.BeginReceive(m_receiveBuffer, 0, m_receiveBuffer.Length, SocketFlags.None,
-                        EndReceiveDatagram, this);
-                    return null;
-                }
-                    // 同步接收回答
-                int len = m_socketClient.Client.Receive(m_receiveBuffer, 0, m_receiveBuffer.Length, SocketFlags.None);
                 if (len > 0)
                 {
                     return CheckReplyDatagram(len);
@@ -220,10 +234,9 @@ namespace ModBus.Net
         private byte[] CheckReplyDatagram(int len)
         {
             var replyMessage = new byte[len];
-            Array.Copy(m_receiveBuffer, replyMessage, len);
+            Array.Copy(_receiveBuffer, replyMessage, len);
 
             //this.AddInfo("reply: " + replyMesage);
-            ReceiveMessage(replyMessage);
             RefreshReceiveCount();
 
             if (len <= 0)
@@ -236,63 +249,30 @@ namespace ModBus.Net
 
         private void RefreshSendCount()
         {
-            m_sendCount++;
+            _sendCount++;
         }
 
         private void RefreshReceiveCount()
         {
-            m_receiveCount++;
+            _receiveCount++;
         }
 
         private void RefreshErrorCount()
         {
-            m_errorCount++;
+            _errorCount++;
         }
 
         private void CloseClientSocket()
         {
             try
             {
-                m_socketClient.Client.Shutdown(SocketShutdown.Both);
-                m_socketClient.Client.Close();
-                if (!IsConnected)
-                {
-                    if (SocketErrorShutdown != null)
-                    {
-                        Thread.Sleep(1000);
-                        SocketErrorShutdown(this, new EventArgs());
-                        AddInfo("socket error disconnected!");
-                    }
-                }
+                _stream.Close();
+                _socketClient.Client.Shutdown(SocketShutdown.Both);
+                _socketClient.Client.Close();
             }
             catch (Exception ex)
             {
-                //this.AddInfo("client close exception: " + ex.Message);
-            }
-        }
-
-        /// <summary>
-        ///     异步接收消息返回函数
-        /// </summary>
-        /// <param name="iar">异步参数</param>
-        private void EndReceiveDatagram(IAsyncResult iar)
-        {
-            try
-            {
-                int readBytesLength = m_socketClient.Client.EndReceive(iar);
-                if (readBytesLength == 0)
-                {
-                    CloseClientSocket();
-                }
-                else // 正常数据包
-                {
-                    CheckReplyDatagram(readBytesLength);
-                }
-            }
-            catch (Exception err)
-            {
-                AddInfo("receive exception: " + err.Message);
-                CloseClientSocket();
+                AddInfo("client close exception: " + ex.Message);
             }
         }
     }

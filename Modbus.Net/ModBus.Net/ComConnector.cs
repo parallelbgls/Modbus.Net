@@ -52,6 +52,11 @@ namespace ModBus.Net
             return false;
         }
 
+        public override Task<bool> ConnectAsync()
+        {
+            return Task.FromResult(Connect());
+        }
+
         public override bool Disconnect()
         {
             if (serialPort1 != null)
@@ -77,6 +82,11 @@ namespace ModBus.Net
 
         }
 
+        public override Task<bool> SendMsgWithoutReturnAsync(byte[] message)
+        {
+            return Task.FromResult(SendMsgWithoutReturn(message));
+        }
+
         public override byte[] SendMsg(byte[] sendbytes)
         {
             try
@@ -93,6 +103,11 @@ namespace ModBus.Net
                 serialPort1.Close();
                 return null;
             }
+        }
+
+        public override Task<byte[]> SendMsgAsync(byte[] message)
+        {
+            return Task.FromResult(SendMsg(message));
         }
 
         public override bool SendMsgWithoutReturn(byte[] sendbytes)

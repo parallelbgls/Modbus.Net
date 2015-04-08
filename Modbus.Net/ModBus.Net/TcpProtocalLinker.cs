@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 
 namespace ModBus.Net
 {
@@ -17,7 +18,7 @@ namespace ModBus.Net
 
         protected TcpProtocalLinker(string ip, int port)
         {
-            _baseConnector = new TcpConnector(ip, port, false);
+            _baseConnector = new TcpConnector(ip, port, 10000);
         }
     }   
 }

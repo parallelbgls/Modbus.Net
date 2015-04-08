@@ -25,7 +25,7 @@ namespace ModBus.Net
             {"System.Double", 8}
         };
 
-        protected static bool _littleEndian = false;
+        protected static bool _littleEndian = true;
 
         protected ValueHelper()
         {
@@ -41,7 +41,7 @@ namespace ModBus.Net
             {
                 _littleEndian = value;
                 //这里需要重点说明，因为.net默认是小端构造法，所以目标协议是大端的话反而需要调用小端构造协议，把小端反转为大端。
-                _Instance = LittleEndian ? new ValueHelper() : new LittleEndianValueHelper();
+                _Instance = LittleEndian ? new LittleEndianValueHelper() : new ValueHelper();
             }
         }
 
@@ -58,7 +58,7 @@ namespace ModBus.Net
             {
                 if (_Instance == null)
                 {
-                    _Instance = LittleEndian ? new ValueHelper() : new LittleEndianValueHelper();
+                    _Instance = LittleEndian ? new LittleEndianValueHelper() : new ValueHelper();
                 }
                 return _Instance;
             }
@@ -285,7 +285,7 @@ namespace ModBus.Net
             byte temp = data[pos];
             for (int i = 0; i < 8; i++)
             {
-                t[7 - i] = temp%2 > 0;
+                t[i] = temp % 2 > 0;
                 temp /= 2;
             }
             pos += 1;
@@ -709,7 +709,7 @@ namespace ModBus.Net
             byte temp = data[pos];
             for (int i = 0; i < 8; i++)
             {
-                t[i] = temp%2 > 0;
+                t[7 - i] = temp % 2 > 0;
                 temp /= 2;
             }
             pos += 1;

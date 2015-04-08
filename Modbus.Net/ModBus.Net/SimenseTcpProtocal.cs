@@ -62,7 +62,7 @@ namespace ModBus.Net
             ProtocalLinker = new SimenseTcpProtocalLinker(_ip);
             var inputStruct = new CreateReferenceSimenseInputStruct(0x1a, _taspSrc, _tsapDst);
             var outputStruct =
-                (CreateReferenceSimenseOutputStruct) ForceSendReceive(this[typeof(CreateReferenceSimenseProtocal)], inputStruct);
+                (CreateReferenceSimenseOutputStruct)ForceSendReceive(this[typeof(CreateReferenceSimenseProtocal)], inputStruct);
             if (!ProtocalLinker.IsConnected) return;
             var inputStruct2 = new EstablishAssociationSimenseInputStruct(0x0101, _maxCalling, _maxCalled, _maxPdu);
             var outputStruct2 = (EstablishAssociationSimenseOutputStruct)SendReceive(this[typeof(EstablishAssociationSimenseProtocal)], inputStruct2);

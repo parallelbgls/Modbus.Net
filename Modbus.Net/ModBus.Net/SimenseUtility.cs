@@ -34,6 +34,16 @@ namespace ModBus.Net
                             _maxPdu = 0x03c0;
                             break;
                         }
+                    case "300":
+                    case "400":
+                    {
+                        _taspSrc = 0x4b54;
+                        _tsapDst = 0x0302;
+                        _maxCalling = 0x0001;
+                        _maxCalled = 0x0001;
+                        _maxPdu = 0x00f0;
+                        break;
+                    }
                 }
                 _connectionString = splitStrings[0];              
             }
@@ -90,8 +100,8 @@ namespace ModBus.Net
         {
             var readRequestSimenseInputStruct = new ReadRequestSimenseInputStruct(0xd3c7, SimenseTypeCode.Byte, startAddress, (ushort)getByteCount, AddressTranslator);
             var readRequestSimenseOutputStruct =
-                (ReadRequestSimenseOutputStruct)
-                    Wrapper.SendReceive(Wrapper[typeof(ReadRequestSimenseProtocal)], readRequestSimenseInputStruct);
+                 (ReadRequestSimenseOutputStruct)
+                     Wrapper.SendReceive(Wrapper[typeof(ReadRequestSimenseProtocal)], readRequestSimenseInputStruct);
             return readRequestSimenseOutputStruct.GetValue;
         }
 
