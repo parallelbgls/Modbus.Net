@@ -46,7 +46,7 @@ namespace ModBus.Net
 
         #region Factory
 
-        protected static ValueHelper _Instance = null;
+        protected static ValueHelper _Instance;
 
         /// <summary>
         /// ValueHelper单例的实例

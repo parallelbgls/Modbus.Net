@@ -41,7 +41,15 @@ namespace ModBus.Net
 {
     public abstract class ModbusProtocal : BaseProtocal
     {
+        public override bool Connect()
+        {
+            return ProtocalLinker.Connect();
+        }
 
+        public override bool Disconnect()
+        {
+            return ProtocalLinker.Disconnect();
+        }
     }
 
     #region 读PLC数据

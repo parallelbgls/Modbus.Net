@@ -14,6 +14,17 @@ namespace ModBus.Net
         {
             get { return _baseConnector.IsConnected; }
         }
+
+        public bool Connect()
+        {
+            return _baseConnector.Connect();
+        }
+
+        public bool Disconnect()
+        {
+            return _baseConnector.Disconnect();
+        }
+
         /// <summary>
         /// 发送并接收数据
         /// </summary>

@@ -73,10 +73,12 @@
     <Compile Include="ModbusTcpProtocal.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimenseProtocal.cs" />
+    <Compile Include="SimenseStructDefinition.cs" />
     <Compile Include="SimenseTcpProtocal.cs" />
     <Compile Include="SimenseProtocalLinkerBytesExtend.cs" />
     <Compile Include="SimenseTcpProtocalLinker.cs" />
     <Compile Include="SimenseUtility.cs" />
+    <Compile Include="TaskManager.cs" />
     <Compile Include="TcpConnector.cs">
       <SubType>Code</SubType>
     </Compile>

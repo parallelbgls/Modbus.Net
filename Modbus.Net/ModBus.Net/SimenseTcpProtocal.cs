@@ -32,14 +32,13 @@ namespace ModBus.Net
             _tdpuSize = tdpuSize;
             _ip = ip;
             connectTryCount = 0;
-            Connected();
         }
 
         public override byte[] SendReceive(params object[] content)
         {
             while (!ProtocalLinker.IsConnected)
             {
-                Connected();
+                Connect();
             }
             return base.SendReceive(content);
         }
@@ -49,7 +48,7 @@ namespace ModBus.Net
             if (!ProtocalLinker.IsConnected)
             {
                 if (connectTryCount > 10) return null;
-                Connected();
+                Connect();
             }
             return base.SendReceive(unit, content);
         }
@@ -59,16 +58,29 @@ namespace ModBus.Net
             return base.SendReceive(unit, content);
         }
 
-        protected void Connected()
+        public override bool Connect()
         {
             connectTryCount++;
             ProtocalLinker = new SimenseTcpProtocalLinker(_ip);
-            var inputStruct = new CreateReferenceSimenseInputStruct(_tdpuSize, _taspSrc, _tsapDst);
-            var outputStruct =
-                (CreateReferenceSimenseOutputStruct)ForceSendReceive(this[typeof(CreateReferenceSimenseProtocal)], inputStruct);
-            if (!ProtocalLinker.IsConnected) return;
-            var inputStruct2 = new EstablishAssociationSimenseInputStruct(0x0101, _maxCalling, _maxCalled, _maxPdu);
-            var outputStruct2 = (EstablishAssociationSimenseOutputStruct)SendReceive(this[typeof(EstablishAssociationSimenseProtocal)], inputStruct2);
+            if (ProtocalLinker.Connect())
+            {
+                var inputStruct = new CreateReferenceSimenseInputStruct(_tdpuSize, _taspSrc, _tsapDst);
+                var outputStruct =
+                    (CreateReferenceSimenseOutputStruct)
+                        ForceSendReceive(this[typeof (CreateReferenceSimenseProtocal)], inputStruct);
+                if (!ProtocalLinker.IsConnected) return false;
+                var inputStruct2 = new EstablishAssociationSimenseInputStruct(0x0101, _maxCalling, _maxCalled, _maxPdu);
+                var outputStruct2 =
+                    (EstablishAssociationSimenseOutputStruct)
+                        SendReceive(this[typeof (EstablishAssociationSimenseProtocal)], inputStruct2);
+                return true;
+            }
+            return false;
+        }
+
+        public override bool Disconnect()
+        {
+            return ProtocalLinker.Disconnect();
         }
     }
 }

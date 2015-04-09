@@ -83,5 +83,17 @@ namespace ModBus.Net
             }
         }
 
+        /// <summary>
+        /// 协议连接开始
+        /// </summary>
+        /// <returns></returns>
+        public abstract bool Connect();
+
+        /// <summary>
+        /// 协议连接断开
+        /// </summary>
+        /// <returns></returns>
+        public abstract bool Disconnect();
+
     }
 }
