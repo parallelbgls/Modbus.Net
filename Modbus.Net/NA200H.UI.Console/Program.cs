@@ -12,7 +12,7 @@ namespace NA200H.UI.ConsoleApp
     {
         private static void Main(string[] args)
         {
-            string ip = "192.168.3.241";
+            string ip = "192.168.3.191";
             //先初始化一个协议转换器，这里构造Modbus/Tcp协议。
             //BaseProtocal wrapper = new ModbusTcpProtocal(ip);
 
@@ -118,7 +118,7 @@ namespace NA200H.UI.ConsoleApp
             Console.Read();
             */
 
-            BaseProtocal wrapper = new SimenseTcpProtocal(0x4d57, 0x4d57, 0x0001, 0x0001, 0x03c0, ip);
+            /*BaseProtocal wrapper = new SimenseTcpProtocal(0x09, 0x1001, 0x1000, 0x0001, 0x0001, 0x03c0, ip);
             if (!wrapper.ProtocalLinker.IsConnected) return;
             AddressTranslator addressTranslator = new AddressTranslatorSimense();
 
@@ -144,21 +144,7 @@ namespace NA200H.UI.ConsoleApp
                     wrapper.SendReceive(wrapper[typeof(WriteRequestSimenseProtocal)], writeRequestSimenseInputStruct);
             Console.WriteLine(writeRequestSimenseOutputStruct.AccessResult.ToString());
             Console.Read();
-            Console.Read();
-
-            var readTimeSimenseInputStruct = new ReadTimeSimenseInputStruct(0xaaee);
-            var readTimeSimenseOutputStruct =
-                (ReadTimeSimenseOutputStruct)
-                    wrapper.SendReceive(wrapper[typeof(ReadTimeSimenseProtocal)], readTimeSimenseInputStruct);
-            Console.WriteLine(readTimeSimenseOutputStruct.DateTime);
-            Console.Read();
-            Console.Read();
-
-            var writeTimeSimenseInputStruct = new WriteTimeSimenseInputStruct(0xaaee, DateTime.Now);
-            var writeTimeSimenseOutputStruct =
-                (WriteTimeSimenseOutputStruct)
-                    wrapper.SendReceive(wrapper[typeof(WriteTimeSimenseProtocal)], writeTimeSimenseInputStruct);
-            Console.WriteLine(writeTimeSimenseOutputStruct.Id2);
+            Console.Read();        */
         }
     }
 }
