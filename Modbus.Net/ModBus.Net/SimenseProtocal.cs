@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Windows.Forms;
@@ -354,138 +355,67 @@ namespace ModBus.Net
 
     public class ReadTimeSimenseOutputStruct : OutputStruct
     {
-        public ReadTimeSimenseOutputStruct(ushort pduRef, DateTime dateTime)
+        public ReadTimeSimenseOutputStruct(ushort pduRef, DateTime dateTime, TodClockStatus todClockStatus)
         {
             PduRef = pduRef;
             DateTime = dateTime;
+            TodClockStatus = todClockStatus;
         }
 
         public ushort PduRef { get; private set; }
         public DateTime DateTime { get; private set; }
+        public TodClockStatus TodClockStatus { get; private set; }
     }
 
     public class ReadTimeSimenseProtocal : ProtocalUnit
     {
         public override byte[] Format(InputStruct message)
         {
-            var r_message = (ReadTimeSimenseInputStruct) message;
-            const byte protoId = 0x32;
-            const byte rosctr = 0x07;
-            const ushort redId = 0x0000;
-            ushort pduRef = r_message.PduRef;
-            const ushort parLg = 8;
-            const ushort datLg = 4;
-            const byte serviceId = 0x00;
-            const byte noVar = 0x01;
-            const byte varSpc = 0x12;
-            const byte vAddrLg = 0x04;
-            const byte synId = 0x11;
-            const byte classP = 0x47;
-            const byte id1 = 0x01;
-            const byte id2 = 0x00;
-            const byte accRslt = 0x0A;
-            const byte dType = 0x00;
-            const ushort length = 0x0000;
-            return Format(new Byte[7], protoId, rosctr, redId, pduRef, parLg, datLg, serviceId, noVar, varSpc, vAddrLg, synId, classP,
-                id1, id2, accRslt, dType, length);
+            throw new NotImplementedException();
         }
 
         public override OutputStruct Unformat(byte[] messageBytes, ref int pos)
         {
-            pos = 4;
-            ushort pduRef = ValueHelper.Instance.GetUShort(messageBytes, ref pos);
-            pos = 28;
-            byte year1 = ValueHelper.Instance.GetByte(messageBytes, ref pos);
-            byte month1 = ValueHelper.Instance.GetByte(messageBytes, ref pos);
-            byte day1 = ValueHelper.Instance.GetByte(messageBytes, ref pos);
-            byte hour1 = ValueHelper.Instance.GetByte(messageBytes, ref pos);
-            byte minute1 = ValueHelper.Instance.GetByte(messageBytes, ref pos);
-            byte second1 = ValueHelper.Instance.GetByte(messageBytes, ref pos);
-            byte second1_10_100 = ValueHelper.Instance.GetByte(messageBytes, ref pos);
-            byte second1_1000_weekday = ValueHelper.Instance.GetByte(messageBytes, ref pos);
-            int year = year1/16*10 + year1%16;
-            int month = month1/16*10 + month1%16;
-            int day = day1/16*10 + day1%16;
-            int hour = hour1/16*10 + hour1%16;
-            int minute = minute1/16*10 + minute1%16;
-            int second = second1/16*10 + second1%16;
-            int millisecond = second1_10_100 / 16 * 100 + second1_10_100 % 16 * 10 + second1_1000_weekday / 16;
-            int weekday = second1_1000_weekday%16;
-            DateTime dateTime = new DateTime(DateTime.Now.Year/100*100 + year, month, day, hour, minute, second, millisecond);
-            if (dateTime > DateTime.Now.AddDays(1)) dateTime = dateTime.AddYears(-100);
-            if (weekday == 0) return new ReadTimeSimenseOutputStruct(pduRef, dateTime); 
-            while (dateTime.DayOfWeek != (DayOfWeek) (weekday - 1)) dateTime = dateTime.AddYears(-100);
-            return new ReadTimeSimenseOutputStruct(pduRef, dateTime);
+            throw new NotImplementedException();
         }
     }
 
     public class WriteTimeSimenseInputStruct : InputStruct
     {
-        public WriteTimeSimenseInputStruct(ushort pduRef, DateTime dateTime)
+        public WriteTimeSimenseInputStruct(ushort pduRef, DateTime dateTime, TodClockStatus todClockStatus)
         {
             PduRef = pduRef;
             DateTime = dateTime;
+            TodClockStatus = todClockStatus;
         }
 
         public ushort PduRef { get; private set; }
         public DateTime DateTime { get; private set; }
+        public TodClockStatus TodClockStatus { get; private set; }
     }
 
     public class WriteTimeSimenseOutputStruct : OutputStruct
     {
-        public WriteTimeSimenseOutputStruct(ushort pduRef, byte id2)
+        public WriteTimeSimenseOutputStruct(ushort pduRef, byte errCod)
         {
             PduRef = pduRef;
-            Id2 = id2;
+            ErrCod = errCod;
         }
 
         public ushort PduRef { get; private set; }
-
-        public byte Id2 { get; private set; }
+        public byte ErrCod { get;private set; }
     }
 
     public class WriteTimeSimenseProtocal : ProtocalUnit
     {
         public override byte[] Format(InputStruct message)
         {
-            var r_message = (WriteTimeSimenseInputStruct) message;
-            const byte protoId = 0x32;
-            const byte rosctr = 0x07;
-            const ushort redId = 0x0000;
-            ushort pduRef = r_message.PduRef;
-            const ushort parLg = 0x0008;
-            const ushort datLg = 0x000e;
-            const byte serviceId = 0x00;
-            const byte noVar = 0x01;
-            const byte varSpc = 0x12;
-            const byte vAddrLg = 0x04;
-            const byte synId = 0x11;
-            const byte classP = 0x47;
-            const byte id1 = 0x02;
-            const byte id2 = 0x00;
-            const byte accRslt = 0xFF;
-            const byte dType = 0x09;
-            const ushort length = 0x000A;
-            const ushort todClockStatus = 0x0018;
-            byte year = (byte) (r_message.DateTime.Year%100/10*16 + r_message.DateTime.Year%10);
-            byte month = (byte) (r_message.DateTime.Month/10*16 + r_message.DateTime.Month%10);
-            byte day = (byte) (r_message.DateTime.Day/10*16 + r_message.DateTime.Day%10);
-            byte hour = (byte) (r_message.DateTime.Hour/10*16 + r_message.DateTime.Hour%10);
-            byte minute = (byte) (r_message.DateTime.Minute/10*16 + r_message.DateTime.Minute%10);
-            byte second = (byte) (r_message.DateTime.Second/10*16 + r_message.DateTime.Second%10);
-            byte dayOfWeek = (byte) (r_message.DateTime.DayOfWeek + 1);
-            return Format(new byte[7], protoId, rosctr, redId, pduRef, parLg, datLg, serviceId, noVar, varSpc, vAddrLg,
-                synId, classP, id1, id2, accRslt, dType, length, todClockStatus, year, month, day, hour, minute, second,
-                (byte)0, dayOfWeek);
+            throw new NotImplementedException();
         }
 
         public override OutputStruct Unformat(byte[] messageBytes, ref int pos)
         {
-            pos = 4;
-            ushort pduRef = ValueHelper.Instance.GetUShort(messageBytes, ref pos);
-            pos = 17;
-            byte id2 = ValueHelper.Instance.GetByte(messageBytes, ref pos);
-            return new WriteTimeSimenseOutputStruct(pduRef, id2);
+            throw new NotImplementedException();
         }
     }
 

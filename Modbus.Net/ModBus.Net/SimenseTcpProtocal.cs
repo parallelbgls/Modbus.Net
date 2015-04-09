@@ -13,20 +13,23 @@ namespace ModBus.Net
         private ushort _maxCalling;
         private ushort _maxCalled;
         private ushort _maxPdu;
+        private byte _tdpuSize;
+
         private string _ip;
         private int connectTryCount;
 
-        public SimenseTcpProtocal(ushort tsapSrc, ushort tsapDst, ushort maxCalling, ushort maxCalled, ushort maxPdu) : this(tsapSrc, tsapDst, maxCalling, maxCalled, maxPdu, ConfigurationManager.IP)
+        public SimenseTcpProtocal(byte tdpuSize, ushort tsapSrc, ushort tsapDst, ushort maxCalling, ushort maxCalled, ushort maxPdu) : this(tdpuSize, tsapSrc, tsapDst, maxCalling, maxCalled, maxPdu, ConfigurationManager.IP)
         {
         }
 
-        public SimenseTcpProtocal(ushort tsapSrc, ushort tsapDst, ushort maxCalling, ushort maxCalled, ushort maxPdu, string ip)
+        public SimenseTcpProtocal(byte tdpuSize, ushort tsapSrc, ushort tsapDst, ushort maxCalling, ushort maxCalled, ushort maxPdu, string ip)
         {
             _taspSrc = tsapSrc;
             _tsapDst = tsapDst;
             _maxCalling = maxCalling;
             _maxCalled = maxCalled;
             _maxPdu = maxPdu;
+            _tdpuSize = tdpuSize;
             _ip = ip;
             connectTryCount = 0;
             Connected();
@@ -60,7 +63,7 @@ namespace ModBus.Net
         {
             connectTryCount++;
             ProtocalLinker = new SimenseTcpProtocalLinker(_ip);
-            var inputStruct = new CreateReferenceSimenseInputStruct(0x1a, _taspSrc, _tsapDst);
+            var inputStruct = new CreateReferenceSimenseInputStruct(_tdpuSize, _taspSrc, _tsapDst);
             var outputStruct =
                 (CreateReferenceSimenseOutputStruct)ForceSendReceive(this[typeof(CreateReferenceSimenseProtocal)], inputStruct);
             if (!ProtocalLinker.IsConnected) return;

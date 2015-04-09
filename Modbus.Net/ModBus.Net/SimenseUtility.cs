@@ -27,21 +27,23 @@ namespace ModBus.Net
                 {
                     case "200":
                         {
+                            _tdpuSize = 0x09;
                             _taspSrc = 0x4d57;
                             _tsapDst = 0x4d57;
                             _maxCalling = 0x0001;
                             _maxCalled = 0x0001;
-                            _maxPdu = 0x03c0;
+                            _maxPdu = 0x03c0;                          
                             break;
                         }
                     case "300":
                     case "400":
                     {
+                        _tdpuSize = 0x1a;
                         _taspSrc = 0x4b54;
                         _tsapDst = 0x0302;
                         _maxCalling = 0x0001;
                         _maxCalled = 0x0001;
-                        _maxPdu = 0x00f0;
+                        _maxPdu = 0x00f0;                      
                         break;
                     }
                 }
@@ -49,12 +51,13 @@ namespace ModBus.Net
             }
         }
 
+        private byte _tdpuSize;
         private ushort _taspSrc;
         private ushort _tsapDst;
         private ushort _maxCalling;
         private ushort _maxCalled;
         private ushort _maxPdu;
-
+        
         private SimenseType _simenseType;
 
         public SimenseType ConnectionType
@@ -78,7 +81,7 @@ namespace ModBus.Net
                         }
                     case SimenseType.Tcp:
                     {
-                        Wrapper = ConnectionString == null ? new SimenseTcpProtocal(_taspSrc, _tsapDst, _maxCalling, _maxCalled, _maxPdu) : new SimenseTcpProtocal(_taspSrc, _tsapDst, _maxCalling, _maxCalled, _maxPdu, ConnectionString);
+                        Wrapper = ConnectionString == null ? new SimenseTcpProtocal(_tdpuSize, _taspSrc, _tsapDst, _maxCalling, _maxCalled, _maxPdu) : new SimenseTcpProtocal(_tdpuSize, _taspSrc, _tsapDst, _maxCalling, _maxCalled, _maxPdu, ConnectionString);
                         break;
                     }
                 }

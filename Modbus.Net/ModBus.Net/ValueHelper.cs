@@ -25,14 +25,14 @@ namespace ModBus.Net
             {"System.Double", 8}
         };
 
-        protected static bool _littleEndian = true;
+        protected static bool _littleEndian = false;
 
         protected ValueHelper()
         {
         }
 
         /// <summary>
-        /// 协议中的内容构造是否小端的，默认是大端构造协议。
+        /// 协议中的内容构造是否小端的，默认是小端构造协议。
         /// </summary>
         public static bool LittleEndian
         {
@@ -40,8 +40,7 @@ namespace ModBus.Net
             set
             {
                 _littleEndian = value;
-                //这里需要重点说明，因为.net默认是小端构造法，所以目标协议是大端的话反而需要调用小端构造协议，把小端反转为大端。
-                _Instance = LittleEndian ? new LittleEndianValueHelper() : new ValueHelper();
+                _Instance = LittleEndian ? new ValueHelper() : new BigEndianValueHelper();
             }
         }
 
@@ -58,7 +57,7 @@ namespace ModBus.Net
             {
                 if (_Instance == null)
                 {
-                    _Instance = LittleEndian ? new LittleEndianValueHelper() : new ValueHelper();
+                    _Instance = LittleEndian ? new ValueHelper() : new BigEndianValueHelper();
                 }
                 return _Instance;
             }
@@ -566,6 +565,12 @@ namespace ModBus.Net
             return ans > 0;
         }
 
+        public virtual bool GetBit(byte[] number, ref int pos)
+        {
+            var tpos = pos%8;
+            return GetBit(number[pos++/8], ref tpos);
+        }
+
         /// <summary>
         /// 设置对应数字中相应位置的bit的值
         /// </summary>
@@ -595,9 +600,16 @@ namespace ModBus.Net
                 return (byte) (number & creation);
             }
         }
+
+        public virtual ushort SetBit(byte[] number, int pos, bool setBit)
+        {
+            SetBit(number[pos / 8], pos % 8, setBit);
+            var tpos = 0;
+            return GetUShort(number, ref tpos);
+        }
     }
 
-    internal class LittleEndianValueHelper : ValueHelper
+    internal class BigEndianValueHelper : ValueHelper
     {
         public override Byte[] GetBytes(short value)
         {
@@ -703,6 +715,12 @@ namespace ModBus.Net
             return t;
         }
 
+        public override bool GetBit(byte[] number, ref int pos)
+        {
+            var tpos = pos % 8;
+            return base.GetBit(number[number.Length - 1 - (pos++ / 8)], ref tpos);
+        }
+
         public override bool[] GetBits(byte[] data, ref int pos)
         {
             bool[] t = new bool[8];
@@ -714,6 +732,12 @@ namespace ModBus.Net
             }
             pos += 1;
             return t;
+        }
+
+        public override ushort SetBit(byte[] number, int pos, bool setBit)
+        {
+            Array.Reverse(number);
+            return base.SetBit(number, pos, setBit);
         }
 
         private Byte[] Reverse(Byte[] data)

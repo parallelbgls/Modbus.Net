@@ -45,7 +45,7 @@ namespace ModBus.Net
         {
             _host = ipaddress;
             _port = port;
-            //TimeoutTime = timeoutTime;
+            TimeoutTime = timeoutTime;
         }
 
         public override bool IsConnected
