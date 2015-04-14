@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -144,7 +145,8 @@ namespace NA200H.UI.ConsoleApp
                     wrapper.SendReceive(wrapper[typeof(WriteRequestSimenseProtocal)], writeRequestSimenseInputStruct);
             Console.WriteLine(writeRequestSimenseOutputStruct.AccessResult.ToString());
             Console.Read();
-            Console.Read();        */
+            Console.Read();        
+            */
         }
     }
 }

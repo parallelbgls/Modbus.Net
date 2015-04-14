@@ -17,7 +17,7 @@ namespace ModBus.Net
     {
         private string _connectionString;
 
-        public override string ConnectionString
+        protected override string ConnectionString
         {
             get { return _connectionString; }
             set
@@ -28,8 +28,8 @@ namespace ModBus.Net
                     case "200":
                         {
                             _tdpuSize = 0x09;
-                            _taspSrc = 0x4d57;
-                            _tsapDst = 0x4d57;
+                            _taspSrc = 0x1001;
+                            _tsapDst = 0x1000;
                             _maxCalling = 0x0001;
                             _maxCalled = 0x0001;
                             _maxPdu = 0x03c0;                          
@@ -92,6 +92,7 @@ namespace ModBus.Net
         {
             ConnectionString = connectionString;
             ConnectionType = connectionType;
+            AddressTranslator = new AddressTranslatorSimense();
         }
 
         public override void SetConnectionType(int connectionType)

@@ -26,6 +26,7 @@ namespace ModBus.Net
     /// </summary>
     public class TcpConnector : BaseConnector, IDisposable
     {
+        public override string ConnectionToken { get { return _host; } }
 
         private readonly string _host;
 
@@ -39,7 +40,20 @@ namespace ModBus.Net
         private readonly int _port;
         private TcpClient _socketClient;
 
-        public int TimeoutTime { get; set; }
+        private int _timeoutTime;
+
+        public int TimeoutTime
+        {
+            get { return _timeoutTime; }
+            set
+            {
+                _timeoutTime = value;
+                if (_socketClient != null)
+                {
+                    _socketClient.ReceiveTimeout = _timeoutTime;
+                }
+            }
+        }
 
         public TcpConnector(string ipaddress, int port, int timeoutTime)
         {
@@ -77,9 +91,7 @@ namespace ModBus.Net
                 {
                     _socketClient = new TcpClient
                     {
-                        SendTimeout = TimeoutTime, 
-                        ReceiveTimeout = TimeoutTime
-                        
+                        ReceiveTimeout = TimeoutTime                      
                     };
 
                     try

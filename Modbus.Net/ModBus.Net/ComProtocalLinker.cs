@@ -16,7 +16,7 @@ namespace ModBus.Net
         protected ComProtocalLinker(string com)
         {
             //初始化连对象
-            _baseConnector = new ComConnector(com);
+            _baseConnector = new ComConnector(com, 30000);
         }
     }
 }

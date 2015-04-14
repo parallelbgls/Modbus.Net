@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NA200H.UI.ConsoleApp", "NA200H.UI.Console\NA200H.UI.ConsoleApp.csproj", "{D06F6A34-93F6-4139-B485-8F5686E4E2C9}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NA200H.UI.WPF", "NA200H.UI.WPF\NA200H.UI.WPF.csproj", "{78916B03-C910-468E-B593-667A3EFF68BE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossLampControl.WebApi", "CrossLampControl.WebApi\CrossLampControl.WebApi.csproj", "{252FDEE7-8671-46D3-A05B-CB7668804700}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simense_S7_200.UI.WPF.TaskTest", "Simense_S7_200.UI.WPF.TaskTest\Simense_S7_200.UI.WPF.TaskTest.csproj", "{02CE1787-291A-47CB-A7F7-929DA1D920A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{252FDEE7-8671-46D3-A05B-CB7668804700}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{252FDEE7-8671-46D3-A05B-CB7668804700}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{252FDEE7-8671-46D3-A05B-CB7668804700}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02CE1787-291A-47CB-A7F7-929DA1D920A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02CE1787-291A-47CB-A7F7-929DA1D920A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02CE1787-291A-47CB-A7F7-929DA1D920A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02CE1787-291A-47CB-A7F7-929DA1D920A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

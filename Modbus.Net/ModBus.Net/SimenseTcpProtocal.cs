@@ -77,10 +77,5 @@ namespace ModBus.Net
             }
             return false;
         }
-
-        public override bool Disconnect()
-        {
-            return ProtocalLinker.Disconnect();
-        }
     }
 }

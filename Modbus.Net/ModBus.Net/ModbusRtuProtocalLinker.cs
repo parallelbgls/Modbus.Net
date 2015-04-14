@@ -10,6 +10,7 @@ namespace ModBus.Net
     {
         public override bool CheckRight(byte[] content)
         {
+            if (!base.CheckRight(content)) return false;
             //CRC校验失败
             if (!Crc16.GetInstance().CrcEfficacy(content))
             {

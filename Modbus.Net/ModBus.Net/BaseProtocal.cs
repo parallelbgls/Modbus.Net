@@ -93,7 +93,13 @@ namespace ModBus.Net
         /// 协议连接断开
         /// </summary>
         /// <returns></returns>
-        public abstract bool Disconnect();
-
+        public virtual bool Disconnect()
+        {
+            if (ProtocalLinker != null)
+            {
+                return ProtocalLinker.Disconnect();
+            }
+            return false;
+        }
     }
 }

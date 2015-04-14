@@ -10,38 +10,49 @@ namespace ModBus.Net
 {
     public class ComConnector : BaseConnector, IDisposable
     {
-        private SerialPort serialPort1 = new SerialPort();
+        public override string ConnectionToken { get { return _com; }
+    }
 
-        public delegate byte[] getDate(byte[] bts);
+        private SerialPort _serialPort1;
 
-        private getDate mygetDate;
-        private string com;
+        public delegate byte[] GetDate(byte[] bts);
 
-        public ComConnector(string com)
+        private GetDate mygetDate;
+        private readonly string _com;
+
+        public ComConnector(string com, int timeoutTime)
         {
-            this.com = com;
-            serialPort1.PortName = com; //端口号 
-            serialPort1.BaudRate = 9600; //比特率 
-            serialPort1.Parity = Parity.None; //奇偶校验 
-            serialPort1.StopBits = StopBits.One; //停止位 
-            serialPort1.DataBits = 8;
-            serialPort1.ReadTimeout = 1000; //读超时，即在1000内未读到数据就引起超时异常 
+            this._com = com;
+            _serialPort1 = new SerialPort
+            {
+                PortName = com,
+                BaudRate = 9600,
+                Parity = Parity.None,
+                StopBits = StopBits.One,
+                DataBits = 8,
+                ReadTimeout = timeoutTime,
+            };
+            //端口号 
+            //比特率 
+            //奇偶校验 
+            //停止位 
+            //读超时，即在1000内未读到数据就引起超时异常 
         }
 
         #region 发送接收数据
 
         public override bool IsConnected
         {
-            get { return serialPort1 != null && serialPort1.IsOpen; }
+            get { return _serialPort1 != null && _serialPort1.IsOpen; }
         }
 
         public override bool Connect()
         {
-            if (serialPort1 != null)
+            if (_serialPort1 != null)
             {
                 try
                 {
-                    serialPort1.Open();
+                    _serialPort1.Open();
                     return true;
                 }
                 catch
@@ -59,11 +70,11 @@ namespace ModBus.Net
 
         public override bool Disconnect()
         {
-            if (serialPort1 != null)
+            if (_serialPort1 != null)
             {
                 try
                 {
-                    serialPort1.Close();
+                    _serialPort1.Close();
                     return true;
                 }
                 catch
@@ -91,16 +102,16 @@ namespace ModBus.Net
         {
             try
             {
-                if (!serialPort1.IsOpen)
+                if (!_serialPort1.IsOpen)
                 {
-                    serialPort1.Open();
+                    _serialPort1.Open();
                 }
-                serialPort1.Write(sendbytes, 0, sendbytes.Length);
+                _serialPort1.Write(sendbytes, 0, sendbytes.Length);
                 return ReadMsg();
             }
             catch
             {
-                serialPort1.Close();
+                _serialPort1.Close();
                 return null;
             }
         }
@@ -114,7 +125,7 @@ namespace ModBus.Net
         {
             try
             {
-                serialPort1.Write(sendbytes, 0, sendbytes.Length);
+                _serialPort1.Write(sendbytes, 0, sendbytes.Length);
                 return true;
             }
             catch (Exception)
@@ -139,22 +150,22 @@ namespace ModBus.Net
         {
             try
             {
-                if (!serialPort1.IsOpen)
+                if (!_serialPort1.IsOpen)
                 {
-                    serialPort1.Open();
+                    _serialPort1.Open();
                 }
 
                 byte[] data = new byte[200];
                 Thread.Sleep(100);
-                int i = serialPort1.Read(data, 0, serialPort1.BytesToRead);
+                int i = _serialPort1.Read(data, 0, _serialPort1.BytesToRead);
                 byte[] returndata = new byte[i];
                 Array.Copy(data, 0, returndata, 0, i);
-                serialPort1.Close();
+                _serialPort1.Close();
                 return returndata;
             }
             catch (Exception)
             {
-                serialPort1.Close();
+                _serialPort1.Close();
                 return null;
             }     
         }
@@ -176,15 +187,15 @@ namespace ModBus.Net
             Array.Clear(readBuf, 0, readBuf.Length);
 
             int nReadLen, nBytelen;
-            if (serialPort1.IsOpen == false)
+            if (_serialPort1.IsOpen == false)
                 return -1;
             nBytelen = 0;
-            serialPort1.ReadTimeout = HowTime;
+            _serialPort1.ReadTimeout = HowTime;
 
 
             try
             {
-                readBuf[nBytelen] = (byte) serialPort1.ReadByte();
+                readBuf[nBytelen] = (byte) _serialPort1.ReadByte();
                 byte[] bTmp = new byte[1023];
                 Array.Clear(bTmp, 0, bTmp.Length);
 
@@ -225,16 +236,16 @@ namespace ModBus.Net
             sbyte nBytelen;
             //long nByteRead; 
 
-            if (serialPort1.IsOpen == false)
+            if (_serialPort1.IsOpen == false)
                 return 0;
             nBytelen = 0;
-            serialPort1.ReadTimeout = ByteTime;
+            _serialPort1.ReadTimeout = ByteTime;
 
             while (nBytelen < (ReadRoom - 1))
             {
                 try
                 {
-                    ReadBuf[nBytelen] = (byte) serialPort1.ReadByte();
+                    ReadBuf[nBytelen] = (byte) _serialPort1.ReadByte();
                     nBytelen++; // add one 
                 }
                 catch (Exception ex)
@@ -330,10 +341,10 @@ namespace ModBus.Net
 
         public void Dispose()
         {
-            if (serialPort1 != null)
+            if (_serialPort1 != null)
             {
-                serialPort1.Close();
-                serialPort1.Dispose();
+                _serialPort1.Close();
+                _serialPort1.Dispose();
             }
         }
     }

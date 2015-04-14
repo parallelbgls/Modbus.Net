@@ -51,7 +51,9 @@
     <Compile Include="AsyncHelper.cs" />
     <Compile Include="BaseProtocal.cs" />
     <Compile Include="BaseUtility.cs" />
+    <Compile Include="BaseMachine.cs" />
     <Compile Include="ComConnector.cs" />
+    <Compile Include="ModbusMachine.cs" />
     <Compile Include="ModbusProtocalLinkerBytesExtend.cs" />
     <Compile Include="ModbusUtility.cs" />
     <Compile Include="ComProtocalLinker.cs" />
@@ -72,6 +74,7 @@
     <Compile Include="ModbusProtocal.cs" />
     <Compile Include="ModbusTcpProtocal.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SimenseMachine.cs" />
     <Compile Include="SimenseProtocal.cs" />
     <Compile Include="SimenseStructDefinition.cs" />
     <Compile Include="SimenseTcpProtocal.cs" />

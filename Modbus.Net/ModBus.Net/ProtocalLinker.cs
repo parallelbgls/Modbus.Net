@@ -10,6 +10,11 @@ namespace ModBus.Net
     {
         protected BaseConnector _baseConnector;
 
+        public string ConnectionToken
+        {
+            get { return _baseConnector.ConnectionToken; }
+        }
+
         public bool IsConnected
         {
             get { return _baseConnector.IsConnected; }
@@ -57,7 +62,15 @@ namespace ModBus.Net
         /// </summary>
         /// <param name="content">接收协议的内容</param>
         /// <returns>协议是否是正确的</returns>
-        public abstract bool CheckRight(byte[] content);
+        public virtual bool CheckRight(byte[] content)
+        {
+            if (content == null)
+            {
+                Disconnect();
+                return false;
+            }
+            return true;
+        }
 
         /// <summary>
         /// 协议内容扩展，发送时根据需要扩展
@@ -68,7 +81,7 @@ namespace ModBus.Net
         {
             //自动查找相应的协议放缩类，命令规则为——当前的实际类名（注意是继承后的）+"BytesExtend"。
             ProtocalLinkerBytesExtend bytesExtend =
-                Assembly.Load("ModBus.Net").CreateInstance(this.GetType().FullName + "BytesExtend") as
+                Assembly.Load(this.GetType().Assembly.GetName().Name).CreateInstance(this.GetType().FullName + "BytesExtend") as
                     ProtocalLinkerBytesExtend;
             return bytesExtend.BytesExtend(content);
         }
@@ -82,7 +95,7 @@ namespace ModBus.Net
         {
             //自动查找相应的协议放缩类，命令规则为——当前的实际类名（注意是继承后的）+"BytesExtend"。
             ProtocalLinkerBytesExtend bytesExtend =
-                Assembly.Load("ModBus.Net").CreateInstance(this.GetType().FullName + "BytesExtend") as
+                Assembly.Load(this.GetType().Assembly.GetName().Name).CreateInstance(this.GetType().FullName + "BytesExtend") as
                     ProtocalLinkerBytesExtend;
             return bytesExtend.BytesDecact(content);
         }

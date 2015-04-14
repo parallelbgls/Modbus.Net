@@ -45,11 +45,6 @@ namespace ModBus.Net
         {
             return ProtocalLinker.Connect();
         }
-
-        public override bool Disconnect()
-        {
-            return ProtocalLinker.Disconnect();
-        }
     }
 
     #region 读PLC数据

@@ -9,6 +9,7 @@ namespace ModBus.Net
     {
         public override bool CheckRight(byte[] content)
         {
+            if (!base.CheckRight(content)) return false;
             switch (content[5])
             {
                 case 0xd0:

@@ -13,7 +13,21 @@ namespace ModBus.Net
         /// 协议收发主体
         /// </summary>
         protected BaseProtocal Wrapper;
-        public virtual string ConnectionString { get; set; }
+        protected virtual string ConnectionString { get; set; }
+
+        public bool IsConnected
+        {
+            get
+            {
+                if (Wrapper == null || Wrapper.ProtocalLinker == null) return false;
+                return Wrapper.ProtocalLinker.IsConnected;
+            }
+        }
+
+        public string ConnectionToken
+        {
+            get { return Wrapper.ProtocalLinker.ConnectionToken; }
+        }
 
         public AddressTranslator AddressTranslator { get; set; }
 
@@ -43,6 +57,13 @@ namespace ModBus.Net
             double bCount = ValueHelper.Instance.ByteLength[typeName];
             byte[] getBytes = GetDatas(belongAddress, masterAddress, startAddress, (int)Math.Ceiling(bCount * getTypeAndCount.Value));
             return ValueHelper.Instance.ByteArrayToObjectArray(getBytes, getTypeAndCount);
+        }
+
+        public virtual T[] GetDatas<T>(byte belongAddress, byte masterAddress, string startAddress,
+            int getByteCount)
+        {
+            var getBytes = GetDatas(belongAddress, masterAddress, startAddress, new KeyValuePair<Type, int>(typeof(T), getByteCount));
+            return ValueHelper.Instance.ObjectArrayToDestinationArray<T>(getBytes);
         }
 
         public virtual object[] GetDatas(byte belongAddress, byte masterAddress, string startAddress,
@@ -82,5 +103,15 @@ namespace ModBus.Net
         /// <param name="setTime">设置PLC时间</param>
         /// <returns>设置是否成功</returns>
         public abstract bool SetTime(byte belongAddress, DateTime setTime);
+
+        public bool Connect()
+        {
+            return Wrapper.Connect();
+        }
+
+        public bool DisConnect()
+        {
+            return Wrapper.Disconnect();
+        }
     }
 }

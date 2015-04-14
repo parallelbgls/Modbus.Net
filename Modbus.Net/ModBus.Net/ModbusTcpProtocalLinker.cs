@@ -10,6 +10,7 @@ namespace ModBus.Net
     {
         public override bool CheckRight(byte[] content)
         {
+            if (!base.CheckRight(content)) return false;
             //长度校验失败
             if (content[5] != content.Length - 6)
             {
