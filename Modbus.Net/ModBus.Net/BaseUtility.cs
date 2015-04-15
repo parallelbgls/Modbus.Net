@@ -109,7 +109,7 @@ namespace ModBus.Net
             return Wrapper.Connect();
         }
 
-        public bool DisConnect()
+        public bool Disconnect()
         {
             return Wrapper.Disconnect();
         }

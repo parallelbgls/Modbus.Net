@@ -170,7 +170,7 @@ namespace ModBus.Net
     {
         public bool Equals(BaseMachine x, BaseMachine y)
         {
-            return x.BaseUtility.ConnectionToken == y.BaseUtility.ConnectionToken;
+            return x.ConnectionToken == y.ConnectionToken;
         }
 
         public int GetHashCode(BaseMachine obj)
@@ -182,20 +182,31 @@ namespace ModBus.Net
     public class TaskManager
     {
         private HashSet<BaseMachine> _machines;
-        private TaskFactory<IEnumerable<IEnumerable<object>>> _tasks;
+        private TaskFactory<Dictionary<string,string>> _tasks;
         private TaskScheduler _scheduler;
         private CancellationTokenSource _cts;
         private Timer _timer;
 
         private bool _keepConnect;
-        public bool KeepConnect { get { return _keepConnect; } set { TaskStop(); _keepConnect = value;
-            foreach (var machine in _machines)
-            {
-                machine.KeepConnect = _keepConnect;
-            }
-        } }
 
-        public delegate void ReturnValuesDelegate(KeyValuePair<string, IEnumerable<IEnumerable<object>>> returnValue);
+        public bool KeepConnect
+        {
+            get { return _keepConnect; }
+            set
+            {
+                TaskStop();
+                _keepConnect = value;
+                lock (_machines)
+                {
+                    foreach (var machine in _machines)
+                    {
+                        machine.KeepConnect = _keepConnect;
+                    }
+                }
+            }
+        }
+
+        public delegate void ReturnValuesDelegate(KeyValuePair<string, Dictionary<string,string>> returnValue);
 
         public event ReturnValuesDelegate ReturnValues;
 
@@ -226,9 +237,10 @@ namespace ModBus.Net
                     else
                     {
                         _timer = new Timer(_getCycle*1000);
-                        _timer.Elapsed += MaintainTasks;                        
+                        _timer.Elapsed += MaintainTasks;   
                     }
                     _timer.Start();
+                    MaintainTasks(null,null);
                 }
             }
         }
@@ -253,15 +265,21 @@ namespace ModBus.Net
 
         public void AddMachine(BaseMachine machine)
         {
-            _machines.Add(machine);
             machine.KeepConnect = KeepConnect;
+            lock (_machines)
+            {
+                _machines.Add(machine);
+            }
         }
 
         private void MaintainTasks(object sender, System.Timers.ElapsedEventArgs e)
         {
-            foreach (var machine in _machines)
+            lock (_machines)
             {
-                RunTask(machine);
+                foreach (var machine in _machines)
+                {
+                    RunTask(machine);
+                }
             }
         }
 
@@ -269,7 +287,7 @@ namespace ModBus.Net
         {
             TaskStop();
             _cts = new CancellationTokenSource();
-            _tasks = new TaskFactory<IEnumerable<IEnumerable<object>>>(_cts.Token, TaskCreationOptions.None, TaskContinuationOptions.None, _scheduler);
+            _tasks = new TaskFactory<Dictionary<string,string>>(_cts.Token, TaskCreationOptions.None, TaskContinuationOptions.None, _scheduler);
             GetCycle = TimeRestore.Restore;
         }
 
@@ -282,9 +300,12 @@ namespace ModBus.Net
             }
             if (_machines != null)
             {
-                foreach (var machine in _machines)
+                lock (_machines)
                 {
-                    machine.BaseUtility.DisConnect();
+                    foreach (var machine in _machines)
+                    {
+                        machine.Disconnect();
+                    }
                 }
             }
         }
@@ -297,7 +318,7 @@ namespace ModBus.Net
                 var ans = _tasks.StartNew(machine.GetDatas).Result;
                 if (ReturnValues != null)
                 {
-                    ReturnValues(new KeyValuePair<string, IEnumerable<IEnumerable<object>>>(machine.BaseUtility.ConnectionToken, ans));
+                    ReturnValues(new KeyValuePair<string, Dictionary<string,string>>(machine.ConnectionToken, ans));
                 }
             }
             catch (Exception e)
@@ -305,7 +326,7 @@ namespace ModBus.Net
                 
                 if (ReturnValues != null)
                 {
-                    ReturnValues(new KeyValuePair<string, IEnumerable<IEnumerable<object>>>(machine.BaseUtility.ConnectionToken, null));
+                    ReturnValues(new KeyValuePair<string, Dictionary<string,string>>(machine.ConnectionToken, null));
                 }
             }
         }

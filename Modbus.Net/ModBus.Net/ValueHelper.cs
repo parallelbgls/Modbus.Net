@@ -156,6 +156,69 @@ namespace ModBus.Net
         }
 
         /// <summary>
+        /// 将byte数组中相应的位置转换为对应类型的数字
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="pos"></param>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        public virtual object GetValue(byte[] data, ref int pos, Type t)
+        {
+            switch (t.FullName)
+            {
+                case "System.Int16":
+                    {
+                        short value = Instance.GetShort(data, ref pos);
+                        return value;
+                    }
+                case "System.Int32":
+                    {
+                        int value = Instance.GetInt(data, ref pos);
+                        return value;
+                    }
+                case "System.Int64":
+                    {
+                        long value = Instance.GetLong(data, ref pos);
+                        return value;
+                    }
+                case "System.UInt16":
+                    {
+                        ushort value = Instance.GetUShort(data, ref pos);
+                        return value;
+                    }
+                case "System.UInt32":
+                    {
+                        uint value = Instance.GetUInt(data, ref pos);
+                        return value;
+                    }
+                case "System.UInt64":
+                    {
+                        ulong value = Instance.GetULong(data, ref pos);
+                        return value;
+                    }
+                case "System.Single":
+                    {
+                        float value = Instance.GetFloat(data, ref pos);
+                        return value;
+                    }
+                case "System.Double":
+                    {
+                        double value = Instance.GetDouble(data, ref pos);
+                        return value;
+                    }
+                case "System.Byte":
+                    {
+                        byte value = Instance.GetByte(data, ref pos);
+                        return value;
+                    }
+                default:
+                    {
+                        throw new NotImplementedException("没有实现除整数以外的其它转换方式");
+                    }
+            }
+        }
+
+        /// <summary>
         /// 将byte数组中相应的位置转换为byte数字
         /// </summary>
         /// <param name="data"></param>

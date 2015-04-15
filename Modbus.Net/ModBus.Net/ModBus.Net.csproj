@@ -47,6 +47,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddressCombiner.cs" />
+    <Compile Include="AddressFormater.cs" />
     <Compile Include="AddressTranslator.cs" />
     <Compile Include="AsyncHelper.cs" />
     <Compile Include="BaseProtocal.cs" />
