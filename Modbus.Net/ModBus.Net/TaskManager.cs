@@ -166,19 +166,6 @@ namespace ModBus.Net
         }
     }
 
-    public class BaseMachineEqualityComparer : IEqualityComparer<BaseMachine>
-    {
-        public bool Equals(BaseMachine x, BaseMachine y)
-        {
-            return x.ConnectionToken == y.ConnectionToken;
-        }
-
-        public int GetHashCode(BaseMachine obj)
-        {
-            return obj.GetHashCode();
-        }
-    }
-
     public class TaskManager
     {
         private HashSet<BaseMachine> _machines;
@@ -272,6 +259,38 @@ namespace ModBus.Net
             }
         }
 
+        public void AddMachines(IEnumerable<BaseMachine> machines)
+        {
+            foreach (var machine in machines)
+            {
+                AddMachine(machine);
+            }
+        }
+
+        public void RemoveMachineWithToken(string machineToken)
+        {
+            lock (_machines)
+            {
+                _machines.RemoveWhere(p => p.ConnectionToken == machineToken);
+            }
+        }
+
+        public void RemoveMachineWithId(string id)
+        {
+            lock (_machines)
+            {
+                _machines.RemoveWhere(p => p.Id == id);
+            }
+        }
+
+        public void RemoveMachine(BaseMachine machine)
+        {
+            lock (_machines)
+            {
+                _machines.Remove(machine);
+            }
+        }
+
         private void MaintainTasks(object sender, System.Timers.ElapsedEventArgs e)
         {
             lock (_machines)
@@ -318,7 +337,7 @@ namespace ModBus.Net
                 var ans = _tasks.StartNew(machine.GetDatas).Result;
                 if (ReturnValues != null)
                 {
-                    ReturnValues(new KeyValuePair<string, Dictionary<string,string>>(machine.ConnectionToken, ans));
+                    ReturnValues(new KeyValuePair<string, Dictionary<string,string>>(machine.Id, ans));
                 }
             }
             catch (Exception e)
@@ -326,7 +345,7 @@ namespace ModBus.Net
                 
                 if (ReturnValues != null)
                 {
-                    ReturnValues(new KeyValuePair<string, Dictionary<string,string>>(machine.ConnectionToken, null));
+                    ReturnValues(new KeyValuePair<string, Dictionary<string,string>>(machine.Id, null));
                 }
             }
         }

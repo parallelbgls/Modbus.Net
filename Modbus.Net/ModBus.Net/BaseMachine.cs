@@ -10,15 +10,20 @@ namespace ModBus.Net
 {
     public abstract class BaseMachine : IMachineProperty
     {
+        public string Id { get; set; }
+
         public string ProjectName { get; set; }
 
         public string MachineName { get; set; }
 
-        public string ConnectionToken { get { return BaseUtility.ConnectionToken; } }
+        public string ConnectionToken
+        {
+            get { return BaseUtility.ConnectionToken; }
+        }
 
-        protected AddressFormater AddressFormater { get; set; }
+        public AddressFormater AddressFormater { get; set; }
 
-        protected AddressCombiner AddressCombiner { get; set; }
+        public AddressCombiner AddressCombiner { get; set; }
 
         protected IEnumerable<CommunicationUnit> CommunicateAddresses
         {
@@ -60,7 +65,7 @@ namespace ModBus.Net
                             p => p.Area == communicateAddress.Area && p.Address == pos + communicateAddress.Address);
                     if (address != null)
                     {
-                        ans.Add(address.CommunicationTag, (String.Format("{0:#0.000}", Double.Parse(ValueHelper.Instance.GetValue(datas, ref pos, address.DataType).ToString()) * address.Zoom)));
+                        ans.Add(address.CommunicationTag, (String.Format("{0:#0.#}", Math.Round(Double.Parse(ValueHelper.Instance.GetValue(datas, ref pos, address.DataType).ToString()) * address.Zoom, 3))));
                     }
                     else
                     {
@@ -83,6 +88,19 @@ namespace ModBus.Net
         public bool Disconnect()
         {
             return BaseUtility.Disconnect();
+        }
+    }
+
+    public class BaseMachineEqualityComparer : IEqualityComparer<BaseMachine>
+    {
+        public bool Equals(BaseMachine x, BaseMachine y)
+        {
+            return x.ConnectionToken == y.ConnectionToken;
+        }
+
+        public int GetHashCode(BaseMachine obj)
+        {
+            return obj.GetHashCode();
         }
     }
 
@@ -129,6 +147,7 @@ namespace ModBus.Net
 
     public interface IMachineProperty
     {
+        string Id { get; set; }
         string ProjectName { get; set; }
         string MachineName { get; set; }
         string ConnectionToken { get; }
