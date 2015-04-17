@@ -130,6 +130,7 @@ namespace ModBus.Net
         /// </summary>
         public string CommunicationTag { get; set; }
         public string Name { get; set; }
+        public string Unit { get; set; }
     }
 
     public struct AddressUnitEqualityComparer : IEqualityComparer<AddressUnit>
