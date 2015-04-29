@@ -15,7 +15,8 @@ namespace ModBus.Net
     {
         public override string FormatAddress(string area, int address)
         {
-            if (area.ToUpper().Substring(0,2) == "DB")
+            if (area.Length > 1 && 
+                area.ToUpper().Substring(0,2) == "DB")
             {
                 return area.ToUpper() + "." + "DB" + address;
             }
