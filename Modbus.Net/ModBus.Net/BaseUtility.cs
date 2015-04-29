@@ -13,7 +13,7 @@ namespace ModBus.Net
         /// 协议收发主体
         /// </summary>
         protected BaseProtocal Wrapper;
-        protected virtual string ConnectionString { get; set; }
+        protected string ConnectionString { get; set; }
 
         public bool IsConnected
         {

@@ -9,48 +9,22 @@ public enum SimenseType
     Ppi = 0,
     Mpi = 1,
     Tcp = 2
-}
+};
+
+public enum SimenseMachineModel
+{
+    S7_200 = 0,
+    S7_200_Smart = 1,
+    S7_300 = 2,
+    S7_400 = 3,
+    S7_1200 = 4,
+    S7_1500 = 5
+};
 
 namespace ModBus.Net
 {
     public class SimenseUtility : BaseUtility
     {
-        private string _connectionString;
-
-        protected override string ConnectionString
-        {
-            get { return _connectionString; }
-            set
-            {
-                string[] splitStrings = value.Split(',');
-                switch (splitStrings[1])
-                {
-                    case "200":
-                        {
-                            _tdpuSize = 0x09;
-                            _taspSrc = 0x1001;
-                            _tsapDst = 0x1000;
-                            _maxCalling = 0x0001;
-                            _maxCalled = 0x0001;
-                            _maxPdu = 0x03c0;                          
-                            break;
-                        }
-                    case "300":
-                    case "400":
-                    {
-                        _tdpuSize = 0x1a;
-                        _taspSrc = 0x4b54;
-                        _tsapDst = 0x0302;
-                        _maxCalling = 0x0001;
-                        _maxCalled = 0x0001;
-                        _maxPdu = 0x00f0;                      
-                        break;
-                    }
-                }
-                _connectionString = splitStrings[0];              
-            }
-        }
-
         private byte _tdpuSize;
         private ushort _taspSrc;
         private ushort _tsapDst;
@@ -88,11 +62,35 @@ namespace ModBus.Net
             }
         }
 
-        public SimenseUtility(SimenseType connectionType, string connectionString)
+        public SimenseUtility(SimenseType connectionType, string connectionString, SimenseMachineModel model)
         {
             ConnectionString = connectionString;
+            switch (model)
+            {
+                case SimenseMachineModel.S7_200:
+                    {
+                        _tdpuSize = 0x09;
+                        _taspSrc = 0x1001;
+                        _tsapDst = 0x1000;
+                        _maxCalling = 0x0001;
+                        _maxCalled = 0x0001;
+                        _maxPdu = 0x03c0;
+                        break;
+                    }
+                case SimenseMachineModel.S7_300:
+                case SimenseMachineModel.S7_400:
+                    {
+                        _tdpuSize = 0x1a;
+                        _taspSrc = 0x4b54;
+                        _tsapDst = 0x0302;
+                        _maxCalling = 0x0001;
+                        _maxCalled = 0x0001;
+                        _maxPdu = 0x00f0;
+                        break;
+                    }
+            }
             ConnectionType = connectionType;
-            AddressTranslator = new AddressTranslatorSimense();
+            AddressTranslator = new AddressTranslatorSimense();            
         }
 
         public override void SetConnectionType(int connectionType)
