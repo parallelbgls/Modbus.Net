@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.Remoting.Messaging;
 
 internal enum ModbusProtocalVariableFunctionCode : byte
 {
