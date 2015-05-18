@@ -16,7 +16,7 @@ namespace CrossLampControl.WebApi.Controllers
 
         public CrossLampController()
         {
-            _utility = new SimenseUtility(SimenseType.Tcp, "192.168.3.241,200");
+            _utility = new SimenseUtility(SimenseType.Tcp, "192.168.3.241", SimenseMachineModel.S7_200);
             _utility.AddressTranslator = new AddressTranslatorSimense();
         }
 

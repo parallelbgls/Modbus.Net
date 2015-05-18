@@ -71,15 +71,25 @@ namespace ModBus.Net
         public virtual OutputStruct SendReceive(ProtocalUnit unit, InputStruct content)
         {
             int t = 0;
-            //如果为特别处理协议的话，跳过协议扩展收缩
-            if (unit is SpecialProtocalUnit)
+            //如果为特别处理协议的话，跳过协议扩展收缩          
+            var formatContent = unit.Format(content);
+            if (formatContent != null)
             {
-                return unit.Unformat(ProtocalLinker.SendReceiveWithoutExtAndDec(unit.Format(content)), ref t);
+                byte[] receiveContent;
+                if (unit is SpecialProtocalUnit)
+                {
+                    receiveContent = ProtocalLinker.SendReceiveWithoutExtAndDec(formatContent);
+                }
+                else
+                {
+                    receiveContent = ProtocalLinker.SendReceive(formatContent);
+                }
+                if (receiveContent != null)
+                {
+                    return unit.Unformat(receiveContent, ref t);
+                }
             }
-            else
-            {
-                return unit.Unformat(ProtocalLinker.SendReceive(unit.Format(content)), ref t);
-            }
+            return null;
         }
 
         /// <summary>

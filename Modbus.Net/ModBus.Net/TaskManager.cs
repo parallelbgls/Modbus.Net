@@ -167,7 +167,7 @@ namespace ModBus.Net
     public class TaskManager
     {
         private HashSet<BaseMachine> _machines;
-        private TaskFactory<Dictionary<string,string>> _tasks;
+        private TaskFactory<Dictionary<string,ReturnUnit>> _tasks;
         private TaskScheduler _scheduler;
         private CancellationTokenSource _cts;
         private Timer _timer;
@@ -191,7 +191,7 @@ namespace ModBus.Net
             }
         }
 
-        public delegate void ReturnValuesDelegate(KeyValuePair<string, Dictionary<string,string>> returnValue);
+        public delegate void ReturnValuesDelegate(KeyValuePair<string, Dictionary<string,ReturnUnit>> returnValue);
 
         public event ReturnValuesDelegate ReturnValues;
 
@@ -304,7 +304,7 @@ namespace ModBus.Net
         {
             TaskStop();
             _cts = new CancellationTokenSource();
-            _tasks = new TaskFactory<Dictionary<string,string>>(_cts.Token, TaskCreationOptions.None, TaskContinuationOptions.None, _scheduler);
+            _tasks = new TaskFactory<Dictionary<string,ReturnUnit>>(_cts.Token, TaskCreationOptions.None, TaskContinuationOptions.None, _scheduler);
             GetCycle = TimeRestore.Restore;
         }
 
@@ -335,7 +335,7 @@ namespace ModBus.Net
                 var ans = _tasks.StartNew(machine.GetDatas).Result;
                 if (ReturnValues != null)
                 {
-                    ReturnValues(new KeyValuePair<string, Dictionary<string,string>>(machine.Id, ans));
+                    ReturnValues(new KeyValuePair<string, Dictionary<string,ReturnUnit>>(machine.Id, ans));
                 }
             }
             catch (Exception e)
@@ -343,7 +343,7 @@ namespace ModBus.Net
                 
                 if (ReturnValues != null)
                 {
-                    ReturnValues(new KeyValuePair<string, Dictionary<string,string>>(machine.Id, null));
+                    ReturnValues(new KeyValuePair<string, Dictionary<string,ReturnUnit>>(machine.Id, null));
                 }
             }
         }

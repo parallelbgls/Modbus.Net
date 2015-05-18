@@ -43,9 +43,9 @@ namespace ModBus.Net
             KeepConnect = keepConnect;
         }
 
-        public Dictionary<string,string> GetDatas()
+        public Dictionary<string,ReturnUnit> GetDatas()
         {
-            Dictionary<string, string> ans = new Dictionary<string, string>();
+            Dictionary<string, ReturnUnit> ans = new Dictionary<string, ReturnUnit>();
             if (!BaseUtility.IsConnected)
             {
                 BaseUtility.Connect();
@@ -61,7 +61,7 @@ namespace ModBus.Net
                             p => p.Area == communicateAddress.Area && p.Address == pos + communicateAddress.Address);
                     if (address != null)
                     {
-                        ans.Add(address.CommunicationTag, (String.Format("{0:#0.#}", Math.Round(Double.Parse(ValueHelper.Instance.GetValue(datas, ref pos, address.DataType).ToString()) * address.Zoom, 3))));
+                        ans.Add(address.CommunicationTag, new ReturnUnit{PlcValue = String.Format("{0:#0.#}", Math.Round(Single.Parse(ValueHelper.Instance.GetValue(datas, ref pos, address.DataType).ToString()) * address.Zoom, 3)),ExtendUnit = address.ExtendUnit});
                     }
                     else
                     {
@@ -100,12 +100,23 @@ namespace ModBus.Net
         }
     }
 
-    public struct CommunicationUnit
+    public class CommunicationUnit
     {
         public string Area { get; set; }
         public int Address { get; set; }
         public int GetCount { get; set; }
         public Type DataType { get; set; }
+    }
+
+    public class ExtendUnit
+    {
+        
+    }
+
+    public class ReturnUnit
+    {
+        public string PlcValue { get; set; }
+        public ExtendUnit ExtendUnit { get; set; }
     }
 
     public class AddressUnit
@@ -127,6 +138,8 @@ namespace ModBus.Net
         public string CommunicationTag { get; set; }
         public string Name { get; set; }
         public string Unit { get; set; }
+
+        public ExtendUnit ExtendUnit { get; set; }
     }
 
     public struct AddressUnitEqualityComparer : IEqualityComparer<AddressUnit>
