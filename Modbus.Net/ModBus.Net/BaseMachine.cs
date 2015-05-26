@@ -6,7 +6,7 @@ namespace ModBus.Net
 {
     public abstract class BaseMachine : IMachineProperty
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
 
         public string ProjectName { get; set; }
 
@@ -20,6 +20,8 @@ namespace ModBus.Net
         public AddressFormater AddressFormater { get; set; }
 
         public AddressCombiner AddressCombiner { get; set; }
+
+        public MachineExtend MachineExtend { get; set; }
 
         protected IEnumerable<CommunicationUnit> CommunicateAddresses
         {
@@ -61,7 +63,7 @@ namespace ModBus.Net
                             p => p.Area == communicateAddress.Area && p.Address == pos + communicateAddress.Address);
                     if (address != null)
                     {
-                        ans.Add(address.CommunicationTag, new ReturnUnit{PlcValue = String.Format("{0:#0.#}", Math.Round(Single.Parse(ValueHelper.Instance.GetValue(datas, ref pos, address.DataType).ToString()) * address.Zoom, 3)),ExtendUnit = address.ExtendUnit});
+                        ans.Add(address.CommunicationTag, new ReturnUnit{PlcValue = String.Format("{0:#0.#}", Math.Round(Single.Parse(ValueHelper.Instance.GetValue(datas, ref pos, address.DataType).ToString()) * address.Zoom, 3)),UnitExtend = address.UnitExtend});
                     }
                     else
                     {
@@ -108,7 +110,12 @@ namespace ModBus.Net
         public Type DataType { get; set; }
     }
 
-    public class ExtendUnit
+    public class UnitExtend
+    {
+        
+    }
+
+    public class MachineExtend
     {
         
     }
@@ -116,7 +123,7 @@ namespace ModBus.Net
     public class ReturnUnit
     {
         public string PlcValue { get; set; }
-        public ExtendUnit ExtendUnit { get; set; }
+        public UnitExtend UnitExtend { get; set; }
     }
 
     public class AddressUnit
@@ -139,7 +146,7 @@ namespace ModBus.Net
         public string Name { get; set; }
         public string Unit { get; set; }
 
-        public ExtendUnit ExtendUnit { get; set; }
+        public UnitExtend UnitExtend { get; set; }
     }
 
     public struct AddressUnitEqualityComparer : IEqualityComparer<AddressUnit>
@@ -157,7 +164,7 @@ namespace ModBus.Net
 
     public interface IMachineProperty
     {
-        string Id { get; set; }
+        int Id { get; set; }
         string ProjectName { get; set; }
         string MachineName { get; set; }
         string ConnectionToken { get; }

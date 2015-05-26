@@ -191,7 +191,7 @@ namespace ModBus.Net
             }
         }
 
-        public delegate void ReturnValuesDelegate(KeyValuePair<string, Dictionary<string,ReturnUnit>> returnValue);
+        public delegate void ReturnValuesDelegate(KeyValuePair<int, Dictionary<string,ReturnUnit>> returnValue);
 
         public event ReturnValuesDelegate ReturnValues;
 
@@ -273,7 +273,7 @@ namespace ModBus.Net
             }
         }
 
-        public void RemoveMachineWithId(string id)
+        public void RemoveMachineWithId(int id)
         {
             lock (_machines)
             {
@@ -335,7 +335,7 @@ namespace ModBus.Net
                 var ans = _tasks.StartNew(machine.GetDatas).Result;
                 if (ReturnValues != null)
                 {
-                    ReturnValues(new KeyValuePair<string, Dictionary<string,ReturnUnit>>(machine.Id, ans));
+                    ReturnValues(new KeyValuePair<int, Dictionary<string,ReturnUnit>>(machine.Id, ans));
                 }
             }
             catch (Exception e)
@@ -343,7 +343,7 @@ namespace ModBus.Net
                 
                 if (ReturnValues != null)
                 {
-                    ReturnValues(new KeyValuePair<string, Dictionary<string,ReturnUnit>>(machine.Id, null));
+                    ReturnValues(new KeyValuePair<int, Dictionary<string,ReturnUnit>>(machine.Id, null));
                 }
             }
         }
