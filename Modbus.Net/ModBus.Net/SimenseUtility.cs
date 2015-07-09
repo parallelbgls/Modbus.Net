@@ -96,23 +96,39 @@ namespace ModBus.Net
 
         protected override byte[] GetDatas(byte belongAddress, byte materAddress, string startAddress, int getByteCount)
         {
-            var readRequestSimenseInputStruct = new ReadRequestSimenseInputStruct(0xd3c7, SimenseTypeCode.Byte, startAddress, (ushort)getByteCount, AddressTranslator);
-            var readRequestSimenseOutputStruct =
-                 (ReadRequestSimenseOutputStruct)
-                     Wrapper.SendReceive(Wrapper[typeof(ReadRequestSimenseProtocal)], readRequestSimenseInputStruct);
-            return readRequestSimenseOutputStruct.GetValue;
+            try
+            {
+                var readRequestSimenseInputStruct = new ReadRequestSimenseInputStruct(0xd3c7, SimenseTypeCode.Byte, startAddress, (ushort)getByteCount, AddressTranslator);
+                var readRequestSimenseOutputStruct =
+                     (ReadRequestSimenseOutputStruct)
+                         Wrapper.SendReceive(Wrapper[typeof(ReadRequestSimenseProtocal)], readRequestSimenseInputStruct);
+                return readRequestSimenseOutputStruct.GetValue;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+            
         }
 
         public override bool SetDatas(byte belongAddress, byte materAddress, string startAddress, object[] setContents)
         {
-            var writeRequestSimenseInputStruct = new WriteRequestSimenseInputStruct(0xd3c8, startAddress, setContents, AddressTranslator);
-            var writeRequestSimenseOutputStruct =
-                (WriteRequestSimenseOutputStruct)
-                    Wrapper.SendReceive(Wrapper[typeof(WriteRequestSimenseProtocal)], writeRequestSimenseInputStruct);
-            if (writeRequestSimenseOutputStruct.AccessResult == SimenseAccessResult.NoError) 
-                return true;
-            else 
+            try
+            {
+                var writeRequestSimenseInputStruct = new WriteRequestSimenseInputStruct(0xd3c8, startAddress, setContents, AddressTranslator);
+                var writeRequestSimenseOutputStruct =
+                    (WriteRequestSimenseOutputStruct)
+                        Wrapper.SendReceive(Wrapper[typeof(WriteRequestSimenseProtocal)], writeRequestSimenseInputStruct);
+                if (writeRequestSimenseOutputStruct.AccessResult == SimenseAccessResult.NoError)
+                    return true;
+                else
+                    return false;
+            }
+            catch (Exception)
+            {
                 return false;
+            }
+            
         }
 
         public override DateTime GetTime(byte belongAddress)
