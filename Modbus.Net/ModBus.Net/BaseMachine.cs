@@ -63,7 +63,7 @@ namespace ModBus.Net
                             p => p.Area == communicateAddress.Area && p.Address == pos + communicateAddress.Address);
                     if (address != null)
                     {
-                        ans.Add(address.CommunicationTag, new ReturnUnit{PlcValue = String.Format("{0:#0.#}", Math.Round(Single.Parse(ValueHelper.Instance.GetValue(datas, ref pos, address.DataType).ToString()) * address.Zoom, 3)),UnitExtend = address.UnitExtend});
+                        ans.Add(address.CommunicationTag, new ReturnUnit{PlcValue = Math.Round(Single.Parse(ValueHelper.Instance.GetValue(datas, ref pos, address.DataType).ToString()) * address.Zoom, address.DataType == typeof(System.Single) || address.DataType == typeof(System.Double) ? 3 : (Math.Log10(address.Zoom) > 0 ? 0 : (int)Math.Ceiling(-Math.Log10(address.Zoom)))).ToString(),UnitExtend = address.UnitExtend});
                     }
                     else
                     {

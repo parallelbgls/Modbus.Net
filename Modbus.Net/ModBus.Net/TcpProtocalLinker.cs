@@ -15,7 +15,7 @@ namespace ModBus.Net
 
         protected TcpProtocalLinker(string ip, int port)
         {
-            _baseConnector = new TcpConnector(ip, port, 30000);
+            _baseConnector = new TcpConnector(ip, port, 2000);
         }
     }   
 }
