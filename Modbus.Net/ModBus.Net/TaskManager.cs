@@ -349,7 +349,7 @@ namespace ModBus.Net
                     ReturnValues(new KeyValuePair<int, Dictionary<string,ReturnUnit>>(machine.Id, ans));
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 
                 if (ReturnValues != null)

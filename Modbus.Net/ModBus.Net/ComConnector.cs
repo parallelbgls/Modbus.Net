@@ -15,7 +15,7 @@ namespace ModBus.Net
 
         public delegate byte[] GetDate(byte[] bts);
 
-        private GetDate mygetDate;
+        //private GetDate mygetDate;
         private readonly string _com;
 
         public ComConnector(string com, int timeoutTime)
@@ -249,7 +249,6 @@ namespace ModBus.Net
                 catch (Exception ex)
                 {
                     throw new Exception(ex.Message);
-                    break;
                 }
             }
             ReadBuf[nBytelen] = 0x00;

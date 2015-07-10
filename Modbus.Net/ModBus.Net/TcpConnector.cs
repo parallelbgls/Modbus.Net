@@ -32,7 +32,6 @@ namespace ModBus.Net
         private int _sendCount;
         private int _receiveCount;
         private int _errorCount;
-        private NetworkStream _stream;
 
         // 2MB 的接收缓冲区，目的是一次接收完服务器发回的消息
         private readonly byte[] _receiveBuffer = new byte[1024];
@@ -89,7 +88,7 @@ namespace ModBus.Net
         {
             _timeoutObject.Reset(); 
             _socketClient = new TcpClient();
-            _socketClient.BeginConnect(_host, _port, new AsyncCallback(CallBackMethod), _socketClient);
+            _socketClient.BeginConnect(_host, _port, CallBackMethod, _socketClient);
             if (_timeoutObject.WaitOne(TimeoutTime, false)) 
             {
                 if (_isConnectionSuccessful)
@@ -222,8 +221,9 @@ namespace ModBus.Net
                 {
                     await ConnectAsync();
                 }
-                
-                await _stream.WriteAsync(datagram, 0, datagram.Length);
+
+                var stream = _socketClient.GetStream();
+                await stream.WriteAsync(datagram, 0, datagram.Length);
 
                 RefreshSendCount();
                 //this.AddInfo("send text len = " + datagramText.Length.ToString());
@@ -333,7 +333,8 @@ namespace ModBus.Net
         {
             try
             {
-                _stream.Close();
+                var stream = _socketClient.GetStream();
+                stream.Close();
                 _socketClient.Client.Shutdown(SocketShutdown.Both);
                 _socketClient.Client.Close();
             }
