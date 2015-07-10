@@ -49,31 +49,55 @@ namespace ModBus.Net
         public virtual object[] GetDatas(byte belongAddress, byte masterAddress, string startAddress,
             KeyValuePair<Type, int> getTypeAndCount)
         {
-            string typeName = getTypeAndCount.Key.FullName;
-            double bCount = ValueHelper.Instance.ByteLength[typeName];
-            byte[] getBytes = GetDatas(belongAddress, masterAddress, startAddress, (int)Math.Ceiling(bCount * getTypeAndCount.Value));
-            return ValueHelper.Instance.ByteArrayToObjectArray(getBytes, getTypeAndCount);
+            try
+            {
+                string typeName = getTypeAndCount.Key.FullName;
+                double bCount = ValueHelper.Instance.ByteLength[typeName];
+                byte[] getBytes = GetDatas(belongAddress, masterAddress, startAddress,
+                    (int) Math.Ceiling(bCount*getTypeAndCount.Value));
+                return ValueHelper.Instance.ByteArrayToObjectArray(getBytes, getTypeAndCount);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         public virtual T[] GetDatas<T>(byte belongAddress, byte masterAddress, string startAddress,
             int getByteCount)
         {
-            var getBytes = GetDatas(belongAddress, masterAddress, startAddress, new KeyValuePair<Type, int>(typeof(T), getByteCount));
-            return ValueHelper.Instance.ObjectArrayToDestinationArray<T>(getBytes);
+            try
+            {
+                var getBytes = GetDatas(belongAddress, masterAddress, startAddress,
+                    new KeyValuePair<Type, int>(typeof (T), getByteCount));
+                return ValueHelper.Instance.ObjectArrayToDestinationArray<T>(getBytes);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         public virtual object[] GetDatas(byte belongAddress, byte masterAddress, string startAddress,
             IEnumerable<KeyValuePair<Type, int>> getTypeAndCountList)
         {
-            int bAllCount = 0;
-            foreach (var getTypeAndCount in getTypeAndCountList)
+            try
             {
-                string typeName = getTypeAndCount.Key.FullName;
-                double bCount = ValueHelper.Instance.ByteLength[typeName];
-                bAllCount += (int)Math.Ceiling(bCount*getTypeAndCount.Value);
+                int bAllCount = 0;
+                foreach (var getTypeAndCount in getTypeAndCountList)
+                {
+                    string typeName = getTypeAndCount.Key.FullName;
+                    double bCount = ValueHelper.Instance.ByteLength[typeName];
+                    bAllCount += (int)Math.Ceiling(bCount * getTypeAndCount.Value);
+                }
+                byte[] getBytes = GetDatas(belongAddress, masterAddress, startAddress, bAllCount);
+                return ValueHelper.Instance.ByteArrayToObjectArray(getBytes, getTypeAndCountList);
             }
-            byte[] getBytes = GetDatas(belongAddress, masterAddress, startAddress, bAllCount);
-            return ValueHelper.Instance.ByteArrayToObjectArray(getBytes, getTypeAndCountList);
+            catch (Exception)
+            {
+                return null;
+            }
+            
         }
         /// <summary>
         /// 设置数据

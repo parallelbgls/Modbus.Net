@@ -55,6 +55,7 @@ namespace ModBus.Net
             foreach (var communicateAddress in CommunicateAddresses)
             {
                 var datas = BaseUtility.GetDatas<byte>(2, 0, AddressFormater.FormatAddress(communicateAddress.Area,communicateAddress.Address), communicateAddress.GetCount);
+                if (datas == null) return null;
                 int pos = 0;
                 while (pos < communicateAddress.GetCount)
                 {

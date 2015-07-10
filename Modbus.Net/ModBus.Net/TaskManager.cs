@@ -225,7 +225,7 @@ namespace ModBus.Net
                         _timer.Elapsed += MaintainTasks;   
                     }
                     _timer.Start();
-                    MaintainTasks(null,null);
+                    //MaintainTasks(null,null);
                 }
             }
         }
@@ -259,9 +259,12 @@ namespace ModBus.Net
 
         public void AddMachines(IEnumerable<BaseMachine> machines)
         {
-            foreach (var machine in machines)
+            lock (_machines)
             {
-                AddMachine(machine);
+                foreach (var machine in machines)
+                {
+                    AddMachine(machine);
+                }
             }
         }
 
@@ -289,14 +292,22 @@ namespace ModBus.Net
             }
         }
 
+
         private void MaintainTasks(object sender, System.Timers.ElapsedEventArgs e)
         {
+            AsyncHelper.RunSync(MaintainTasksAsync);
+        }
+
+        private async Task MaintainTasksAsync()
+        {
+            HashSet<BaseMachine> saveMachines = new HashSet<BaseMachine>();
             lock (_machines)
             {
-                foreach (var machine in _machines)
-                {
-                    RunTask(machine);
-                }
+                saveMachines.UnionWith(_machines);
+            }
+            foreach (var machine in saveMachines)
+            {
+                await RunTask(machine);
             }
         }
 
@@ -327,12 +338,12 @@ namespace ModBus.Net
             }
         }
 
-        private void RunTask(BaseMachine machine)
+        private async Task RunTask(BaseMachine machine)
         {
             try
             {
                 //var ans = machine.GetDatas();
-                var ans = _tasks.StartNew(machine.GetDatas).Result;
+                var ans = await _tasks.StartNew(machine.GetDatas);
                 if (ReturnValues != null)
                 {
                     ReturnValues(new KeyValuePair<int, Dictionary<string,ReturnUnit>>(machine.Id, ans));

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ModBus.Net
@@ -61,7 +63,10 @@ namespace ModBus.Net
 
         public override bool IsConnected
         {
-            get { return _socketClient != null && _socketClient.Connected; }
+            get
+            {
+                return _socketClient != null && _socketClient.Client != null && _socketClient.Connected;
+            }
         }
 
         public void Dispose()
@@ -78,7 +83,59 @@ namespace ModBus.Net
             return AsyncHelper.RunSync(ConnectAsync);
         }
 
+        private ManualResetEvent _timeoutObject = new ManualResetEvent(false); 
+        private bool _isConnectionSuccessful; 
         public override async Task<bool> ConnectAsync()
+        {
+            _timeoutObject.Reset(); 
+            _socketClient = new TcpClient();
+            _socketClient.BeginConnect(_host, _port, new AsyncCallback(CallBackMethod), _socketClient);
+            if (_timeoutObject.WaitOne(TimeoutTime, false)) 
+            {
+                if (_isConnectionSuccessful)
+                {
+                    AddInfo("client connected.");
+                    return true;
+                }
+                else
+                {
+                    AddInfo("connect failed.");
+                    _socketClient = null;
+                    return false;
+                } 
+            } 
+            else
+            {
+                _socketClient.Close();
+                AddInfo("connect failed.");
+                _socketClient = null;
+                return false;
+            }
+        }
+
+        private void CallBackMethod(IAsyncResult asyncresult) 
+        {
+            try
+            {
+                _isConnectionSuccessful = false;
+                TcpClient tcpclient = asyncresult.AsyncState as TcpClient;
+                if (tcpclient != null && tcpclient.Client != null)
+                {
+                    _isConnectionSuccessful = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                AddInfo("client connected exception: " + ex.Message);
+                _isConnectionSuccessful = false;
+            }
+            finally
+            {
+                _timeoutObject.Set();               
+            }
+        }
+
+        /*public override async Task<bool> ConnectAsync()
         {
             if (_socketClient != null)
             {
@@ -88,7 +145,8 @@ namespace ModBus.Net
                 {
                     _socketClient = new TcpClient
                     {
-                        ReceiveTimeout = TimeoutTime                      
+                        SendTimeout = TimeoutTime,
+                        ReceiveTimeout = TimeoutTime
                     };
 
                     try
@@ -113,7 +171,7 @@ namespace ModBus.Net
                     AddInfo("client connect exception: " + err.Message);
                     return false;
                 }
-        }
+        }*/
 
         public override bool Disconnect()
         {
