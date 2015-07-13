@@ -84,6 +84,17 @@ namespace ModBus.Net
                         _maxPdu = 0x00f0;
                         break;
                     }
+                case SimenseMachineModel.S7_1200:
+                case SimenseMachineModel.S7_1500:
+                {
+                    _tdpuSize = 0x09;
+                    _taspSrc = 0x4b54;
+                    _tsapDst = 0x0300;
+                    _maxCalling = 0x0001;
+                    _maxCalled = 0x0001;
+                    _maxPdu = 0x00f0;
+                    break;
+                }
             }
             ConnectionType = connectionType;
             AddressTranslator = new AddressTranslatorSimense();            
