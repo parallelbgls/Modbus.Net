@@ -64,7 +64,7 @@ namespace ModBus.Net
                             p => p.Area == communicateAddress.Area && p.Address == pos + communicateAddress.Address);
                     if (address != null)
                     {
-                        ans.Add(address.CommunicationTag, new ReturnUnit{PlcValue = Math.Round(Single.Parse(ValueHelper.Instance.GetValue(datas, ref pos, address.DataType).ToString()) * address.Zoom, address.DataType == typeof(System.Single) || address.DataType == typeof(System.Double) ? 3 : (Math.Log10(address.Zoom) > 0 ? 0 : (int)Math.Ceiling(-Math.Log10(address.Zoom)))).ToString(),UnitExtend = address.UnitExtend});
+                        ans.Add(address.CommunicationTag, new ReturnUnit{PlcValue = Double.Parse(ValueHelper.Instance.GetValue(datas, ref pos, address.DataType).ToString()) * address.Zoom,UnitExtend = address.UnitExtend});
                     }
                     else
                     {
@@ -123,7 +123,7 @@ namespace ModBus.Net
 
     public class ReturnUnit
     {
-        public string PlcValue { get; set; }
+        public double PlcValue { get; set; }
         public UnitExtend UnitExtend { get; set; }
     }
 
@@ -140,6 +140,7 @@ namespace ModBus.Net
         /// 放缩比例
         /// </summary>
         public double Zoom { get; set; }
+        public int DecimalPos { get; set; }
         /// <summary>
         /// 通讯标识名称
         /// </summary>

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Timer = System.Timers.Timer;
 
 
 namespace ModBus.Net
@@ -170,6 +169,7 @@ namespace ModBus.Net
         private TaskFactory<Dictionary<string,ReturnUnit>> _tasks;
         private TaskScheduler _scheduler;
         private CancellationTokenSource _cts;
+
         private Timer _timer;
 
         private bool _keepConnect;
@@ -205,27 +205,30 @@ namespace ModBus.Net
             get { return _getCycle; }
             set
             {
+                if (value == _getCycle) return;
+
                 if (value == Timeout.Infinite)
                 {
                     if (_timer != null)
                     {
-                        _timer.Stop();
+                        _timer.Change(Timeout.Infinite, Timeout.Infinite);
                     }
                 }
+                else if (value < 0) return;
                 else 
-                {
+                {              
+                    if (_timer != null)
+                    {
+                        _timer.Change(Timeout.Infinite, Timeout.Infinite);
+                        _timer.Dispose();
+                        _timer = null;
+                    }
                     if (value > 0)
                     {
                         _getCycle = value;
                     }
-                    if (_timer != null) _timer.Interval = _getCycle*1000;
-                    else
-                    {
-                        _timer = new Timer(_getCycle*1000);
-                        _timer.Elapsed += MaintainTasks;   
-                    }
-                    _timer.Start();
-                    //MaintainTasks(null,null);
+                    _timer = new Timer(MaintainTasks, null, 0, _getCycle * 1000);
+                    //MaintainTasks(null);
                 }
             }
         }
@@ -293,7 +296,7 @@ namespace ModBus.Net
         }
 
 
-        private void MaintainTasks(object sender, System.Timers.ElapsedEventArgs e)
+        private void MaintainTasks(object sender)
         {
             AsyncHelper.RunSync(MaintainTasksAsync);
         }
@@ -343,7 +346,9 @@ namespace ModBus.Net
             try
             {
                 //var ans = machine.GetDatas();
-                var ans = await _tasks.StartNew(machine.GetDatas);
+                CancellationTokenSource cts = new CancellationTokenSource();
+                cts.CancelAfter(TimeSpan.FromSeconds(_getCycle * 2));
+                var ans = await _tasks.StartNew(machine.GetDatas, cts.Token);
                 if (ReturnValues != null)
                 {
                     ReturnValues(new KeyValuePair<int, Dictionary<string,ReturnUnit>>(machine.Id, ans));
