@@ -23,7 +23,7 @@ namespace NA200H.UI.WPF
             //utility = new ModbusUtility(ModbusType.Tcp, "192.168.3.247");
             //utility.AddressTranslator = new AddressTranslatorNA200H();
             //object[] getNum = utility.GetDatas(0x02, 0x00, "NW1", new KeyValuePair<Type, int>(typeof(ushort), 4));
-            utility = new SimenseUtility(SimenseType.Tcp, "192.168.3.191,200");
+            utility = new SimenseUtility(SimenseType.Tcp, "192.168.3.191", SimenseMachineModel.S7_200);
             utility.AddressTranslator = new AddressTranslatorSimense();
             object[] getNum = utility.GetDatas(0x02, 0x00, "V1", new KeyValuePair<Type, int>(typeof(ushort), 4));
             ushort[] getNumUshorts = ValueHelper.Instance.ObjectArrayToDestinationArray<ushort>(getNum);

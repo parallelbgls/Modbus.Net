@@ -32,7 +32,7 @@ namespace Simense_S7_200.UI.WPF.TaskTest
                 new AddressUnit() {Id = 1, Area = "V", Address = 2, CommunicationTag = "D2", DataType = typeof (float), Zoom = 1}
             };
             TaskManager task = new TaskManager(20, 300, true);
-            task.AddMachine(new SimenseMachine(SimenseType.Tcp, "192.168.3.191,200", addressUnits,
+            task.AddMachine(new SimenseMachine(SimenseType.Tcp, "192.168.3.191",SimenseMachineModel.S7_200, addressUnits,
             true));
             task.ReturnValues += (returnValues) =>
             {
