@@ -76,6 +76,7 @@ namespace ModBus.Net
             {
                 BaseUtility.Disconnect();
             }
+            if (ans.Count == 0) ans = null;
             return ans;
         }
 
