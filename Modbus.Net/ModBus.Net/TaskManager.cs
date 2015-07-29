@@ -212,6 +212,8 @@ namespace ModBus.Net
                     if (_timer != null)
                     {
                         _timer.Change(Timeout.Infinite, Timeout.Infinite);
+                        _timer.Dispose();
+                        _timer = null;
                     }
                 }
                 else if (value < 0) return;
@@ -298,7 +300,15 @@ namespace ModBus.Net
 
         private void MaintainTasks(object sender)
         {
-            AsyncHelper.RunSync(MaintainTasksAsync);
+            try
+            {
+                AsyncHelper.RunSync(MaintainTasksAsync);
+            }
+            catch (Exception)
+            {
+                TaskStop();
+                TaskStart();
+            }
         }
 
         private async Task MaintainTasksAsync()
