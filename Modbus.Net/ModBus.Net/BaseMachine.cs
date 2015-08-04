@@ -12,6 +12,14 @@ namespace ModBus.Net
 
         public string MachineName { get; set; }
 
+        public bool IsConnected
+        {
+            get
+            {
+                return BaseUtility.IsConnected;
+            }
+        }
+
         public string ConnectionToken
         {
             get { return BaseUtility.ConnectionToken; }
@@ -52,6 +60,7 @@ namespace ModBus.Net
             {
                 BaseUtility.Connect();
             }
+            if (!BaseUtility.IsConnected) return null;
             foreach (var communicateAddress in CommunicateAddresses)
             {
                 var datas = BaseUtility.GetDatas<byte>(2, 0, AddressFormater.FormatAddress(communicateAddress.Area,communicateAddress.Address), communicateAddress.GetCount);

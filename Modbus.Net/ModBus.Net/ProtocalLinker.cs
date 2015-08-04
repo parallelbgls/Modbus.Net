@@ -16,7 +16,12 @@ namespace ModBus.Net
 
         public bool IsConnected
         {
-            get { return _baseConnector.IsConnected; }
+            get
+            {
+                if (_baseConnector == null)
+                    return false;
+                return _baseConnector.IsConnected;
+            }
         }
 
         public bool Connect()

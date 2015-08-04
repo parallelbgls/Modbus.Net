@@ -94,7 +94,7 @@ namespace ModBus.Net
 
                             // Get the next item from the queue
                             item = _tasks.First.Value;
-                            _tasks.RemoveFirst();
+                            _tasks.RemoveFirst();                         
                         }
 
                         // Execute the task we pulled out of the queue
@@ -166,11 +166,13 @@ namespace ModBus.Net
     public class TaskManager
     {
         private HashSet<BaseMachine> _machines;
+        private HashSet<BaseMachine> _unlinkedMachines;
         private TaskFactory<Dictionary<string,ReturnUnit>> _tasks;
         private TaskScheduler _scheduler;
         private CancellationTokenSource _cts;
 
         private Timer _timer;
+        private Timer _timer2;
 
         private bool _keepConnect;
 
@@ -212,8 +214,11 @@ namespace ModBus.Net
                     if (_timer != null)
                     {
                         _timer.Change(Timeout.Infinite, Timeout.Infinite);
+                        _timer2.Change(Timeout.Infinite, Timeout.Infinite);
                         _timer.Dispose();
+                        _timer2.Dispose();
                         _timer = null;
+                        _timer2 = null;
                     }
                 }
                 else if (value < 0) return;
@@ -222,14 +227,18 @@ namespace ModBus.Net
                     if (_timer != null)
                     {
                         _timer.Change(Timeout.Infinite, Timeout.Infinite);
+                        _timer2.Change(Timeout.Infinite, Timeout.Infinite);
                         _timer.Dispose();
+                        _timer2.Dispose();
                         _timer = null;
+                        _timer2 = null;
                     }
                     if (value > 0)
                     {
                         _getCycle = value;
                     }
                     _timer = new Timer(MaintainTasks, null, 0, _getCycle * 1000);
+                    _timer2 = new Timer(MaintainTasks2, null, _getCycle * 6000, _getCycle * 6000);                  
                     //MaintainTasks(null);
                 }
             }
@@ -248,7 +257,8 @@ namespace ModBus.Net
         public TaskManager(int maxRunningTask, int getCycle, bool keepConnect)
         {
             _scheduler = new LimitedConcurrencyLevelTaskScheduler(maxRunningTask);
-            _machines = new HashSet<BaseMachine>(new BaseMachineEqualityComparer());         
+            _machines = new HashSet<BaseMachine>(new BaseMachineEqualityComparer());
+            _unlinkedMachines = new HashSet<BaseMachine>(new BaseMachineEqualityComparer());
             _getCycle = getCycle;
             KeepConnect = keepConnect;
         }
@@ -289,6 +299,42 @@ namespace ModBus.Net
             }
         }
 
+        public void MoveMachineToUnlinked(int id)
+        {
+            IEnumerable<BaseMachine> machines;
+            lock(_machines)
+            {
+                machines = _machines.Where(c => c.Id == id).ToList();
+                if (machines.Count() <= 0) return;
+                _machines.RemoveWhere(p => p.Id == id);
+            }
+            lock(_unlinkedMachines)
+            {
+                foreach(var machine in machines)
+                {
+                    _unlinkedMachines.Add(machine);
+                }
+            }
+        }
+
+        public void MoveMachineToLinked(int id)
+        {
+            IEnumerable<BaseMachine> machines;
+            lock (_unlinkedMachines)
+            {
+                machines = _unlinkedMachines.Where(c => c.Id == id).ToList();
+                if (machines.Count() <= 0) return;
+                _unlinkedMachines.RemoveWhere(p => p.Id == id);
+            }
+            lock (_machines)
+            {
+                foreach (var machine in machines)
+                {
+                    _machines.Add(machine);
+                }
+            }
+        }
+
         public void RemoveMachine(BaseMachine machine)
         {
             lock (_machines)
@@ -297,26 +343,37 @@ namespace ModBus.Net
             }
         }
 
-
         private void MaintainTasks(object sender)
         {
-            try
-            {
-                AsyncHelper.RunSync(MaintainTasksAsync);
-            }
-            catch (Exception)
-            {
-                TaskStop();
-                TaskStart();
-            }
+            AsyncHelper.RunSync(MaintainTasksAsync);
+        }
+
+        private void MaintainTasks2(object sender)
+        {
+            AsyncHelper.RunSync(MaintainTasks2Async);
         }
 
         private async Task MaintainTasksAsync()
         {
             HashSet<BaseMachine> saveMachines = new HashSet<BaseMachine>();
+            IEnumerable<BaseMachine> saveMachinesEnum = new List<BaseMachine>();
             lock (_machines)
             {
                 saveMachines.UnionWith(_machines);
+                saveMachinesEnum = saveMachines.ToList();
+            }
+            foreach (var machine in saveMachinesEnum)
+            {
+                await RunTask(machine);
+            }
+        }
+
+        private async Task MaintainTasks2Async()
+        {
+            HashSet<BaseMachine> saveMachines = new HashSet<BaseMachine>();
+            lock (_unlinkedMachines)
+            {
+                saveMachines.UnionWith(_unlinkedMachines);
             }
             foreach (var machine in saveMachines)
             {
@@ -334,20 +391,21 @@ namespace ModBus.Net
 
         public void TaskStop()
         {
-            GetCycle = Timeout.Infinite;
-            if (_cts != null)
+            lock (_machines)
             {
-                _cts.Cancel();
-            }
-            if (_machines != null)
-            {
-                lock (_machines)
+                GetCycle = Timeout.Infinite;
+                if (_cts != null)
+                {
+                    _cts.Cancel();
+                }
+                if (_machines != null)
                 {
                     foreach (var machine in _machines)
                     {
                         machine.Disconnect();
                     }
                 }
+                _tasks = null;
             }
         }
 
@@ -357,16 +415,28 @@ namespace ModBus.Net
             {
                 //var ans = machine.GetDatas();
                 CancellationTokenSource cts = new CancellationTokenSource();
-                cts.CancelAfter(TimeSpan.FromSeconds(_getCycle * 2));
+                cts.CancelAfter(TimeSpan.FromSeconds(_getCycle));
                 var ans = await _tasks.StartNew(machine.GetDatas, cts.Token);
+                //var ans = await Task.Factory.StartNew(machine.GetDatas, cts.Token);
+                if (!machine.IsConnected)
+                {
+                    MoveMachineToUnlinked(machine.Id);
+                }
+                else
+                {
+                    MoveMachineToLinked(machine.Id);
+                }
                 if (ReturnValues != null)
                 {
                     ReturnValues(new KeyValuePair<int, Dictionary<string,ReturnUnit>>(machine.Id, ans));
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                
+                if (!machine.IsConnected)
+                {
+                    MoveMachineToUnlinked(machine.Id);
+                }
                 if (ReturnValues != null)
                 {
                     ReturnValues(new KeyValuePair<int, Dictionary<string,ReturnUnit>>(machine.Id, null));
