@@ -377,7 +377,16 @@ namespace ModBus.Net
             }
             foreach (var machine in saveMachines)
             {
-                await RunTask(machine);
+                try
+                {
+                    CancellationTokenSource cts = new CancellationTokenSource();
+                    cts.CancelAfter(TimeSpan.FromSeconds(30));
+                    await RunTask(machine).WithCancellation(cts.Token);
+                }
+                catch
+                {
+                    return;
+                }
             }
         }
 
