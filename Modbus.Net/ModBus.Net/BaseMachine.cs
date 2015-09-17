@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ModBus.Net
 {
@@ -53,17 +54,22 @@ namespace ModBus.Net
             KeepConnect = keepConnect;
         }
 
-        public Dictionary<string,ReturnUnit> GetDatas()
+        public Dictionary<string, ReturnUnit> GetDatas()
+        {
+            return AsyncHelper.RunSync(GetDatasAsync);
+        }
+
+        public async Task<Dictionary<string,ReturnUnit>> GetDatasAsync()
         {
             Dictionary<string, ReturnUnit> ans = new Dictionary<string, ReturnUnit>();
             if (!BaseUtility.IsConnected)
             {
-                BaseUtility.Connect();
+                await BaseUtility.ConnectAsync();
             }
             if (!BaseUtility.IsConnected) return null;
             foreach (var communicateAddress in CommunicateAddresses)
             {
-                var datas = BaseUtility.GetDatas<byte>(2, 0, AddressFormater.FormatAddress(communicateAddress.Area,communicateAddress.Address), communicateAddress.GetCount);
+                var datas = await BaseUtility.GetDatasAsync<byte>(2, 0, AddressFormater.FormatAddress(communicateAddress.Area,communicateAddress.Address), communicateAddress.GetCount);
                 if (datas == null || datas.Length == 0) return null;
                 int pos = 0;
                 while (pos < communicateAddress.GetCount)
@@ -92,6 +98,11 @@ namespace ModBus.Net
         public bool Connect()
         {
             return BaseUtility.Connect();
+        }
+
+        public async Task<bool> ConnectAsync()
+        {
+            return await BaseUtility.ConnectAsync();
         }
 
         public bool Disconnect()

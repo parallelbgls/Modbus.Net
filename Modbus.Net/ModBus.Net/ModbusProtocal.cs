@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 internal enum ModbusProtocalVariableFunctionCode : byte
 {
@@ -43,6 +44,11 @@ namespace ModBus.Net
         public override bool Connect()
         {
             return ProtocalLinker.Connect();
+        }
+
+        public override async Task<bool> ConnectAsync()
+        {
+            return await ProtocalLinker.ConnectAsync();
         }
     }
 

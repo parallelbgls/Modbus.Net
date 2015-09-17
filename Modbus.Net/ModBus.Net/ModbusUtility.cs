@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 /// <summary>
 /// Modbus连接类型
@@ -65,28 +66,28 @@ namespace ModBus.Net
             ModbusType = (ModbusType) connectionType;
         }
 
-        protected override byte[] GetDatas(byte belongAddress, byte materAddress, string startAddress, int getByteCount)
+        protected override async Task<byte[]> GetDatasAsync(byte belongAddress, byte masterAddress, string startAddress, int getByteCount)
         {
             try
             {
                 var inputStruct = new ReadDataModbusInputStruct(belongAddress, startAddress, getByteCount % 2 == 0 ? (ushort)(getByteCount / 2) : (ushort)(getByteCount / 2 + 1), AddressTranslator);
-                var outputStruct =
-                    Wrapper.SendReceive(Wrapper[typeof(ReadDataModbusProtocal)], inputStruct) as ReadDataModbusOutputStruct;
+                var outputStruct = await 
+                    Wrapper.SendReceiveAsync(Wrapper[typeof(ReadDataModbusProtocal)], inputStruct) as ReadDataModbusOutputStruct;
                 return outputStruct.DataValue;
             }
             catch
             {
                 return null;
-            }    
+            }
         }
 
-        public override bool SetDatas(byte belongAddress, byte materAddress, string startAddress, object[] setContents)
+        public override async Task<bool> SetDatasAsync(byte belongAddress, byte masterAddress, string startAddress, object[] setContents)
         {
             try
             {
                 var inputStruct = new WriteDataModbusInputStruct(belongAddress, startAddress, setContents, AddressTranslator);
-                var outputStruct =
-                    Wrapper.SendReceive(Wrapper[typeof(WriteDataModbusProtocal)], inputStruct) as
+                var outputStruct = await
+                    Wrapper.SendReceiveAsync(Wrapper[typeof(WriteDataModbusProtocal)], inputStruct) as
                         WriteDataModbusOutputStruct;
                 if (outputStruct.WriteCount != setContents.Length) return false;
                 return true;
@@ -97,6 +98,7 @@ namespace ModBus.Net
             }
         }
 
+        /*
         public override DateTime GetTime(byte belongAddress)
         {
             try
@@ -128,5 +130,6 @@ namespace ModBus.Net
                 return false;
             }
         }
+        */
     }
 }

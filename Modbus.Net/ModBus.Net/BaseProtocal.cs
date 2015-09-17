@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace ModBus.Net
 {
@@ -63,6 +64,16 @@ namespace ModBus.Net
         }
 
         /// <summary>
+        /// 发送协议内容并接收，一般方法(异步）
+        /// </summary>
+        /// <param name="content"></param>
+        /// <returns></returns>
+        public virtual async Task<byte[]> SendReceiveAsync(params object[] content)
+        {
+            return await ProtocalLinker.SendReceiveAsync(ProtocalUnit.TranslateContent(content));
+        }
+
+        /// <summary>
         /// 发送协议，通过传入需要使用的协议内容和输入结构
         /// </summary>
         /// <param name="unit"></param>
@@ -93,10 +104,46 @@ namespace ModBus.Net
         }
 
         /// <summary>
+        /// 发送协议，通过传入需要使用的协议内容和输入结构（异步）
+        /// </summary>
+        /// <param name="unit"></param>
+        /// <param name="content"></param>
+        /// <returns></returns>
+        public virtual async Task<OutputStruct> SendReceiveAsync(ProtocalUnit unit, InputStruct content)
+        {
+            int t = 0;
+            //如果为特别处理协议的话，跳过协议扩展收缩          
+            var formatContent = unit.Format(content);
+            if (formatContent != null)
+            {
+                byte[] receiveContent;
+                if (unit is SpecialProtocalUnit)
+                {
+                    receiveContent = await ProtocalLinker.SendReceiveWithoutExtAndDecAsync(formatContent);
+                }
+                else
+                {
+                    receiveContent = await ProtocalLinker.SendReceiveAsync(formatContent);
+                }
+                if (receiveContent != null)
+                {
+                    return unit.Unformat(receiveContent, ref t);
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
         /// 协议连接开始
         /// </summary>
         /// <returns></returns>
         public abstract bool Connect();
+
+        /// <summary>
+        /// 协议连接开始（异步）
+        /// </summary>
+        /// <returns></returns>
+        public abstract Task<bool> ConnectAsync();
 
         /// <summary>
         /// 协议连接断开

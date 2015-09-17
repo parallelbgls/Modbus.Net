@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 public enum SimenseType
 {
@@ -105,31 +106,30 @@ namespace ModBus.Net
             ConnectionType = (SimenseType) connectionType;
         }
 
-        protected override byte[] GetDatas(byte belongAddress, byte materAddress, string startAddress, int getByteCount)
+        protected override async Task<byte[]> GetDatasAsync(byte belongAddress, byte materAddress, string startAddress, int getByteCount)
         {
             try
             {
                 var readRequestSimenseInputStruct = new ReadRequestSimenseInputStruct(0xd3c7, SimenseTypeCode.Byte, startAddress, (ushort)getByteCount, AddressTranslator);
                 var readRequestSimenseOutputStruct =
-                     (ReadRequestSimenseOutputStruct)
-                         Wrapper.SendReceive(Wrapper[typeof(ReadRequestSimenseProtocal)], readRequestSimenseInputStruct);
+                     (ReadRequestSimenseOutputStruct) await
+                         Wrapper.SendReceiveAsync(Wrapper[typeof(ReadRequestSimenseProtocal)], readRequestSimenseInputStruct);
                 return readRequestSimenseOutputStruct.GetValue;
             }
             catch (Exception)
             {
                 return null;
             }
-            
         }
 
-        public override bool SetDatas(byte belongAddress, byte materAddress, string startAddress, object[] setContents)
+        public override async Task<bool> SetDatasAsync(byte belongAddress, byte materAddress, string startAddress, object[] setContents)
         {
             try
             {
                 var writeRequestSimenseInputStruct = new WriteRequestSimenseInputStruct(0xd3c8, startAddress, setContents, AddressTranslator);
                 var writeRequestSimenseOutputStruct =
-                    (WriteRequestSimenseOutputStruct)
-                        Wrapper.SendReceive(Wrapper[typeof(WriteRequestSimenseProtocal)], writeRequestSimenseInputStruct);
+                    (WriteRequestSimenseOutputStruct) await
+                        Wrapper.SendReceiveAsync(Wrapper[typeof(WriteRequestSimenseProtocal)], writeRequestSimenseInputStruct);
                 if (writeRequestSimenseOutputStruct.AccessResult == SimenseAccessResult.NoError)
                     return true;
                 else
@@ -139,9 +139,9 @@ namespace ModBus.Net
             {
                 return false;
             }
-            
         }
 
+        /*
         public override DateTime GetTime(byte belongAddress)
         {
             throw new NotImplementedException();
@@ -151,5 +151,6 @@ namespace ModBus.Net
         {
             throw new NotImplementedException();
         }
+        */
     }
 }

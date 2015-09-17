@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Threading.Tasks;
 
 namespace ModBus.Net
 {
@@ -29,6 +30,11 @@ namespace ModBus.Net
             return _baseConnector.Connect();
         }
 
+        public async Task<bool> ConnectAsync()
+        {
+            return await _baseConnector.ConnectAsync();
+        }
+
         public bool Disconnect()
         {
             return _baseConnector.Disconnect();
@@ -41,8 +47,18 @@ namespace ModBus.Net
         /// <returns>接收协议的内容</returns>
         public virtual byte[] SendReceive(byte[] content)
         {
+            return AsyncHelper.RunSync(() => SendReceiveAsync(content));
+        }
+
+        /// <summary>
+        /// 发送并接收数据
+        /// </summary>
+        /// <param name="content">发送协议的内容</param>
+        /// <returns>接收协议的内容</returns>
+        public virtual async Task<byte[]> SendReceiveAsync(byte[] content)
+        {
             byte[] extBytes = BytesExtend(content);
-            byte[] receiveBytes = SendReceiveWithoutExtAndDec(extBytes);
+            byte[] receiveBytes = await SendReceiveWithoutExtAndDecAsync(extBytes);
             return receiveBytes == null ? null : BytesDecact(receiveBytes);
         }
 
@@ -53,8 +69,18 @@ namespace ModBus.Net
         /// <returns>接收协议的内容</returns>
         public virtual byte[] SendReceiveWithoutExtAndDec(byte[] content)
         {
+            return AsyncHelper.RunSync(() => SendReceiveWithoutExtAndDecAsync(content));
+        }
+
+        /// <summary>
+        /// 发送并接收数据，不进行协议扩展和收缩，用于特殊协议
+        /// </summary>
+        /// <param name="content">发送协议的内容</param>
+        /// <returns>接收协议的内容</returns>
+        public virtual async Task<byte[]> SendReceiveWithoutExtAndDecAsync(byte[] content)
+        {
             //发送数据
-            byte[] receiveBytes = _baseConnector.SendMsg(content);
+            byte[] receiveBytes = await _baseConnector.SendMsgAsync(content);
             //容错处理
             if (!CheckRight(receiveBytes)) return null;
             //返回字符
