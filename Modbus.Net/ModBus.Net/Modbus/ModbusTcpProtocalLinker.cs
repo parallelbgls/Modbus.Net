@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ModBus.Net
+﻿namespace ModBus.Net.Modbus
 {
     public class ModbusTcpProtocalLinker : TcpProtocalLinker
     {

@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ModBus.Net;
+using ModBus.Net.Simense;
 
 namespace Simense_S7_200.UI.WPF.TaskTest
 {

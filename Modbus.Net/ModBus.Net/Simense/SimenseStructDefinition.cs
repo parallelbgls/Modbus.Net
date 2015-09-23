@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ModBus.Net
+﻿namespace ModBus.Net.Simense
 {
     public struct TodClockStatus
     {

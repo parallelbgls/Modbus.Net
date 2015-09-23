@@ -2,43 +2,43 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-internal enum ModbusProtocalVariableFunctionCode : byte
+namespace ModBus.Net.Modbus
 {
-    ReadVariable = 20,
-    WriteVariable = 21,
-}
+    internal enum ModbusProtocalVariableFunctionCode : byte
+    {
+        ReadVariable = 20,
+        WriteVariable = 21,
+    }
 
-/// <summary>
-/// 跟时间有关的功能码
-/// </summary>
-public enum ModbusProtocalTimeFunctionCode : byte
-{
-    GetSystemTime = 3,
-    SetSystemTime = 16,
-}
+    /// <summary>
+    /// 跟时间有关的功能码
+    /// </summary>
+    public enum ModbusProtocalTimeFunctionCode : byte
+    {
+        GetSystemTime = 3,
+        SetSystemTime = 16,
+    }
 
-/// <summary>
-/// 跟读数据有关的功能码
-/// </summary>
-public enum ModbusProtocalReadDataFunctionCode : byte
-{
-    ReadCoilStatus = 1,
-    ReadInputStatus = 2,
-    ReadHoldRegister = 3,
-    ReadInputRegister = 4,
-}
+    /// <summary>
+    /// 跟读数据有关的功能码
+    /// </summary>
+    public enum ModbusProtocalReadDataFunctionCode : byte
+    {
+        ReadCoilStatus = 1,
+        ReadInputStatus = 2,
+        ReadHoldRegister = 3,
+        ReadInputRegister = 4,
+    }
 
-/// <summary>
-/// 跟写数据有关的功能码
-/// </summary>
-internal enum ModbusProtocalWriteDataFunctionCode : byte
-{
-    WriteMultiCoil = 15,
-    WriteMultiRegister = 16,
-}
+    /// <summary>
+    /// 跟写数据有关的功能码
+    /// </summary>
+    internal enum ModbusProtocalWriteDataFunctionCode : byte
+    {
+        WriteMultiCoil = 15,
+        WriteMultiRegister = 16,
+    }
 
-namespace ModBus.Net
-{
     public abstract class ModbusProtocal : BaseProtocal
     {
         public override bool Connect()

@@ -2,36 +2,36 @@
 using System.Collections.Generic;
 using System.Linq;
 
-public enum SimenseTypeCode : byte
+namespace ModBus.Net.Simense
 {
-    Bool = 0x01,
-    Byte = 0x02,
-    Word = 0x03,
-    DWord = 0x04,
-    C = 0x1E,
-    T = 0x1F,
-    HC = 0x20,
-};
+    public enum SimenseTypeCode : byte
+    {
+        Bool = 0x01,
+        Byte = 0x02,
+        Word = 0x03,
+        DWord = 0x04,
+        C = 0x1E,
+        T = 0x1F,
+        HC = 0x20,
+    };
 
-public enum SimenseAccessResult : byte
-{
-    NoError = 0xFF,
-    HardwareFault = 0x01,
-    IllegalObjectAccess = 0x03,
-    InvalidAddress = 0x05,
-    DataTypeNotSupport = 0x06,
-    ObjNotExistOrLengthError = 0x0A,
-};
+    public enum SimenseAccessResult : byte
+    {
+        NoError = 0xFF,
+        HardwareFault = 0x01,
+        IllegalObjectAccess = 0x03,
+        InvalidAddress = 0x05,
+        DataTypeNotSupport = 0x06,
+        ObjNotExistOrLengthError = 0x0A,
+    };
 
-public enum SimenseDataType : byte
-{
-    Error = 0x00,
-    BitAccess = 0x03,
-    OtherAccess = 0x04
-};
+    public enum SimenseDataType : byte
+    {
+        Error = 0x00,
+        BitAccess = 0x03,
+        OtherAccess = 0x04
+    };
 
-namespace ModBus.Net
-{
     public abstract class SimenseProtocal : BaseProtocal
     {
 

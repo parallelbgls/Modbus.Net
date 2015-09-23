@@ -1,25 +1,26 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-public enum SimenseType
+namespace ModBus.Net.Simense
 {
-    Ppi = 0,
-    Mpi = 1,
-    Tcp = 2
-};
+    public enum SimenseType
+    {
+        Ppi = 0,
+        Mpi = 1,
+        Tcp = 2
+    };
 
-public enum SimenseMachineModel
-{
-    S7_200 = 0,
-    S7_200_Smart = 1,
-    S7_300 = 2,
-    S7_400 = 3,
-    S7_1200 = 4,
-    S7_1500 = 5
-};
+    public enum SimenseMachineModel
+    {
+        S7_200 = 0,
+        S7_200_Smart = 1,
+        S7_300 = 2,
+        S7_400 = 3,
+        S7_1200 = 4,
+        S7_1500 = 5
+    };
 
-namespace ModBus.Net
-{
+
     public class SimenseUtility : BaseUtility
     {
         private byte _tdpuSize;

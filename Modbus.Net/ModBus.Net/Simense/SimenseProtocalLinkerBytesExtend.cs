@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ModBus.Net
+namespace ModBus.Net.Simense
 {
     public class SimenseTcpProtocalLinkerBytesExtend : ProtocalLinkerBytesExtend
     {

@@ -1,7 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
-namespace ModBus.Net
+namespace ModBus.Net.Simense
 {
     public class SimenseTcpProtocal : SimenseProtocal
     {

@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace ModBus.Net
+namespace ModBus.Net.Simense
 {
     public class SimenseMachine : BaseMachine
     {

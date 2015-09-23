@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using ModBus.Net;
 using System.Windows;
+using ModBus.Net.Simense;
 
 
 namespace NA200H.UI.WPF

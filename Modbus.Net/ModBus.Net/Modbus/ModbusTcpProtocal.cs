@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ModBus.Net
+﻿namespace ModBus.Net.Modbus
 {
     /// <summary>
     /// Modbus/Tcp协议

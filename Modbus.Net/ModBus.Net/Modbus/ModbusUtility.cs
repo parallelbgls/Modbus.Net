@@ -1,23 +1,22 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
-/// <summary>
-/// Modbus连接类型
-/// </summary>
-public enum ModbusType
+namespace ModBus.Net.Modbus
 {
     /// <summary>
-    /// Rtu连接
+    /// Modbus连接类型
     /// </summary>
-    Rtu = 0,
-    /// <summary>
-    /// Tcp连接
-    /// </summary>
-    Tcp = 1,
-}
+    public enum ModbusType
+    {
+        /// <summary>
+        /// Rtu连接
+        /// </summary>
+        Rtu = 0,
+        /// <summary>
+        /// Tcp连接
+        /// </summary>
+        Tcp = 1,
+    }
 
-namespace ModBus.Net
-{
     public class ModbusUtility : BaseUtility
     {
         private ModbusType _modbusType;

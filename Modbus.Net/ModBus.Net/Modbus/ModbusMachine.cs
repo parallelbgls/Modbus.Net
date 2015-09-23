@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace ModBus.Net
+namespace ModBus.Net.Modbus
 {
     public class ModbusMachine : BaseMachine
     {

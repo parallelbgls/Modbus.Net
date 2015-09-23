@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -44,24 +44,9 @@
     </Compile>
     <Compile Include="CRC16.cs" />
     <Compile Include="IProtocalFormatting.cs" />
-    <Compile Include="ModbusMachine.cs" />
-    <Compile Include="ModbusProtocal.cs" />
-    <Compile Include="ModbusProtocalLinkerBytesExtend.cs" />
-    <Compile Include="ModbusRtuProtocal.cs" />
-    <Compile Include="ModbusRtuProtocalLinker.cs" />
-    <Compile Include="ModbusTcpProtocal.cs" />
-    <Compile Include="ModbusTcpProtocalLinker.cs" />
-    <Compile Include="ModbusUtility.cs" />
     <Compile Include="ProtocalLinker.cs" />
     <Compile Include="ProtocalLinkerBytesExtend.cs" />
     <Compile Include="ProtocalUnit.cs" />
-    <Compile Include="SimenseMachine.cs" />
-    <Compile Include="SimenseProtocal.cs" />
-    <Compile Include="SimenseProtocalLinkerBytesExtend.cs" />
-    <Compile Include="SimenseStructDefinition.cs" />
-    <Compile Include="SimenseTcpProtocal.cs" />
-    <Compile Include="SimenseTcpProtocalLinker.cs" />
-    <Compile Include="SimenseUtility.cs" />
     <Compile Include="TaskManager.cs" />
     <Compile Include="TcpConnector.cs" />
     <Compile Include="TcpProtocalLinker.cs" />
@@ -71,9 +56,7 @@
   <ItemGroup>
     <None Include="ConfigurationManager.resx" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="c:\Users\luosheng\Documents\Projects\Modbus.Net-xamarin\ModBus.Net\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Reference Include="System" />
   </ItemGroup>
