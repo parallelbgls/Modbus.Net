@@ -69,7 +69,7 @@ namespace ModBus.Net
             if (!BaseUtility.IsConnected) return null;
             foreach (var communicateAddress in CommunicateAddresses)
             {
-                var datas = await BaseUtility.GetDatasAsync<byte>(2, 0, AddressFormater.FormatAddress(communicateAddress.Area,communicateAddress.Address), communicateAddress.GetCount);
+                var datas = await BaseUtility.GetDatasAsync<byte>(2, 0, AddressFormater.FormatAddress(communicateAddress.Area,communicateAddress.Address), (int)Math.Ceiling(communicateAddress.GetCount * ValueHelper.Instance.ByteLength[communicateAddress.DataType.FullName]));
                 if (datas == null || datas.Length == 0) return null;
                 int pos = 0;
                 while (pos < communicateAddress.GetCount)

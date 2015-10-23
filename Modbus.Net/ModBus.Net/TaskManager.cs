@@ -426,7 +426,6 @@ namespace ModBus.Net
                 CancellationTokenSource cts = new CancellationTokenSource();
                 cts.CancelAfter(TimeSpan.FromSeconds(_getCycle));
                 var ans = await machine.GetDatasAsync().WithCancellation(cts.Token);
-                //var ans = await machine.GetDatasAsync().WithCancellation(cts.Token);
                 if (!machine.IsConnected)
                 {
                     MoveMachineToUnlinked(machine.Id);
