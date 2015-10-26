@@ -166,76 +166,96 @@ namespace ModBus.Net.FBox
                         }
                         foreach (var dMonEntry in dataGroup.DMonEntries)
                         {
-                                switch (dMonEntry.DataType)
+                            Type type;
+                            switch (dMonEntry.DataType)
+                            {
+                                //位
+                                case 0:
                                 {
-                                    case 1:
-                                    {
-                                        Type type = typeof(ushort);
-                                        if (!_machineDataType[groupName].ContainsKey(dMonEntry.Desc))
-                                        {
-                                            _machineDataType[groupName].Add(dMonEntry.Desc, type);
-                                        }
-                                        else
-                                        {
-                                            _machineDataType[groupName][dMonEntry.Desc] = type;
-                                        }
-                                        break;
-                                    }
-                                    case 2:
-                                    {
-                                        Type type = typeof (short);
-                                        if (!_machineDataType[groupName].ContainsKey(dMonEntry.Desc))
-                                        {
-                                            _machineDataType[groupName].Add(dMonEntry.Desc, type);
-                                        }
-                                        else
-                                        {
-                                            _machineDataType[groupName][dMonEntry.Desc] = type;
-                                        }
-                                        break;
-                                    }
-                                    case 3:
-                                    {
-                                        Type type = typeof (uint);
-                                        if (!_machineDataType[groupName].ContainsKey(dMonEntry.Desc))
-                                        {
-                                            _machineDataType[groupName].Add(dMonEntry.Desc, type);
-                                        }
-                                        else
-                                        {
-                                            _machineDataType[groupName][dMonEntry.Desc] = type;
-                                        }
-                                        break;
-                                    }
-                                    case 4:
-                                    {
-                                        Type type = typeof (int);
-                                        if (!_machineDataType[groupName].ContainsKey(dMonEntry.Desc))
-                                        {
-                                            _machineDataType[groupName].Add(dMonEntry.Desc, type);
-                                        }
-                                        else
-                                        {
-                                            _machineDataType[groupName][dMonEntry.Desc] = type;
-                                        }
-                                        break;
-                                    }
-                                    case 7:
-                                    {
-                                        Type type = typeof (float);
-                                        if (!_machineDataType[groupName].ContainsKey(dMonEntry.Desc))
-                                        {
-                                            _machineDataType[groupName].Add(dMonEntry.Desc, type);
-                                        }
-                                        else
-                                        {
-                                            _machineDataType[groupName][dMonEntry.Desc] = type;
-                                        }
-                                        break;
-                                    }
+                                    type = typeof (bool);
+                                    break;
                                 }
-                                
-                            
+                                //16位无符号
+                                case 1:
+                                {
+                                    type = typeof (ushort);
+                                    break;
+                                }
+                                //16位有符号
+                                case 2:
+                                {
+                                    type = typeof (short);
+                                    break;
+                                }
+                                //32位无符号
+                                case 11:
+                                {
+                                    type = typeof (uint);
+                                    break;
+                                }
+                                //32位有符号
+                                case 12:
+                                {
+                                    type = typeof (int);
+                                    break;
+                                }
+                                //16位BCD
+                                case 3:
+                                {
+                                    type = typeof (short);
+                                    break;
+                                }
+                                //32位BCD
+                                case 13:
+                                {
+                                    type = typeof (int);
+                                    break;
+                                }
+                                //浮点数
+                                case 16:
+                                {
+                                    type = typeof (float);
+                                    break;
+                                }
+                                //16位16进制
+                                case 4:
+                                {
+                                    type = typeof (short);
+                                    break;
+                                }
+                                //32位16进制
+                                case 14:
+                                {
+                                    type = typeof (int);
+                                    break;
+                                }
+                                //16位2进制
+                                case 5:
+                                {
+                                    type = typeof (short);
+                                    break;
+                                }
+                                //32位2进制
+                                case 15:
+                                {
+                                    type = typeof (int);
+                                    break;
+                                }
+                                default:
+                                {
+                                    type = typeof (short);
+                                    break;
+                                }
+                            }
+
+                            if (!_machineDataType[groupName].ContainsKey(dMonEntry.Desc))
+                            {
+                                _machineDataType[groupName].Add(dMonEntry.Desc, type);
+                            }
+                            else
+                            {
+                                _machineDataType[groupName][dMonEntry.Desc] = type;
+                            }
                         }
 
                         hubConnection.Headers.Add("Authorization", "Bearer " + token);
