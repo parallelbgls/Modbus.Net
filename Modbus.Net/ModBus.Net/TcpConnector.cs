@@ -228,6 +228,7 @@ namespace ModBus.Net
             try
             {
                 int len = await stream.ReadAsync(_receiveBuffer, 0, _receiveBuffer.Length);
+                stream.Flush();
                 // 异步接收回答
                 if (len > 0)
                 {
