@@ -6,17 +6,89 @@ using System.Threading.Tasks;
 
 namespace ModBus.Net.FBox
 {
-    public static class Constants
+    public enum SignalRServer
     {
-        public const string BaseAddress = "https://account.flexem.com/core";
+        FBoxServer = 0,
+        DelianServer = 1
+    }
 
-        public const string AuthorizeEndpoint = BaseAddress + "/connect/authorize";
-        public const string LogoutEndpoint = BaseAddress + "/connect/endsession";
-        public const string TokenEndpoint = BaseAddress + "/connect/token";
-        public const string UserInfoEndpoint = BaseAddress + "/connect/userinfo";
-        public const string IdentityTokenValidationEndpoint = BaseAddress + "/connect/identitytokenvalidation";
-        public const string TokenRevocationEndpoint = BaseAddress + "/connect/revocation";
+    public class Constants
+    {     
+        public SignalRServer SignalRServer = SignalRServer.FBoxServer;
 
-        public const string AspNetWebApiSampleApi = "http://fbox360.com/api/client/";
+        public string BaseAddress
+        {
+            get
+            {
+                switch (SignalRServer)
+                {
+                    case SignalRServer.FBoxServer:
+                    {
+                        return "https://account.flexem.com/core";
+                    }
+                    case SignalRServer.DelianServer:
+                    {
+                        return "https://id.data.hzdelian.com/core";
+                    }
+                    default:
+                    {
+                        return "https://account.flexem.com/core";
+                    }
+                }
+            }
+        }
+
+        public string AuthorizeEndpoint
+        {
+            get { return BaseAddress + "/connect/authorize"; }
+        }
+
+        public string LogoutEndpoint
+        {
+            get { return BaseAddress + "/connect/endsession"; }
+        }
+
+        public string TokenEndpoint
+        {
+            get { return BaseAddress + "/connect/token"; }
+        }
+
+        public string UserInfoEndpoint
+        {
+            get {return BaseAddress + "/connect/userinfo"; }
+        }
+
+        public string IdentityTokenValidationEndpoint
+        {
+            get {return BaseAddress + "/connect/identitytokenvalidation"; }
+        }
+
+        public string TokenRevocationEndpoint
+        {
+            get {return BaseAddress + "/connect/revocation"; } 
+        } 
+
+        public string AspNetWebApiSampleApi
+        {
+            get
+            {
+                switch (SignalRServer)
+                {
+                    case SignalRServer.FBoxServer:
+                    {
+                        return "http://fbox360.com/api/client/";
+                    }
+                    case SignalRServer.DelianServer:
+                    {
+                        return "http://wl.data.hzdelian.com/api/client/";
+                    }
+                    default:
+                    {
+                        return "http://fbox360.com/api/client/";
+                    }
+                }
+            }
+        } 
+
     }
 }

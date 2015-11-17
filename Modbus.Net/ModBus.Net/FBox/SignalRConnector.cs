@@ -18,6 +18,7 @@ namespace ModBus.Net.FBox
         public string UserId { get; set; }
         public string Password { get; set; }
         public string SigninAdditionalValues { get; set; }
+        public SignalRServer SignalRServer { get; set; }
     }
 
     public class SignalRConnector : BaseConnector
@@ -36,8 +37,21 @@ namespace ModBus.Net.FBox
         private bool _connected;
         public override bool IsConnected { get { return _connected; } }
 
+        private Constants _constants;
+        private Constants Constants
+        {
+            get
+            {
+                if (_constants == null) _constants = new Constants();
+                return _constants;
+            }
+
+        }
+
         public SignalRConnector(string machineId, SignalRSigninMsg msg)
         {
+            Constants.SignalRServer = msg.SignalRServer;
+            System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
             ConnectionToken = machineId;
             if (_oauth2 == null)
             {
@@ -50,7 +64,7 @@ namespace ModBus.Net.FBox
                 _httpClient2 = new Dictionary<string, HttpClient>();
                 _machineData = new Dictionary<string, Dictionary<string, double>>();
                 _machineDataType = new Dictionary<string, Dictionary<string, Type>>();
-                GroupNameUid = new Dictionary<string, string>();
+                GroupNameUid = new Dictionary<string, string>();               
                 var tokenResponse = _oauth2.RequestResourceOwnerPasswordAsync
                     (
                         msg.UserId,
@@ -77,15 +91,18 @@ namespace ModBus.Net.FBox
                     await _httpClient2[ConnectionToken].PostAsync("dmon/group/" + GroupNameUid[ConnectionToken] + "/start",
                         null);
                     _connected = true;
+                    Console.WriteLine("SignalR Connected success");
                     return true;
                 }
                 else
                 {
+                    Console.WriteLine("SignalR Connected failed");
                     return false;
                 }
             }
             catch
             {
+                Console.WriteLine("SignalR Connected failed");
                 return false;
             }         
         }
@@ -351,15 +368,18 @@ namespace ModBus.Net.FBox
                     await _httpClient2[ConnectionToken].PostAsync("dmon/group/" + GroupNameUid[ConnectionToken] + "/stop",
                         null);
                     _connected = false;
+                    Console.WriteLine("SignalR Disconnect success");
                     return true;
                 }
                 else
                 {
+                    Console.WriteLine("SignalR Disconnect failed");
                     return false;
                 }
             }
             catch
             {
+                Console.WriteLine("SignalR Disconnect failed");
                 return false;
             }
         }
