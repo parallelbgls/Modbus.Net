@@ -11,7 +11,7 @@ using Thinktecture.IdentityModel.Client;
 
 namespace ModBus.Net.FBox
 {
-    public class SignalRSigninMsg
+    public struct SignalRSigninMsg
     {
         public string ClientId { get; set; }
         public string ClientSecret { get; set; }
@@ -23,12 +23,14 @@ namespace ModBus.Net.FBox
 
     public class SignalRConnector : BaseConnector
     {
-        private static OAuth2Client _oauth2;
+        private static Dictionary<SignalRSigninMsg, OAuth2Client> _oauth2;
         private HttpClient _httpClient;
-        private readonly Dictionary<string, HttpClient> _httpClient2;
-        private readonly Dictionary<string, HubConnection> _hubConnections;
+        private static Dictionary<string, HttpClient> _httpClient2;
+        private static Dictionary<string, HubConnection> _hubConnections;
 
-        private Dictionary<string, string> GroupNameUid { get; }       
+        private static HashSet<int> _boxSessionIds;
+        private static Dictionary<int, List<DMonGroup>> _boxSessionDataGroups; 
+        private static Dictionary<string, string> _groupNameUid;      
         private static Dictionary<string, Dictionary<string, double>> _machineData;
         private static Dictionary<string, Dictionary<string, Type>> _machineDataType; 
 
@@ -55,25 +57,31 @@ namespace ModBus.Net.FBox
             ConnectionToken = machineId;
             if (_oauth2 == null)
             {
-                _oauth2 = new OAuth2Client(
-                    new Uri(Constants.TokenEndpoint),
-                    msg.ClientId, 
-                    msg.ClientSecret 
-                );
+                _oauth2 = new Dictionary<SignalRSigninMsg, OAuth2Client>();
                 _hubConnections = new Dictionary<string, HubConnection>();
                 _httpClient2 = new Dictionary<string, HttpClient>();
                 _machineData = new Dictionary<string, Dictionary<string, double>>();
                 _machineDataType = new Dictionary<string, Dictionary<string, Type>>();
-                GroupNameUid = new Dictionary<string, string>();               
-                var tokenResponse = _oauth2.RequestResourceOwnerPasswordAsync
+                _boxSessionIds = new HashSet<int>();
+                _groupNameUid = new Dictionary<string, string>();  
+                _boxSessionDataGroups = new Dictionary<int, List<DMonGroup>>();                          
+            }
+
+            if (!_oauth2.ContainsKey(msg))
+            {
+                _oauth2.Add(msg, new OAuth2Client(
+                    new Uri(Constants.TokenEndpoint),
+                    msg.ClientId,
+                    msg.ClientSecret
+                    ));
+                var tokenResponse = _oauth2[msg].RequestResourceOwnerPasswordAsync
                     (
                         msg.UserId,
                         msg.Password,
                         msg.SigninAdditionalValues
                     ).Result;
                 if (tokenResponse != null)
-                    AsyncHelper.RunSync(()=>CallService(tokenResponse.AccessToken));
-                
+                    AsyncHelper.RunSync(() => CallService(tokenResponse.AccessToken));
             }
         }
 
@@ -86,9 +94,9 @@ namespace ModBus.Net.FBox
         {
             try
             {
-                if (_hubConnections.ContainsKey(ConnectionToken) && _httpClient2.ContainsKey(ConnectionToken) && GroupNameUid.ContainsKey(ConnectionToken))
+                if (_hubConnections.ContainsKey(ConnectionToken) && _httpClient2.ContainsKey(ConnectionToken) && _groupNameUid.ContainsKey(ConnectionToken))
                 {
-                    await _httpClient2[ConnectionToken].PostAsync("dmon/group/" + GroupNameUid[ConnectionToken] + "/start",
+                    await _httpClient2[ConnectionToken].PostAsync("dmon/group/" + _groupNameUid[ConnectionToken] + "/start",
                         null);
                     _connected = true;
                     Console.WriteLine("SignalR Connected success");
@@ -150,15 +158,17 @@ namespace ModBus.Net.FBox
                     response = await client3.GetStringAsync("box/" + box.Box.Uid + "/dmon/def/grouped");
 
                     List<DMonGroup> dataGroups = JsonConvert.DeserializeObject<List<DMonGroup>>(response);
+                    _boxSessionDataGroups.Add(sessionId, dataGroups);
                     foreach (var dataGroup in dataGroups)
                     {
                         if (dataGroup == null) return;
+                        _boxSessionIds.Add(sessionId);
                         var groupUid = dataGroup.Uid;
                         var groupName = dataGroup.Name;
 
-                        if (groupName != "(Default)" && !GroupNameUid.ContainsKey(groupName))
+                        if (groupName != "(Default)" && !_groupNameUid.ContainsKey(groupName))
                         {
-                            GroupNameUid.Add(groupName, groupUid);
+                            _groupNameUid.Add(groupName, groupUid);
                         }
 
                         var client2 = new HttpClient
@@ -279,39 +289,48 @@ namespace ModBus.Net.FBox
                         hubConnection.Headers.Add("X-FBox-ClientId", guid);
                         hubConnection.Headers.Add("X-FBox-Session", sessionId.ToString());
 
-                        IHubProxy stockTickerHubProxy = hubConnection.CreateHubProxy("clientHub");
-                        stockTickerHubProxy.On<int, List<GetValue>>("dMonUpdateValue",
+                        IHubProxy dataHubProxy = hubConnection.CreateHubProxy("clientHub");
+                        dataHubProxy.On<int, List<GetValue>>("dMonUpdateValue",
                             (boxSessionId, values) =>
                             {
-                                if (boxSessionId == sessionId)
+                                if (_boxSessionIds.Contains(boxSessionId))
                                 {
                                     foreach (var value in values)
                                     {
-                                        lock(_machineData)
+                                        lock (_machineData)
                                         {
-                                            if (dataGroup.DMonEntries.Any(p => p.Uid == value.Id))
+                                            if (_boxSessionDataGroups.ContainsKey(boxSessionId))
                                             {
-                                                if (!_machineData.ContainsKey(groupName))
+                                                foreach (var dataGroupInner in _boxSessionDataGroups[boxSessionId])
                                                 {
-                                                    _machineData.Add(groupName, new Dictionary<string, double>());
-                                                }
-                                                if (_machineData[groupName] == null)
-                                                {
-                                                    _machineData[groupName] = new Dictionary<string, double>();
-                                                }
-
-                                                var dMonEntry =
-                                                    dataGroup.DMonEntries.FirstOrDefault(p => p.Uid == value.Id);
-
-                                                if (value.Value.HasValue && dMonEntry != null)
-                                                {
-                                                    if (_machineData[groupName].ContainsKey(dMonEntry.Desc))
+                                                    if (dataGroupInner.DMonEntries.Any(p => p.Uid == value.Id))
                                                     {
-                                                        _machineData[groupName][dMonEntry.Desc] = value.Value.Value;
-                                                    }
-                                                    else
-                                                    {
-                                                        _machineData[groupName].Add(dMonEntry.Desc, value.Value.Value);
+                                                        if (!_machineData.ContainsKey(dataGroupInner.Name))
+                                                        {
+                                                            _machineData.Add(dataGroupInner.Name, new Dictionary<string, double>());
+                                                        }
+                                                        if (_machineData[dataGroupInner.Name] == null)
+                                                        {
+                                                            _machineData[dataGroupInner.Name] = new Dictionary<string, double>();
+                                                        }
+
+                                                        var dMonEntry =
+                                                            dataGroupInner.DMonEntries.FirstOrDefault(p => p.Uid == value.Id);
+
+                                                        if (value.Value.HasValue && dMonEntry != null)
+                                                        {
+                                                            if (_machineData[dataGroupInner.Name].ContainsKey(dMonEntry.Desc))
+                                                            {
+                                                                _machineData[dataGroupInner.Name][dMonEntry.Desc] =
+                                                                    value.Value.Value;
+                                                            }
+                                                            else
+                                                            {
+                                                                _machineData[dataGroupInner.Name].Add(dMonEntry.Desc,
+                                                                    value.Value.Value);
+                                                            }
+                                                        }
+                                                        break;
                                                     }
                                                 }
                                             }
@@ -320,7 +339,7 @@ namespace ModBus.Net.FBox
                                 }
                             }
                             );
-                        stockTickerHubProxy.On<int, string, int, int>("boxConnectionStateChanged",
+                        dataHubProxy.On<int, string, int, int>("boxConnectionStateChanged",
                             async (newConnectionToken, getBoxUid, oldStatus, newStatus) =>
                             {
                                 if (getBoxUid == boxUid)
@@ -346,7 +365,7 @@ namespace ModBus.Net.FBox
                         hubConnection.Error += ex => Console.WriteLine(@"SignalR error: {0}", ex.Message);
                         ServicePointManager.DefaultConnectionLimit = 10;
                         await hubConnection.Start();
-                        await stockTickerHubProxy.Invoke("updateClientId", guid);
+                        await dataHubProxy.Invoke("updateClientId", guid);
 
                         client2.DefaultRequestHeaders.Add("X-FBox-Session", sessionId.ToString());
                     }
@@ -363,9 +382,9 @@ namespace ModBus.Net.FBox
         {
             try
             {
-                if (_hubConnections.ContainsKey(ConnectionToken) && _httpClient2.ContainsKey(ConnectionToken) && GroupNameUid.ContainsKey(ConnectionToken))
+                if (_hubConnections.ContainsKey(ConnectionToken) && _httpClient2.ContainsKey(ConnectionToken) && _groupNameUid.ContainsKey(ConnectionToken))
                 {
-                    await _httpClient2[ConnectionToken].PostAsync("dmon/group/" + GroupNameUid[ConnectionToken] + "/stop",
+                    await _httpClient2[ConnectionToken].PostAsync("dmon/group/" + _groupNameUid[ConnectionToken] + "/stop",
                         null);
                     _connected = false;
                     Console.WriteLine("SignalR Disconnect success");

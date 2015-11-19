@@ -30,14 +30,18 @@ namespace ModBus.Net.FBox
                 {"MW", 14},
                 {"MD", 15},
                 {"M.B", 16},
+                {"0X", 20},
+                {"1X", 21},
+                {"2X", 22},
+                {"3X", 23},
+                {"4X", 24},
                 {"DB", 10000},
             };
         }
 
         public override KeyValuePair<int, int> AddressTranslate(string address, bool isRead)
         {
-            var tmpAddress = address.Replace(" ", "");
-            tmpAddress = tmpAddress.ToUpper();
+            var tmpAddress = address.Trim().ToUpper();
             if (tmpAddress.Substring(0, 2) == "DB")
             {
                 var addressSplit = tmpAddress.Split('.');
@@ -48,15 +52,9 @@ namespace ModBus.Net.FBox
                 return new KeyValuePair<int, int>(int.Parse(addressSplit[1]),
                     int.Parse(addressSplit[0]) + AreaCodeDictionary["DB"]);
             }
-            int i = 0;
-            int t;
-            while (!int.TryParse(tmpAddress[i].ToString(), out t) && i < tmpAddress.Length)
-            {
-                i++;
-            }
-            if (i == 0 || i >= tmpAddress.Length) throw new FormatException();
-            string head = tmpAddress.Substring(0, i);
-            string tail = tmpAddress.Substring(i);
+            var tmpAddressArray = (tmpAddress.Split(' '));
+            string head = tmpAddressArray[0];
+            string tail = tmpAddressArray[1];
             return
                 new KeyValuePair<int, int>(int.Parse(tail),
                     AreaCodeDictionary[head]);
