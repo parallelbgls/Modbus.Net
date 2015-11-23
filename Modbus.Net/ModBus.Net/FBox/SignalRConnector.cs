@@ -236,12 +236,19 @@ namespace ModBus.Net.FBox
                                 _boxUidSessionId[getBoxUid] = sessionId;
                                 _httpClient2[getBoxUid].DefaultRequestHeaders.Remove("X-FBox-Session");
                                 _httpClient2[getBoxUid].DefaultRequestHeaders.Add("X-FBox-Session", sessionId.ToString());
+                                _hubConnections[getBoxUid].Headers.Remove("X-FBox-Session");
+                                _hubConnections[getBoxUid].Headers.Add("X-FBox-Session", sessionId.ToString());
+                                _hubConnections[getBoxUid].Stop();
+                                await _hubConnections[getBoxUid].Start();
 
                                 if (newStatus == 1 && IsConnected)
                                 {
                                     var localDataGroups = _boxUidDataGroups[getBoxUid];
                                     foreach (var localDataGroup in localDataGroups)
                                     {
+                                        await
+                                            _httpClient2[getBoxUid].PostAsync(
+                                                "dmon/group/" + localDataGroup.Uid + "/stop", null);
                                         await
                                             _httpClient2[getBoxUid].PostAsync(
                                                 "dmon/group/" + localDataGroup.Uid + "/start", null);
@@ -287,8 +294,6 @@ namespace ModBus.Net.FBox
                         {
                             _httpClient2.Add(boxUid, client2);
                         }
-
-
 
                         if (!_machineDataType.ContainsKey(groupName))
                         {
@@ -446,6 +451,7 @@ namespace ModBus.Net.FBox
             {
                 if (!_machineData.ContainsKey(ConnectionToken) || !_machineDataType.ContainsKey(ConnectionToken))
                 {
+                    //Console.WriteLine("Return Value Rejected");
                     return null;
                 }
                 var machineDataValue = _machineData[ConnectionToken];
