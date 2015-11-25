@@ -261,7 +261,22 @@ namespace ModBus.Net.FBox
                                     {
                                         _boxUidSessionId[getBoxUid] = sessionId;
                                     }
-                                    
+
+                                    var localDataGroups = _boxUidDataGroups[getBoxUid];
+                                    lock (_connectionTokenState)
+                                    {
+                                        foreach (var localDataGroup in localDataGroups)
+                                        {
+                                            if (!_connectionTokenState.ContainsKey(localDataGroup.Name))
+                                            {
+                                                _connectionTokenState.Add(localDataGroup.Name, newStatus);
+                                            }
+                                            else
+                                            {
+                                                _connectionTokenState[localDataGroup.Name] = newStatus;
+                                            }
+                                        }
+                                    }
                                     _httpClient2[getBoxUid].DefaultRequestHeaders.Remove("X-FBox-Session");
                                     _httpClient2[getBoxUid].DefaultRequestHeaders.Add("X-FBox-Session",
                                         sessionId.ToString());
@@ -273,8 +288,7 @@ namespace ModBus.Net.FBox
                                     }
 
                                     if (newStatus == 1 && IsConnected)
-                                    {
-                                        var localDataGroups = _boxUidDataGroups[getBoxUid];
+                                    {                                     
                                         foreach (var localDataGroup in localDataGroups)
                                         {
                                             await
@@ -284,20 +298,8 @@ namespace ModBus.Net.FBox
                                     }
                                     else
                                     {
-                                        var localDataGroups = _boxUidDataGroups[getBoxUid];
-                                        foreach (var localDataGroup in localDataGroups)
-                                        {
-                                            lock (_connectionTokenState)
-                                            {
-                                                if (!_connectionTokenState.ContainsKey(localDataGroup.Name))
-                                                {
-                                                    _connectionTokenState.Add(localDataGroup.Name, newStatus);
-                                                }
-                                                else
-                                                {
-                                                    _connectionTokenState[localDataGroup.Name] = newStatus;
-                                                }
-                                            }
+                                        //foreach (var localDataGroup in localDataGroups)
+                                        //{
                                             //lock (_machineData)
                                             //{
                                                 //if (_machineData.ContainsKey(localDataGroup.Name))
@@ -308,7 +310,7 @@ namespace ModBus.Net.FBox
                                                     //_httpClient2[getBoxUid].PostAsync(
                                                         //"dmon/group/" + localDataGroup.Uid + "/stop", null);
                                             //}
-                                        }
+                                        //}
                                     }
                                 }
                             }
