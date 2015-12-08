@@ -352,16 +352,19 @@ namespace ModBus.Net.FBox
                         var groupUid = dataGroup.Uid;
                         var groupName = dataGroup.Name;
 
-                        _connectionTokenState.Add(groupName, 1);
-                        if (groupName != "(Default)" && !_groupNameUid.ContainsKey(groupName))
+                        if ((groupName != "(Default)" || groupName != "默认组") && !_connectionTokenState.ContainsKey(groupName))
+                        {
+                            _connectionTokenState.Add(groupName, 1);
+                        }
+                        if ((groupName != "(Default)" || groupName != "默认组") && !_groupNameUid.ContainsKey(groupName))
                         {
                             _groupNameUid.Add(groupName, groupUid);
                         }
-                        if (groupName != "(Default)" && !_groupNameBoxUid.ContainsKey(groupName))
+                        if ((groupName != "(Default)" || groupName != "默认组") && !_groupNameBoxUid.ContainsKey(groupName))
                         {
                             _groupNameBoxUid.Add(groupName, boxUid);
                         }
-                        if (groupName != "(Default)" && !_httpClient2.ContainsKey(boxUid))
+                        if ((groupName != "(Default)" || groupName != "默认组") && !_httpClient2.ContainsKey(boxUid))
                         {
                             _httpClient2.Add(boxUid, client2);
                         }
