@@ -8,9 +8,9 @@ namespace ModBus.Net.FBox
 {
     public class FBoxSignalRProtocal : FBoxProtocal
     {
-        public FBoxSignalRProtocal(string machineId, SignalRSigninMsg msg)
+        public FBoxSignalRProtocal(string machineId, string localSequence, SignalRSigninMsg msg)
         {
-            ProtocalLinker = new FBoxSignalRProtocalLinker(machineId, msg);
+            ProtocalLinker = new FBoxSignalRProtocalLinker(machineId, localSequence, msg);
         }
     }
 }
