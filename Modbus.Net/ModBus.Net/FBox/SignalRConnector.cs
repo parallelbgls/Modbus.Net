@@ -440,15 +440,15 @@ namespace ModBus.Net.FBox
                         var groupUid = dataGroup.Uid;
                         var groupName = dataGroup.Name;
 
-                        if ((groupName != "(Default)" || groupName != "默认组") && !_connectionTokenState.ContainsKey(boxNo + "," + groupName))
+                        if (groupName != "(Default)" && groupName != "默认组" && !_connectionTokenState.ContainsKey(boxNo + "," + groupName))
                         {
                             _connectionTokenState.Add(boxNo + "," + groupName, 1);
                         }
-                        if ((groupName != "(Default)" || groupName != "默认组") && !_groupNameUid.ContainsKey(boxNo + "," + groupName))
+                        if (groupName != "(Default)" && groupName != "默认组" && !_groupNameUid.ContainsKey(boxNo + "," + groupName))
                         {
                             _groupNameUid.Add(boxNo + "," + groupName, groupUid);
                         }
-                        if ((groupName != "(Default)" || groupName != "默认组") && !_groupNameBoxUid.ContainsKey(boxNo + "," + groupName))
+                        if (groupName != "(Default)" && groupName != "默认组" && !_groupNameBoxUid.ContainsKey(boxNo + "," + groupName))
                         {
                             _groupNameBoxUid.Add(boxNo + "," + groupName, boxUid);
                         }
