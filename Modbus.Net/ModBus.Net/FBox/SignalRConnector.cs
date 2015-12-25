@@ -41,8 +41,31 @@ namespace ModBus.Net.FBox
 
         private static AsyncLock _lock = new AsyncLock();
 
+        private static bool _retokenFlag;
+        private static bool RetokenFlag
+        {
+            get
+            {
+                return _retokenFlag;
+            }
+            set
+            {
+                _retokenFlag = value;
+                if (_retokenFlag)
+                {
+                    System.Threading.Timer timer = new System.Threading.Timer(new System.Threading.TimerCallback(RetokenReset), null, 300000, System.Threading.Timeout.Infinite);
+                }
+            }
+        }
+
+        private static void RetokenReset(object state)
+        {
+            RetokenFlag = false;
+        }
+
         private bool _connected;
         public override bool IsConnected { get { return _connected; } }
+        private SignalRSigninMsg Msg { get; set;}
 
         private Constants _constants;
         private Constants Constants
@@ -52,11 +75,11 @@ namespace ModBus.Net.FBox
                 if (_constants == null) _constants = new Constants();
                 return _constants;
             }
-
         }
 
         public SignalRConnector(string machineId, SignalRSigninMsg msg)
         {
+            RetokenFlag = false;
             Constants.SignalRServer = msg.SignalRServer;
             System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
             ConnectionToken = machineId;
@@ -74,23 +97,7 @@ namespace ModBus.Net.FBox
                 _groupNameBoxUid = new Dictionary<string, string>();
                 _boxUidDataGroups = new Dictionary<string, List<DMonGroup>>();                       
             }
-
-            if (!_oauth2.ContainsKey(msg))
-            {
-                _oauth2.Add(msg, new OAuth2Client(
-                    new Uri(Constants.TokenEndpoint),
-                    msg.ClientId,
-                    msg.ClientSecret
-                    ));
-                var tokenResponse = _oauth2[msg].RequestResourceOwnerPasswordAsync
-                    (
-                        msg.UserId,
-                        msg.Password,
-                        msg.SigninAdditionalValues
-                    ).Result;
-                if (tokenResponse != null)
-                    AsyncHelper.RunSync(() => CallService(msg, tokenResponse.AccessToken));
-            }
+            Msg = msg;
         }
 
         public override bool Connect()
@@ -104,7 +111,28 @@ namespace ModBus.Net.FBox
             {
                 using (await _lock.LockAsync())
                 {
-                    if (_hubConnections.ContainsKey(_groupNameBoxUid[ConnectionToken]) &&
+                    if (!_oauth2.ContainsKey(Msg))
+                    {
+                        _oauth2.Add(Msg, new OAuth2Client(
+                            new Uri(Constants.TokenEndpoint),
+                                Msg.ClientId,
+                                Msg.ClientSecret
+                            ));
+                        var tokenResponse = _oauth2[Msg].RequestResourceOwnerPasswordAsync
+                            (
+                                Msg.UserId,
+                                Msg.Password,
+                                Msg.SigninAdditionalValues
+                            ).Result;
+                        if (tokenResponse != null)
+                        {
+                            RetokenFlag = true;
+                            AsyncHelper.RunSync(()=> CallService(Msg, tokenResponse.AccessToken));                        
+                        }                   
+                    }
+
+                
+                    if (_groupNameBoxUid.ContainsKey(ConnectionToken) && _hubConnections.ContainsKey(_groupNameBoxUid[ConnectionToken]) &&
                         _httpClient2.ContainsKey(_groupNameBoxUid[ConnectionToken]) &&
                         _groupNameUid.ContainsKey(ConnectionToken))
                     {
@@ -118,13 +146,18 @@ namespace ModBus.Net.FBox
                     }
                     else
                     {
+                        _connected = false;
                         Console.WriteLine("SignalR Connected failed");
                         return false;
-                    }
+                    } 
                 }
             }
-            catch
+            catch (Exception e)
             {
+                if (_oauth2.ContainsKey(Msg))
+                {
+                    _oauth2.Remove(Msg);
+                }
                 Console.WriteLine("SignalR Connected failed");
                 return false;
             }         
@@ -175,6 +208,11 @@ namespace ModBus.Net.FBox
                     client2.DefaultRequestHeaders.Add("X-FBox-ClientId", guid);
 
                     response = await client2.GetStringAsync("box/" + box.Box.Uid + "/dmon/def/grouped");
+
+                    if (_boxUidDataGroups.ContainsKey(boxUid))
+                    {
+                        break;
+                    }
 
                     List<DMonGroup> dataGroups = JsonConvert.DeserializeObject<List<DMonGroup>>(response);
                     _boxUidDataGroups.Add(boxUid, dataGroups);
@@ -320,26 +358,69 @@ namespace ModBus.Net.FBox
 
                     hubConnection.Closed += async () =>
                     {
-                        string getBoxUid;
-                        lock (_boxUidSessionId)
+                        try
                         {
-                            getBoxUid =
-                                _boxUidSessionId.FirstOrDefault(
-                                    p => p.Value == int.Parse(hubConnection.Headers["X-FBox-Session"])).Key;
-                        }
-                        if (hubConnection.State != ConnectionState.Connected)
-                        {
-                            await hubConnection.Start();
-                            if (IsConnected)
+                            string getBoxUid;
+                            lock (_boxUidSessionId)
                             {
-                                var localDataGroups = _boxUidDataGroups[getBoxUid];
-                                foreach (var localDataGroup in localDataGroups)
+                                getBoxUid =
+                                    _boxUidSessionId.FirstOrDefault(
+                                        p => p.Value == int.Parse(hubConnection.Headers["X-FBox-Session"])).Key;
+                            }
+                            if (hubConnection.State != ConnectionState.Connected)
+                            {
+                            
+                                await hubConnection.Start();
+                                if (IsConnected)
                                 {
-                                await
-                                    _httpClient2[getBoxUid].PostAsync(
-                                        "dmon/group/" + localDataGroup.Uid + "/start", null);
+                                    var localDataGroups = _boxUidDataGroups[getBoxUid];
+                                    foreach (var localDataGroup in localDataGroups)
+                                    {
+                                        await
+                                            _httpClient2[getBoxUid].PostAsync(
+                                                "dmon/group/" + localDataGroup.Uid + "/start", null);
+                                    }
+                                }
+                            }                            
+                        }
+                        catch (HttpClientException e)
+                        {
+                            using (await _lock.LockAsync())
+                            {
+                                if (!RetokenFlag)
+                                {
+                                    foreach(var httpClient in _httpClient)
+                                    {
+                                        httpClient.Value.Dispose();
+                                    }
+                                    foreach(var httpClient in _httpClient2)
+                                    {
+                                        httpClient.Value.Dispose();
+                                    }
+                                    foreach(var hubConnectiont in _hubConnections)
+                                    {
+                                        //hubConnectiont.Value.Stop();
+                                        hubConnectiont.Value.Dispose();
+                                    }
+                                    _oauth2.Clear();
+                                    _httpClient.Clear();
+                                    _httpClient2.Clear();
+                                    _hubConnections.Clear();
+
+                                    _boxUidSessionId.Clear();
+                                    _boxUidDataGroups.Clear();
+                                    _connectionTokenState.Clear();
+                                    _groupNameUid.Clear();
+                                    _groupNameBoxUid.Clear();
+                                    _machineData.Clear();
+                                    _machineDataType.Clear();
                                 }
                             }
+                            _connected = false;
+                        }
+                        catch
+                        {
+                            _connected = false;
                         }
                     };
 
@@ -352,19 +433,19 @@ namespace ModBus.Net.FBox
                         var groupUid = dataGroup.Uid;
                         var groupName = dataGroup.Name;
 
-                        if ((groupName != "(Default)" || groupName != "默认组") && !_connectionTokenState.ContainsKey(groupName))
+                        if (groupName != "(Default)" && groupName != "默认组" && !_connectionTokenState.ContainsKey(groupName))
                         {
                             _connectionTokenState.Add(groupName, 1);
                         }
-                        if ((groupName != "(Default)" || groupName != "默认组") && !_groupNameUid.ContainsKey(groupName))
+                        if (groupName != "(Default)" && groupName != "默认组" && !_groupNameUid.ContainsKey(groupName))
                         {
                             _groupNameUid.Add(groupName, groupUid);
                         }
-                        if ((groupName != "(Default)" || groupName != "默认组") && !_groupNameBoxUid.ContainsKey(groupName))
+                        if (groupName != "(Default)" && groupName != "默认组" && !_groupNameBoxUid.ContainsKey(groupName))
                         {
                             _groupNameBoxUid.Add(groupName, boxUid);
                         }
-                        if ((groupName != "(Default)" || groupName != "默认组") && !_httpClient2.ContainsKey(boxUid))
+                        if (groupName != "(Default)" && groupName != "默认组" && !_httpClient2.ContainsKey(boxUid))
                         {
                             _httpClient2.Add(boxUid, client2);
                         }
@@ -485,7 +566,7 @@ namespace ModBus.Net.FBox
             {
                 using (await _lock.LockAsync())
                 {
-                    if (_hubConnections.ContainsKey(_groupNameBoxUid[ConnectionToken]) &&
+                    if (_groupNameBoxUid.ContainsKey(ConnectionToken) && _hubConnections.ContainsKey(_groupNameBoxUid[ConnectionToken]) &&
                         _httpClient2.ContainsKey(_groupNameBoxUid[ConnectionToken]) &&
                         _groupNameUid.ContainsKey(ConnectionToken))
                     {
@@ -523,6 +604,12 @@ namespace ModBus.Net.FBox
 
         public override byte[] SendMsg(byte[] message)
         {
+            if (!_httpClient.ContainsKey(Msg))
+            {
+                _connected = false;
+                return null;
+            }
+
             var formater = new AddressFormaterFBox();
             var translator = new AddressTranslatorFBox();
             
@@ -532,6 +619,7 @@ namespace ModBus.Net.FBox
             {
                 if (_connectionTokenState.ContainsKey(ConnectionToken) && _connectionTokenState[ConnectionToken] != 1)
                 {
+                    _connected = false;
                     Console.WriteLine($"Return Value Rejected with connectionToken {ConnectionToken}");
                     return null;
                 }
@@ -541,6 +629,7 @@ namespace ModBus.Net.FBox
             {
                 if (!_machineData.ContainsKey(ConnectionToken) || !_machineDataType.ContainsKey(ConnectionToken))
                 {
+                    _connected = false;
                     Console.WriteLine($"Return Value Rejected with connectionToken {ConnectionToken}");
                     return null;
                 }
