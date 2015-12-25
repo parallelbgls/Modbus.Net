@@ -421,6 +421,7 @@ namespace ModBus.Net.FBox
                                     _groupNameBoxUid.Clear();
                                     _machineData.Clear();
                                     _machineDataType.Clear();
+                                    _boxUidBoxNo.Clear();
                                 }
                             }
                             _connected = false;
