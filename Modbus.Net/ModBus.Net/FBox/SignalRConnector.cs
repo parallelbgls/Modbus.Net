@@ -35,9 +35,25 @@ namespace ModBus.Net.FBox
         private static Dictionary<string, string> _groupNameUid;
         private static Dictionary<string, string> _groupNameBoxUid; 
         private static Dictionary<string, Dictionary<string, double>> _machineData;
-        private static Dictionary<string, Dictionary<string, Type>> _machineDataType; 
+        private static Dictionary<string, Dictionary<string, Type>> _machineDataType;
+        private static Dictionary<string, string> _boxUidBoxNo;
 
         public override string ConnectionToken { get; }
+
+        private string MachineId
+        {
+            get
+            {
+                return ConnectionToken.Split(',')[0];
+            }
+        }
+
+        private string LocalSequence {
+            get
+            {
+                return ConnectionToken.Split(',')[1];
+            }
+        }
 
         private static AsyncLock _lock = new AsyncLock();
 
@@ -55,11 +71,11 @@ namespace ModBus.Net.FBox
 
         }
 
-        public SignalRConnector(string machineId, SignalRSigninMsg msg)
+        public SignalRConnector(string machineId, string localSequence, SignalRSigninMsg msg)
         {
             Constants.SignalRServer = msg.SignalRServer;
             System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
-            ConnectionToken = machineId;
+            ConnectionToken = machineId + "," + localSequence;
             if (_oauth2 == null)
             {
                 _httpClient = new Dictionary<SignalRSigninMsg, HttpClient>();
@@ -72,7 +88,8 @@ namespace ModBus.Net.FBox
                 _connectionTokenState = new Dictionary<string, int>();
                 _groupNameUid = new Dictionary<string, string>();  
                 _groupNameBoxUid = new Dictionary<string, string>();
-                _boxUidDataGroups = new Dictionary<string, List<DMonGroup>>();                       
+                _boxUidDataGroups = new Dictionary<string, List<DMonGroup>>();  
+                _boxUidBoxNo = new Dictionary<string, string>();                     
             }
 
             if (!_oauth2.ContainsKey(msg))
@@ -165,6 +182,8 @@ namespace ModBus.Net.FBox
                     var baseUrl = box.Box.CommServer.ApiBaseUrl;
                     var signalrUrl = box.Box.CommServer.SignalRUrl;
                     var boxUid = box.Box.Uid;
+                    var boxNo = box.Box.BoxNo;
+
                     //var currentStat = box.Box.ConnectionState;
 
                     var client2 = new HttpClient
@@ -179,6 +198,7 @@ namespace ModBus.Net.FBox
                     List<DMonGroup> dataGroups = JsonConvert.DeserializeObject<List<DMonGroup>>(response);
                     _boxUidDataGroups.Add(boxUid, dataGroups);
                     _boxUidSessionId.Add(boxUid, sessionId);
+                    _boxUidBoxNo.Add(boxUid, boxNo);
 
                     var hubConnection = new HubConnection(signalrUrl);
                     _hubConnections.Add(boxUid, hubConnection);
@@ -196,6 +216,8 @@ namespace ModBus.Net.FBox
                                 {
                                     Console.WriteLine($"Box session {boxSessionId} return at {DateTime.Now}");
                                     var localBoxUid = _boxUidSessionId.FirstOrDefault(p => p.Value == boxSessionId).Key;
+                                    var localBoxNo = _boxUidBoxNo[localBoxUid];
+
                                     foreach (var value in values)
                                     {
                                         if (value.Status != 0) return;
@@ -207,14 +229,14 @@ namespace ModBus.Net.FBox
                                                 {
                                                     if (dataGroupInner.DMonEntries.Any(p => p.Uid == value.Id))
                                                     {
-                                                        if (!_machineData.ContainsKey(dataGroupInner.Name))
+                                                        if (!_machineData.ContainsKey(localBoxNo + "," + dataGroupInner.Name))
                                                         {
-                                                            _machineData.Add(dataGroupInner.Name,
+                                                            _machineData.Add(localBoxNo + "," + dataGroupInner.Name,
                                                                 new Dictionary<string, double>());
                                                         }
-                                                        if (_machineData[dataGroupInner.Name] == null)
+                                                        if (_machineData[localBoxNo + "," + dataGroupInner.Name] == null)
                                                         {
-                                                            _machineData[dataGroupInner.Name] =
+                                                            _machineData[localBoxNo + "," + dataGroupInner.Name] =
                                                                 new Dictionary<string, double>();
                                                         }
 
@@ -225,15 +247,15 @@ namespace ModBus.Net.FBox
                                                         if (value.Value.HasValue && dMonEntry != null)
                                                         {
                                                             if (
-                                                                _machineData[dataGroupInner.Name].ContainsKey(
+                                                                _machineData[localBoxNo + "," + dataGroupInner.Name].ContainsKey(
                                                                     dMonEntry.Desc))
                                                             {
-                                                                _machineData[dataGroupInner.Name][dMonEntry.Desc] =
+                                                                _machineData[localBoxNo + "," + dataGroupInner.Name][dMonEntry.Desc] =
                                                                     value.Value.Value;
                                                             }
                                                             else
                                                             {
-                                                                _machineData[dataGroupInner.Name].Add(dMonEntry.Desc,
+                                                                _machineData[localBoxNo + "," + dataGroupInner.Name].Add(dMonEntry.Desc,
                                                                     value.Value.Value);
                                                             }
                                                         }
@@ -262,18 +284,19 @@ namespace ModBus.Net.FBox
                                         _boxUidSessionId[getBoxUid] = sessionId;
                                     }
 
+                                    var localBoxNo = _boxUidBoxNo[getBoxUid];
                                     var localDataGroups = _boxUidDataGroups[getBoxUid];
                                     lock (_connectionTokenState)
                                     {
                                         foreach (var localDataGroup in localDataGroups)
                                         {
-                                            if (!_connectionTokenState.ContainsKey(localDataGroup.Name))
+                                            if (!_connectionTokenState.ContainsKey(localBoxNo + "," + localDataGroup.Name))
                                             {
-                                                _connectionTokenState.Add(localDataGroup.Name, newStatus);
+                                                _connectionTokenState.Add(localBoxNo + "," + localDataGroup.Name, newStatus);
                                             }
                                             else
                                             {
-                                                _connectionTokenState[localDataGroup.Name] = newStatus;
+                                                _connectionTokenState[localBoxNo + "," + localDataGroup.Name] = newStatus;
                                             }
                                         }
                                     }
@@ -295,22 +318,6 @@ namespace ModBus.Net.FBox
                                                 _httpClient2[getBoxUid].PostAsync(
                                                     "dmon/group/" + localDataGroup.Uid + "/start", null);
                                         }
-                                    }
-                                    else
-                                    {
-                                        //foreach (var localDataGroup in localDataGroups)
-                                        //{
-                                            //lock (_machineData)
-                                            //{
-                                                //if (_machineData.ContainsKey(localDataGroup.Name))
-                                                //{
-                                                    //_machineData.Remove(localDataGroup.Name);
-                                                //}
-                                                //await
-                                                    //_httpClient2[getBoxUid].PostAsync(
-                                                        //"dmon/group/" + localDataGroup.Uid + "/stop", null);
-                                            //}
-                                        //}
                                     }
                                 }
                             }
@@ -352,26 +359,26 @@ namespace ModBus.Net.FBox
                         var groupUid = dataGroup.Uid;
                         var groupName = dataGroup.Name;
 
-                        if ((groupName != "(Default)" || groupName != "默认组") && !_connectionTokenState.ContainsKey(groupName))
+                        if ((groupName != "(Default)" || groupName != "默认组") && !_connectionTokenState.ContainsKey(boxNo + "," + groupName))
                         {
-                            _connectionTokenState.Add(groupName, 1);
+                            _connectionTokenState.Add(boxNo + "," + groupName, 1);
                         }
-                        if ((groupName != "(Default)" || groupName != "默认组") && !_groupNameUid.ContainsKey(groupName))
+                        if ((groupName != "(Default)" || groupName != "默认组") && !_groupNameUid.ContainsKey(boxNo + "," + groupName))
                         {
-                            _groupNameUid.Add(groupName, groupUid);
+                            _groupNameUid.Add(boxNo + "," + groupName, groupUid);
                         }
-                        if ((groupName != "(Default)" || groupName != "默认组") && !_groupNameBoxUid.ContainsKey(groupName))
+                        if ((groupName != "(Default)" || groupName != "默认组") && !_groupNameBoxUid.ContainsKey(boxNo + "," + groupName))
                         {
-                            _groupNameBoxUid.Add(groupName, boxUid);
+                            _groupNameBoxUid.Add(boxNo + "," + groupName, boxUid);
                         }
                         if ((groupName != "(Default)" || groupName != "默认组") && !_httpClient2.ContainsKey(boxUid))
                         {
                             _httpClient2.Add(boxUid, client2);
                         }
 
-                        if (!_machineDataType.ContainsKey(groupName))
+                        if (!_machineDataType.ContainsKey(boxNo + "," + groupName))
                         {
-                            _machineDataType.Add(groupName, new Dictionary<string, Type>());
+                            _machineDataType.Add(boxNo + "," + groupName, new Dictionary<string, Type>());
                         }
                         foreach (var dMonEntry in dataGroup.DMonEntries)
                         {
@@ -457,13 +464,13 @@ namespace ModBus.Net.FBox
                                 }
                             }
 
-                            if (!_machineDataType[groupName].ContainsKey(dMonEntry.Desc))
+                            if (!_machineDataType[boxNo + "," + groupName].ContainsKey(dMonEntry.Desc))
                             {
-                                _machineDataType[groupName].Add(dMonEntry.Desc, type);
+                                _machineDataType[boxNo + "," + groupName].Add(dMonEntry.Desc, type);
                             }
                             else
                             {
-                                _machineDataType[groupName][dMonEntry.Desc] = type;
+                                _machineDataType[boxNo + "," + groupName][dMonEntry.Desc] = type;
                             }
                         }
                     }

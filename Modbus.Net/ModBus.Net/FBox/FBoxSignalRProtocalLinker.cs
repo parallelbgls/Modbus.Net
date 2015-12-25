@@ -8,7 +8,7 @@ namespace ModBus.Net.FBox
 {
     public class FBoxSignalRProtocalLinker : SignalRProtocalLinker
     {
-        public FBoxSignalRProtocalLinker(string machineId, SignalRSigninMsg msg) : base(machineId, msg)
+        public FBoxSignalRProtocalLinker(string machineId, string localSequence, SignalRSigninMsg msg) : base(machineId, localSequence, msg)
         {
         }
 

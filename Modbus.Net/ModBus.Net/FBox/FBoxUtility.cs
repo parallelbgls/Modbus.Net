@@ -17,6 +17,8 @@ namespace ModBus.Net.FBox
         private FBoxType _fboxType;
         private SignalRSigninMsg SigninMsg { get; set; }
         
+        public string LocalSequence { get; set; }
+
         protected IEnumerable<CommunicationUnit> CommunicationUnits { get; set; } 
         public FBoxType ConnectionType
         {
@@ -35,16 +37,17 @@ namespace ModBus.Net.FBox
                         }
                     case FBoxType.CommunicationTagSync:
                         {
-                            Wrapper = new FBoxSignalRProtocal(ConnectionString, SigninMsg);
+                            Wrapper = new FBoxSignalRProtocal(ConnectionString, LocalSequence, SigninMsg);
                             break;
                         }
                 }
             }
         }
 
-        public FBoxUtility(FBoxType fBoxType, string connectionString, IEnumerable<CommunicationUnit> communicationUnits, SignalRSigninMsg msg)
+        public FBoxUtility(FBoxType fBoxType, string connectionString, string localSequence, IEnumerable<CommunicationUnit> communicationUnits, SignalRSigninMsg msg)
         {
             ConnectionString = connectionString;
+            LocalSequence = localSequence;
             CommunicationUnits = communicationUnits.AsEnumerable();
             SigninMsg = msg;
 
