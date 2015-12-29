@@ -44,11 +44,9 @@ namespace ModBus.Net.FBox
             var tmpAddress = address.Trim().ToUpper();
             if (tmpAddress.Substring(0, 2) == "DB")
             {
-                var addressSplit = tmpAddress.Split('.');
+                var addressSplit = tmpAddress.Split(' ');
                 if (addressSplit.Length != 2) throw new FormatException();
                 addressSplit[0] = addressSplit[0].Substring(2);
-                if (addressSplit[1].Substring(0, 2) == "DB")
-                    addressSplit[1] = addressSplit[1].Substring(2);
                 return new KeyValuePair<int, int>(int.Parse(addressSplit[1]),
                     int.Parse(addressSplit[0]) + AreaCodeDictionary["DB"]);
             }
