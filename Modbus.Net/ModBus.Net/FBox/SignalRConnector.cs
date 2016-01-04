@@ -258,7 +258,31 @@ namespace ModBus.Net.FBox
 
                                     foreach (var value in values)
                                     {
-                                        if (value.Status != 0) return;
+                                        if (value.Status != 0)
+                                        {
+                                            lock (_machineData)
+                                            {
+                                                if (_boxUidDataGroups.ContainsKey(localBoxUid))
+                                                {
+                                                    foreach (var dataGroupInner in _boxUidDataGroups[localBoxUid])
+                                                    {
+                                                        var dMonEntry =
+                                                            dataGroupInner.DMonEntries.FirstOrDefault(
+                                                                p => p.Uid == value.Id);
+                                                        if (dMonEntry != null)
+                                                        {
+                                                            if (_machineData[localBoxNo + "," + dataGroupInner.Name]
+                                                                    .ContainsKey(dMonEntry.Desc))
+                                                            {
+                                                                _machineData[localBoxNo + "," + dataGroupInner.Name]
+                                                                    .Remove(dMonEntry.Desc);
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            return;
+                                        }
                                         lock (_machineData)
                                         {
                                             if (_boxUidDataGroups.ContainsKey(localBoxUid))
@@ -643,6 +667,12 @@ namespace ModBus.Net.FBox
                 }
                 var machineDataValue = _machineData[ConnectionToken];
                 var machineDataType = _machineDataType[ConnectionToken];
+                if (machineDataValue != null && machineDataType.Count == 0)
+                {
+                    _connected = false;
+                    Console.WriteLine($"Return Value Rejected with connectionToken {ConnectionToken}");
+                    return null;
+                }
                 int pos = 0;
                 int area = ValueHelper.Instance.GetInt(message, ref pos);
                 int address = ValueHelper.Instance.GetInt(message, ref pos);
