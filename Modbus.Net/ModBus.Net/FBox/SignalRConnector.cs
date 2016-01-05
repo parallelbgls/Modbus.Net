@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using DelinRemoteControlBoxTest;
 using Microsoft.AspNet.SignalR.Client;
@@ -24,11 +25,12 @@ namespace ModBus.Net.FBox
     public class SignalRConnector : BaseConnector
     {
         private static Dictionary<SignalRSigninMsg, OAuth2Client> _oauth2;
+        private static Dictionary<SignalRSigninMsg, string> _refreshToken; 
 
         private static Dictionary<SignalRSigninMsg, HttpClient> _httpClient;
         private static Dictionary<string, HttpClient> _httpClient2;
         private static Dictionary<string, HubConnection> _hubConnections;
-
+        private static Dictionary<string, SignalRSigninMsg> _boxUidMsg; 
         private static Dictionary<string, int> _boxUidSessionId; 
         private static Dictionary<string, List<DMonGroup>> _boxUidDataGroups;
         private static Dictionary<string, int> _connectionTokenState;  
@@ -39,6 +41,8 @@ namespace ModBus.Net.FBox
         private static Dictionary<string, string> _boxUidBoxNo;
 
         public override string ConnectionToken { get; }
+
+        private Timer _timer;
 
         private string MachineId
         {
@@ -57,28 +61,6 @@ namespace ModBus.Net.FBox
 
         private static AsyncLock _lock = new AsyncLock();
 
-        private static bool _retokenFlag;
-        private static bool RetokenFlag
-        {
-            get
-            {
-                return _retokenFlag;
-            }
-            set
-            {
-                _retokenFlag = value;
-                if (_retokenFlag)
-                {
-                    System.Threading.Timer timer = new System.Threading.Timer(new System.Threading.TimerCallback(RetokenReset), null, 300000, System.Threading.Timeout.Infinite);
-                }
-            }
-        }
-
-        private static void RetokenReset(object state)
-        {
-            RetokenFlag = false;
-        }
-
         private bool _connected;
         public override bool IsConnected { get { return _connected; } }
         private SignalRSigninMsg Msg { get; set;}
@@ -95,7 +77,6 @@ namespace ModBus.Net.FBox
 
         public SignalRConnector(string machineId, string localSequence, SignalRSigninMsg msg)
         {
-            RetokenFlag = false;
             Constants.SignalRServer = msg.SignalRServer;
             System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
             ConnectionToken = machineId + "," + localSequence;
@@ -103,6 +84,8 @@ namespace ModBus.Net.FBox
             {
                 _httpClient = new Dictionary<SignalRSigninMsg, HttpClient>();
                 _oauth2 = new Dictionary<SignalRSigninMsg, OAuth2Client>();
+                _refreshToken = new Dictionary<SignalRSigninMsg, string>();
+                _boxUidMsg = new Dictionary<string, SignalRSigninMsg>();
                 _hubConnections = new Dictionary<string, HubConnection>();
                 _httpClient2 = new Dictionary<string, HttpClient>();
                 _machineData = new Dictionary<string, Dictionary<string, double>>();
@@ -112,10 +95,44 @@ namespace ModBus.Net.FBox
                 _groupNameUid = new Dictionary<string, string>();  
                 _groupNameBoxUid = new Dictionary<string, string>();
                 _boxUidDataGroups = new Dictionary<string, List<DMonGroup>>();                       
-                _boxUidBoxNo = new Dictionary<string, string>();                     
+                _boxUidBoxNo = new Dictionary<string, string>();
+                _timer = new Timer(ChangeToken, null, 3600 * 1000 * 4, 3600 * 1000 * 4);                     
             }
             Msg = msg;
             }
+
+        private async void ChangeToken(object sender)
+        {
+            try
+            {
+                var tokenResponse = await _oauth2[Msg].RequestRefreshTokenAsync(_refreshToken[Msg]);
+                _refreshToken[Msg] = tokenResponse.RefreshToken;
+                _httpClient[Msg].SetBearerToken(tokenResponse.AccessToken);
+                foreach (var boxUidMsg in _boxUidMsg)
+                {
+                    if (boxUidMsg.Value.Equals(Msg))
+                    {
+                        if (_httpClient2.ContainsKey(boxUidMsg.Key) && _hubConnections.ContainsKey(boxUidMsg.Key))
+                        _httpClient2[boxUidMsg.Key].SetBearerToken(tokenResponse.AccessToken);
+                        _hubConnections[boxUidMsg.Key].Stop();
+                        _hubConnections[boxUidMsg.Key].Headers["Authorization"] = "Bearer " + tokenResponse.AccessToken;
+                        await _hubConnections[boxUidMsg.Key].Start();
+                        var localDataGroups = _boxUidDataGroups[boxUidMsg.Key];
+                        foreach (var localDataGroup in localDataGroups)
+                        {
+                            await
+                                _httpClient2[boxUidMsg.Key].PostAsync(
+                                    "dmon/group/" + localDataGroup.Uid + "/start", null);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Retoken failed." + e.Message);
+            }
+            Console.WriteLine("Retoken success.");
+        }
 
         public override bool Connect()
         {
@@ -135,15 +152,15 @@ namespace ModBus.Net.FBox
                                 Msg.ClientId,
                                 Msg.ClientSecret
                             ));
-                        var tokenResponse = _oauth2[Msg].RequestResourceOwnerPasswordAsync
+                        var tokenResponse = await _oauth2[Msg].RequestResourceOwnerPasswordAsync
                             (
                                 Msg.UserId,
                                 Msg.Password,
                                 Msg.SigninAdditionalValues
-                            ).Result;
+                            );
                         if (tokenResponse != null)
                         {
-                            RetokenFlag = true;
+                            _refreshToken.Add(Msg, tokenResponse.RefreshToken);
                             AsyncHelper.RunSync(()=> CallService(Msg, tokenResponse.AccessToken));                        
                         }                   
                     }
@@ -237,6 +254,7 @@ namespace ModBus.Net.FBox
                     _boxUidDataGroups.Add(boxUid, dataGroups);
                     _boxUidSessionId.Add(boxUid, sessionId);
                     _boxUidBoxNo.Add(boxUid, boxNo);
+                    _boxUidMsg.Add(boxUid, Msg);
 
                     var hubConnection = new HubConnection(signalrUrl);
                     _hubConnections.Add(boxUid, hubConnection);
@@ -269,7 +287,7 @@ namespace ModBus.Net.FBox
                                                         var dMonEntry =
                                                             dataGroupInner.DMonEntries.FirstOrDefault(
                                                                 p => p.Uid == value.Id);
-                                                        if (dMonEntry != null)
+                                                        if (dMonEntry != null && _machineData.ContainsKey(localBoxNo + "," + dataGroupInner.Name))
                                                         {
                                                             if (_machineData[localBoxNo + "," + dataGroupInner.Name]
                                                                     .ContainsKey(dMonEntry.Desc))
@@ -385,75 +403,15 @@ namespace ModBus.Net.FBox
                             }
                         });
 
-                    hubConnection.Error += ex => Console.WriteLine(@"SignalR error: {0}", ex.Message);
+                    hubConnection.Error += async ex =>
+                    {
+                        Console.WriteLine(@"SignalR error: {0}", ex.Message);
+                        await ConnectRecovery(hubConnection);
+                    };
 
                     hubConnection.Closed += async () =>
                     {
-                        try
-                        {
-                        string getBoxUid;
-                        lock (_boxUidSessionId)
-                        {
-                            getBoxUid =
-                                _boxUidSessionId.FirstOrDefault(
-                                    p => p.Value == int.Parse(hubConnection.Headers["X-FBox-Session"])).Key;
-                        }
-                        if (hubConnection.State != ConnectionState.Connected)
-                        {
-                            
-                            await hubConnection.Start();
-                            if (IsConnected)
-                            {
-                                var localDataGroups = _boxUidDataGroups[getBoxUid];
-                                foreach (var localDataGroup in localDataGroups)
-                                {
-                                await
-                                    _httpClient2[getBoxUid].PostAsync(
-                                        "dmon/group/" + localDataGroup.Uid + "/start", null);
-                                }
-                                }
-                            }                            
-                        }
-                        catch (HttpClientException e)
-                        {
-                            using (await _lock.LockAsync())
-                            {
-                                if (!RetokenFlag)
-                                {
-                                    foreach(var httpClient in _httpClient)
-                                    {
-                                        httpClient.Value.Dispose();
-                                    }
-                                    foreach(var httpClient in _httpClient2)
-                                    {
-                                        httpClient.Value.Dispose();
-                                    }
-                                    foreach(var hubConnectiont in _hubConnections)
-                                    {
-                                        //hubConnectiont.Value.Stop();
-                                        hubConnectiont.Value.Dispose();
-                                    }
-                                    _oauth2.Clear();
-                                    _httpClient.Clear();
-                                    _httpClient2.Clear();
-                                    _hubConnections.Clear();
-
-                                    _boxUidSessionId.Clear();
-                                    _boxUidDataGroups.Clear();
-                                    _connectionTokenState.Clear();
-                                    _groupNameUid.Clear();
-                                    _groupNameBoxUid.Clear();
-                                    _machineData.Clear();
-                                    _machineDataType.Clear();
-                                    _boxUidBoxNo.Clear();
-                                }
-                            }
-                            _connected = false;
-                            }
-                        catch
-                        {
-                            _connected = false;
-                        }
+                        await ConnectRecovery(hubConnection);
                     };
 
                     ServicePointManager.DefaultConnectionLimit = 10;
@@ -586,7 +544,62 @@ namespace ModBus.Net.FBox
                 }            
             }
         }
-    
+
+        private async Task ConnectRecovery(HubConnection hubConnection)
+        {
+            string getBoxUid;
+            lock (_boxUidSessionId)
+            {
+                getBoxUid =
+                    _boxUidSessionId.FirstOrDefault(
+                        p => p.Value == int.Parse(hubConnection.Headers["X-FBox-Session"])).Key;
+            }
+            try
+            {
+                if (hubConnection.State != ConnectionState.Connected)
+                {
+                    try
+                    {
+                        hubConnection.Stop();
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
+
+                    await hubConnection.Start();
+                    if (IsConnected)
+                    {
+                        var localDataGroups = _boxUidDataGroups[getBoxUid];
+                        foreach (var localDataGroup in localDataGroups)
+                        {
+                            await
+                                _httpClient2[getBoxUid].PostAsync(
+                                    "dmon/group/" + localDataGroup.Uid + "/start", null);
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                if (_boxUidBoxNo.ContainsKey(getBoxUid))
+                {
+                    var localBoxNo = _boxUidBoxNo[getBoxUid];
+                    lock (_machineData)
+                    {
+                        foreach (var machineDataUnit in _machineData)
+                        {
+                            if (machineDataUnit.Key.Contains(localBoxNo))
+                            {
+                                _machineData.Remove(machineDataUnit.Key);
+                            }
+                        }
+                    }
+                }
+                _connected = false;
+            }
+        }
+
         public override bool Disconnect()
         {
             return AsyncHelper.RunSync(DisconnectAsync);

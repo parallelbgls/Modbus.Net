@@ -238,7 +238,7 @@ namespace ModBus.Net
                         _getCycle = value;
                     }
                     _timer = new Timer(MaintainTasks, null, 0, _getCycle * 1000);
-                    _timer2 = new Timer(MaintainTasks2, null, _getCycle * 6000, _getCycle * 6000);                  
+                    _timer2 = new Timer(MaintainTasks2, null, _getCycle * 2000, _getCycle * 2000);                  
                     //MaintainTasks(null);
                 }
             }
