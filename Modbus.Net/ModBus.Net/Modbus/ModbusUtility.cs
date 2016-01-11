@@ -50,14 +50,14 @@ namespace ModBus.Net.Modbus
         {
             ConnectionString = null;
             ModbusType = (ModbusType)connectionType;
-            AddressTranslator = new AddressTranslatorBase();
+            AddressTranslator = new AddressTranslatorModbus();
         }
 
         public ModbusUtility(ModbusType connectionType, string connectionString)
         {
             ConnectionString = connectionString;
             ModbusType = connectionType;
-            AddressTranslator = new AddressTranslatorBase();
+            AddressTranslator = new AddressTranslatorModbus();
         }
 
         public override void SetConnectionType(int connectionType)

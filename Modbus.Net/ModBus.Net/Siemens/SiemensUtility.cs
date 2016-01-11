@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace ModBus.Net.Simense
+namespace ModBus.Net.Siemens
 {
-    public enum SimenseType
+    public enum SiemensType
     {
         Ppi = 0,
         Mpi = 1,
         Tcp = 2
     };
 
-    public enum SimenseMachineModel
+    public enum SiemensMachineModel
     {
         S7_200 = 0,
         S7_200_Smart = 1,
@@ -21,7 +21,7 @@ namespace ModBus.Net.Simense
     };
 
 
-    public class SimenseUtility : BaseUtility
+    public class SiemensUtility : BaseUtility
     {
         private byte _tdpuSize;
         private ushort _taspSrc;
@@ -30,42 +30,42 @@ namespace ModBus.Net.Simense
         private ushort _maxCalled;
         private ushort _maxPdu;
         
-        private SimenseType _simenseType;
+        private SiemensType _siemensType;
 
-        public SimenseType ConnectionType
+        public SiemensType ConnectionType
         {
             get
             {
-                return _simenseType;
+                return _siemensType;
             }
             set
             {
-                _simenseType = value;
-                switch (_simenseType)
+                _siemensType = value;
+                switch (_siemensType)
                 {
-                    case SimenseType.Ppi:
+                    case SiemensType.Ppi:
                         {
                             throw new NotImplementedException();
                         }
-                    case SimenseType.Mpi:
+                    case SiemensType.Mpi:
                         {
                             throw new NotImplementedException();
                         }
-                    case SimenseType.Tcp:
+                    case SiemensType.Tcp:
                     {
-                        Wrapper = ConnectionString == null ? new SimenseTcpProtocal(_tdpuSize, _taspSrc, _tsapDst, _maxCalling, _maxCalled, _maxPdu) : new SimenseTcpProtocal(_tdpuSize, _taspSrc, _tsapDst, _maxCalling, _maxCalled, _maxPdu, ConnectionString);
+                        Wrapper = ConnectionString == null ? new SiemensTcpProtocal(_tdpuSize, _taspSrc, _tsapDst, _maxCalling, _maxCalled, _maxPdu) : new SiemensTcpProtocal(_tdpuSize, _taspSrc, _tsapDst, _maxCalling, _maxCalled, _maxPdu, ConnectionString);
                         break;
                     }
                 }
             }
         }
 
-        public SimenseUtility(SimenseType connectionType, string connectionString, SimenseMachineModel model)
+        public SiemensUtility(SiemensType connectionType, string connectionString, SiemensMachineModel model)
         {
             ConnectionString = connectionString;
             switch (model)
             {
-                case SimenseMachineModel.S7_200:
+                case SiemensMachineModel.S7_200:
                     {
                         _tdpuSize = 0x09;
                         _taspSrc = 0x1001;
@@ -75,8 +75,8 @@ namespace ModBus.Net.Simense
                         _maxPdu = 0x03c0;
                         break;
                     }
-                case SimenseMachineModel.S7_300:
-                case SimenseMachineModel.S7_400:
+                case SiemensMachineModel.S7_300:
+                case SiemensMachineModel.S7_400:
                     {
                         _tdpuSize = 0x1a;
                         _taspSrc = 0x4b54;
@@ -86,8 +86,8 @@ namespace ModBus.Net.Simense
                         _maxPdu = 0x00f0;
                         break;
                     }
-                case SimenseMachineModel.S7_1200:
-                case SimenseMachineModel.S7_1500:
+                case SiemensMachineModel.S7_1200:
+                case SiemensMachineModel.S7_1500:
                 {
                     _tdpuSize = 0x09;
                     _taspSrc = 0x4b54;
@@ -99,23 +99,23 @@ namespace ModBus.Net.Simense
                 }
             }
             ConnectionType = connectionType;
-            AddressTranslator = new AddressTranslatorSimense();            
+            AddressTranslator = new AddressTranslatorSiemens();            
         }
 
         public override void SetConnectionType(int connectionType)
         {
-            ConnectionType = (SimenseType) connectionType;
+            ConnectionType = (SiemensType) connectionType;
         }
 
         protected override async Task<byte[]> GetDatasAsync(byte belongAddress, byte materAddress, string startAddress, int getByteCount)
         {
             try
             {
-                var readRequestSimenseInputStruct = new ReadRequestSimenseInputStruct(0xd3c7, SimenseTypeCode.Byte, startAddress, (ushort)getByteCount, AddressTranslator);
-                var readRequestSimenseOutputStruct =
-                     (ReadRequestSimenseOutputStruct) await
-                         Wrapper.SendReceiveAsync(Wrapper[typeof(ReadRequestSimenseProtocal)], readRequestSimenseInputStruct);
-                return readRequestSimenseOutputStruct.GetValue;
+                var readRequestSiemensInputStruct = new ReadRequestSiemensInputStruct(0xd3c7, SiemensTypeCode.Byte, startAddress, (ushort)getByteCount, AddressTranslator);
+                var readRequestSiemensOutputStruct =
+                     (ReadRequestSiemensOutputStruct) await
+                         Wrapper.SendReceiveAsync(Wrapper[typeof(ReadRequestSiemensProtocal)], readRequestSiemensInputStruct);
+                return readRequestSiemensOutputStruct.GetValue;
             }
             catch (Exception)
             {
@@ -127,11 +127,11 @@ namespace ModBus.Net.Simense
         {
             try
             {
-                var writeRequestSimenseInputStruct = new WriteRequestSimenseInputStruct(0xd3c8, startAddress, setContents, AddressTranslator);
-                var writeRequestSimenseOutputStruct =
-                    (WriteRequestSimenseOutputStruct) await
-                        Wrapper.SendReceiveAsync(Wrapper[typeof(WriteRequestSimenseProtocal)], writeRequestSimenseInputStruct);
-                if (writeRequestSimenseOutputStruct.AccessResult == SimenseAccessResult.NoError)
+                var writeRequestSiemensInputStruct = new WriteRequestSiemensInputStruct(0xd3c8, startAddress, setContents, AddressTranslator);
+                var writeRequestSiemensOutputStruct =
+                    (WriteRequestSiemensOutputStruct) await
+                        Wrapper.SendReceiveAsync(Wrapper[typeof(WriteRequestSiemensProtocal)], writeRequestSiemensInputStruct);
+                if (writeRequestSiemensOutputStruct.AccessResult == SiemensAccessResult.NoError)
                     return true;
                 else
                     return false;

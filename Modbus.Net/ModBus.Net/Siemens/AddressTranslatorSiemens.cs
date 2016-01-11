@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ModBus.Net.Simense
+namespace ModBus.Net.Siemens
 {
-    public class AddressTranslatorSimense : AddressTranslator
+    public class AddressTranslatorSiemens : AddressTranslator
     {
         protected Dictionary<string, int> AreaCodeDictionary;
 
-        public AddressTranslatorSimense()
+        public AddressTranslatorSiemens()
         {
             AreaCodeDictionary = new Dictionary<string, int>
             {
@@ -28,7 +28,7 @@ namespace ModBus.Net.Simense
 
         public override KeyValuePair<int, int> AddressTranslate(string address, bool isRead)
         {
-            address = address.ToUpper();
+            /*address = address.ToUpper();
             if (address.Substring(0, 2) == "DB")
             {
                 var addressSplit = address.Split('.');
@@ -49,6 +49,19 @@ namespace ModBus.Net.Simense
             string head = address.Substring(0, i);
             string tail = address.Substring(i);
             return
+                new KeyValuePair<int, int>(int.Parse(tail),
+                    AreaCodeDictionary[head]);
+            */
+            string[] splitString = address.Split(' ');
+            string head = splitString[0];
+            string tail = splitString[1];
+            if (head.Substring(0, 2) == "DB")
+            {
+                head = head.Substring(2);
+                return new KeyValuePair<int, int>(int.Parse(tail),
+                    int.Parse(head)*256 + AreaCodeDictionary["DB"]);
+            }
+            return 
                 new KeyValuePair<int, int>(int.Parse(tail),
                     AreaCodeDictionary[head]);
         }

@@ -13,9 +13,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ModBus.Net;
-using ModBus.Net.Simense;
+using ModBus.Net.Siemens;
 
-namespace Simense_S7_200.UI.WPF.TaskTest
+namespace Siemens_S7_200.UI.WPF.TaskTest
 {
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
@@ -34,9 +34,9 @@ namespace Simense_S7_200.UI.WPF.TaskTest
                 new AddressUnit() {Id = 1, Area = "V", Address = 2, CommunicationTag = "D2", DataType = typeof (float), Zoom = 1}
             };
             //初始化任务管理器
-            TaskManager task = new TaskManager(20, 300, true);
+            TaskManager task = new TaskManager(300, true);
             //向任务管理器中添加设备
-            task.AddMachine(new SimenseMachine(SimenseType.Tcp, "192.168.3.191",SimenseMachineModel.S7_200, addressUnits,
+            task.AddMachine(new SiemensMachine(SiemensType.Tcp, "192.168.3.191",SiemensMachineModel.S7_200, addressUnits,
             true));
             //增加值返回时的处理函数
             task.ReturnValues += (returnValues) =>
@@ -46,7 +46,7 @@ namespace Simense_S7_200.UI.WPF.TaskTest
                 if (returnValues.Value != null)
                 {
                     value = from val in returnValues.Value select val.Key + val.Value;
-                    simenseItems.Dispatcher.Invoke(() => simenseItems.ItemsSource = value);
+                    siemensItems.Dispatcher.Invoke(() => siemensItems.ItemsSource = value);
                 }
                 else
                 {

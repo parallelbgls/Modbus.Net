@@ -7,7 +7,7 @@ using System.Web.Http;
 using System.Web.Http.Routing;
 using CrossLampControl.WebApi.Models;
 using ModBus.Net;
-using ModBus.Net.Simense;
+using ModBus.Net.Siemens;
 
 namespace CrossLampControl.WebApi.Controllers
 {
@@ -17,15 +17,15 @@ namespace CrossLampControl.WebApi.Controllers
 
         public CrossLampController()
         {
-            _utility = new SimenseUtility(SimenseType.Tcp, "192.168.3.241", SimenseMachineModel.S7_200);
-            _utility.AddressTranslator = new AddressTranslatorSimense();
+            _utility = new SiemensUtility(SiemensType.Tcp, "192.168.3.241", SiemensMachineModel.S7_200);
+            _utility.AddressTranslator = new AddressTranslatorSiemens();
         }
 
         [HttpGet]
         public Lamp GetLamp()
         {
             Lamp light = new Lamp();
-            object[] lampsbyte = _utility.GetDatas(2, 0, "Q0", new KeyValuePair<Type, int>(typeof(bool), 7));
+            object[] lampsbyte = _utility.GetDatas(2, 0, "Q 0", new KeyValuePair<Type, int>(typeof(bool), 7));
             bool[] lamps =
                 ValueHelper.Instance.ObjectArrayToDestinationArray<bool>(
                     lampsbyte);

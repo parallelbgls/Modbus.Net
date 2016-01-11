@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 
-namespace ModBus.Net.Simense
+namespace ModBus.Net.Siemens
 {
-    public class SimenseTcpProtocal : SimenseProtocal
+    public class SiemensTcpProtocal : SiemensProtocal
     {
         private ushort _taspSrc;
         private ushort _tsapDst;
@@ -14,11 +14,11 @@ namespace ModBus.Net.Simense
         private string _ip;
         private int connectTryCount;
 
-        public SimenseTcpProtocal(byte tdpuSize, ushort tsapSrc, ushort tsapDst, ushort maxCalling, ushort maxCalled, ushort maxPdu) : this(tdpuSize, tsapSrc, tsapDst, maxCalling, maxCalled, maxPdu, ConfigurationManager.IP)
+        public SiemensTcpProtocal(byte tdpuSize, ushort tsapSrc, ushort tsapDst, ushort maxCalling, ushort maxCalled, ushort maxPdu) : this(tdpuSize, tsapSrc, tsapDst, maxCalling, maxCalled, maxPdu, ConfigurationManager.IP)
         {
         }
 
-        public SimenseTcpProtocal(byte tdpuSize, ushort tsapSrc, ushort tsapDst, ushort maxCalling, ushort maxCalled, ushort maxPdu, string ip)
+        public SiemensTcpProtocal(byte tdpuSize, ushort tsapSrc, ushort tsapDst, ushort maxCalling, ushort maxCalled, ushort maxPdu, string ip)
         {
             _taspSrc = tsapSrc;
             _tsapDst = tsapDst;
@@ -72,24 +72,24 @@ namespace ModBus.Net.Simense
         public override async Task<bool> ConnectAsync()
         {
             connectTryCount++;
-            ProtocalLinker = new SimenseTcpProtocalLinker(_ip);
+            ProtocalLinker = new SiemensTcpProtocalLinker(_ip);
             if (await ProtocalLinker.ConnectAsync())
             {
                 connectTryCount = 0;
-                var inputStruct = new CreateReferenceSimenseInputStruct(_tdpuSize, _taspSrc, _tsapDst);
+                var inputStruct = new CreateReferenceSiemensInputStruct(_tdpuSize, _taspSrc, _tsapDst);
                 return
                     await await
-                        ForceSendReceiveAsync(this[typeof (CreateReferenceSimenseProtocal)], inputStruct)
+                        ForceSendReceiveAsync(this[typeof (CreateReferenceSiemensProtocal)], inputStruct)
                             .ContinueWith(async answer =>
                             {
                                 if (!ProtocalLinker.IsConnected) return false;
-                                var inputStruct2 = new EstablishAssociationSimenseInputStruct(0x0101, _maxCalling,
+                                var inputStruct2 = new EstablishAssociationSiemensInputStruct(0x0101, _maxCalling,
                                     _maxCalled,
                                     _maxPdu);
                                 var outputStruct2 =
-                                    (EstablishAssociationSimenseOutputStruct)
+                                    (EstablishAssociationSiemensOutputStruct)
                                         await
-                                            SendReceiveAsync(this[typeof (EstablishAssociationSimenseProtocal)],
+                                            SendReceiveAsync(this[typeof (EstablishAssociationSiemensProtocal)],
                                                 inputStruct2);
                                 return true;
                             });

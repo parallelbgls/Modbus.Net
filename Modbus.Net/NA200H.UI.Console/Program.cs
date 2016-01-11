@@ -59,7 +59,7 @@ namespace NA200H.UI.ConsoleApp
             //第一步：先生成一个输入结构体，然后向这个结构体中填写数据
             AddressTranslator addressTranslator = new AddressTranslatorNA200H();
 
-            ReadDataModbusInputStruct readCoilStatusInputStruct = new ReadDataModbusInputStruct(0x02, "N1", 0x0a, addressTranslator);
+            ReadDataModbusInputStruct readCoilStatusInputStruct = new ReadDataModbusInputStruct(0x02, "N 1", 0x0a, addressTranslator);
             //第二步：再生成一个输出结构体，执行相应协议的发送指令，并将输出信息自动转换到输出结构体中
             ReadDataModbusOutputStruct readCoilStatusOutputStruct = (ReadDataModbusOutputStruct)wrapper.SendReceive(wrapper[typeof(ReadDataModbusProtocal)], readCoilStatusInputStruct);
             //第三步：读取这个输出结构体的信息。
@@ -75,7 +75,7 @@ namespace NA200H.UI.ConsoleApp
             Console.Read();
             Console.Read();
 
-            ReadDataModbusInputStruct readHoldRegisterInputStruct = new ReadDataModbusInputStruct(0x02, "NW1", 4, addressTranslator);
+            ReadDataModbusInputStruct readHoldRegisterInputStruct = new ReadDataModbusInputStruct(0x02, "NW 1", 4, addressTranslator);
             ReadDataModbusOutputStruct readHoldRegisterOutputStruct = (ReadDataModbusOutputStruct)wrapper.SendReceive(wrapper[typeof(ReadDataModbusProtocal)], readHoldRegisterInputStruct);
             ushort[] array2 =
                 ValueHelper.Instance.ObjectArrayToDestinationArray<ushort>(
@@ -89,7 +89,7 @@ namespace NA200H.UI.ConsoleApp
             Console.Read();
             Console.Read();
 
-            WriteDataModbusInputStruct writeMultiCoilInputStruct = new WriteDataModbusInputStruct(0x02, "Q20", new object[] { true, false, true, true, false, false, true, true, true, false }, addressTranslator);
+            WriteDataModbusInputStruct writeMultiCoilInputStruct = new WriteDataModbusInputStruct(0x02, "Q 20", new object[] { true, false, true, true, false, false, true, true, true, false }, addressTranslator);
             WriteDataModbusOutputStruct writeMultiCoilOutputStruct = (WriteDataModbusOutputStruct)wrapper.SendReceive(wrapper[typeof(WriteDataModbusProtocal)], writeMultiCoilInputStruct);
             Console.WriteLine(writeMultiCoilOutputStruct.StartAddress);
             Console.WriteLine(writeMultiCoilOutputStruct.WriteCount);
@@ -97,7 +97,7 @@ namespace NA200H.UI.ConsoleApp
             Console.Read();
             Console.Read();
 
-            WriteDataModbusInputStruct writeMultiRegisterInputStruct = new WriteDataModbusInputStruct(0x02, "NW1", new object[] { (ushort)25, (ushort)18, (ushort)17 }, addressTranslator);
+            WriteDataModbusInputStruct writeMultiRegisterInputStruct = new WriteDataModbusInputStruct(0x02, "NW 1", new object[] { (ushort)25, (ushort)18, (ushort)17 }, addressTranslator);
             WriteDataModbusOutputStruct writeMultiRegisterOutputStruct = (WriteDataModbusOutputStruct)wrapper.SendReceive(wrapper[typeof(WriteDataModbusProtocal)], writeMultiRegisterInputStruct);
             Console.WriteLine(writeMultiRegisterOutputStruct.StartAddress);
             Console.WriteLine(writeMultiRegisterOutputStruct.WriteCount);
@@ -119,17 +119,17 @@ namespace NA200H.UI.ConsoleApp
             Console.Read();
             */
 
-            /*BaseProtocal wrapper = new SimenseTcpProtocal(0x09, 0x1001, 0x1000, 0x0001, 0x0001, 0x03c0, ip);
+            /*BaseProtocal wrapper = new SiemensTcpProtocal(0x09, 0x1001, 0x1000, 0x0001, 0x0001, 0x03c0, ip);
             if (!wrapper.ProtocalLinker.IsConnected) return;
-            AddressTranslator addressTranslator = new AddressTranslatorSimense();
+            AddressTranslator addressTranslator = new AddressTranslatorSiemens();
 
-            var readRequestSimenseInputStruct = new ReadRequestSimenseInputStruct(0xaacc, SimenseTypeCode.Byte, "V0", 4, addressTranslator);
-            var readRequestSimenseOutputStruct =
-                (ReadRequestSimenseOutputStruct)
-                    wrapper.SendReceive(wrapper[typeof(ReadRequestSimenseProtocal)], readRequestSimenseInputStruct);
+            var readRequestSiemensInputStruct = new ReadRequestSiemensInputStruct(0xaacc, SiemensTypeCode.Byte, "V 0", 4, addressTranslator);
+            var readRequestSiemensOutputStruct =
+                (ReadRequestSiemensOutputStruct)
+                    wrapper.SendReceive(wrapper[typeof(ReadRequestSiemensProtocal)], readRequestSiemensInputStruct);
             ushort[] array =
                 ValueHelper.Instance.ObjectArrayToDestinationArray<ushort>(
-                    ValueHelper.Instance.ByteArrayToObjectArray(readRequestSimenseOutputStruct.GetValue,
+                    ValueHelper.Instance.ByteArrayToObjectArray(readRequestSiemensOutputStruct.GetValue,
                         new KeyValuePair<Type, int>(typeof (ushort), 2)));
             for (int i = 0; i < array.Length; i++)
             {
@@ -138,12 +138,12 @@ namespace NA200H.UI.ConsoleApp
             Console.Read();
             Console.Read();
 
-            var writeRequestSimenseInputStruct = new WriteRequestSimenseInputStruct(0xaadd, "V100",
+            var writeRequestSiemensInputStruct = new WriteRequestSiemensInputStruct(0xaadd, "V 100",
                 new object[] { (ushort)280, (ushort)12, (ushort)56, (ushort)72, (ushort)88, (ushort)525, (ushort)477, (ushort)151, (ushort)52 }, addressTranslator);
-            var writeRequestSimenseOutputStruct =
-                (WriteRequestSimenseOutputStruct)
-                    wrapper.SendReceive(wrapper[typeof(WriteRequestSimenseProtocal)], writeRequestSimenseInputStruct);
-            Console.WriteLine(writeRequestSimenseOutputStruct.AccessResult.ToString());
+            var writeRequestSiemensOutputStruct =
+                (WriteRequestSiemensOutputStruct)
+                    wrapper.SendReceive(wrapper[typeof(WriteRequestSiemensProtocal)], writeRequestSiemensInputStruct);
+            Console.WriteLine(writeRequestSiemensOutputStruct.AccessResult.ToString());
             Console.Read();
             Console.Read();        
             */

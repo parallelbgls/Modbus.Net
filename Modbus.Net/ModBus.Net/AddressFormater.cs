@@ -11,7 +11,7 @@ namespace ModBus.Net
     {
         public override string FormatAddress(string area, int address)
         {
-            return area + "." + address;
+            return area + ":" + address;
         }
     }
 }

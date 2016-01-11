@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Simense_S7_200.UI.WPF.TaskTest
+namespace Siemens_S7_200.UI.WPF.TaskTest
 {
     /// <summary>
     /// App.xaml 的交互逻辑

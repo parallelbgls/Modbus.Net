@@ -1,4 +1,4 @@
-﻿<Application x:Class="Simense_S7_200.UI.WPF.TaskTest.App"
+﻿<Application x:Class="Siemens_S7_200.UI.WPF.TaskTest.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              StartupUri="MainWindow.xaml">

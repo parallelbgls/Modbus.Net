@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ModBus.Net.Simense
+namespace ModBus.Net.Siemens
 {
-    public class AddressFormaterSimense : AddressFormater
+    public class AddressFormaterSiemens : AddressFormater
     {
         public override string FormatAddress(string area, int address)
         {
+            /*
             if (area.Length > 1 &&
                 area.ToUpper().Substring(0, 2) == "DB")
             {
@@ -19,6 +20,8 @@ namespace ModBus.Net.Simense
             {
                 return area.ToUpper() + address;
             }
+            */
+            return area + " " + address;
         }
     }
 }

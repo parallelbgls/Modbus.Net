@@ -17,7 +17,7 @@ Table of Content:
 * Siemens Tcp protocal (acturally it is the same as Profinet)
 * All communications can be asyncronized.
 * A task manager that you can easily manage multiple connections.
-* .net 4.5 and Visual Studio 2013 support (In the future, it will upgrade to .net 4.6 and Visual Studio 2015)
+* .net 4.5 and Visual Studio 2013 support (In the future, it will be upgraded to .net 4.6 and Visual Studio 2015)
 
 ##<a name="usage"></a> Usage
 
@@ -73,22 +73,21 @@ The highest api that you can manage many PLC links and all links are async so th
 The fastest way you can write is to use TaskManager. TaskTest Project is a good example.
 
 
-
 ```C#
 List<AddressUnit> addressUnits = new List<AddressUnit>
 {
     new AddressUnit() {Id = 0, Area = "V", Address = 0, CommunicationTag = "D1", DataType = typeof (ushort), Zoom = 1},
     new AddressUnit() {Id = 1, Area = "V", Address = 2, CommunicationTag = "D2", DataType = typeof (float), Zoom = 1}
 };
-TaskManager task = new TaskManager(20, 300, true);
-task.AddMachine(new SimenseMachine(SimenseType.Tcp, "192.168.3.191",SimenseMachineModel.S7_200, addressUnits, true));
+TaskManager task = new TaskManager(300, true);
+task.AddMachine(new SiemensMachine(SiemensType.Tcp, "192.168.3.191",SiemensMachineModel.S7_200, addressUnits, true));
 task.ReturnValues += (returnValues) =>
 {
     value = new List<string>();
     if (returnValues.Value != null)
     {
         value = from val in returnValues.Value select val.Key + val.Value;
-        simenseItems.Dispatcher.Invoke(() => simenseItems.ItemsSource = value);
+        siemensItems.Dispatcher.Invoke(() => siemensItems.ItemsSource = value);
     }
     else
     {
@@ -98,10 +97,11 @@ task.ReturnValues += (returnValues) =>
 task.TaskStart();
 ```
 
+
 Here are the details to use the TaskManager.
 
 1. Initialize the task manager. 
-Three arguments are: the max tasks you can run in a same time; How long did the next send message call happens(milliseconds); and you should keep the connection when a single message called complete.
+Three arguments are: <s>the max tasks you can run in a same time;</s> How long did the next send message call happens(milliseconds); and you should keep the connection when a single message called complete.
 
 2. Add the addresses that you want to communicate to PLC. Area are defined in AddressTranslator in each type of communiction.
 Basically you can write only Id, Area, Address, CommunicationTag, DataType and Zoom, and it should work. And there are other fields that you can use. 
@@ -113,9 +113,9 @@ Add a machine like siemens machine to the task manager.
 4. Implement ReturnValues event.
 The argument return values is a key value pair. The architechture is:
 
-Key : the link address of machine (in sample is the second parameter).<p>
-Value : Dictionary.<p>
-----------Key : CommunicationTag in AddressUnit.<p>
-----------Value : ReturnUnit.<p>
----------------------PlcValue : The return data, all in double type.<p>
----------------------UnitExtend : UnitExtend in AddressUnit. You should cast this class to your own class extends by UnitExtend.
+  * Key : the link address of machine (in sample is the second parameter).<p>
+  * Value : Dictionary.<p>
+    * Key : CommunicationTag in AddressUnit.<p>
+    * Value : ReturnUnit.<p>
+      * PlcValue : The return data, all in double type.<p>
+      * UnitExtend : UnitExtend in AddressUnit. You should cast this class to your own class extends by UnitExtend.

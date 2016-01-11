@@ -104,15 +104,15 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FBox\SignalRConnector.cs" />
     <Compile Include="FBox\SignalRProtocalLinker.cs" />
-    <Compile Include="Simense\AddressFormaterSimense.cs" />
-    <Compile Include="Simense\AddressTranslatorSimense.cs" />
-    <Compile Include="Simense\SimenseMachine.cs" />
-    <Compile Include="Simense\SimenseProtocal.cs" />
-    <Compile Include="Simense\SimenseStructDefinition.cs" />
-    <Compile Include="Simense\SimenseTcpProtocal.cs" />
-    <Compile Include="Simense\SimenseProtocalLinkerBytesExtend.cs" />
-    <Compile Include="Simense\SimenseTcpProtocalLinker.cs" />
-    <Compile Include="Simense\SimenseUtility.cs" />
+    <Compile Include="Siemens\AddressFormaterSiemens.cs" />
+    <Compile Include="Siemens\AddressTranslatorSiemens.cs" />
+    <Compile Include="Siemens\SiemensMachine.cs" />
+    <Compile Include="Siemens\SiemensProtocal.cs" />
+    <Compile Include="Siemens\SiemensStructDefinition.cs" />
+    <Compile Include="Siemens\SiemensTcpProtocal.cs" />
+    <Compile Include="Siemens\SiemensProtocalLinkerBytesExtend.cs" />
+    <Compile Include="Siemens\SiemensTcpProtocalLinker.cs" />
+    <Compile Include="Siemens\SiemensUtility.cs" />
     <Compile Include="TaskManager.cs" />
     <Compile Include="TcpConnector.cs">
       <SubType>Code</SubType>

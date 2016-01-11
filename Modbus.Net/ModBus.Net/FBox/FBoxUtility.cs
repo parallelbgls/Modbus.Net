@@ -65,10 +65,10 @@ namespace ModBus.Net.FBox
             try
             {
                 var readRequestFBoxInputStruct = new ReadRequestFBoxInputStruct(startAddress, (ushort)getByteCount, AddressTranslator);
-                var readRequestSimenseOutputStruct =
+                var readRequestSiemensOutputStruct =
                      (ReadRequestFBoxOutputStruct)await
                          Wrapper.SendReceiveAsync(Wrapper[typeof(ReadRequestFBoxProtocal)], readRequestFBoxInputStruct);
-                return readRequestSimenseOutputStruct.GetValue;
+                return readRequestSiemensOutputStruct.GetValue;
             }
             catch (Exception)
             {

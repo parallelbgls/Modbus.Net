@@ -8,7 +8,7 @@ namespace ModBus.Net.Modbus
             IEnumerable<AddressUnit> getAddresses, bool keepConnect) : base(getAddresses, keepConnect)
         {
             BaseUtility = new ModbusUtility(connectionType, connectionString);
-            AddressFormater = new AddressFormaterBase();
+            AddressFormater = new AddressFormaterModbus();
             AddressCombiner = new AddressCombinerContinus();
         }
 

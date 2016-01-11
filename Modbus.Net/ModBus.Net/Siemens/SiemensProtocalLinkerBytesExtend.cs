@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace ModBus.Net.Simense
+namespace ModBus.Net.Siemens
 {
-    public class SimenseTcpProtocalLinkerBytesExtend : ProtocalLinkerBytesExtend
+    public class SiemensTcpProtocalLinkerBytesExtend : ProtocalLinkerBytesExtend
     {
         public override byte[] BytesExtend(byte[] content)
         {

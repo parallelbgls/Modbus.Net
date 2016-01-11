@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using ModBus.Net;
 using System.Windows;
-using ModBus.Net.Simense;
+using ModBus.Net.Siemens;
 
 
 namespace NA200H.UI.WPF
@@ -23,10 +23,10 @@ namespace NA200H.UI.WPF
         {
             //utility = new ModbusUtility(ModbusType.Tcp, "192.168.3.247");
             //utility.AddressTranslator = new AddressTranslatorNA200H();
-            //object[] getNum = utility.GetDatas(0x02, 0x00, "NW1", new KeyValuePair<Type, int>(typeof(ushort), 4));
-            utility = new SimenseUtility(SimenseType.Tcp, "192.168.3.191", SimenseMachineModel.S7_200);
-            utility.AddressTranslator = new AddressTranslatorSimense();
-            object[] getNum = utility.GetDatas(0x02, 0x00, "V1", new KeyValuePair<Type, int>(typeof(ushort), 4));
+            //object[] getNum = utility.GetDatas(0x02, 0x00, "NW 1", new KeyValuePair<Type, int>(typeof(ushort), 4));
+            utility = new SiemensUtility(SiemensType.Tcp, "192.168.3.191", SiemensMachineModel.S7_200);
+            utility.AddressTranslator = new AddressTranslatorSiemens();
+            object[] getNum = utility.GetDatas(0x02, 0x00, "V 1", new KeyValuePair<Type, int>(typeof(ushort), 4));
             ushort[] getNumUshorts = ValueHelper.Instance.ObjectArrayToDestinationArray<ushort>(getNum);
             SetValue(getNumUshorts);
         }
@@ -45,11 +45,11 @@ namespace NA200H.UI.WPF
             ushort.TryParse(Add1.Text, out add1);
             ushort.TryParse(Add2.Text, out add2);
             ushort.TryParse(Add3.Text, out add3);
-            //utility.SetDatas(0x02, 0x00, "NW1", new object[] { add1, add2, add3 });
-            utility.SetDatas(0x02, 0x00, "V1", new object[] { add1, add2, add3 });
+            //utility.SetDatas(0x02, 0x00, "NW 1", new object[] { add1, add2, add3 });
+            utility.SetDatas(0x02, 0x00, "V 1", new object[] { add1, add2, add3 });
             Thread.Sleep(100);
-            //object[] getNum = utility.GetDatas(0x02, 0x00, "NW1", new KeyValuePair<Type, int>(typeof(ushort), 4));
-            object[] getNum = utility.GetDatas(0x02, 0x00, "V1", new KeyValuePair<Type, int>(typeof(ushort), 4));
+            //object[] getNum = utility.GetDatas(0x02, 0x00, "NW 1", new KeyValuePair<Type, int>(typeof(ushort), 4));
+            object[] getNum = utility.GetDatas(0x02, 0x00, "V 1", new KeyValuePair<Type, int>(typeof(ushort), 4));
             ushort[] getNumUshorts = ValueHelper.Instance.ObjectArrayToDestinationArray<ushort>(getNum);
             SetValue(getNumUshorts);
         }

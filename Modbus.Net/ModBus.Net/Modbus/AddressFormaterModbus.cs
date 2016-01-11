@@ -10,7 +10,15 @@ namespace ModBus.Net.Modbus
     {
         public override string FormatAddress(string area, int address)
         {
-            return area + address;
+            return area + " " + address;
+        }
+    }
+
+    public class AddressFormaterModbus : AddressFormater
+    {
+        public override string FormatAddress(string area, int address)
+        {
+            return area + " " + address;
         }
     }
 }

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ModBus.Net.Simense
+namespace ModBus.Net.Siemens
 {
-    public enum SimenseTypeCode : byte
+    public enum SiemensTypeCode : byte
     {
         Bool = 0x01,
         Byte = 0x02,
@@ -15,7 +15,7 @@ namespace ModBus.Net.Simense
         HC = 0x20,
     };
 
-    public enum SimenseAccessResult : byte
+    public enum SiemensAccessResult : byte
     {
         NoError = 0xFF,
         HardwareFault = 0x01,
@@ -25,21 +25,21 @@ namespace ModBus.Net.Simense
         ObjNotExistOrLengthError = 0x0A,
     };
 
-    public enum SimenseDataType : byte
+    public enum SiemensDataType : byte
     {
         Error = 0x00,
         BitAccess = 0x03,
         OtherAccess = 0x04
     };
 
-    public abstract class SimenseProtocal : BaseProtocal
+    public abstract class SiemensProtocal : BaseProtocal
     {
 
     }
 
-    internal class CreateReferenceSimenseInputStruct : InputStruct
+    internal class CreateReferenceSiemensInputStruct : InputStruct
     {
-        public CreateReferenceSimenseInputStruct(byte tdpuSize, ushort srcTsap, ushort dstTsap)
+        public CreateReferenceSiemensInputStruct(byte tdpuSize, ushort srcTsap, ushort dstTsap)
         {
             TdpuSize = tdpuSize;
             TsapSrc = srcTsap;
@@ -53,9 +53,9 @@ namespace ModBus.Net.Simense
         public ushort TsapDst;
     }
 
-    internal class CreateReferenceSimenseOutputStruct : OutputStruct
+    internal class CreateReferenceSiemensOutputStruct : OutputStruct
     {
-        public CreateReferenceSimenseOutputStruct(byte tdpuSize, ushort srcTsap, ushort dstTsap)
+        public CreateReferenceSiemensOutputStruct(byte tdpuSize, ushort srcTsap, ushort dstTsap)
         {
             TdpuSize = tdpuSize;
             TsapSrc = srcTsap;
@@ -67,11 +67,11 @@ namespace ModBus.Net.Simense
         public ushort TsapDst { get; private set; }
     }
 
-    internal class CreateReferenceSimenseProtocal : SpecialProtocalUnit
+    internal class CreateReferenceSiemensProtocal : SpecialProtocalUnit
     {
         public override byte[] Format(InputStruct message)
         {
-            var r_message = (CreateReferenceSimenseInputStruct)message;
+            var r_message = (CreateReferenceSiemensInputStruct)message;
             const ushort head = 0x0300;
             const ushort len = 0x0016;
             const byte contentLen = 0x11;
@@ -115,13 +115,13 @@ namespace ModBus.Net.Simense
                     break;
                 }
             }
-            return new CreateReferenceSimenseOutputStruct(tdpuSize, srcTsap, dstTsap);
+            return new CreateReferenceSiemensOutputStruct(tdpuSize, srcTsap, dstTsap);
         }
     }
 
-    internal class EstablishAssociationSimenseInputStruct : InputStruct
+    internal class EstablishAssociationSiemensInputStruct : InputStruct
     {
-        public EstablishAssociationSimenseInputStruct(ushort pduRef, ushort maxCalling, ushort maxCalled, ushort maxPdu)
+        public EstablishAssociationSiemensInputStruct(ushort pduRef, ushort maxCalling, ushort maxCalled, ushort maxPdu)
         {
             PduRef = pduRef;
             MaxCalling = maxCalling;
@@ -135,9 +135,9 @@ namespace ModBus.Net.Simense
         public ushort MaxPdu { get; private set; }
     }
 
-    internal class EstablishAssociationSimenseOutputStruct : OutputStruct
+    internal class EstablishAssociationSiemensOutputStruct : OutputStruct
     {
-        public EstablishAssociationSimenseOutputStruct(ushort pduRef, ushort maxCalling, ushort maxCalled, ushort maxPdu)
+        public EstablishAssociationSiemensOutputStruct(ushort pduRef, ushort maxCalling, ushort maxCalled, ushort maxPdu)
         {
             PduRef = pduRef;
             MaxCalling = maxCalling;
@@ -151,11 +151,11 @@ namespace ModBus.Net.Simense
         public ushort MaxPdu { get; private set; }
     }
 
-    internal class EstablishAssociationSimenseProtocal : ProtocalUnit
+    internal class EstablishAssociationSiemensProtocal : ProtocalUnit
     {
         public override byte[] Format(InputStruct message)
         {
-            var r_message = (EstablishAssociationSimenseInputStruct) message;
+            var r_message = (EstablishAssociationSiemensInputStruct) message;
             const byte protoId = 0x32;
             const byte rosctr = 0x01;
             const ushort redId = 0x0000;
@@ -179,13 +179,13 @@ namespace ModBus.Net.Simense
             ushort maxCalling = ValueHelper.Instance.GetUShort(messageBytes, ref pos);
             ushort maxCalled = ValueHelper.Instance.GetUShort(messageBytes, ref pos);
             ushort maxPdu = ValueHelper.Instance.GetUShort(messageBytes, ref pos);
-            return new EstablishAssociationSimenseOutputStruct(pduRef,maxCalling,maxCalled,maxPdu);
+            return new EstablishAssociationSiemensOutputStruct(pduRef,maxCalling,maxCalled,maxPdu);
         }
     }
 
-    public class ReadRequestSimenseInputStruct : InputStruct
+    public class ReadRequestSiemensInputStruct : InputStruct
     {
-        public ReadRequestSimenseInputStruct(ushort pduRef, SimenseTypeCode getType, string startAddress, ushort getCount, AddressTranslator addressTranslator)
+        public ReadRequestSiemensInputStruct(ushort pduRef, SiemensTypeCode getType, string startAddress, ushort getCount, AddressTranslator addressTranslator)
         {
             PduRef = pduRef;
             TypeCode = (byte) getType;
@@ -205,9 +205,9 @@ namespace ModBus.Net.Simense
         public int Offset { get; private set; }
     }
       
-    public class ReadRequestSimenseOutputStruct : OutputStruct
+    public class ReadRequestSiemensOutputStruct : OutputStruct
     {
-        public ReadRequestSimenseOutputStruct(ushort pduRef, SimenseAccessResult accessResult, SimenseDataType dataType, ushort getLength, byte[] value)
+        public ReadRequestSiemensOutputStruct(ushort pduRef, SiemensAccessResult accessResult, SiemensDataType dataType, ushort getLength, byte[] value)
         {
             PduRef = pduRef;
             AccessResult = accessResult;
@@ -217,17 +217,17 @@ namespace ModBus.Net.Simense
         }
 
         public ushort PduRef { get; private set; }
-        public SimenseAccessResult AccessResult { get; private set; }
-        public SimenseDataType DataType { get; private set; }
+        public SiemensAccessResult AccessResult { get; private set; }
+        public SiemensDataType DataType { get; private set; }
         public ushort GetLength { get; private set; }
         public byte[] GetValue { get; private set; }
     }
 
-    public class ReadRequestSimenseProtocal : ProtocalUnit
+    public class ReadRequestSiemensProtocal : ProtocalUnit
     {
         public override byte[] Format(InputStruct message)
         {
-            var r_message = (ReadRequestSimenseInputStruct) message;
+            var r_message = (ReadRequestSiemensInputStruct) message;
             const byte protoId = 0x32;
             const byte rosctr = 0x01;
             const ushort redId = 0x0000;
@@ -261,14 +261,14 @@ namespace ModBus.Net.Simense
             int byteLength = length/8;
             var values = new Byte[byteLength];
             Array.Copy(messageBytes, pos, values, 0, byteLength);
-            return new ReadRequestSimenseOutputStruct(pduRef, (SimenseAccessResult) accessResult,
-                (SimenseDataType) dataType, length, values);
+            return new ReadRequestSiemensOutputStruct(pduRef, (SiemensAccessResult) accessResult,
+                (SiemensDataType) dataType, length, values);
         }
     }
 
-    public class WriteRequestSimenseInputStruct : InputStruct
+    public class WriteRequestSiemensInputStruct : InputStruct
     {
-        public WriteRequestSimenseInputStruct(ushort pduRef, string startAddress, object[] writeValue, AddressTranslator addressTranslator)
+        public WriteRequestSiemensInputStruct(ushort pduRef, string startAddress, object[] writeValue, AddressTranslator addressTranslator)
         {
             PduRef = pduRef;
             var address = addressTranslator.AddressTranslate(startAddress, true);
@@ -286,24 +286,24 @@ namespace ModBus.Net.Simense
         public object[] WriteValue { get; private set; }
     }
 
-    public class WriteRequestSimenseOutputStruct : OutputStruct
+    public class WriteRequestSiemensOutputStruct : OutputStruct
     {
-        public WriteRequestSimenseOutputStruct(ushort pduRef, SimenseAccessResult accessResult)
+        public WriteRequestSiemensOutputStruct(ushort pduRef, SiemensAccessResult accessResult)
         {
             PduRef = pduRef;
             AccessResult = accessResult;
         }
 
         public ushort PduRef { get; private set; }
-        public SimenseAccessResult AccessResult {get; private set; }
+        public SiemensAccessResult AccessResult {get; private set; }
 
     }
 
-    public class WriteRequestSimenseProtocal : ProtocalUnit
+    public class WriteRequestSiemensProtocal : ProtocalUnit
     {
         public override byte[] Format(InputStruct message)
         {
-            var r_message = (WriteRequestSimenseInputStruct) message;
+            var r_message = (WriteRequestSiemensInputStruct) message;
             byte[] valueBytes = ValueHelper.Instance.ObjectArrayToByteArray(r_message.WriteValue);
             const byte protoId = 0x32;
             const byte rosctr = 0x01;
@@ -316,14 +316,14 @@ namespace ModBus.Net.Simense
             const byte variableSpec = 0x12;
             const byte vAddrLg = 0x0A;
             const byte syntaxId = 0x10;
-            const byte typeR = (byte)SimenseTypeCode.Byte;
+            const byte typeR = (byte)SiemensTypeCode.Byte;
             ushort numberOfElements = (ushort)valueBytes.Length;
             ushort dbBlock = r_message.DbBlock;
             byte area = r_message.Area;
             int offsetBit = r_message.Offset * 8;
             byte[] offsetBitBytes = ValueHelper.Instance.GetBytes(offsetBit);
             const byte reserved = 0x00;
-            const byte type = (byte)SimenseDataType.OtherAccess;
+            const byte type = (byte)SiemensDataType.OtherAccess;
             ushort numberOfWriteBits = (ushort)(valueBytes.Length*8);
             return Format(new byte[7], protoId, rosctr, redId, pduRef, parLg, datLg, serviceId, numberOfVariables
                 , variableSpec, vAddrLg, syntaxId, typeR, numberOfElements, dbBlock, area,
@@ -336,13 +336,13 @@ namespace ModBus.Net.Simense
             ushort pduRef = ValueHelper.Instance.GetUShort(messageBytes, ref pos);
             pos = 14;
             byte accessResult = ValueHelper.Instance.GetByte(messageBytes, ref pos);
-            return new WriteRequestSimenseOutputStruct(pduRef, (SimenseAccessResult)accessResult);
+            return new WriteRequestSiemensOutputStruct(pduRef, (SiemensAccessResult)accessResult);
         }
     }
 
-    public class ReadTimeSimenseInputStruct : InputStruct
+    public class ReadTimeSiemensInputStruct : InputStruct
     {
-        public ReadTimeSimenseInputStruct(ushort pduRef)
+        public ReadTimeSiemensInputStruct(ushort pduRef)
         {
             PduRef = pduRef;
         }
@@ -350,9 +350,9 @@ namespace ModBus.Net.Simense
         public ushort PduRef { get; private set; }
     }
 
-    public class ReadTimeSimenseOutputStruct : OutputStruct
+    public class ReadTimeSiemensOutputStruct : OutputStruct
     {
-        public ReadTimeSimenseOutputStruct(ushort pduRef, DateTime dateTime, TodClockStatus todClockStatus)
+        public ReadTimeSiemensOutputStruct(ushort pduRef, DateTime dateTime, TodClockStatus todClockStatus)
         {
             PduRef = pduRef;
             DateTime = dateTime;
@@ -364,7 +364,7 @@ namespace ModBus.Net.Simense
         public TodClockStatus TodClockStatus { get; private set; }
     }
 
-    public class ReadTimeSimenseProtocal : ProtocalUnit
+    public class ReadTimeSiemensProtocal : ProtocalUnit
     {
         public override byte[] Format(InputStruct message)
         {
@@ -377,9 +377,9 @@ namespace ModBus.Net.Simense
         }
     }
 
-    public class WriteTimeSimenseInputStruct : InputStruct
+    public class WriteTimeSiemensInputStruct : InputStruct
     {
-        public WriteTimeSimenseInputStruct(ushort pduRef, DateTime dateTime, TodClockStatus todClockStatus)
+        public WriteTimeSiemensInputStruct(ushort pduRef, DateTime dateTime, TodClockStatus todClockStatus)
         {
             PduRef = pduRef;
             DateTime = dateTime;
@@ -391,9 +391,9 @@ namespace ModBus.Net.Simense
         public TodClockStatus TodClockStatus { get; private set; }
     }
 
-    public class WriteTimeSimenseOutputStruct : OutputStruct
+    public class WriteTimeSiemensOutputStruct : OutputStruct
     {
-        public WriteTimeSimenseOutputStruct(ushort pduRef, byte errCod)
+        public WriteTimeSiemensOutputStruct(ushort pduRef, byte errCod)
         {
             PduRef = pduRef;
             ErrCod = errCod;
@@ -403,7 +403,7 @@ namespace ModBus.Net.Simense
         public byte ErrCod { get;private set; }
     }
 
-    public class WriteTimeSimenseProtocal : ProtocalUnit
+    public class WriteTimeSiemensProtocal : ProtocalUnit
     {
         public override byte[] Format(InputStruct message)
         {
@@ -416,7 +416,7 @@ namespace ModBus.Net.Simense
         }
     }
 
-    public class SimenseProtocalErrorException : ProtocalErrorException
+    public class SiemensProtocalErrorException : ProtocalErrorException
     {
         public int ErrorClass { get; private set; }
         public int ErrorCode { get; private set; }
@@ -436,7 +436,7 @@ namespace ModBus.Net.Simense
             {0xEF, "Layer 2 specific error"},
         };
 
-        public SimenseProtocalErrorException(int errCls, int errCod)
+        public SiemensProtocalErrorException(int errCls, int errCod)
             : base(ProtocalErrorDictionary[errCls] + " : " + errCod)
         {
             ErrorClass = errCls;

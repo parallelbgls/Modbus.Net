@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace ModBus.Net.Simense
+namespace ModBus.Net.Siemens
 {
-    public class SimenseTcpProtocalLinker : TcpProtocalLinker
+    public class SiemensTcpProtocalLinker : TcpProtocalLinker
     {
         public override bool CheckRight(byte[] content)
         {
@@ -17,10 +17,10 @@ namespace ModBus.Net.Simense
                     {
                         case 0x03:
                             if (content[17] == 0x00 && content[18] == 0x00) return true;
-                            throw new SimenseProtocalErrorException(content[17],content[18]);
+                            throw new SiemensProtocalErrorException(content[17],content[18]);
                         case 0x07:
                             if (content[27] == 0x00 && content[28] == 0x00) return true;
-                            throw new SimenseProtocalErrorException(content[27],content[28]);
+                            throw new SiemensProtocalErrorException(content[27],content[28]);
                     }
                     return true;
                 default:
@@ -28,7 +28,7 @@ namespace ModBus.Net.Simense
             }
         }
 
-        public SimenseTcpProtocalLinker(string ip)
+        public SiemensTcpProtocalLinker(string ip)
             : base(ip, 102)
         {
             

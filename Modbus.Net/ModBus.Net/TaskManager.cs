@@ -12,7 +12,7 @@ namespace ModBus.Net
         public static int Restore = 0;
     }
 
-    public class LimitedConcurrencyLevelTaskScheduler : TaskScheduler
+    /*public class LimitedConcurrencyLevelTaskScheduler : TaskScheduler
     {
         /// <summary>
         /// Whether the current thread is processing work items.
@@ -161,21 +161,36 @@ namespace ModBus.Net
                 if (lockTaken) Monitor.Exit(_tasks);
             }
         }
-    }
+    }*/
 
     public class TaskManager
     {
+        /// <summary>
+        /// 正在运行的设备
+        /// </summary>
         private HashSet<BaseMachine> _machines;
+        /// <summary>
+        /// 不在运行的设备
+        /// </summary>
         private HashSet<BaseMachine> _unlinkedMachines;
-        private TaskFactory<Dictionary<string,ReturnUnit>> _tasks;
+        //private TaskFactory<Dictionary<string,ReturnUnit>> _tasks;
         private TaskScheduler _scheduler;
-        private CancellationTokenSource _cts;
+        //private CancellationTokenSource _cts;
 
+        /// <summary>
+        /// 正常读取的计时器
+        /// </summary>
         private Timer _timer;
+        /// <summary>
+        /// 重连计时器
+        /// </summary>
         private Timer _timer2;
 
         private bool _keepConnect;
 
+        /// <summary>
+        /// 保持连接
+        /// </summary>
         public bool KeepConnect
         {
             get { return _keepConnect; }
@@ -200,7 +215,7 @@ namespace ModBus.Net
         private int _getCycle;
 
         /// <summary>
-        /// 毫秒
+        /// 获取间隔，毫秒
         /// </summary>
         public int GetCycle
         {
@@ -237,14 +252,15 @@ namespace ModBus.Net
                     {
                         _getCycle = value;
                     }
-                    _timer = new Timer(MaintainTasks, null, 0, _getCycle * 1000);
-                    _timer2 = new Timer(MaintainTasks2, null, _getCycle * 2000, _getCycle * 2000);                  
+                    _timer = new Timer(MaintainTasks, null, 0, _getCycle);
+                    _timer2 = new Timer(MaintainTasks2, null, _getCycle * 2, _getCycle * 2);  
+                    //调试行，调试时请注释上面两行并取消下面一行的注释，每台设备只会执行一次数据获取。                
                     //MaintainTasks(null);
                 }
             }
         }
 
-        public int MaxRunningTasks
+        /*public int MaxRunningTasks
         {
             get { return _scheduler.MaximumConcurrencyLevel; }
             set
@@ -252,17 +268,27 @@ namespace ModBus.Net
                 TaskStop();
                 _scheduler = new LimitedConcurrencyLevelTaskScheduler(value);           
             }
-        }
+        }*/
 
-        public TaskManager(int maxRunningTask, int getCycle, bool keepConnect)
+        /// <summary>
+        /// 构造一个TaskManager
+        /// </summary>
+        /// <param name="maxRunningTask">同时可以运行的任务数</param>
+        /// <param name="getCycle">读取数据的时间间隔（秒）</param>
+        /// <param name="keepConnect">读取数据后是否保持连接</param>
+        public TaskManager(/*int maxRunningTask,*/ int getCycle, bool keepConnect)
         {
-            _scheduler = new LimitedConcurrencyLevelTaskScheduler(maxRunningTask);
+            //_scheduler = new LimitedConcurrencyLevelTaskScheduler(maxRunningTask);
             _machines = new HashSet<BaseMachine>(new BaseMachineEqualityComparer());
             _unlinkedMachines = new HashSet<BaseMachine>(new BaseMachineEqualityComparer());
             _getCycle = getCycle;
             KeepConnect = keepConnect;
         }
 
+        /// <summary>
+        /// 添加一台设备
+        /// </summary>
+        /// <param name="machine">设备</param>
         public void AddMachine(BaseMachine machine)
         {
             machine.KeepConnect = KeepConnect;
@@ -272,6 +298,10 @@ namespace ModBus.Net
             }
         }
 
+        /// <summary>
+        /// 添加多台设备
+        /// </summary>
+        /// <param name="machines">设备的列表</param>
         public void AddMachines(IEnumerable<BaseMachine> machines)
         {
             lock (_machines)
@@ -283,19 +313,35 @@ namespace ModBus.Net
             }
         }
 
+        /// <summary>
+        /// 根据设备的连接地址移除设备
+        /// </summary>
+        /// <param name="machineToken">设备的连接地址</param>
         public void RemoveMachineWithToken(string machineToken)
         {
             lock (_machines)
             {
                 _machines.RemoveWhere(p => p.ConnectionToken == machineToken);
             }
+            lock (_unlinkedMachines)
+            {
+                _unlinkedMachines.RemoveWhere(p => p.ConnectionToken == machineToken);
+            }
         }
 
+        /// <summary>
+        /// 根据设备的id移除设备
+        /// </summary>
+        /// <param name="id">设备的id</param>
         public void RemoveMachineWithId(int id)
         {
             lock (_machines)
             {
                 _machines.RemoveWhere(p => p.Id == id);
+            }
+            lock (_unlinkedMachines)
+            {
+                _unlinkedMachines.RemoveWhere(p => p.Id == id);
             }
         }
 
@@ -335,11 +381,19 @@ namespace ModBus.Net
             }
         }
 
+        /// <summary>
+        /// 移除设备
+        /// </summary>
+        /// <param name="machine">设备的实例</param>
         public void RemoveMachine(BaseMachine machine)
         {
             lock (_machines)
             {
                 _machines.Remove(machine);
+            }
+            lock (_unlinkedMachines)
+            {
+                _unlinkedMachines.Remove(machine);
             }
         }
 
@@ -380,7 +434,7 @@ namespace ModBus.Net
                 try
                 {
                     CancellationTokenSource cts = new CancellationTokenSource();
-                    cts.CancelAfter(TimeSpan.FromSeconds(30));
+                    cts.CancelAfter(TimeSpan.FromSeconds(_getCycle * 10));
                     await RunTask(machine).WithCancellation(cts.Token);
                 }
                 catch
@@ -393,8 +447,8 @@ namespace ModBus.Net
         public void TaskStart()
         {
             TaskStop();
-            _cts = new CancellationTokenSource();
-            _tasks = new TaskFactory<Dictionary<string,ReturnUnit>>(_cts.Token, TaskCreationOptions.None, TaskContinuationOptions.None, _scheduler);
+            //_cts = new CancellationTokenSource();
+            //_tasks = new TaskFactory<Dictionary<string,ReturnUnit>>(_cts.Token, TaskCreationOptions.None, TaskContinuationOptions.None, _scheduler);
             GetCycle = TimeRestore.Restore;
         }
 
@@ -403,10 +457,10 @@ namespace ModBus.Net
             lock (_machines)
             {
                 GetCycle = Timeout.Infinite;
-                if (_cts != null)
-                {
-                    _cts.Cancel();
-                }
+                //if (_cts != null)
+                //{
+                //    _cts.Cancel();
+                //}
                 if (_machines != null)
                 {
                     foreach (var machine in _machines)
@@ -414,7 +468,7 @@ namespace ModBus.Net
                         machine.Disconnect();
                     }
                 }
-                _tasks = null;
+                //_tasks = null;
             }
         }
 
@@ -422,9 +476,13 @@ namespace ModBus.Net
         {
             try
             {
+                //调试代码，调试时取消下面一下代码的注释，会同步调用获取数据。
                 //var ans = machine.GetDatas();
+                //设置Cancellation Token
                 CancellationTokenSource cts = new CancellationTokenSource();
+                //超时后取消任务
                 cts.CancelAfter(TimeSpan.FromSeconds(_getCycle));
+                //读取数据
                 var ans = await machine.GetDatasAsync().WithCancellation(cts.Token);
                 if (!machine.IsConnected)
                 {
