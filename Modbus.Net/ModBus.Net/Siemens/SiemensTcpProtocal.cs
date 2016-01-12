@@ -37,7 +37,7 @@ namespace ModBus.Net.Siemens
 
         public override async Task<byte[]> SendReceiveAsync(params object[] content)
         {
-            while (!ProtocalLinker.IsConnected)
+            if (ProtocalLinker == null || !ProtocalLinker.IsConnected)
             {
                 await ConnectAsync();
             }
@@ -51,7 +51,7 @@ namespace ModBus.Net.Siemens
 
         public override async Task<OutputStruct> SendReceiveAsync(ProtocalUnit unit, InputStruct content)
         {
-            if (!ProtocalLinker.IsConnected)
+            if (ProtocalLinker == null || !ProtocalLinker.IsConnected)
             {
                 if (connectTryCount > 10) return null;
                 return await await ConnectAsync().ContinueWith(answer => answer.Result ? base.SendReceiveAsync(unit, content) : null);

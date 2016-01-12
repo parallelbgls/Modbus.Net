@@ -60,7 +60,7 @@ namespace ModBus.Net
         /// <returns></returns>
         public virtual byte[] SendReceive(params object[] content)
         {
-            return ProtocalLinker.SendReceive(ProtocalUnit.TranslateContent(content));
+            return AsyncHelper.RunSync(() => SendReceiveAsync(content));
         }
 
         /// <summary>
@@ -70,6 +70,10 @@ namespace ModBus.Net
         /// <returns></returns>
         public virtual async Task<byte[]> SendReceiveAsync(params object[] content)
         {
+            if (ProtocalLinker == null || !ProtocalLinker.IsConnected)
+            {
+                await ConnectAsync();
+            }
             return await ProtocalLinker.SendReceiveAsync(ProtocalUnit.TranslateContent(content));
         }
 
