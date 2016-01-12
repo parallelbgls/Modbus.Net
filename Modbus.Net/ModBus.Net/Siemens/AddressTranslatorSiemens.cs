@@ -55,7 +55,7 @@ namespace ModBus.Net.Siemens
             string[] splitString = address.Split(' ');
             string head = splitString[0];
             string tail = splitString[1];
-            if (head.Substring(0, 2) == "DB")
+            if (head.Length > 1 && head.Substring(0, 2) == "DB")
             {
                 head = head.Substring(2);
                 return new KeyValuePair<int, int>(int.Parse(tail),
