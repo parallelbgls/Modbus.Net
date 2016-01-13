@@ -61,7 +61,7 @@ namespace ModBus.Net {
         }
         
         /// <summary>
-        ///   查找类似 COM6 的本地化字符串。
+        ///   查找类似 COM1 的本地化字符串。
         /// </summary>
         internal static string COM {
             get {
@@ -70,7 +70,7 @@ namespace ModBus.Net {
         }
         
         /// <summary>
-        ///   查找类似 192.168.3.247 的本地化字符串。
+        ///   查找类似 192.168.1.1 的本地化字符串。
         /// </summary>
         internal static string IP {
             get {
@@ -90,9 +90,18 @@ namespace ModBus.Net {
         /// <summary>
         ///   查找类似 502 的本地化字符串。
         /// </summary>
-        internal static string Port {
+        internal static string ModbusPort {
             get {
-                return ResourceManager.GetString("Port", resourceCulture);
+                return ResourceManager.GetString("ModbusPort", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 102 的本地化字符串。
+        /// </summary>
+        internal static string SiemensPort {
+            get {
+                return ResourceManager.GetString("SiemensPort", resourceCulture);
             }
         }
     }

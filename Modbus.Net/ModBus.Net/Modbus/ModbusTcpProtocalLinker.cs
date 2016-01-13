@@ -18,7 +18,7 @@
             return true;
         }
 
-        public ModbusTcpProtocalLinker(string ip) : base(ip, 102)
+        public ModbusTcpProtocalLinker(string ip) : base(ip, int.Parse(ConfigurationManager.ModbusPort))
         {
             
         }

@@ -118,15 +118,18 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="COM" xml:space="preserve">
-    <value>COM6</value>
+    <value>COM1</value>
   </data>
   <data name="IP" xml:space="preserve">
-    <value>192.168.3.247</value>
+    <value>192.168.1.1</value>
   </data>
   <data name="IPConnectionTimeout" xml:space="preserve">
     <value>5000</value>
   </data>
-  <data name="Port" xml:space="preserve">
+  <data name="ModbusPort" xml:space="preserve">
     <value>502</value>
+  </data>
+  <data name="SiemensPort" xml:space="preserve">
+    <value>102</value>
   </data>
 </root>

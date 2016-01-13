@@ -8,7 +8,7 @@ namespace ModBus.Net
     public abstract class TcpProtocalLinker : ProtocalLinker
     {
         
-        protected TcpProtocalLinker() : this(ConfigurationManager.IP, int.Parse(ConfigurationManager.Port))
+        protected TcpProtocalLinker() : this(ConfigurationManager.IP, int.Parse(ConfigurationManager.ModbusPort))
         {
             
         }
