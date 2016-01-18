@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace ModBus.Net
@@ -25,8 +26,6 @@ namespace ModBus.Net
             {"System.Double", 8}
         };
 
-        protected static bool _littleEndian = false;
-
         protected ValueHelper()
         {
         }
@@ -36,12 +35,7 @@ namespace ModBus.Net
         /// </summary>
         public static bool LittleEndian
         {
-            get { return _littleEndian; }
-            set
-            {
-                _littleEndian = value;
-                _Instance = LittleEndian ? new ValueHelper() : new BigEndianValueHelper();
-            }
+            get { return true; }
         }
 
         #region Factory
@@ -57,7 +51,7 @@ namespace ModBus.Net
             {
                 if (_Instance == null)
                 {
-                    _Instance = LittleEndian ? new ValueHelper() : new BigEndianValueHelper();
+                    _Instance = new ValueHelper();
                 }
                 return _Instance;
             }
@@ -164,6 +158,16 @@ namespace ModBus.Net
         /// <returns></returns>
         public virtual object GetValue(byte[] data, ref int pos, Type t)
         {
+            ValueHelper Instance;
+            if (this is BigEndianValueHelper)
+            {
+                Instance = BigEndianValueHelper.Instance;
+            }
+            else
+            {
+                Instance = ValueHelper.Instance;
+            }
+
             switch (t.FullName)
             {
                 case "System.Int16":
@@ -359,8 +363,18 @@ namespace ModBus.Net
         /// </summary>
         /// <param name="contents"></param>
         /// <returns></returns>
-        public byte[] ObjectArrayToByteArray(object[] contents)
+        public virtual byte[] ObjectArrayToByteArray(object[] contents)
         {
+            ValueHelper Instance;
+            if (this is BigEndianValueHelper)
+            {
+                Instance = BigEndianValueHelper.Instance;
+            }
+            else
+            {
+                Instance = ValueHelper.Instance;
+            }
+
             bool b = false;
             //先查找传入的结构中有没有数组，有的话将其打开
             var newContentsList = new List<object>();
@@ -400,7 +414,7 @@ namespace ModBus.Net
                         boolToByteTemp = 0;
                     }
                     lastIsBool = true;
-                    if (_littleEndian)
+                    if (LittleEndian)
                     {
                         boolToByteTemp = (byte)(boolToByteTemp * 2 + ((bool)content ? 1 : 0));
                     }
@@ -488,7 +502,7 @@ namespace ModBus.Net
         /// <param name="contents">byte数组</param>
         /// <param name="translateTypeAndCount">单一的类型和需要转换的个数的键值对</param>
         /// <returns>object数组</returns>
-        public object[] ByteArrayToObjectArray(byte[] contents, KeyValuePair<Type, int> translateTypeAndCount)
+        public virtual object[] ByteArrayToObjectArray(byte[] contents, KeyValuePair<Type, int> translateTypeAndCount)
         {
             return ByteArrayToObjectArray(contents, new List<KeyValuePair<Type, int>>() {translateTypeAndCount});
         }
@@ -499,9 +513,19 @@ namespace ModBus.Net
         /// <param name="contents">byte数组</param>
         /// <param name="translateTypeAndCount">一连串类型和需要转换的个数的键值对，该方法会依次转换每一个需要转的目标数据类型。比如：typeof(int),5; typeof(short),3 会转换出8个元素（当然前提是byte数组足够长的时候），5个int和3个short，然后全部变为object类型返回。</param>
         /// <returns>object数组</returns>
-        public object[] ByteArrayToObjectArray(byte[] contents,
+        public virtual object[] ByteArrayToObjectArray(byte[] contents,
             IEnumerable<KeyValuePair<Type, int>> translateTypeAndCount)
         {
+            ValueHelper Instance;
+            if (this is BigEndianValueHelper)
+            {
+                Instance = BigEndianValueHelper.Instance;
+            }
+            else
+            {
+                Instance = ValueHelper.Instance;
+            }
+
             List<object> translation = new List<object>();
             int count = 0;
             foreach (var translateUnit in translateTypeAndCount)
@@ -672,8 +696,32 @@ namespace ModBus.Net
         }
     }
 
-    internal class BigEndianValueHelper : ValueHelper
+    public class BigEndianValueHelper : ValueHelper
     {
+        protected static BigEndianValueHelper _BigEndianInstance;
+
+        protected BigEndianValueHelper()
+        {
+            
+        }
+
+        protected new bool LittleEndian
+        {
+            get { return false; }
+        }
+
+        public new static BigEndianValueHelper Instance 
+        {
+            get
+            {
+                if (_BigEndianInstance == null)
+                {
+                    _BigEndianInstance = new BigEndianValueHelper();
+                }
+                return _BigEndianInstance;
+            }
+        }
+
         public override Byte[] GetBytes(short value)
         {
             return Reverse(BitConverter.GetBytes(value));

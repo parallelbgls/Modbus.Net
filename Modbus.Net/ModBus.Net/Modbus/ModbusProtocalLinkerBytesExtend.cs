@@ -13,8 +13,8 @@ namespace ModBus.Net.Modbus
             byte[] newFormat = new byte[6 + content.Length];
             int tag = 0;
             ushort leng = (ushort)content.Length;
-            Array.Copy(ValueHelper.Instance.GetBytes(tag), 0, newFormat, 0, 4);
-            Array.Copy(ValueHelper.Instance.GetBytes(leng), 0, newFormat, 4, 2);
+            Array.Copy(BigEndianValueHelper.Instance.GetBytes(tag), 0, newFormat, 0, 4);
+            Array.Copy(BigEndianValueHelper.Instance.GetBytes(leng), 0, newFormat, 4, 2);
             Array.Copy(content, 0, newFormat, 6, content.Length);
             return newFormat;
         }

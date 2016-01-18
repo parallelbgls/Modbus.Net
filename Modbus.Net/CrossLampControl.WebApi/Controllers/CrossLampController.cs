@@ -27,7 +27,7 @@ namespace CrossLampControl.WebApi.Controllers
             Lamp light = new Lamp();
             object[] lampsbyte = _utility.GetDatas(2, 0, "Q 0", new KeyValuePair<Type, int>(typeof(bool), 7));
             bool[] lamps =
-                ValueHelper.Instance.ObjectArrayToDestinationArray<bool>(
+                BigEndianValueHelper.Instance.ObjectArrayToDestinationArray<bool>(
                     lampsbyte);
             if (lamps[0])
             {

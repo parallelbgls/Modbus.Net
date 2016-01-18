@@ -64,8 +64,8 @@ namespace NA200H.UI.ConsoleApp
             ReadDataModbusOutputStruct readCoilStatusOutputStruct = (ReadDataModbusOutputStruct)wrapper.SendReceive(wrapper[typeof(ReadDataModbusProtocal)], readCoilStatusInputStruct);
             //第三步：读取这个输出结构体的信息。
             bool[] array =
-                ValueHelper.Instance.ObjectArrayToDestinationArray<bool>(
-                    ValueHelper.Instance.ByteArrayToObjectArray(readCoilStatusOutputStruct.DataValue,
+                BigEndianValueHelper.Instance.ObjectArrayToDestinationArray<bool>(
+                    BigEndianValueHelper.Instance.ByteArrayToObjectArray(readCoilStatusOutputStruct.DataValue,
                         new KeyValuePair<Type, int>(typeof (bool), 0x0a)));
             for (int i = 0; i < array.Length; i++)
             {
@@ -78,8 +78,8 @@ namespace NA200H.UI.ConsoleApp
             ReadDataModbusInputStruct readHoldRegisterInputStruct = new ReadDataModbusInputStruct(0x02, "NW 1", 4, addressTranslator);
             ReadDataModbusOutputStruct readHoldRegisterOutputStruct = (ReadDataModbusOutputStruct)wrapper.SendReceive(wrapper[typeof(ReadDataModbusProtocal)], readHoldRegisterInputStruct);
             ushort[] array2 =
-                ValueHelper.Instance.ObjectArrayToDestinationArray<ushort>(
-                    ValueHelper.Instance.ByteArrayToObjectArray(readHoldRegisterOutputStruct.DataValue,
+                BigEndianValueHelper.Instance.ObjectArrayToDestinationArray<ushort>(
+                    BigEndianValueHelper.Instance.ByteArrayToObjectArray(readHoldRegisterOutputStruct.DataValue,
                         new KeyValuePair<Type, int>(typeof (ushort), 8)));
             for (int i = 0; i < array2.Length; i++)
             {
@@ -128,8 +128,8 @@ namespace NA200H.UI.ConsoleApp
                 (ReadRequestSiemensOutputStruct)
                     wrapper.SendReceive(wrapper[typeof(ReadRequestSiemensProtocal)], readRequestSiemensInputStruct);
             ushort[] array =
-                ValueHelper.Instance.ObjectArrayToDestinationArray<ushort>(
-                    ValueHelper.Instance.ByteArrayToObjectArray(readRequestSiemensOutputStruct.GetValue,
+                BigEndianValueHelper.Instance.ObjectArrayToDestinationArray<ushort>(
+                    BigEndianValueHelper.Instance.ByteArrayToObjectArray(readRequestSiemensOutputStruct.GetValue,
                         new KeyValuePair<Type, int>(typeof (ushort), 2)));
             for (int i = 0; i < array.Length; i++)
             {

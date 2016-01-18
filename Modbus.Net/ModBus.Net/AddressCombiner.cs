@@ -30,19 +30,19 @@ namespace ModBus.Net
                     if (initNum < 0)
                     {
                         initNum = address.Address;
-                        getCount = (int)ValueHelper.Instance.ByteLength[address.DataType.FullName];
+                        getCount = (int)BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName];
                     }
                     else
                     {
-                        if (address.Address > preNum + ValueHelper.Instance.ByteLength[preType.FullName])
+                        if (address.Address > preNum + BigEndianValueHelper.Instance.ByteLength[preType.FullName])
                         {
                             ans.Add(new CommunicationUnit(){Area = area, Address = initNum, GetCount = getCount, DataType = typeof(byte)});
                             initNum = address.Address;
-                            getCount = (int)ValueHelper.Instance.ByteLength[address.DataType.FullName];
+                            getCount = (int)BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName];
                         }
                         else
                         {
-                            getCount += (int)ValueHelper.Instance.ByteLength[address.DataType.FullName];
+                            getCount += (int)BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName];
                         }
                     }
                     preNum = address.Address;

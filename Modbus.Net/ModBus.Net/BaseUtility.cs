@@ -67,10 +67,10 @@ namespace ModBus.Net
             try
             {
                 string typeName = getTypeAndCount.Key.FullName;
-                double bCount = ValueHelper.Instance.ByteLength[typeName];
+                double bCount = BigEndianValueHelper.Instance.ByteLength[typeName];
                 byte[] getBytes = GetDatas(belongAddress, masterAddress, startAddress,
                     (int) Math.Ceiling(bCount*getTypeAndCount.Value));
-                return ValueHelper.Instance.ByteArrayToObjectArray(getBytes, getTypeAndCount);
+                return BigEndianValueHelper.Instance.ByteArrayToObjectArray(getBytes, getTypeAndCount);
             }
             catch (Exception)
             {
@@ -84,10 +84,10 @@ namespace ModBus.Net
             try
             {
                 string typeName = getTypeAndCount.Key.FullName;
-                double bCount = ValueHelper.Instance.ByteLength[typeName];
+                double bCount = BigEndianValueHelper.Instance.ByteLength[typeName];
                 byte[] getBytes = await GetDatasAsync(belongAddress, masterAddress, startAddress,
                     (int) Math.Ceiling(bCount*getTypeAndCount.Value));
-                return ValueHelper.Instance.ByteArrayToObjectArray(getBytes, getTypeAndCount);
+                return BigEndianValueHelper.Instance.ByteArrayToObjectArray(getBytes, getTypeAndCount);
             }
             catch (Exception)
             {
@@ -102,7 +102,7 @@ namespace ModBus.Net
             {
                 var getBytes = GetDatas(belongAddress, masterAddress, startAddress,
                     new KeyValuePair<Type, int>(typeof (T), getByteCount));
-                return ValueHelper.Instance.ObjectArrayToDestinationArray<T>(getBytes);
+                return BigEndianValueHelper.Instance.ObjectArrayToDestinationArray<T>(getBytes);
             }
             catch (Exception)
             {
@@ -117,7 +117,7 @@ namespace ModBus.Net
             {
                 var getBytes = await GetDatasAsync(belongAddress, masterAddress, startAddress,
                     new KeyValuePair<Type, int>(typeof(T), getByteCount));
-                return ValueHelper.Instance.ObjectArrayToDestinationArray<T>(getBytes);
+                return BigEndianValueHelper.Instance.ObjectArrayToDestinationArray<T>(getBytes);
             }
             catch (Exception)
             {
@@ -134,11 +134,11 @@ namespace ModBus.Net
                 foreach (var getTypeAndCount in getTypeAndCountList)
                 {
                     string typeName = getTypeAndCount.Key.FullName;
-                    double bCount = ValueHelper.Instance.ByteLength[typeName];
+                    double bCount = BigEndianValueHelper.Instance.ByteLength[typeName];
                     bAllCount += (int)Math.Ceiling(bCount * getTypeAndCount.Value);
                 }
                 byte[] getBytes = GetDatas(belongAddress, masterAddress, startAddress, bAllCount);
-                return ValueHelper.Instance.ByteArrayToObjectArray(getBytes, getTypeAndCountList);
+                return BigEndianValueHelper.Instance.ByteArrayToObjectArray(getBytes, getTypeAndCountList);
             }
             catch (Exception)
             {
@@ -155,11 +155,11 @@ namespace ModBus.Net
                 foreach (var getTypeAndCount in getTypeAndCountList)
                 {
                     string typeName = getTypeAndCount.Key.FullName;
-                    double bCount = ValueHelper.Instance.ByteLength[typeName];
+                    double bCount = BigEndianValueHelper.Instance.ByteLength[typeName];
                     bAllCount += (int)Math.Ceiling(bCount * getTypeAndCount.Value);
                 }
                 byte[] getBytes = await GetDatasAsync(belongAddress, masterAddress, startAddress, bAllCount);
-                return ValueHelper.Instance.ByteArrayToObjectArray(getBytes, getTypeAndCountList);
+                return BigEndianValueHelper.Instance.ByteArrayToObjectArray(getBytes, getTypeAndCountList);
             }
             catch (Exception)
             {

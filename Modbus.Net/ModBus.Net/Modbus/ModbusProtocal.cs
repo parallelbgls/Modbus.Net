@@ -104,9 +104,9 @@ namespace ModBus.Net.Modbus
 
         public override OutputStruct Unformat(byte[] messageBytes, ref int pos)
         {
-            byte belongAddress = ValueHelper.Instance.GetByte(messageBytes, ref pos);
-            byte functionCode = ValueHelper.Instance.GetByte(messageBytes, ref pos);
-            byte dataCount = ValueHelper.Instance.GetByte(messageBytes, ref pos);
+            byte belongAddress = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
+            byte functionCode = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
+            byte dataCount = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
             byte[] dataValue = new byte[dataCount];
             Array.Copy(messageBytes, 3, dataValue, 0, dataCount);
             return new ReadDataModbusOutputStruct(belongAddress, functionCode, dataCount, dataValue);
@@ -178,10 +178,10 @@ namespace ModBus.Net.Modbus
 
         public override OutputStruct Unformat(byte[] messageBytes, ref int flag)
         {
-            byte belongAddress = ValueHelper.Instance.GetByte(messageBytes, ref flag);
-            byte functionCode = ValueHelper.Instance.GetByte(messageBytes, ref flag);
-            ushort startAddress = ValueHelper.Instance.GetUShort(messageBytes, ref flag);
-            ushort writeCount = ValueHelper.Instance.GetUShort(messageBytes, ref flag);
+            byte belongAddress = BigEndianValueHelper.Instance.GetByte(messageBytes, ref flag);
+            byte functionCode = BigEndianValueHelper.Instance.GetByte(messageBytes, ref flag);
+            ushort startAddress = BigEndianValueHelper.Instance.GetUShort(messageBytes, ref flag);
+            ushort writeCount = BigEndianValueHelper.Instance.GetUShort(messageBytes, ref flag);
             return new WriteDataModbusOutputStruct(belongAddress, functionCode, startAddress,
                 writeCount);
         }
@@ -244,16 +244,16 @@ namespace ModBus.Net.Modbus
 
         public override OutputStruct Unformat(byte[] messageBytes, ref int flag)
         {
-            byte belongAddress = ValueHelper.Instance.GetByte(messageBytes, ref flag);
-            byte functionCode = ValueHelper.Instance.GetByte(messageBytes, ref flag);
-            byte writeByteCount = ValueHelper.Instance.GetByte(messageBytes, ref flag);
-            ushort year = ValueHelper.Instance.GetUShort(messageBytes, ref flag);
-            byte day = ValueHelper.Instance.GetByte(messageBytes, ref flag);
-            byte month = ValueHelper.Instance.GetByte(messageBytes, ref flag);
-            ushort hour = ValueHelper.Instance.GetUShort(messageBytes, ref flag);
-            byte second = ValueHelper.Instance.GetByte(messageBytes, ref flag);
-            byte minute = ValueHelper.Instance.GetByte(messageBytes, ref flag);
-            ushort millisecond = ValueHelper.Instance.GetUShort(messageBytes, ref flag);
+            byte belongAddress = BigEndianValueHelper.Instance.GetByte(messageBytes, ref flag);
+            byte functionCode = BigEndianValueHelper.Instance.GetByte(messageBytes, ref flag);
+            byte writeByteCount = BigEndianValueHelper.Instance.GetByte(messageBytes, ref flag);
+            ushort year = BigEndianValueHelper.Instance.GetUShort(messageBytes, ref flag);
+            byte day = BigEndianValueHelper.Instance.GetByte(messageBytes, ref flag);
+            byte month = BigEndianValueHelper.Instance.GetByte(messageBytes, ref flag);
+            ushort hour = BigEndianValueHelper.Instance.GetUShort(messageBytes, ref flag);
+            byte second = BigEndianValueHelper.Instance.GetByte(messageBytes, ref flag);
+            byte minute = BigEndianValueHelper.Instance.GetByte(messageBytes, ref flag);
+            ushort millisecond = BigEndianValueHelper.Instance.GetUShort(messageBytes, ref flag);
             return new GetSystemTimeModbusOutputStruct(belongAddress, functionCode, writeByteCount, year, day,
                 month, hour, second, minute, millisecond);
         }
@@ -341,10 +341,10 @@ namespace ModBus.Net.Modbus
 
         public override OutputStruct Unformat(byte[] messageBytes, ref int flag)
         {
-            byte belongAddress = ValueHelper.Instance.GetByte(messageBytes, ref flag);
-            byte functionCode = ValueHelper.Instance.GetByte(messageBytes, ref flag);
-            ushort startAddress = ValueHelper.Instance.GetUShort(messageBytes, ref flag);
-            ushort writeCount = ValueHelper.Instance.GetUShort(messageBytes, ref flag);
+            byte belongAddress = BigEndianValueHelper.Instance.GetByte(messageBytes, ref flag);
+            byte functionCode = BigEndianValueHelper.Instance.GetByte(messageBytes, ref flag);
+            ushort startAddress = BigEndianValueHelper.Instance.GetUShort(messageBytes, ref flag);
+            ushort writeCount = BigEndianValueHelper.Instance.GetUShort(messageBytes, ref flag);
             return new SetSystemTimeModbusOutputStruct(belongAddress, functionCode, startAddress, writeCount);
         }
     }

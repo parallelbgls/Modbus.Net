@@ -27,7 +27,7 @@ namespace NA200H.UI.WPF
             utility = new SiemensUtility(SiemensType.Tcp, "192.168.3.191", SiemensMachineModel.S7_200);
             utility.AddressTranslator = new AddressTranslatorSiemens();
             object[] getNum = utility.GetDatas(0x02, 0x00, "V 1", new KeyValuePair<Type, int>(typeof(ushort), 4));
-            ushort[] getNumUshorts = ValueHelper.Instance.ObjectArrayToDestinationArray<ushort>(getNum);
+            ushort[] getNumUshorts = BigEndianValueHelper.Instance.ObjectArrayToDestinationArray<ushort>(getNum);
             SetValue(getNumUshorts);
         }
 
@@ -50,7 +50,7 @@ namespace NA200H.UI.WPF
             Thread.Sleep(100);
             //object[] getNum = utility.GetDatas(0x02, 0x00, "NW 1", new KeyValuePair<Type, int>(typeof(ushort), 4));
             object[] getNum = utility.GetDatas(0x02, 0x00, "V 1", new KeyValuePair<Type, int>(typeof(ushort), 4));
-            ushort[] getNumUshorts = ValueHelper.Instance.ObjectArrayToDestinationArray<ushort>(getNum);
+            ushort[] getNumUshorts = BigEndianValueHelper.Instance.ObjectArrayToDestinationArray<ushort>(getNum);
             SetValue(getNumUshorts);
         }
     }

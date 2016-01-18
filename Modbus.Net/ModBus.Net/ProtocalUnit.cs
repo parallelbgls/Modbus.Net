@@ -36,7 +36,7 @@ namespace ModBus.Net
         /// <returns></returns>
         public static byte[] TranslateContent(params object[] contents)
         {
-            return ValueHelper.Instance.ObjectArrayToByteArray(contents);
+            return BigEndianValueHelper.Instance.ObjectArrayToByteArray(contents);
         }
     }
 

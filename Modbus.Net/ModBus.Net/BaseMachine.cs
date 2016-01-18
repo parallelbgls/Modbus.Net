@@ -61,38 +61,61 @@ namespace ModBus.Net
 
         public async Task<Dictionary<string,ReturnUnit>> GetDatasAsync()
         {
-            Dictionary<string, ReturnUnit> ans = new Dictionary<string, ReturnUnit>();
-            if (!BaseUtility.IsConnected)
+            try
             {
-                await BaseUtility.ConnectAsync();
-            }
-            if (!BaseUtility.IsConnected) return null;
-            foreach (var communicateAddress in CommunicateAddresses)
-            {
-                var datas = await BaseUtility.GetDatasAsync<byte>(2, 0, AddressFormater.FormatAddress(communicateAddress.Area,communicateAddress.Address), (int)Math.Ceiling(communicateAddress.GetCount * ValueHelper.Instance.ByteLength[communicateAddress.DataType.FullName]));
-                if (datas == null || datas.Length == 0) return null;
-                int pos = 0;
-                while (pos < communicateAddress.GetCount)
+                Dictionary<string, ReturnUnit> ans = new Dictionary<string, ReturnUnit>();
+                if (!BaseUtility.IsConnected)
                 {
-                    var address =
-                        GetAddresses.SingleOrDefault(
-                            p => p.Area == communicateAddress.Area && p.Address == pos + communicateAddress.Address);
-                    if (address != null)
+                    await BaseUtility.ConnectAsync();
+                }
+                if (!BaseUtility.IsConnected) return null;
+                foreach (var communicateAddress in CommunicateAddresses)
+                {
+                    var datas =
+                        await
+                            BaseUtility.GetDatasAsync<byte>(2, 0,
+                                AddressFormater.FormatAddress(communicateAddress.Area, communicateAddress.Address),
+                                (int)
+                                    Math.Ceiling(communicateAddress.GetCount*
+                                                 BigEndianValueHelper.Instance.ByteLength[
+                                                     communicateAddress.DataType.FullName]));
+                    if (datas == null || datas.Length == 0) return null;
+                    int pos = 0;
+                    while (pos < communicateAddress.GetCount)
                     {
-                        ans.Add(address.CommunicationTag, new ReturnUnit{PlcValue = Double.Parse(ValueHelper.Instance.GetValue(datas, ref pos, address.DataType).ToString()) * address.Zoom,UnitExtend = address.UnitExtend});
-                    }
-                    else
-                    {
-                        pos++;
+                        var address =
+                            GetAddresses.SingleOrDefault(
+                                p => p.Area == communicateAddress.Area && p.Address == pos + communicateAddress.Address);
+                        if (address != null)
+                        {
+                            ans.Add(address.CommunicationTag,
+                                new ReturnUnit
+                                {
+                                    PlcValue =
+                                        Double.Parse(
+                                            BigEndianValueHelper.Instance.GetValue(datas, ref pos, address.DataType)
+                                                .ToString())*address.Zoom,
+                                    UnitExtend = address.UnitExtend
+                                });
+                        }
+                        else
+                        {
+                            pos++;
+                        }
                     }
                 }
+                if (!KeepConnect)
+                {
+                    BaseUtility.Disconnect();
+                }
+                if (ans.Count == 0) ans = null;
+                return ans;
             }
-            if (!KeepConnect)
+            catch (Exception e)
             {
-                BaseUtility.Disconnect();
+                Console.WriteLine(ConnectionToken + " " + e.Message);
+                return null;
             }
-            if (ans.Count == 0) ans = null;
-            return ans;
         }
 
         public bool Connect()
