@@ -5,6 +5,8 @@ An automation communication Library written by C#.
 
 Caution: I really want to implement the COM communication system, but nowaday Usb to Serial cable is really hard to be driven in Win8.1 and Win10. So finally, I'm really sorry to tell that the maintainence of ComConnector has been stopped. Although Modbus RTU will remain in this project, maintanence will also be stopped. And there are no future support for Modbus ASCII, Siemens PPI and Siemens MPI. 
 
+Caution2: In the current version, you can't get bit or set bit in this library. Please get a byte, change the bit value in the byte, and set to PLC. I will fix this bug in future.
+
 Table of Content:
 * [Features](#features)
 * [Usage](#usage)
