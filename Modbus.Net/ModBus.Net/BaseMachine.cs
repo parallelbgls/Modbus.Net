@@ -5,6 +5,12 @@ using System.Threading.Tasks;
 
 namespace ModBus.Net
 {
+    public enum MachineSetDataType
+    {
+        Address,
+        CommunicationTag
+    }
+
     public abstract class BaseMachine : IMachineProperty
     {
         public int Id { get; set; }
@@ -29,6 +35,12 @@ namespace ModBus.Net
         public AddressFormater AddressFormater { get; set; }
 
         public AddressCombiner AddressCombiner { get; set; }
+
+        public AddressTranslator AddressTranslator
+        {
+            get { return BaseUtility.AddressTranslator; }
+            set { BaseUtility.AddressTranslator = value; }
+        }
 
         public MachineExtend MachineExtend { get; set; }
 
@@ -118,6 +130,93 @@ namespace ModBus.Net
             }
         }
 
+        public bool SetDatas(MachineSetDataType setDataType, Dictionary<string, double> values)
+        {
+            return AsyncHelper.RunSync(() => SetDatasAsync(setDataType, values));
+        }
+
+        public async Task<bool> SetDatasAsync(MachineSetDataType setDataType, Dictionary<string, double> values)
+        {
+            try
+            {
+                if (!BaseUtility.IsConnected)
+                {
+                    await BaseUtility.ConnectAsync();
+                }
+                if (!BaseUtility.IsConnected) return false;
+                List<AddressUnit> addresses = new List<AddressUnit>();
+                foreach (var value in values)
+                {
+                    AddressUnit address = null;
+                    switch (setDataType)
+                    {
+                        case MachineSetDataType.Address:
+                        {
+                            address =
+                                GetAddresses.SingleOrDefault(p => AddressFormater.FormatAddress(p.Area, p.Address) == value.Key);
+                            break;
+                        }
+                        case MachineSetDataType.CommunicationTag:
+                        {
+                            address =
+                                GetAddresses.SingleOrDefault(p => p.CommunicationTag == value.Key);
+                            break;
+                        }
+                    }
+                    if (address == null) return false;
+                    addresses.Add(address);
+                }
+                var communcationUnits = AddressCombiner.Combine(addresses);
+                foreach (var communicateAddress in communcationUnits)
+                {
+                    List<object> datasList = new List<object>();
+                    var setCount = (int)
+                        Math.Ceiling(communicateAddress.GetCount*
+                                     BigEndianValueHelper.Instance.ByteLength[
+                                         communicateAddress.DataType.FullName]);
+                    var allBytes = setCount;
+
+                    while (setCount > 0)
+                    {
+                        var address = AddressFormater.FormatAddress(communicateAddress.Area,
+                            communicateAddress.Address + allBytes - setCount);
+                        var addressUnit =
+                            GetAddresses.SingleOrDefault(
+                                p =>
+                                    p.Area == communicateAddress.Area &&
+                                    p.Address == communicateAddress.Address + allBytes - setCount);
+                        Type dataType = addressUnit.DataType;
+                        switch (setDataType)
+                        {
+                            case MachineSetDataType.Address:
+                            {
+                                var value = values.SingleOrDefault(p => p.Key == address);
+                                await
+                                    BaseUtility.SetDatasAsync(2, 0, address,
+                                        new object[] {Convert.ChangeType(value.Value, dataType)});
+                                break;
+                            }
+                            case MachineSetDataType.CommunicationTag:
+                            {
+                                var value = values.SingleOrDefault(p => p.Key == addressUnit.CommunicationTag);
+                                await
+                                    BaseUtility.SetDatasAsync(2, 0, address,
+                                        new object[] {Convert.ChangeType(value.Value, dataType)});
+                                break;
+                            }
+                        }
+                        setCount -= (int) BigEndianValueHelper.Instance.ByteLength[dataType.FullName];
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(ConnectionToken + " " + e.Message);
+                return false;
+            }
+            return true;
+        }
+
         public bool Connect()
         {
             return BaseUtility.Connect();
@@ -132,6 +231,12 @@ namespace ModBus.Net
         {
             return BaseUtility.Disconnect();
         }
+
+        public static Dictionary<string, double> MapGetValuesToSetValues(Dictionary<string, ReturnUnit> getValues)
+        {
+            return (from getValue in getValues
+                select new KeyValuePair<string, double>(getValue.Key, getValue.Value.PlcValue)).ToDictionary(p=>p.Key,p=>p.Value);
+        } 
     }
 
     public class BaseMachineEqualityComparer : IEqualityComparer<BaseMachine>

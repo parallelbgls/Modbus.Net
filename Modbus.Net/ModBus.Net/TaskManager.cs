@@ -444,6 +444,18 @@ namespace ModBus.Net
             }
         }
 
+        public async Task<bool> SetDatasAsync(string machineToken, MachineSetDataType setDataType,
+            Dictionary<string, double> values)
+        {
+            BaseMachine machine = null;
+            lock (_machines)
+            {
+                machine = _machines.FirstOrDefault(p => p.ConnectionToken == machineToken);
+            }
+            if (machine == null) return false;
+            return await machine.SetDatasAsync(setDataType, values);
+        }
+
         public void TaskStart()
         {
             TaskStop();
