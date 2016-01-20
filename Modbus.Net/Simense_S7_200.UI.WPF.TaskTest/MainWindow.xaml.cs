@@ -30,13 +30,13 @@ namespace Siemens_S7_200.UI.WPF.TaskTest
             //增加需要通信的PLC地址
             List<AddressUnit> addressUnits = new List<AddressUnit>
             {
-                new AddressUnit() {Id = 0, Area = "V", Address = 0, CommunicationTag = "D1", DataType = typeof (ushort), Zoom = 1},
-                new AddressUnit() {Id = 1, Area = "V", Address = 2, CommunicationTag = "D2", DataType = typeof (float), Zoom = 1}
+                new AddressUnit() {Id = 0, Area = "V", Address = 1, CommunicationTag = "D1", DataType = typeof (ushort), Zoom = 1},
+                new AddressUnit() {Id = 1, Area = "V", Address = 3, CommunicationTag = "D2", DataType = typeof (float), Zoom = 1}
             };
             //初始化任务管理器
             TaskManager task = new TaskManager(300, true);
             //向任务管理器中添加设备
-            task.AddMachine(new SiemensMachine(SiemensType.Tcp, "192.168.3.191",SiemensMachineModel.S7_200, addressUnits,
+            task.AddMachine(new SiemensMachine(SiemensType.Tcp, "192.168.3.11",SiemensMachineModel.S7_300, addressUnits,
             true));
             //增加值返回时的处理函数
             task.ReturnValues += (returnValues) =>
@@ -45,12 +45,12 @@ namespace Siemens_S7_200.UI.WPF.TaskTest
                 value = new List<string>();
                 if (returnValues.Value != null)
                 {
-                    value = from val in returnValues.Value select val.Key + val.Value;
+                    value = from val in returnValues.Value select val.Key + " " + val.Value.PlcValue;
                     siemensItems.Dispatcher.Invoke(() => siemensItems.ItemsSource = value);
                 }
                 else
                 {
-                    Console.WriteLine(String.Format("ip {0} not return value", returnValues.Key));
+                    Console.WriteLine($"ip {returnValues.Key} not return value");
                 }
             };
             //启动任务

@@ -25,7 +25,7 @@ namespace ModBus.Net
     /// </summary>
     public class TcpConnector : BaseConnector, IDisposable
     {
-        public override string ConnectionToken { get { return _host; } }
+        public override string ConnectionToken => _host;
 
         private readonly string _host;
 
@@ -60,13 +60,7 @@ namespace ModBus.Net
             TimeoutTime = timeoutTime;
         }
 
-        public override bool IsConnected
-        {
-            get
-            {
-                return _socketClient != null && _socketClient.Client != null && _socketClient.Connected;
-            }
-        }
+        public override bool IsConnected => _socketClient?.Client != null && _socketClient.Connected;
 
         public void Dispose()
         {

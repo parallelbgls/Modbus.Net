@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace DelinRemoteControlBoxTest
+namespace ModBus.Net.FBox
 {
     public class BoxGroup
     {

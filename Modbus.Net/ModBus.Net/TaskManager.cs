@@ -174,7 +174,7 @@ namespace ModBus.Net
         /// </summary>
         private HashSet<BaseMachine> _unlinkedMachines;
         //private TaskFactory<Dictionary<string,ReturnUnit>> _tasks;
-        private TaskScheduler _scheduler;
+        //private TaskScheduler _scheduler;
         //private CancellationTokenSource _cts;
 
         /// <summary>
@@ -186,6 +186,9 @@ namespace ModBus.Net
         /// </summary>
         private Timer _timer2;
 
+        /// <summary>
+        /// 保持连接
+        /// </summary>
         private bool _keepConnect;
 
         /// <summary>
@@ -208,10 +211,20 @@ namespace ModBus.Net
             }
         }
 
+        /// <summary>
+        /// 返回数据代理
+        /// </summary>
+        /// <param name="returnValue"></param>
         public delegate void ReturnValuesDelegate(KeyValuePair<int, Dictionary<string,ReturnUnit>> returnValue);
 
+        /// <summary>
+        /// 返回数据事件
+        /// </summary>
         public event ReturnValuesDelegate ReturnValues;
 
+        /// <summary>
+        /// 获取间隔
+        /// </summary>
         private int _getCycle;
 
         /// <summary>
@@ -345,13 +358,17 @@ namespace ModBus.Net
             }
         }
 
+        /// <summary>
+        /// 将设备指定为未连接
+        /// </summary>
+        /// <param name="id">设备的id</param>
         public void MoveMachineToUnlinked(int id)
         {
             IEnumerable<BaseMachine> machines;
             lock(_machines)
             {
                 machines = _machines.Where(c => c.Id == id).ToList();
-                if (machines.Count() <= 0) return;
+                if (!machines.Any()) return;
                 _machines.RemoveWhere(p => p.Id == id);
             }
             lock(_unlinkedMachines)
@@ -363,13 +380,17 @@ namespace ModBus.Net
             }
         }
 
+        /// <summary>
+        /// 将设备指定为已连接
+        /// </summary>
+        /// <param name="id">设备的id</param>
         public void MoveMachineToLinked(int id)
         {
             IEnumerable<BaseMachine> machines;
             lock (_unlinkedMachines)
             {
                 machines = _unlinkedMachines.Where(c => c.Id == id).ToList();
-                if (machines.Count() <= 0) return;
+                if (!machines.Any()) return;
                 _unlinkedMachines.RemoveWhere(p => p.Id == id);
             }
             lock (_machines)
@@ -397,20 +418,32 @@ namespace ModBus.Net
             }
         }
 
+        /// <summary>
+        /// 已连接设备更新
+        /// </summary>
+        /// <param name="sender"></param>
         private void MaintainTasks(object sender)
         {
             AsyncHelper.RunSync(MaintainTasksAsync);
         }
 
+        /// <summary>
+        /// 未连接设备更新
+        /// </summary>
+        /// <param name="sender"></param>
         private void MaintainTasks2(object sender)
         {
             AsyncHelper.RunSync(MaintainTasks2Async);
         }
 
+        /// <summary>
+        /// 已连接设备更新
+        /// </summary>
+        /// <returns></returns>
         private async Task MaintainTasksAsync()
         {
             HashSet<BaseMachine> saveMachines = new HashSet<BaseMachine>();
-            IEnumerable<BaseMachine> saveMachinesEnum = new List<BaseMachine>();
+            IEnumerable<BaseMachine> saveMachinesEnum;
             lock (_machines)
             {
                 saveMachines.UnionWith(_machines);
@@ -422,6 +455,10 @@ namespace ModBus.Net
             }
         }
 
+        /// <summary>
+        /// 未连接设备更新
+        /// </summary>
+        /// <returns></returns>
         private async Task MaintainTasks2Async()
         {
             HashSet<BaseMachine> saveMachines = new HashSet<BaseMachine>();
@@ -444,18 +481,28 @@ namespace ModBus.Net
             }
         }
 
-        public async Task<bool> SetDatasAsync(string machineToken, MachineSetDataType setDataType,
+        /// <summary>
+        /// 设置数据
+        /// </summary>
+        /// <param name="connectionToken">设备的连接标识</param>
+        /// <param name="setDataType">设置类型</param>
+        /// <param name="values">需要设置的数据</param>
+        /// <returns>是否设置成功</returns>
+        public async Task<bool> SetDatasAsync(string connectionToken, MachineSetDataType setDataType,
             Dictionary<string, double> values)
         {
             BaseMachine machine = null;
             lock (_machines)
             {
-                machine = _machines.FirstOrDefault(p => p.ConnectionToken == machineToken);
+                machine = _machines.FirstOrDefault(p => p.ConnectionToken == connectionToken);
             }
             if (machine == null) return false;
             return await machine.SetDatasAsync(setDataType, values);
         }
 
+        /// <summary>
+        /// 启动TaskManager
+        /// </summary>
         public void TaskStart()
         {
             TaskStop();
@@ -464,6 +511,9 @@ namespace ModBus.Net
             GetCycle = TimeRestore.Restore;
         }
 
+        /// <summary>
+        /// 停止TaskManager
+        /// </summary>
         public void TaskStop()
         {
             lock (_machines)
@@ -484,6 +534,11 @@ namespace ModBus.Net
             }
         }
 
+        /// <summary>
+        /// 执行对具体设备的数据更新
+        /// </summary>
+        /// <param name="machine">设备的实例</param>
+        /// <returns></returns>
         private async Task RunTask(BaseMachine machine)
         {
             try
@@ -504,10 +559,7 @@ namespace ModBus.Net
                 {
                     MoveMachineToLinked(machine.Id);
                 }
-                if (ReturnValues != null)
-                {
-                    ReturnValues(new KeyValuePair<int, Dictionary<string,ReturnUnit>>(machine.Id, ans));
-                }
+                ReturnValues?.Invoke(new KeyValuePair<int, Dictionary<string,ReturnUnit>>(machine.Id, ans));
             }
             catch (Exception e)
             {
@@ -515,10 +567,7 @@ namespace ModBus.Net
                 {
                     MoveMachineToUnlinked(machine.Id);
                 }
-                if (ReturnValues != null)
-                {
-                    ReturnValues(new KeyValuePair<int, Dictionary<string,ReturnUnit>>(machine.Id, null));
-                }
+                ReturnValues?.Invoke(new KeyValuePair<int, Dictionary<string,ReturnUnit>>(machine.Id, null));
             }
         }
     }

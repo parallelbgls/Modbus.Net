@@ -38,35 +38,17 @@ namespace ModBus.Net.FBox
             }
         }
 
-        public string AuthorizeEndpoint
-        {
-            get { return BaseAddress + "/connect/authorize"; }
-        }
+        public string AuthorizeEndpoint => BaseAddress + "/connect/authorize";
 
-        public string LogoutEndpoint
-        {
-            get { return BaseAddress + "/connect/endsession"; }
-        }
+        public string LogoutEndpoint => BaseAddress + "/connect/endsession";
 
-        public string TokenEndpoint
-        {
-            get { return BaseAddress + "/connect/token"; }
-        }
+        public string TokenEndpoint => BaseAddress + "/connect/token";
 
-        public string UserInfoEndpoint
-        {
-            get {return BaseAddress + "/connect/userinfo"; }
-        }
+        public string UserInfoEndpoint => BaseAddress + "/connect/userinfo";
 
-        public string IdentityTokenValidationEndpoint
-        {
-            get {return BaseAddress + "/connect/identitytokenvalidation"; }
-        }
+        public string IdentityTokenValidationEndpoint => BaseAddress + "/connect/identitytokenvalidation";
 
-        public string TokenRevocationEndpoint
-        {
-            get {return BaseAddress + "/connect/revocation"; } 
-        } 
+        public string TokenRevocationEndpoint => BaseAddress + "/connect/revocation";
 
         public string AspNetWebApiSampleApi
         {

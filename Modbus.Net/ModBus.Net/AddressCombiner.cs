@@ -4,11 +4,22 @@ using System.Linq;
 
 namespace ModBus.Net
 {
+    /// <summary>
+    /// 地址组合器，组合后的每一组地址将只需一次向设备进行通讯
+    /// </summary>
     public abstract class AddressCombiner
     {
+        /// <summary>
+        /// 组合地址
+        /// </summary>
+        /// <param name="addresses">需要进行组合的地址</param>
+        /// <returns>组合完成后与设备通讯的地址</returns>
         public abstract IEnumerable<CommunicationUnit> Combine(IEnumerable<AddressUnit> addresses);
     }
 
+    /// <summary>
+    /// 连续的地址将组合成一组，向设备进行通讯
+    /// </summary>
     public class AddressCombinerContinus : AddressCombiner
     {
         public override IEnumerable<CommunicationUnit> Combine(IEnumerable<AddressUnit> addresses)

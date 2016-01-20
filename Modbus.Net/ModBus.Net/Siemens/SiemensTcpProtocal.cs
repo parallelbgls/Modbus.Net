@@ -4,15 +4,15 @@ namespace ModBus.Net.Siemens
 {
     public class SiemensTcpProtocal : SiemensProtocal
     {
-        private ushort _taspSrc;
-        private ushort _tsapDst;
-        private ushort _maxCalling;
-        private ushort _maxCalled;
-        private ushort _maxPdu;
-        private byte _tdpuSize;
+        private readonly ushort _taspSrc;
+        private readonly ushort _tsapDst;
+        private readonly ushort _maxCalling;
+        private readonly ushort _maxCalled;
+        private readonly ushort _maxPdu;
+        private readonly byte _tdpuSize;
 
-        private string _ip;
-        private int connectTryCount;
+        private readonly string _ip;
+        private int _connectTryCount;
 
         public SiemensTcpProtocal(byte tdpuSize, ushort tsapSrc, ushort tsapDst, ushort maxCalling, ushort maxCalled, ushort maxPdu) : this(tdpuSize, tsapSrc, tsapDst, maxCalling, maxCalled, maxPdu, ConfigurationManager.IP)
         {
@@ -27,7 +27,7 @@ namespace ModBus.Net.Siemens
             _maxPdu = maxPdu;
             _tdpuSize = tdpuSize;
             _ip = ip;
-            connectTryCount = 0;
+            _connectTryCount = 0;
         }
 
         public override byte[] SendReceive(params object[] content)
@@ -51,12 +51,9 @@ namespace ModBus.Net.Siemens
 
         public override async Task<OutputStruct> SendReceiveAsync(ProtocalUnit unit, InputStruct content)
         {
-            if (ProtocalLinker == null || !ProtocalLinker.IsConnected)
-            {
-                if (connectTryCount > 10) return null;
-                return await await ConnectAsync().ContinueWith(answer => answer.Result ? base.SendReceiveAsync(unit, content) : null);
-            }
-            return await base.SendReceiveAsync(unit, content);
+            if (ProtocalLinker != null && ProtocalLinker.IsConnected) return await base.SendReceiveAsync(unit, content);
+            if (_connectTryCount > 10) return null;
+            return await await ConnectAsync().ContinueWith(answer => answer.Result ? base.SendReceiveAsync(unit, content) : null);
         }
 
         private async Task<OutputStruct> ForceSendReceiveAsync(ProtocalUnit unit, InputStruct content)
@@ -71,30 +68,27 @@ namespace ModBus.Net.Siemens
 
         public override async Task<bool> ConnectAsync()
         {
-            connectTryCount++;
+            _connectTryCount++;
             ProtocalLinker = new SiemensTcpProtocalLinker(_ip);
-            if (await ProtocalLinker.ConnectAsync())
-            {
-                connectTryCount = 0;
-                var inputStruct = new CreateReferenceSiemensInputStruct(_tdpuSize, _taspSrc, _tsapDst);
-                return
-                    await await
-                        ForceSendReceiveAsync(this[typeof (CreateReferenceSiemensProtocal)], inputStruct)
-                            .ContinueWith(async answer =>
-                            {
-                                if (!ProtocalLinker.IsConnected) return false;
-                                var inputStruct2 = new EstablishAssociationSiemensInputStruct(0x0101, _maxCalling,
-                                    _maxCalled,
-                                    _maxPdu);
-                                var outputStruct2 =
-                                    (EstablishAssociationSiemensOutputStruct)
-                                        await
-                                            SendReceiveAsync(this[typeof (EstablishAssociationSiemensProtocal)],
-                                                inputStruct2);
-                                return true;
-                            });
-            }
-            return false;
+            if (!await ProtocalLinker.ConnectAsync()) return false;
+            _connectTryCount = 0;
+            var inputStruct = new CreateReferenceSiemensInputStruct(_tdpuSize, _taspSrc, _tsapDst);
+            return
+                await await
+                    ForceSendReceiveAsync(this[typeof (CreateReferenceSiemensProtocal)], inputStruct)
+                        .ContinueWith(async answer =>
+                        {
+                            if (!ProtocalLinker.IsConnected) return false;
+                            var inputStruct2 = new EstablishAssociationSiemensInputStruct(0x0101, _maxCalling,
+                                _maxCalled,
+                                _maxPdu);
+                            var outputStruct2 =
+                                (EstablishAssociationSiemensOutputStruct)
+                                    await
+                                        SendReceiveAsync(this[typeof (EstablishAssociationSiemensProtocal)],
+                                            inputStruct2);
+                            return outputStruct2 != null;
+                        });
         }
     }
 }

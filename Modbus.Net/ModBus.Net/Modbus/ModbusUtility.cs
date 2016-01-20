@@ -69,10 +69,12 @@ namespace ModBus.Net.Modbus
         {
             try
             {
-                var inputStruct = new ReadDataModbusInputStruct(belongAddress, startAddress, getByteCount % 2 == 0 ? (ushort)(getByteCount / 2) : (ushort)(getByteCount / 2 + 1), AddressTranslator);
-                var outputStruct = await 
-                    Wrapper.SendReceiveAsync(Wrapper[typeof(ReadDataModbusProtocal)], inputStruct) as ReadDataModbusOutputStruct;
-                return outputStruct.DataValue;
+                var inputStruct = new ReadDataModbusInputStruct(belongAddress, startAddress,
+                    getByteCount%2 == 0 ? (ushort) (getByteCount/2) : (ushort) (getByteCount/2 + 1), AddressTranslator);
+                var outputStruct = await
+                    Wrapper.SendReceiveAsync(Wrapper[typeof (ReadDataModbusProtocal)], inputStruct) as
+                    ReadDataModbusOutputStruct;
+                return outputStruct?.DataValue;
             }
             catch
             {
@@ -84,12 +86,12 @@ namespace ModBus.Net.Modbus
         {
             try
             {
-                var inputStruct = new WriteDataModbusInputStruct(belongAddress, startAddress, setContents, AddressTranslator);
+                var inputStruct = new WriteDataModbusInputStruct(belongAddress, startAddress, setContents,
+                    AddressTranslator);
                 var outputStruct = await
-                    Wrapper.SendReceiveAsync(Wrapper[typeof(WriteDataModbusProtocal)], inputStruct) as
-                        WriteDataModbusOutputStruct;
-                if (outputStruct.WriteCount != setContents.Length) return false;
-                return true;
+                    Wrapper.SendReceiveAsync(Wrapper[typeof (WriteDataModbusProtocal)], inputStruct) as
+                    WriteDataModbusOutputStruct;
+                return outputStruct?.WriteCount == setContents.Length;
             }
             catch
             {
@@ -106,7 +108,7 @@ namespace ModBus.Net.Modbus
                 var outputStruct =
                     Wrapper.SendReceive(Wrapper[typeof(GetSystemTimeModbusProtocal)], inputStruct) as
                         GetSystemTimeModbusOutputStruct;
-                return outputStruct.Time;
+                return outputStruct?.Time;
             }
             catch (Exception)
             {
@@ -122,7 +124,7 @@ namespace ModBus.Net.Modbus
                 var outputStruct =
                     Wrapper.SendReceive(Wrapper[typeof(SetSystemTimeModbusProtocal)], inputStruct) as
                         SetSystemTimeModbusOutputStruct;
-                return outputStruct.WriteCount > 0;
+                return outputStruct?.WriteCount > 0;
             }
             catch (Exception)
             {

@@ -13,6 +13,12 @@ namespace ModBus.Net
                       TaskContinuationOptions.None,
                       TaskScheduler.Default);
 
+        /// <summary>
+        /// Run async method syncronized
+        /// </summary>
+        /// <typeparam name="TResult">Return type</typeparam>
+        /// <param name="func">Async method with return</param>
+        /// <returns>Return value</returns>
         public static TResult RunSync<TResult>(Func<Task<TResult>> func)
         {
             return AsyncHelper._myTaskFactory
@@ -22,6 +28,10 @@ namespace ModBus.Net
               .GetResult();
         }
 
+        /// <summary>
+        /// Run async method syncronized.
+        /// </summary>
+        /// <param name="func">Async method</param>
         public static void RunSync(Func<Task> func)
         {
             AsyncHelper._myTaskFactory
@@ -31,6 +41,12 @@ namespace ModBus.Net
               .GetResult();
         }
 
+        /// <summary>
+        /// Change async task to async task with cancellation token
+        /// </summary>
+        /// <param name="task">Async task</param>
+        /// <param name="token">Cancellation Token</param>
+        /// <returns>Task with Cancellation token</returns>
         public static Task WithCancellation(this Task task,
             CancellationToken token)
         {
@@ -44,8 +60,8 @@ namespace ModBus.Net
         }
     }
 
-    /// <summary>AsyncLock locks across one or several await calls.
-    /// 
+    /// <summary>
+    /// AsyncLock locks across one or several await calls.
     /// </summary>
     public class AsyncLock
     {
@@ -58,6 +74,10 @@ namespace ModBus.Net
             _releaser = Task.FromResult(new Releaser(this));
         }
 
+        /// <summary>
+        /// Lock the async method. Call like: using (await asynclock.LockAsync())
+        /// </summary>
+        /// <returns></returns>
         public Task<Releaser> LockAsync()
         {
             var wait = _semaphore.WaitAsync();
@@ -88,6 +108,9 @@ namespace ModBus.Net
         }
     }
 
+    /// <summary>
+    /// AsyncSemaphore semaphore the multi run tasks.
+    /// </summary>
     public class AsyncSemaphore
     {
         private readonly static Task _completed = Task.FromResult(true);

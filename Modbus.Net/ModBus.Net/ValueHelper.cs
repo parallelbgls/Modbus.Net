@@ -33,10 +33,7 @@ namespace ModBus.Net
         /// <summary>
         /// 协议中的内容构造是否小端的，默认是小端构造协议。
         /// </summary>
-        public static bool LittleEndian
-        {
-            get { return true; }
-        }
+        public static bool LittleEndian => true;
 
         #region Factory
 
@@ -45,17 +42,7 @@ namespace ModBus.Net
         /// <summary>
         /// ValueHelper单例的实例
         /// </summary>
-        public static ValueHelper Instance
-        {
-            get
-            {
-                if (_Instance == null)
-                {
-                    _Instance = new ValueHelper();
-                }
-                return _Instance;
-            }
-        }
+        public static ValueHelper Instance => _Instance ?? (_Instance = new ValueHelper());
 
         #endregion
 
@@ -705,22 +692,9 @@ namespace ModBus.Net
             
         }
 
-        protected new bool LittleEndian
-        {
-            get { return false; }
-        }
+        protected new bool LittleEndian => false;
 
-        public new static BigEndianValueHelper Instance 
-        {
-            get
-            {
-                if (_BigEndianInstance == null)
-                {
-                    _BigEndianInstance = new BigEndianValueHelper();
-                }
-                return _BigEndianInstance;
-            }
-        }
+        public new static BigEndianValueHelper Instance => _BigEndianInstance ?? (_BigEndianInstance = new BigEndianValueHelper());
 
         public override Byte[] GetBytes(short value)
         {

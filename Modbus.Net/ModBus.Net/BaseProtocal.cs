@@ -11,12 +11,13 @@ namespace ModBus.Net
     public abstract class BaseProtocal
     {
         /// <summary>
-        /// 发送数据
+        /// 协议的连接器
         /// </summary>
-        /// <param name="content">需要发送的数据</param>
-        /// <returns>数据是否正确接收</returns>
         public ProtocalLinker ProtocalLinker { get; protected set; }
 
+        /// <summary>
+        /// 构造器
+        /// </summary>
         protected BaseProtocal()
         {
             Protocals = new Dictionary<string, ProtocalUnit>();
@@ -25,8 +26,8 @@ namespace ModBus.Net
         /// <summary>
         /// 协议索引器，这是一个懒加载协议，当字典中不存在协议时自动加载协议，否则调用已经加载的协议
         /// </summary>
-        /// <param name="protocalName">协议的类的名称</param>
-        /// <returns></returns>
+        /// <param name="type">协议的类的GetType</param>
+        /// <returns>协议的实例</returns>
         public ProtocalUnit this[Type type]
         {
             get
@@ -45,8 +46,15 @@ namespace ModBus.Net
             }
         }
 
-        protected Dictionary<string, ProtocalUnit> Protocals { get; private set; }
+        /// <summary>
+        /// 协议集合
+        /// </summary>
+        protected Dictionary<string, ProtocalUnit> Protocals { get; }
 
+        /// <summary>
+        /// 注册一个协议
+        /// </summary>
+        /// <param name="linkProtocal">需要注册的协议</param>
         protected void Register(ProtocalUnit linkProtocal)
         {
             if (linkProtocal == null) return;
@@ -56,71 +64,59 @@ namespace ModBus.Net
         /// <summary>
         /// 发送协议内容并接收，一般方法
         /// </summary>
-        /// <param name="content"></param>
-        /// <returns></returns>
+        /// <param name="content">写入的内容，使用对象数组描述</param>
+        /// <returns>从设备获取的字节流</returns>
         public virtual byte[] SendReceive(params object[] content)
         {
             return AsyncHelper.RunSync(() => SendReceiveAsync(content));
         }
 
         /// <summary>
-        /// 发送协议内容并接收，一般方法(异步）
+        /// 发送协议内容并接收，一般方法
         /// </summary>
-        /// <param name="content"></param>
-        /// <returns></returns>
+        /// <param name="content">写入的内容，使用对象数组描述</param>
+        /// <returns>从设备获取的字节流</returns>
         public virtual async Task<byte[]> SendReceiveAsync(params object[] content)
         {
             if (ProtocalLinker == null || !ProtocalLinker.IsConnected)
             {
                 await ConnectAsync();
             }
-            return await ProtocalLinker.SendReceiveAsync(ProtocalUnit.TranslateContent(content));
+            if (ProtocalLinker != null)
+            {
+                return await ProtocalLinker.SendReceiveAsync(ProtocalUnit.TranslateContent(content));
+            }
+            else
+            {
+                return null;
+            }
         }
 
         /// <summary>
         /// 发送协议，通过传入需要使用的协议内容和输入结构
         /// </summary>
-        /// <param name="unit"></param>
-        /// <param name="content"></param>
-        /// <returns></returns>
+        /// <param name="unit">协议的实例</param>
+        /// <param name="content">输入信息的结构化描述</param>
+        /// <returns>输出信息的结构化描述</returns>
         public virtual OutputStruct SendReceive(ProtocalUnit unit, InputStruct content)
         {
-            int t = 0;
-            //如果为特别处理协议的话，跳过协议扩展收缩          
-            var formatContent = unit.Format(content);
-            if (formatContent != null)
-            {
-                byte[] receiveContent;
-                if (unit is SpecialProtocalUnit)
-                {
-                    receiveContent = ProtocalLinker.SendReceiveWithoutExtAndDec(formatContent);
-                }
-                else
-                {
-                    receiveContent = ProtocalLinker.SendReceive(formatContent);
-                }
-                if (receiveContent != null)
-                {
-                    return unit.Unformat(receiveContent, ref t);
-                }
-            }
-            return null;
+            return AsyncHelper.RunSync(() => SendReceiveAsync(unit, content));
         }
 
         /// <summary>
-        /// 发送协议，通过传入需要使用的协议内容和输入结构（异步）
+        /// 发送协议，通过传入需要使用的协议内容和输入结构
         /// </summary>
-        /// <param name="unit"></param>
-        /// <param name="content"></param>
-        /// <returns></returns>
+        /// <param name="unit">协议的实例</param>
+        /// <param name="content">输入信息的结构化描述</param>
+        /// <returns>输出信息的结构化描述</returns>
         public virtual async Task<OutputStruct> SendReceiveAsync(ProtocalUnit unit, InputStruct content)
         {
-            int t = 0;
-            //如果为特别处理协议的话，跳过协议扩展收缩          
+            int t = 0;          
             var formatContent = unit.Format(content);
             if (formatContent != null)
             {
                 byte[] receiveContent;
+                //如果为特别处理协议的话，跳过协议扩展收缩
                 if (unit is SpecialProtocalUnit)
                 {
                     receiveContent = await ProtocalLinker.SendReceiveWithoutExtAndDecAsync(formatContent);

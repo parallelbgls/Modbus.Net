@@ -10,31 +10,35 @@ namespace ModBus.Net
     {
         protected BaseConnector _baseConnector;
 
-        public string ConnectionToken
-        {
-            get { return _baseConnector.ConnectionToken; }
-        }
+        public string ConnectionToken => _baseConnector.ConnectionToken;
 
-        public bool IsConnected
-        {
-            get
-            {
-                if (_baseConnector == null)
-                    return false;
-                return _baseConnector.IsConnected;
-            }
-        }
+        /// <summary>
+        /// 设备是否连接
+        /// </summary>
+        public bool IsConnected => _baseConnector != null && _baseConnector.IsConnected;
 
+        /// <summary>
+        /// 连接设备
+        /// </summary>
+        /// <returns>设备是否连接成功</returns>
         public bool Connect()
         {
             return _baseConnector.Connect();
         }
 
+        /// <summary>
+        /// 连接设备
+        /// </summary>
+        /// <returns>设备是否连接成功</returns>
         public async Task<bool> ConnectAsync()
         {
             return await _baseConnector.ConnectAsync();
         }
-
+        
+        /// <summary>
+        /// 断开设备
+        /// </summary>
+        /// <returns>设备是否断开成功</returns>
         public bool Disconnect()
         {
             return _baseConnector.Disconnect();
@@ -82,9 +86,8 @@ namespace ModBus.Net
             //发送数据
             byte[] receiveBytes = await _baseConnector.SendMsgAsync(content);
             //容错处理
-            if (!CheckRight(receiveBytes)) return null;
+            return !CheckRight(receiveBytes) ? null : receiveBytes;
             //返回字符
-            return receiveBytes;
         }
 
         /// <summary>
@@ -94,12 +97,9 @@ namespace ModBus.Net
         /// <returns>协议是否是正确的</returns>
         public virtual bool CheckRight(byte[] content)
         {
-            if (content == null)
-            {
-                Disconnect();
-                return false;
-            }
-            return true;
+            if (content != null) return true;
+            Disconnect();
+            return false;
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace ModBus.Net
             ProtocalLinkerBytesExtend bytesExtend =
                 Assembly.Load(this.GetType().Assembly.GetName().Name).CreateInstance(this.GetType().FullName + "BytesExtend") as
                     ProtocalLinkerBytesExtend;
-            return bytesExtend.BytesExtend(content);
+            return bytesExtend?.BytesExtend(content);
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace ModBus.Net
             ProtocalLinkerBytesExtend bytesExtend =
                 Assembly.Load(this.GetType().Assembly.GetName().Name).CreateInstance(this.GetType().FullName + "BytesExtend") as
                     ProtocalLinkerBytesExtend;
-            return bytesExtend.BytesDecact(content);
+            return bytesExtend?.BytesDecact(content);
         }
     }
 }

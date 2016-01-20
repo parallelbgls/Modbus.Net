@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace ModBus.Net
 {
     /// <summary>
-    /// 数据单元翻译器
+    /// 地址翻译器
     /// </summary>
     public abstract class AddressTranslator
     {
@@ -18,7 +18,7 @@ namespace ModBus.Net
     }
 
     /// <summary>
-    /// 基本的单元转换器
+    /// 基本的地址翻译器
     /// </summary>
     public class AddressTranslatorBase : AddressTranslator
     {

@@ -19,7 +19,7 @@ Table of Content:
 * Siemens Tcp protocal (acturally it is the same as Profinet)
 * All communications can be asyncronized.
 * A task manager that you can easily manage multiple connections.
-* .net 4.5 and Visual Studio 2013 support (In the future, it will be upgraded to .net 4.6 and Visual Studio 2015)
+* .net framework 4.6 and Visual Studio 2015 support.
 
 ##<a name="usage"></a> Usage
 

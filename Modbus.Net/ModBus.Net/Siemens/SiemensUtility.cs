@@ -23,12 +23,12 @@ namespace ModBus.Net.Siemens
 
     public class SiemensUtility : BaseUtility
     {
-        private byte _tdpuSize;
-        private ushort _taspSrc;
-        private ushort _tsapDst;
-        private ushort _maxCalling;
-        private ushort _maxCalled;
-        private ushort _maxPdu;
+        private readonly byte _tdpuSize;
+        private readonly ushort _taspSrc;
+        private readonly ushort _tsapDst;
+        private readonly ushort _maxCalling;
+        private readonly ushort _maxCalled;
+        private readonly ushort _maxPdu;
         
         private SiemensType _siemensType;
 
@@ -43,14 +43,14 @@ namespace ModBus.Net.Siemens
                 _siemensType = value;
                 switch (_siemensType)
                 {
-                    case SiemensType.Ppi:
-                        {
-                            throw new NotImplementedException();
-                        }
-                    case SiemensType.Mpi:
-                        {
-                            throw new NotImplementedException();
-                        }
+                    //case SiemensType.Ppi:
+                    //    {
+                    //        throw new NotImplementedException();
+                    //    }
+                    //case SiemensType.Mpi:
+                    //    {
+                    //        throw new NotImplementedException();
+                    //    }
                     case SiemensType.Tcp:
                     {
                         Wrapper = ConnectionString == null ? new SiemensTcpProtocal(_tdpuSize, _taspSrc, _tsapDst, _maxCalling, _maxCalled, _maxPdu) : new SiemensTcpProtocal(_tdpuSize, _taspSrc, _tsapDst, _maxCalling, _maxCalled, _maxPdu, ConnectionString);
@@ -88,6 +88,7 @@ namespace ModBus.Net.Siemens
                     }
                 case SiemensMachineModel.S7_1200:
                 case SiemensMachineModel.S7_1500:
+                case SiemensMachineModel.S7_200_Smart:
                 {
                     _tdpuSize = 0x09;
                     _taspSrc = 0x4b54;
@@ -96,6 +97,10 @@ namespace ModBus.Net.Siemens
                     _maxCalled = 0x0001;
                     _maxPdu = 0x00f0;
                     break;
+                }
+                default:
+                {
+                    throw new NotImplementedException("没有相应的西门子类型");
                 }
             }
             ConnectionType = connectionType;
@@ -113,9 +118,10 @@ namespace ModBus.Net.Siemens
             {
                 var readRequestSiemensInputStruct = new ReadRequestSiemensInputStruct(0xd3c7, SiemensTypeCode.Byte, startAddress, (ushort)getByteCount, AddressTranslator);
                 var readRequestSiemensOutputStruct =
-                     (ReadRequestSiemensOutputStruct) await
-                         Wrapper.SendReceiveAsync(Wrapper[typeof(ReadRequestSiemensProtocal)], readRequestSiemensInputStruct);
-                return readRequestSiemensOutputStruct.GetValue;
+                    await
+                        Wrapper.SendReceiveAsync(Wrapper[typeof (ReadRequestSiemensProtocal)],
+                            readRequestSiemensInputStruct) as ReadRequestSiemensOutputStruct;
+                return readRequestSiemensOutputStruct?.GetValue;
             }
             catch (Exception)
             {
@@ -129,12 +135,10 @@ namespace ModBus.Net.Siemens
             {
                 var writeRequestSiemensInputStruct = new WriteRequestSiemensInputStruct(0xd3c8, startAddress, setContents, AddressTranslator);
                 var writeRequestSiemensOutputStruct =
-                    (WriteRequestSiemensOutputStruct) await
-                        Wrapper.SendReceiveAsync(Wrapper[typeof(WriteRequestSiemensProtocal)], writeRequestSiemensInputStruct);
-                if (writeRequestSiemensOutputStruct.AccessResult == SiemensAccessResult.NoError)
-                    return true;
-                else
-                    return false;
+                    await
+                        Wrapper.SendReceiveAsync(Wrapper[typeof (WriteRequestSiemensProtocal)],
+                            writeRequestSiemensInputStruct) as WriteRequestSiemensOutputStruct;
+                return writeRequestSiemensOutputStruct?.AccessResult == SiemensAccessResult.NoError;
             }
             catch (Exception)
             {

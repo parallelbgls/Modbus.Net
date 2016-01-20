@@ -5,7 +5,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using DelinRemoteControlBoxTest;
 using Microsoft.AspNet.SignalR.Client;
 using Newtonsoft.Json;
 using Thinktecture.IdentityModel.Client;
@@ -45,36 +44,18 @@ namespace ModBus.Net.FBox
 
         private Timer _timer;
 
-        private string MachineId
-        {
-            get
-            {
-                return ConnectionToken.Split(',')[0];
-            }
-        }
+        private string MachineId => ConnectionToken.Split(',')[0];
 
-        private string LocalSequence {
-            get
-            {
-                return ConnectionToken.Split(',')[1];
-            }
-        }
+        private string LocalSequence => ConnectionToken.Split(',')[1];
 
         private static readonly AsyncLock _lock = new AsyncLock();
 
         private bool _connected;
-        public override bool IsConnected { get { return _connected; } }
+        public override bool IsConnected => _connected;
         private SignalRSigninMsg Msg { get; set;}
 
         private Constants _constants;
-        private Constants Constants
-        {
-            get
-            {
-                if (_constants == null) _constants = new Constants();
-                return _constants;
-            }
-        }
+        private Constants Constants => _constants ?? (_constants = new Constants());
 
         public SignalRConnector(string machineId, string localSequence, SignalRSigninMsg msg)
         {

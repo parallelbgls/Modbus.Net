@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using ModBus.Net;
 using System.Reflection;
+using ModBus.Net.Modbus;
+using ModBus.Net.Siemens;
 
 namespace NA200H.UI.ConsoleApp
 {
@@ -52,9 +54,9 @@ namespace NA200H.UI.ConsoleApp
             }
             Console.WriteLine();
             Console.Read();
-            Console.Read();*/
+            Console.Read();
 
-            /*
+            
             //调用方法二：自动构造
             //第一步：先生成一个输入结构体，然后向这个结构体中填写数据
             AddressTranslator addressTranslator = new AddressTranslatorNA200H();
@@ -119,7 +121,8 @@ namespace NA200H.UI.ConsoleApp
             Console.Read();
             */
 
-            /*BaseProtocal wrapper = new SiemensTcpProtocal(0x09, 0x1001, 0x1000, 0x0001, 0x0001, 0x03c0, ip);
+            /*
+            BaseProtocal wrapper = new SiemensTcpProtocal(0x09, 0x1001, 0x1000, 0x0001, 0x0001, 0x03c0, ip);
             if (!wrapper.ProtocalLinker.IsConnected) return;
             AddressTranslator addressTranslator = new AddressTranslatorSiemens();
 
