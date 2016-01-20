@@ -85,7 +85,6 @@ namespace NA200H.UI.WPF
             //utility.SetDatas(0x02, 0x00, "NW 1", new object[] { add1, add2, add3 });
             utility.SetDatas(0x02, 0x00, "V 1", new object[] { add1, add2, add3 });
             Thread.Sleep(100);
-            //object[] getNum = utility.GetDatas(0x02, 0x00, "NW 1", new KeyValuePair<Type, int>(typeof(ushort), 4));
             GetUtilityEnter();
         }
 
@@ -99,6 +98,7 @@ namespace NA200H.UI.WPF
             machine.SetDatas(MachineSetDataType.CommunicationTag, setDic);
             //var setDic = new Dictionary<string, double>{{"V 1", add1}, {"V 3", add2}, {"V 5", add3}};
             //machine.SetDatas(MachineSetDataType.Address, setDic);
+            Thread.Sleep(100);
             GetMachineEnter();
         }
     }
