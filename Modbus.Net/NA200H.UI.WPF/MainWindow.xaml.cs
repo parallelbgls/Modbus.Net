@@ -48,6 +48,7 @@ namespace NA200H.UI.WPF
                 //new AddressUnit() {Id = 3, Area = "NW", Address = 5, CommunicationTag = "Add3", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
                 //new AddressUnit() {Id = 4, Area = "NW", Address = 7, CommunicationTag = "Ans",  DataType = typeof(ushort), Zoom = 1, DecimalPos = 0}
             //});
+            //machine.AddressFormater = new AddressFormaterNA200H();
             //machine.AddressTranslator = new AddressTranslatorNA200H();
             machine = new SiemensMachine(SiemensType.Tcp, "192.168.3.11", SiemensMachineModel.S7_300, new List<AddressUnit>()
             {
@@ -94,8 +95,10 @@ namespace NA200H.UI.WPF
             ushort.TryParse(Add1.Text, out add1);
             ushort.TryParse(Add2.Text, out add2);
             ushort.TryParse(Add3.Text, out add3);
-            var setDic = new Dictionary<string, double>{{"V 1", add1}, {"V 3", add2}, {"V 5", add3}};
-            machine.SetDatas(MachineSetDataType.Address, setDic);
+            var setDic = new Dictionary<string, double> {{"Add1", add1}, {"Add2", add2}, {"Add3", add3}};
+            machine.SetDatas(MachineSetDataType.CommunicationTag, setDic);
+            //var setDic = new Dictionary<string, double>{{"V 1", add1}, {"V 3", add2}, {"V 5", add3}};
+            //machine.SetDatas(MachineSetDataType.Address, setDic);
             GetMachineEnter();
         }
     }

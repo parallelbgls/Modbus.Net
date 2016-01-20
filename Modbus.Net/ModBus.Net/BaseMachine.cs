@@ -166,7 +166,7 @@ namespace ModBus.Net
                     if (address == null) return false;
                     addresses.Add(address);
                 }
-                var communcationUnits = AddressCombiner.Combine(addresses);
+                var communcationUnits = new AddressCombinerContinus().Combine(addresses);
                 foreach (var communicateAddress in communcationUnits)
                 {
                     List<object> datasList = new List<object>();
@@ -175,7 +175,8 @@ namespace ModBus.Net
                                      BigEndianValueHelper.Instance.ByteLength[
                                          communicateAddress.DataType.FullName]);
                     var allBytes = setCount;
-
+                    var addressStart = AddressFormater.FormatAddress(communicateAddress.Area,
+                            communicateAddress.Address);
                     while (setCount > 0)
                     {
                         var address = AddressFormater.FormatAddress(communicateAddress.Area,
@@ -191,22 +192,20 @@ namespace ModBus.Net
                             case MachineSetDataType.Address:
                             {
                                 var value = values.SingleOrDefault(p => p.Key == address);
-                                await
-                                    BaseUtility.SetDatasAsync(2, 0, address,
-                                        new object[] {Convert.ChangeType(value.Value, dataType)});
+                                datasList.Add(Convert.ChangeType(value.Value, dataType));
                                 break;
                             }
                             case MachineSetDataType.CommunicationTag:
                             {
                                 var value = values.SingleOrDefault(p => p.Key == addressUnit.CommunicationTag);
-                                await
-                                    BaseUtility.SetDatasAsync(2, 0, address,
-                                        new object[] {Convert.ChangeType(value.Value, dataType)});
+                                datasList.Add(Convert.ChangeType(value.Value, dataType));
                                 break;
                             }
                         }
                         setCount -= (int) BigEndianValueHelper.Instance.ByteLength[dataType.FullName];
                     }
+
+                    await BaseUtility.SetDatasAsync(2, 0, addressStart, datasList.ToArray());
                 }
             }
             catch (Exception e)
