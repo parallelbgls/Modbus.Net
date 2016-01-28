@@ -137,6 +137,78 @@ namespace ModBus.Net
         }
 
         /// <summary>
+        /// 将object数字转换为byte数组
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public virtual Byte[] GetBytes(object value, Type type)
+        {
+            ValueHelper Instance;
+            if (this is BigEndianValueHelper)
+            {
+                Instance = BigEndianValueHelper.Instance;
+            }
+            else
+            {
+                Instance = ValueHelper.Instance;
+            }
+
+            switch (type.FullName)
+            {
+                case "System.Int16":
+                {
+                    byte[] bytes = Instance.GetBytes((short) value);
+                    return bytes;
+                }
+                case "System.Int32":
+                {
+                    byte[] bytes = Instance.GetBytes((int) value);
+                    return bytes;
+                }
+                case "System.Int64":
+                {
+                    byte[] bytes = Instance.GetBytes((long) value);
+                    return bytes;
+                }
+                case "System.UInt16":
+                {
+                    byte[] bytes = Instance.GetBytes((ushort) value);
+                    return bytes;
+                }
+                case "System.UInt32":
+                {
+                    byte[] bytes = Instance.GetBytes((uint) value);
+                    return bytes;
+                }
+                case "System.UInt64":
+                {
+                    byte[] bytes = Instance.GetBytes((ulong) value);
+                    return bytes;
+                }
+                case "System.Single":
+                {
+                    byte[] bytes = Instance.GetBytes((float) value);
+                    return bytes;
+                }
+                case "System.Double":
+                {
+                    byte[] bytes = Instance.GetBytes((double) value);
+                    return bytes;
+                }
+                case "System.Byte":
+                {
+                    byte[] bytes = Instance.GetBytes((byte) value);
+                    return bytes;
+                }
+                default:
+                {
+                    throw new NotImplementedException("没有实现除整数以外的其它转换方式");
+                }
+            }
+        }
+
+        /// <summary>
         /// 将byte数组中相应的位置转换为对应类型的数字
         /// </summary>
         /// <param name="data"></param>

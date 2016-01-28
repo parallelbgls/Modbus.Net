@@ -36,32 +36,61 @@ namespace ModBus.Net
                 int preNum = -1;
                 Type preType = null;
                 int getCount = 0;
-                foreach (var address in groupedAddress.OrderBy(address=>address.Address))
+                foreach (var address in groupedAddress.OrderBy(address => address.Address))
                 {
                     if (initNum < 0)
                     {
                         initNum = address.Address;
-                        getCount = (int)BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName];
+                        getCount = (int) BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName];
                     }
                     else
                     {
                         if (address.Address > preNum + BigEndianValueHelper.Instance.ByteLength[preType.FullName])
                         {
-                            ans.Add(new CommunicationUnit(){Area = area, Address = initNum, GetCount = getCount, DataType = typeof(byte)});
+                            ans.Add(new CommunicationUnit()
+                            {
+                                Area = area,
+                                Address = initNum,
+                                GetCount = getCount,
+                                DataType = typeof (byte)
+                            });
                             initNum = address.Address;
-                            getCount = (int)BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName];
+                            getCount = (int) BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName];
                         }
                         else
                         {
-                            getCount += (int)BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName];
+                            getCount += (int) BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName];
                         }
                     }
                     preNum = address.Address;
                     preType = address.DataType;
                 }
-                ans.Add(new CommunicationUnit() { Area = area, Address = initNum, GetCount = getCount, DataType = typeof(byte) });
+                ans.Add(new CommunicationUnit()
+                {
+                    Area = area,
+                    Address = initNum,
+                    GetCount = getCount,
+                    DataType = typeof (byte)
+                });
             }
             return ans;
+        }
+    }
+
+    public class AddressCombinerSingle : AddressCombiner
+    {
+        public override IEnumerable<CommunicationUnit> Combine(IEnumerable<AddressUnit> addresses)
+        {
+            return
+                addresses.Select(
+                    address =>
+                        new CommunicationUnit()
+                        {
+                            Area = address.Area,
+                            Address = address.Address,
+                            DataType = address.DataType,
+                            GetCount = 1
+                        }).ToList();
         }
     }
 }

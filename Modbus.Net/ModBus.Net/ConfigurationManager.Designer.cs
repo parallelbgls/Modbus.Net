@@ -70,6 +70,15 @@ namespace ModBus.Net {
         }
         
         /// <summary>
+        ///   查找类似 opcda://localhost/FBoxOpcServer 的本地化字符串。
+        /// </summary>
+        internal static string FBoxOpcDaHost {
+            get {
+                return ResourceManager.GetString("FBoxOpcDaHost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 192.168.1.1 的本地化字符串。
         /// </summary>
         internal static string IP {
@@ -93,6 +102,15 @@ namespace ModBus.Net {
         internal static string ModbusPort {
             get {
                 return ResourceManager.GetString("ModbusPort", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 opcda://localhost/... 的本地化字符串。
+        /// </summary>
+        internal static string OpcDaHost {
+            get {
+                return ResourceManager.GetString("OpcDaHost", resourceCulture);
             }
         }
         

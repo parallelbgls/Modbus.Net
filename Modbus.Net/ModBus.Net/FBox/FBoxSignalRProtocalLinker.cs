@@ -6,15 +6,10 @@ using System.Threading.Tasks;
 
 namespace ModBus.Net.FBox
 {
-    public class FBoxSignalRProtocalLinker : SignalRProtocalLinker
+    public class FBoxSignalRProtocalLinker : FBoxProtocalLinker
     {
         public FBoxSignalRProtocalLinker(string machineId, string localSequence, SignalRSigninMsg msg) : base(machineId, localSequence, msg)
         {
-        }
-
-        public override bool CheckRight(byte[] content)
-        {
-            return true;
         }
     }
 }

@@ -144,7 +144,11 @@ namespace ModBus.Net
                                                  BigEndianValueHelper.Instance.ByteLength[
                                                      communicateAddress.DataType.FullName]));
                     //如果没有数据，终止
-                    if (datas == null || datas.Length == 0) return null;
+                    if (datas == null || datas.Length == 0 || datas.Length != 
+                                (int)
+                                    Math.Ceiling(communicateAddress.GetCount *
+                                                 BigEndianValueHelper.Instance.ByteLength[
+                                                     communicateAddress.DataType.FullName])) return null;
                     int pos = 0;
                     //解码数据
                     while (pos < communicateAddress.GetCount)

@@ -120,6 +120,9 @@
   <data name="COM" xml:space="preserve">
     <value>COM1</value>
   </data>
+  <data name="FBoxOpcDaHost" xml:space="preserve">
+    <value>opcda://localhost/FBoxOpcServer</value>
+  </data>
   <data name="IP" xml:space="preserve">
     <value>192.168.1.1</value>
   </data>
@@ -128,6 +131,9 @@
   </data>
   <data name="ModbusPort" xml:space="preserve">
     <value>502</value>
+  </data>
+  <data name="OpcDaHost" xml:space="preserve">
+    <value>opcda://localhost/...</value>
   </data>
   <data name="SiemensPort" xml:space="preserve">
     <value>102</value>

@@ -7,6 +7,8 @@ Caution: I really want to implement the COM communication system, but nowaday Us
 
 Caution2: In the current version, you can't get bit or set bit in this library. Please get a byte, change the bit value in the byte, and set to PLC. I will fix this bug in future.
 
+Reference: <b>"h-opc"</b> is linked by [https://github.com/hylasoft-usa/h-opc](https://github.com/hylasoft-usa/h-opc)
+
 Table of Content:
 * [Features](#features)
 * [Usage](#usage)
@@ -17,6 +19,7 @@ Table of Content:
 * A open platform that you can easy to extend a industrial communication protocal.
 * Modbus Tcp protocal.
 * Siemens Tcp protocal (acturally it is the same as Profinet)
+* OPC DA protocal.
 * All communications can be asyncronized.
 * A task manager that you can easily manage multiple connections.
 * .net framework 4.6 and Visual Studio 2015 support.

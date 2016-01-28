@@ -47,6 +47,30 @@
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Opc.Ua.Client, Version=1.2.334.4, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages_local\Opc.Ua.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Opc.Ua.Configuration, Version=1.2.334.4, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages_local\Opc.Ua.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Opc.Ua.Core, Version=1.2.334.4, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages_local\Opc.Ua.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="OpcComRcw, Version=2.0.105.1, Culture=neutral, PublicKeyToken=9a40e993cbface53, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages_local\OpcComRcw.dll</HintPath>
+    </Reference>
+    <Reference Include="OpcNetApi, Version=2.1.105.1, Culture=neutral, PublicKeyToken=9a40e993cbface53, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages_local\OpcNetApi.dll</HintPath>
+    </Reference>
+    <Reference Include="OpcNetApi.Com, Version=2.1.105.1, Culture=neutral, PublicKeyToken=9a40e993cbface53, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages_local\OpcNetApi.Com.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http" />
@@ -97,14 +121,23 @@
     <Compile Include="Modbus\ModbusRtuProtocal.cs" />
     <Compile Include="Modbus\ModbusRtuProtocalLinker.cs" />
     <Compile Include="Modbus\ModbusTcpProtocalLinker.cs" />
+    <Compile Include="OPC\AddressFormaterOpc.cs" />
+    <Compile Include="OPC\DaClientExtend.cs" />
+    <Compile Include="OPC\FBox\FBoxOpcDaManchine.cs" />
+    <Compile Include="OPC\OpcDaConnector.cs" />
+    <Compile Include="OPC\OpcDaMachine.cs" />
+    <Compile Include="OPC\OpcDaProtocal.cs" />
+    <Compile Include="OPC\OpcDaProtocalLinker.cs" />
+    <Compile Include="OPC\OpcDaUtility.cs" />
+    <Compile Include="OPC\OpcProtocal.cs" />
     <Compile Include="ProtocalLinker.cs" />
     <Compile Include="ProtocalLinkerBytesExtend.cs" />
     <Compile Include="ProtocalUnit.cs" />
     <Compile Include="Modbus\ModbusProtocal.cs" />
     <Compile Include="Modbus\ModbusTcpProtocal.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="FBox\SignalRConnector.cs" />
-    <Compile Include="FBox\SignalRProtocalLinker.cs" />
+    <Compile Include="FBox\FBoxConnector.cs" />
+    <Compile Include="FBox\FBoxProtocalLinker.cs" />
     <Compile Include="Siemens\AddressFormaterSiemens.cs" />
     <Compile Include="Siemens\AddressTranslatorSiemens.cs" />
     <Compile Include="Siemens\SiemensMachine.cs" />
@@ -130,6 +163,12 @@
   <ItemGroup>
     <None Include="LICENSE.md" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\h-opc\h-opc.csproj">
+      <Project>{4f43b6f0-0c32-4c34-978e-9b8b5b0b6e80}</Project>
+      <Name>h-opc</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
