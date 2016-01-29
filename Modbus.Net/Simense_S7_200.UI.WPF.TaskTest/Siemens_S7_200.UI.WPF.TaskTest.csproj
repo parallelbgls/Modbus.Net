@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Siemens_S7_200.UI.WPF.TaskTest</RootNamespace>
     <AssemblyName>Siemens_S7_200.UI.WPF.TaskTest</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -95,6 +95,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Modbus.Net.Siemens\Modbus.Net.Siemens.csproj">
+      <Project>{6258f9d9-0df4-497f-9f3b-6d2f6f752a21}</Project>
+      <Name>Modbus.Net.Siemens</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ModBus.Net\ModBus.Net.csproj">
       <Project>{124ebef2-8960-4447-84cf-1d683b1ef7cc}</Project>
       <Name>ModBus.Net</Name>

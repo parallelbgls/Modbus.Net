@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>NA200H.UI.ConsoleApp</RootNamespace>
     <AssemblyName>NA200H.UI.ConsoleApp</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -49,6 +49,14 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Modbus.Net.Modbus\Modbus.Net.Modbus.csproj">
+      <Project>{fdca72ba-6d06-4de0-b873-c11c4ac853ad}</Project>
+      <Name>Modbus.Net.Modbus</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Modbus.Net.Siemens\Modbus.Net.Siemens.csproj">
+      <Project>{6258f9d9-0df4-497f-9f3b-6d2f6f752a21}</Project>
+      <Name>Modbus.Net.Siemens</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ModBus.Net\ModBus.Net.csproj">
       <Project>{124ebef2-8960-4447-84cf-1d683b1ef7cc}</Project>
       <Name>ModBus.Net</Name>

@@ -22,7 +22,7 @@ namespace ModBus.Net {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class ConfigurationManager {
+    public class ConfigurationManager {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace ModBus.Net {
         ///   返回此类使用的缓存的 ResourceManager 实例。
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ModBus.Net.ConfigurationManager", typeof(ConfigurationManager).Assembly);
@@ -51,7 +51,7 @@ namespace ModBus.Net {
         ///   重写当前线程的 CurrentUICulture 属性。
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace ModBus.Net {
         /// <summary>
         ///   查找类似 COM1 的本地化字符串。
         /// </summary>
-        internal static string COM {
+        public static string COM {
             get {
                 return ResourceManager.GetString("COM", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace ModBus.Net {
         /// <summary>
         ///   查找类似 opcda://localhost/FBoxOpcServer 的本地化字符串。
         /// </summary>
-        internal static string FBoxOpcDaHost {
+        public static string FBoxOpcDaHost {
             get {
                 return ResourceManager.GetString("FBoxOpcDaHost", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace ModBus.Net {
         /// <summary>
         ///   查找类似 192.168.1.1 的本地化字符串。
         /// </summary>
-        internal static string IP {
+        public static string IP {
             get {
                 return ResourceManager.GetString("IP", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace ModBus.Net {
         /// <summary>
         ///   查找类似 5000 的本地化字符串。
         /// </summary>
-        internal static string IPConnectionTimeout {
+        public static string IPConnectionTimeout {
             get {
                 return ResourceManager.GetString("IPConnectionTimeout", resourceCulture);
             }
@@ -99,7 +99,7 @@ namespace ModBus.Net {
         /// <summary>
         ///   查找类似 502 的本地化字符串。
         /// </summary>
-        internal static string ModbusPort {
+        public static string ModbusPort {
             get {
                 return ResourceManager.GetString("ModbusPort", resourceCulture);
             }
@@ -108,7 +108,7 @@ namespace ModBus.Net {
         /// <summary>
         ///   查找类似 opcda://localhost/... 的本地化字符串。
         /// </summary>
-        internal static string OpcDaHost {
+        public static string OpcDaHost {
             get {
                 return ResourceManager.GetString("OpcDaHost", resourceCulture);
             }
@@ -117,7 +117,7 @@ namespace ModBus.Net {
         /// <summary>
         ///   查找类似 102 的本地化字符串。
         /// </summary>
-        internal static string SiemensPort {
+        public static string SiemensPort {
             get {
                 return ResourceManager.GetString("SiemensPort", resourceCulture);
             }

@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{124EBEF2-8960-4447-84CF-1D683B1EF7CC}</ProjectGuid>
+    <ProjectGuid>{97F5A329-357A-4813-BAAE-58E71CC6FA87}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ModBus.Net</RootNamespace>
-    <AssemblyName>ModBus.Net</AssemblyName>
+    <RootNamespace>Modbus.Net.OPC</RootNamespace>
+    <AssemblyName>Modbus.Net.OPC</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -21,7 +21,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,62 +30,55 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>false</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
-  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Opc.Ua.Client">
+      <HintPath>..\packages_local\Opc.Ua.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Opc.Ua.Configuration">
+      <HintPath>..\packages_local\Opc.Ua.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Opc.Ua.Core">
+      <HintPath>..\packages_local\Opc.Ua.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="OpcComRcw">
+      <HintPath>..\packages_local\OpcComRcw.dll</HintPath>
+    </Reference>
+    <Reference Include="OpcNetApi">
+      <HintPath>..\packages_local\OpcNetApi.dll</HintPath>
+    </Reference>
+    <Reference Include="OpcNetApi.Com">
+      <HintPath>..\packages_local\OpcNetApi.Com.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AddressCombiner.cs" />
-    <Compile Include="AddressFormater.cs" />
-    <Compile Include="AddressTranslator.cs" />
-    <Compile Include="AsyncHelper.cs" />
-    <Compile Include="BaseProtocal.cs" />
-    <Compile Include="BaseUtility.cs" />
-    <Compile Include="BaseMachine.cs" />
-    <Compile Include="ComConnector.cs" />
-    <Compile Include="ComProtocalLinker.cs" />
-    <Compile Include="ConfigurationManager.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ConfigurationManager.resx</DependentUpon>
-    </Compile>
-    <Compile Include="BaseConnector.cs" />
-    <Compile Include="CRC16.cs" />
-    <Compile Include="IProtocalFormatting.cs" />
-    <Compile Include="ProtocalLinker.cs" />
-    <Compile Include="ProtocalLinkerBytesExtend.cs" />
-    <Compile Include="ProtocalUnit.cs" />
+    <Compile Include="AddressFormaterOpc.cs" />
+    <Compile Include="DaClientExtend.cs" />
+    <Compile Include="FBox\FBoxOpcDaManchine.cs" />
+    <Compile Include="OpcDaConnector.cs" />
+    <Compile Include="OpcDaMachine.cs" />
+    <Compile Include="OpcDaProtocal.cs" />
+    <Compile Include="OpcDaProtocalLinker.cs" />
+    <Compile Include="OpcDaUtility.cs" />
+    <Compile Include="OpcProtocal.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TaskManager.cs" />
-    <Compile Include="TcpConnector.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="TcpProtocalLinker.cs" />
-    <Compile Include="ValueHelper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ConfigurationManager.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>ConfigurationManager.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="LICENSE.md" />
+    <ProjectReference Include="..\h-opc\h-opc.csproj">
+      <Project>{4f43b6f0-0c32-4c34-978e-9b8b5b0b6e80}</Project>
+      <Name>h-opc</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ModBus.Net\ModBus.Net.csproj">
+      <Project>{124ebef2-8960-4447-84cf-1d683b1ef7cc}</Project>
+      <Name>ModBus.Net</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

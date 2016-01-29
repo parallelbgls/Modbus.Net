@@ -22,7 +22,7 @@ Table of Content:
 * OPC DA protocal.
 * All communications can be asyncronized.
 * A task manager that you can easily manage multiple connections.
-* .net framework 4.6 and Visual Studio 2015 support.
+* .net framework 4.5 and Visual Studio 2015 support.
 
 ##<a name="usage"></a> Usage
 
