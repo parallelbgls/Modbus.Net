@@ -112,7 +112,7 @@ namespace ModBus.Net
         {
             //自动查找相应的协议放缩类，命令规则为——当前的实际类名（注意是继承后的）+"BytesExtend"。
             ProtocalLinkerBytesExtend bytesExtend =
-                Assembly.Load(this.GetType().Assembly.GetName().Name).CreateInstance(this.GetType().FullName + "BytesExtend") as
+                Assembly.Load(this.GetType().Assembly.FullName).CreateInstance(this.GetType().FullName + "BytesExtend") as
                     ProtocalLinkerBytesExtend;
             return bytesExtend?.BytesExtend(content);
         }

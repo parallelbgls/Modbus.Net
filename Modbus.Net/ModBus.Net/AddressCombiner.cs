@@ -25,6 +25,7 @@ namespace ModBus.Net
         public override IEnumerable<CommunicationUnit> Combine(IEnumerable<AddressUnit> addresses)
         {
             var groupedAddresses = from address in addresses
+                orderby address.Address
                 group address by address.Area
                 into grouped
                 select grouped;
@@ -91,6 +92,92 @@ namespace ModBus.Net
                             DataType = address.DataType,
                             GetCount = 1
                         }).ToList();
+        }
+    }
+
+    class CommunicationUnitGap
+    {
+        public CommunicationUnit EndUnit { get; set; }
+        public int GapNumber { get; set; }
+    }
+
+    public class AddressCombinerNumericJump : AddressCombiner
+    {
+        private int JumpNumber { get; }
+
+        public AddressCombinerNumericJump(int jumpNumber)
+        {
+            JumpNumber = jumpNumber;
+        }
+
+        public override IEnumerable<CommunicationUnit> Combine(IEnumerable<AddressUnit> addresses)
+        {
+            var continusAddresses = new AddressCombinerContinus().Combine(addresses).ToList();
+            List<CommunicationUnitGap> addressesGaps = new List<CommunicationUnitGap>();
+            CommunicationUnit preCommunicationUnit = null;
+            foreach (var continusAddress in continusAddresses)
+            {
+                if (preCommunicationUnit == null)
+                {
+                    preCommunicationUnit = continusAddress;
+                    continue;
+                }
+                if (continusAddress.Area == preCommunicationUnit.Area)
+                {
+                    var gap = new CommunicationUnitGap()
+                    {
+                        EndUnit = continusAddress,
+                        GapNumber = continusAddress.Address - preCommunicationUnit.Address - (int)(preCommunicationUnit.GetCount * BigEndianValueHelper.Instance.ByteLength[preCommunicationUnit.DataType.FullName])
+                    };
+                    addressesGaps.Add(gap);
+                }
+                preCommunicationUnit = continusAddress;
+            }
+            var orderedGaps = addressesGaps.OrderBy(p => p.GapNumber);
+            int jumpNumberInner = JumpNumber;
+            foreach (var orderedGap in orderedGaps)
+            {
+                jumpNumberInner -= orderedGap.GapNumber;
+                if (jumpNumberInner < 0) break;
+                var nowAddress = orderedGap.EndUnit;
+                var index = continusAddresses.IndexOf(nowAddress);
+                index--;
+                var preAddress = continusAddresses[index];
+                continusAddresses.RemoveAt(index);
+                continusAddresses.RemoveAt(index);
+                var newAddress = new CommunicationUnit()
+                {
+                    Area = nowAddress.Area,
+                    Address = preAddress.Address,
+                    GetCount =
+                        (int)
+                            (preAddress.GetCount*BigEndianValueHelper.Instance.ByteLength[preAddress.DataType.FullName]) +
+                        orderedGap.GapNumber +
+                        (int)
+                            (nowAddress.GetCount*BigEndianValueHelper.Instance.ByteLength[nowAddress.DataType.FullName]),
+                    DataType = typeof (byte)
+                };
+                continusAddresses.Insert(index, newAddress);
+            }
+            return continusAddresses;
+        }
+    }
+
+    public class AddressCombinerPercentageJump : AddressCombiner
+    {
+        private double Percentage { get; }
+
+        public AddressCombinerPercentageJump(double percentage)
+        {
+            if (percentage < 0 || percentage > 100) throw new ArgumentException();
+            Percentage = percentage;
+        }
+
+        public override IEnumerable<CommunicationUnit> Combine(IEnumerable<AddressUnit> addresses)
+        {
+            var addressUnits = addresses as IList<AddressUnit> ?? addresses.ToList();
+            double count = addressUnits.Sum(address => BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName]);
+            return new AddressCombinerNumericJump((int)(count * Percentage / 100.0)).Combine(addressUnits);
         }
     }
 }
