@@ -66,36 +66,45 @@ namespace ModBus.Net.Siemens
             switch (model)
             {
                 case SiemensMachineModel.S7_200:
-                    {
-                        _tdpuSize = 0x09;
-                        _taspSrc = 0x1001;
-                        _tsapDst = 0x1000;
-                        _maxCalling = 0x0001;
-                        _maxCalled = 0x0001;
-                        _maxPdu = 0x03c0;
-                        break;
-                    }
-                case SiemensMachineModel.S7_300:
-                case SiemensMachineModel.S7_400:
-                    {
-                        _tdpuSize = 0x1a;
-                        _taspSrc = 0x4b54;
-                        _tsapDst = 0x0302;
-                        _maxCalling = 0x0001;
-                        _maxCalled = 0x0001;
-                        _maxPdu = 0x00f0;
-                        break;
-                    }
-                case SiemensMachineModel.S7_1200:
-                case SiemensMachineModel.S7_1500:
-                case SiemensMachineModel.S7_200_Smart:
                 {
                     _tdpuSize = 0x09;
+                    _taspSrc = 0x1001;
+                    _tsapDst = 0x1000;
+                    _maxCalling = 0x0001;
+                    _maxCalled = 0x0001;
+                    _maxPdu = 0x03c0;
+                    break;
+                }
+                case SiemensMachineModel.S7_300:
+                case SiemensMachineModel.S7_400:
+                {
+                    _tdpuSize = 0x1a;
                     _taspSrc = 0x4b54;
-                    _tsapDst = 0x0300;
+                    _tsapDst = 0x0302;
                     _maxCalling = 0x0001;
                     _maxCalled = 0x0001;
                     _maxPdu = 0x00f0;
+                    break;
+                }
+                case SiemensMachineModel.S7_1200:
+                case SiemensMachineModel.S7_1500:
+                {
+                    _tdpuSize = 0x0a;
+                    _taspSrc = 0x1011;
+                    _tsapDst = 0x0301;
+                    _maxCalling = 0x0003;
+                    _maxCalled = 0x0003;
+                    _maxPdu = 0x0100;
+                    break;
+                }
+                case SiemensMachineModel.S7_200_Smart:
+                {
+                    _tdpuSize = 0x0a;
+                    _taspSrc = 0x0101;
+                    _tsapDst = 0x0101;
+                    _maxCalling = 0x0001;
+                    _maxCalled = 0x0001;
+                    _maxPdu = 0x03c0;
                     break;
                 }
                 default:
