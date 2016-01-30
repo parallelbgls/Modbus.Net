@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ModBus.Net
+namespace Modbus.Net
 {
     /// <summary>
     /// 地址翻译器

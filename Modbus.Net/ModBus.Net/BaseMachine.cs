@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ModBus.Net
+namespace Modbus.Net
 {
     /// <summary>
     /// 向设备设置值的方式

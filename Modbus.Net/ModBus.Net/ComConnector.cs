@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ModBus.Net
+namespace Modbus.Net
 {
     public class ComConnector : BaseConnector, IDisposable
     {

@@ -1,4 +1,4 @@
-﻿namespace ModBus.Net.Modbus
+﻿namespace Modbus.Net.Modbus
 {
     class ModbusRtuProtocalLinker : ComProtocalLinker
     {

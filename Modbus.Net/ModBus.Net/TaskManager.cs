@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 
-namespace ModBus.Net
+namespace Modbus.Net
 {
     public static class TimeRestore
     {

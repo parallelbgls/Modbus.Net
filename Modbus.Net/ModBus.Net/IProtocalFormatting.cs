@@ -1,4 +1,4 @@
-﻿namespace ModBus.Net
+﻿namespace Modbus.Net
 {
     /// <summary>
     /// 协议转换的接口

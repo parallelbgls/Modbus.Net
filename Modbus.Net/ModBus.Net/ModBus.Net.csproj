@@ -7,8 +7,8 @@
     <ProjectGuid>{124EBEF2-8960-4447-84CF-1D683B1EF7CC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ModBus.Net</RootNamespace>
-    <AssemblyName>ModBus.Net</AssemblyName>
+    <RootNamespace>Modbus.Net</RootNamespace>
+    <AssemblyName>Modbus.Net</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

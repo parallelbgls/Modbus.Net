@@ -10,7 +10,7 @@ using Microsoft.AspNet.SignalR.Client;
 using Newtonsoft.Json;
 using Thinktecture.IdentityModel.Client;
 
-namespace ModBus.Net.FBox
+namespace Modbus.Net.FBox
 {
     public struct SignalRSigninMsg
     {

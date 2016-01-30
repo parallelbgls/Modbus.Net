@@ -2,7 +2,7 @@
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ModBus.Net
+namespace Modbus.Net
 {
     /// <summary>
     /// 基本的协议连接器

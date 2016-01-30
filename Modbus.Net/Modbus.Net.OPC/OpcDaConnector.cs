@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Hylasoft.Opc.Common;
 using Hylasoft.Opc.Da;
 
-namespace ModBus.Net.OPC
+namespace Modbus.Net.OPC
 {
     public class OpcDaConnector : BaseConnector
     {

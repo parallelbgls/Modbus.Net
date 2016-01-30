@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ModBus.Net;
-using ModBus.Net.FBox;
+using Modbus.Net;
+using Modbus.Net.FBox;
 
-namespace ModBus.Net.FBox
+namespace Modbus.Net.FBox
 {
     public abstract class FBoxProtocal : BaseProtocal
     {

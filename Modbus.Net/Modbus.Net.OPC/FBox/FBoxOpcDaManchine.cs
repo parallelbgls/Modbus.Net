@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ModBus.Net.OPC.FBox
+namespace Modbus.Net.OPC.FBox
 {
     public class FBoxOpcDaMachine : OpcDaMachine
     {

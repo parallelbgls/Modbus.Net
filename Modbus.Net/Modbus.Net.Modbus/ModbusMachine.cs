@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ModBus.Net.Modbus
+namespace Modbus.Net.Modbus
 {
     public class ModbusMachine : BaseMachine
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ModBus.Net.Siemens
+namespace Modbus.Net.Siemens
 {
     public class SiemensTcpProtocalLinkerBytesExtend : ProtocalLinkerBytesExtend
     {

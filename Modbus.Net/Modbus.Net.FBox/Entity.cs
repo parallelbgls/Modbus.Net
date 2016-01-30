@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace ModBus.Net.FBox
+namespace Modbus.Net.FBox
 {
     public class BoxGroup
     {

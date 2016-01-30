@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace ModBus.Net.Modbus
+namespace Modbus.Net.Modbus
 {
     /// <summary>
     /// Modbus连接类型

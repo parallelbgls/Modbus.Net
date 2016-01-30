@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace ModBus.Net
+namespace Modbus.Net
 {
     /// <summary>
     /// 基本协议

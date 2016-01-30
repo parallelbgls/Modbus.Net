@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ModBus.Net.Modbus
+namespace Modbus.Net.Modbus
 {
     /// <summary>
     /// NA200H数据单元翻译器

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace ModBus.Net.Modbus
+namespace Modbus.Net.Modbus
 {
     internal enum ModbusProtocalVariableFunctionCode : byte
     {

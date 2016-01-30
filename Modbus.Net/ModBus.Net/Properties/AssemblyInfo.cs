@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // 特性集控制。更改这些特性值可修改
 // 与程序集关联的信息。
 
-[assembly: AssemblyTitle("ModBus.Net")]
+[assembly: AssemblyTitle("Modbus.Net")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("杭州德联科技股份有限公司")]
-[assembly: AssemblyProduct("ModBus.Net")]
+[assembly: AssemblyProduct("Modbus.Net")]
 [assembly: AssemblyCopyright("Copyright © Chris L. 2014 HangZhou Delian Technology")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ModBus.Net.Modbus
+namespace Modbus.Net.Modbus
 {
     /// <summary>
     /// Tcp协议字节伸缩

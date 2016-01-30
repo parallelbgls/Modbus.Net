@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 
-namespace ModBus.Net
+namespace Modbus.Net
 {
     /// <summary>
     /// 值与字节数组之间转换的辅助类，这是一个Singleton类

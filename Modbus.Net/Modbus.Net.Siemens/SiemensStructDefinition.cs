@@ -1,4 +1,4 @@
-﻿namespace ModBus.Net.Siemens
+﻿namespace Modbus.Net.Siemens
 {
     public struct TodClockStatus
     {

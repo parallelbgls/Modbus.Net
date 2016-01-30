@@ -57,9 +57,9 @@
       <Project>{6258f9d9-0df4-497f-9f3b-6d2f6f752a21}</Project>
       <Name>Modbus.Net.Siemens</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ModBus.Net\ModBus.Net.csproj">
+    <ProjectReference Include="..\ModBus.Net\Modbus.Net.csproj">
       <Project>{124ebef2-8960-4447-84cf-1d683b1ef7cc}</Project>
-      <Name>ModBus.Net</Name>
+      <Name>Modbus.Net</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

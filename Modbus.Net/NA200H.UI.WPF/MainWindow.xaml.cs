@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using ModBus.Net;
+using Modbus.Net;
 using System.Windows;
-using ModBus.Net.Modbus;
-using ModBus.Net.Siemens;
+using Modbus.Net.Modbus;
+using Modbus.Net.Siemens;
 
 
 namespace NA200H.UI.WPF

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ModBus.Net
+namespace Modbus.Net
 {
     public abstract class ProtocalUnit : IProtocalFormatting
     {

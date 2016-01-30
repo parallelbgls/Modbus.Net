@@ -4,7 +4,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ModBus.Net
+namespace Modbus.Net
 {
     /// <summary>
     ///     Socket收到的数据

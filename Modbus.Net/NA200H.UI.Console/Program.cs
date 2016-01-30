@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ModBus.Net;
+using Modbus.Net;
 using System.Reflection;
-using ModBus.Net.Modbus;
-using ModBus.Net.Siemens;
+using Modbus.Net.Modbus;
+using Modbus.Net.Siemens;
 
 namespace NA200H.UI.ConsoleApp
 {

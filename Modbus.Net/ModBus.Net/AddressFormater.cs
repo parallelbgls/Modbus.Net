@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ModBus.Net
+namespace Modbus.Net
 {
     /// <summary>
     /// 地址编码器

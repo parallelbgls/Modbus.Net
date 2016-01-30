@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ModBus.Net.Siemens
+namespace Modbus.Net.Siemens
 {
     public class AddressTranslatorSiemens : AddressTranslator
     {

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace ModBus.Net.Siemens
+namespace Modbus.Net.Siemens
 {
     public class SiemensTcpProtocal : SiemensProtocal
     {

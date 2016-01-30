@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ModBus.Net.OPC
+namespace Modbus.Net.OPC
 {
     public class OpcDaMachine : BaseMachine
     {

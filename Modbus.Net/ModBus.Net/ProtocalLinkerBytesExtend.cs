@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ModBus.Net
+namespace Modbus.Net
 {
     /// <summary>
     /// 协议字节伸缩

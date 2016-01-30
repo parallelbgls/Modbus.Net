@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ModBus.Net.Modbus
+namespace Modbus.Net.Modbus
 {
     public class AddressFormaterNA200H : AddressFormater
     {

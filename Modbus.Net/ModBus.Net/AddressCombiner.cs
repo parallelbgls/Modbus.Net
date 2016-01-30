@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ModBus.Net
+namespace Modbus.Net
 {
     /// <summary>
     /// 地址组合器，组合后的每一组地址将只需一次向设备进行通讯

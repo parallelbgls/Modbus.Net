@@ -12,8 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using ModBus.Net;
-using ModBus.Net.Siemens;
+using Modbus.Net;
+using Modbus.Net.Siemens;
 
 namespace Siemens_S7_200.UI.WPF.TaskTest
 {

@@ -6,8 +6,8 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Routing;
 using CrossLampControl.WebApi.Models;
-using ModBus.Net;
-using ModBus.Net.Siemens;
+using Modbus.Net;
+using Modbus.Net.Siemens;
 
 namespace CrossLampControl.WebApi.Controllers
 {

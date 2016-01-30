@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ModBus.Net.FBox
+namespace Modbus.Net.FBox
 {
     public class FBoxMachine : BaseMachine
     {

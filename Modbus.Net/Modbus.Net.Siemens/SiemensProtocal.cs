@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ModBus.Net.Siemens
+namespace Modbus.Net.Siemens
 {
     public enum SiemensTypeCode : byte
     {
