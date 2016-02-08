@@ -37,12 +37,14 @@ namespace Modbus.Net
 
         #region Factory
 
-        protected static ValueHelper _Instance;
+        private static ValueHelper _instance;
+
+        protected virtual ValueHelper _Instance => _instance;
 
         /// <summary>
         /// ValueHelper单例的实例
         /// </summary>
-        public static ValueHelper Instance => _Instance ?? (_Instance = new ValueHelper());
+        public static ValueHelper Instance => _instance ?? (_instance = new ValueHelper());
 
         #endregion
 
@@ -144,61 +146,51 @@ namespace Modbus.Net
         /// <returns></returns>
         public virtual Byte[] GetBytes(object value, Type type)
         {
-            ValueHelper Instance;
-            if (this is BigEndianValueHelper)
-            {
-                Instance = BigEndianValueHelper.Instance;
-            }
-            else
-            {
-                Instance = ValueHelper.Instance;
-            }
-
             switch (type.FullName)
             {
                 case "System.Int16":
                 {
-                    byte[] bytes = Instance.GetBytes((short) value);
+                    byte[] bytes = _Instance.GetBytes((short) value);
                     return bytes;
                 }
                 case "System.Int32":
                 {
-                    byte[] bytes = Instance.GetBytes((int) value);
+                    byte[] bytes = _Instance.GetBytes((int) value);
                     return bytes;
                 }
                 case "System.Int64":
                 {
-                    byte[] bytes = Instance.GetBytes((long) value);
+                    byte[] bytes = _Instance.GetBytes((long) value);
                     return bytes;
                 }
                 case "System.UInt16":
                 {
-                    byte[] bytes = Instance.GetBytes((ushort) value);
+                    byte[] bytes = _Instance.GetBytes((ushort) value);
                     return bytes;
                 }
                 case "System.UInt32":
                 {
-                    byte[] bytes = Instance.GetBytes((uint) value);
+                    byte[] bytes = _Instance.GetBytes((uint) value);
                     return bytes;
                 }
                 case "System.UInt64":
                 {
-                    byte[] bytes = Instance.GetBytes((ulong) value);
+                    byte[] bytes = _Instance.GetBytes((ulong) value);
                     return bytes;
                 }
                 case "System.Single":
                 {
-                    byte[] bytes = Instance.GetBytes((float) value);
+                    byte[] bytes = _Instance.GetBytes((float) value);
                     return bytes;
                 }
                 case "System.Double":
                 {
-                    byte[] bytes = Instance.GetBytes((double) value);
+                    byte[] bytes = _Instance.GetBytes((double) value);
                     return bytes;
                 }
                 case "System.Byte":
                 {
-                    byte[] bytes = Instance.GetBytes((byte) value);
+                    byte[] bytes = _Instance.GetBytes((byte) value);
                     return bytes;
                 }
                 default:
@@ -217,61 +209,51 @@ namespace Modbus.Net
         /// <returns></returns>
         public virtual object GetValue(byte[] data, ref int pos, Type t)
         {
-            ValueHelper Instance;
-            if (this is BigEndianValueHelper)
-            {
-                Instance = BigEndianValueHelper.Instance;
-            }
-            else
-            {
-                Instance = ValueHelper.Instance;
-            }
-
             switch (t.FullName)
             {
                 case "System.Int16":
                     {
-                        short value = Instance.GetShort(data, ref pos);
+                        short value = _Instance.GetShort(data, ref pos);
                         return value;
                     }
                 case "System.Int32":
                     {
-                        int value = Instance.GetInt(data, ref pos);
+                        int value = _Instance.GetInt(data, ref pos);
                         return value;
                     }
                 case "System.Int64":
                     {
-                        long value = Instance.GetLong(data, ref pos);
+                        long value = _Instance.GetLong(data, ref pos);
                         return value;
                     }
                 case "System.UInt16":
                     {
-                        ushort value = Instance.GetUShort(data, ref pos);
+                        ushort value = _Instance.GetUShort(data, ref pos);
                         return value;
                     }
                 case "System.UInt32":
                     {
-                        uint value = Instance.GetUInt(data, ref pos);
+                        uint value = _Instance.GetUInt(data, ref pos);
                         return value;
                     }
                 case "System.UInt64":
                     {
-                        ulong value = Instance.GetULong(data, ref pos);
+                        ulong value = _Instance.GetULong(data, ref pos);
                         return value;
                     }
                 case "System.Single":
                     {
-                        float value = Instance.GetFloat(data, ref pos);
+                        float value = _Instance.GetFloat(data, ref pos);
                         return value;
                     }
                 case "System.Double":
                     {
-                        double value = Instance.GetDouble(data, ref pos);
+                        double value = _Instance.GetDouble(data, ref pos);
                         return value;
                     }
                 case "System.Byte":
                     {
-                        byte value = Instance.GetByte(data, ref pos);
+                        byte value = _Instance.GetByte(data, ref pos);
                         return value;
                     }
                 default:
@@ -424,16 +406,6 @@ namespace Modbus.Net
         /// <returns></returns>
         public virtual byte[] ObjectArrayToByteArray(object[] contents)
         {
-            ValueHelper Instance;
-            if (this is BigEndianValueHelper)
-            {
-                Instance = BigEndianValueHelper.Instance;
-            }
-            else
-            {
-                Instance = ValueHelper.Instance;
-            }
-
             bool b = false;
             //先查找传入的结构中有没有数组，有的话将其打开
             var newContentsList = new List<object>();
@@ -496,47 +468,47 @@ namespace Modbus.Net
                     {
                         case "System.Int16":
                             {
-                                translateTarget.AddRange(Instance.GetBytes((short)content));
+                                translateTarget.AddRange(_Instance.GetBytes((short)content));
                                 break;
                             }
                         case "System.Int32":
                             {
-                                translateTarget.AddRange(Instance.GetBytes((int)content));
+                                translateTarget.AddRange(_Instance.GetBytes((int)content));
                                 break;
                             }
                         case "System.Int64":
                             {
-                                translateTarget.AddRange(Instance.GetBytes((long)content));
+                                translateTarget.AddRange(_Instance.GetBytes((long)content));
                                 break;
                             }
                         case "System.UInt16":
                             {
-                                translateTarget.AddRange(Instance.GetBytes((ushort)content));
+                                translateTarget.AddRange(_Instance.GetBytes((ushort)content));
                                 break;
                             }
                         case "System.UInt32":
                             {
-                                translateTarget.AddRange(Instance.GetBytes((uint)content));
+                                translateTarget.AddRange(_Instance.GetBytes((uint)content));
                                 break;
                             }
                         case "System.UInt64":
                             {
-                                translateTarget.AddRange(Instance.GetBytes((ulong)content));
+                                translateTarget.AddRange(_Instance.GetBytes((ulong)content));
                                 break;
                             }
                         case "System.Single":
                             {
-                                translateTarget.AddRange(Instance.GetBytes((float)content));
+                                translateTarget.AddRange(_Instance.GetBytes((float)content));
                                 break;
                             }
                         case "System.Double":
                             {
-                                translateTarget.AddRange(Instance.GetBytes((double)content));
+                                translateTarget.AddRange(_Instance.GetBytes((double)content));
                                 break;
                             }
                         case "System.Byte":
                             {
-                                translateTarget.AddRange(Instance.GetBytes((byte)content));
+                                translateTarget.AddRange(_Instance.GetBytes((byte)content));
                                 break;
                             }
                         default:
@@ -575,16 +547,6 @@ namespace Modbus.Net
         public virtual object[] ByteArrayToObjectArray(byte[] contents,
             IEnumerable<KeyValuePair<Type, int>> translateTypeAndCount)
         {
-            ValueHelper Instance;
-            if (this is BigEndianValueHelper)
-            {
-                Instance = BigEndianValueHelper.Instance;
-            }
-            else
-            {
-                Instance = ValueHelper.Instance;
-            }
-
             List<object> translation = new List<object>();
             int count = 0;
             foreach (var translateUnit in translateTypeAndCount)
@@ -598,62 +560,62 @@ namespace Modbus.Net
                         {
                             case "System.Int16":
                             {
-                                short value = Instance.GetShort(contents, ref count);
+                                short value = _Instance.GetShort(contents, ref count);
                                 translation.Add(value);
                                 break;
                             }
                             case "System.Int32":
                             {
-                                int value = Instance.GetInt(contents, ref count);
+                                int value = _Instance.GetInt(contents, ref count);
                                 translation.Add(value);
                                 break;
                             }
                             case "System.Int64":
                             {
-                                long value = Instance.GetLong(contents, ref count);
+                                long value = _Instance.GetLong(contents, ref count);
                                 translation.Add(value);
                                 break;
                             }
                             case "System.UInt16":
                             {
-                                ushort value = Instance.GetUShort(contents, ref count);
+                                ushort value = _Instance.GetUShort(contents, ref count);
                                 translation.Add(value);
                                 break;
                             }
                             case "System.UInt32":
                             {
-                                uint value = Instance.GetUInt(contents, ref count);
+                                uint value = _Instance.GetUInt(contents, ref count);
                                 translation.Add(value);
                                 break;
                             }
                             case "System.UInt64":
                             {
-                                ulong value = Instance.GetULong(contents, ref count);
+                                ulong value = _Instance.GetULong(contents, ref count);
                                 translation.Add(value);
                                 break;
                             }
                             case "System.Single":
                             {
-                                float value = Instance.GetFloat(contents, ref count);
+                                float value = _Instance.GetFloat(contents, ref count);
                                 translation.Add(value);
                                 break;
                             }
                             case "System.Double":
                             {
-                                double value = Instance.GetDouble(contents, ref count);
+                                double value = _Instance.GetDouble(contents, ref count);
                                 translation.Add(value);
                                 break;
                             }
                             case "System.Byte":
                             {
-                                byte value = Instance.GetByte(contents, ref count);
+                                byte value = _Instance.GetByte(contents, ref count);
                                 translation.Add(value);
                                 break;
                             }
                             case "System.Boolean":
                             {
                                 
-                                bool[] value = Instance.GetBits(contents, ref count);
+                                bool[] value = _Instance.GetBits(contents, ref count);
                                 int k = translateUnit.Value - i < 8 ? translateUnit.Value - i : 8;
                                 for (int j = 0; j < k; j++)
                                 {
@@ -757,7 +719,9 @@ namespace Modbus.Net
 
     public class BigEndianValueHelper : ValueHelper
     {
-        protected static BigEndianValueHelper _BigEndianInstance;
+        private static BigEndianValueHelper _bigEndianInstance;
+
+        protected override ValueHelper _Instance => _bigEndianInstance;
 
         protected BigEndianValueHelper()
         {
@@ -766,7 +730,7 @@ namespace Modbus.Net
 
         protected new bool LittleEndian => false;
 
-        public new static BigEndianValueHelper Instance => _BigEndianInstance ?? (_BigEndianInstance = new BigEndianValueHelper());
+        public new static BigEndianValueHelper Instance => _bigEndianInstance ?? (_bigEndianInstance = new BigEndianValueHelper());
 
         public override Byte[] GetBytes(short value)
         {
