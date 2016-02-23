@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>Modbus.Net.OPC</id>
+        <version>1.0.0</version>
+        <title>Modbus.Net.OPC</title>
+        <authors>Chris L.(Luo Sheng)</authors>
+        <owners>Hangzhou Delian Information and Science Technology</owners>
+        <licenseUrl>https://github.com/parallelbgls/Modbus.Net/blob/master/LICENSE.md</licenseUrl>
+        <projectUrl>https://github.com/parallelbgls/Modbus.Net/tree/master/Modbus.Net/Modbus.Net.OPC</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Modbus.Net OPC Implementation</description>
+        <copyright>Copyright 2015 Hangzhou Delian Science and Technology Co.,Ltd.</copyright>
+        <tags>hardware communicate protocal OPC DA Delian</tags>
+        <dependencies>
+            <dependency id="Modbus.Net" version="1.0.0" />
+            <dependency id="Modbus.Net.h-opc" version="0.4.0" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="bin\Release\Modbus.Net.OPC.dll" target="lib\net45\Modbus.Net.OPC.dll" />
+    </files>
+</package>

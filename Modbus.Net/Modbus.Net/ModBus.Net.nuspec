@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>Modbus.Net</id>
+        <version>1.0.0</version>
+        <title>Modbus.Net</title>
+        <authors>Chris L.(Luo Sheng)</authors>
+        <owners>Hangzhou Delian Information and Science Technology Co.,Ltd.</owners>
+        <licenseUrl>https://github.com/parallelbgls/Modbus.Net/blob/master/LICENSE.md</licenseUrl>
+        <projectUrl>https://github.com/parallelbgls/Modbus.Net/tree/master/Modbus.Net</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>High extensible hardware communication implementation platform</description>
+        <copyright>Copyright 2015 Hangzhou Delian Science and Technology Co.,Ltd.</copyright>
+        <tags>hardware communicate protocal Delian</tags>
+    </metadata>
+    <files>
+        <file src="bin\Release\Modbus.Net.dll" target="lib\net45\Modbus.Net.dll" />
+    </files>
+</package>
