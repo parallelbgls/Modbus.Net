@@ -351,3 +351,143 @@ task.TaskStart();
 ```
 public async Task<bool> SetDatasAsync(string connectionToken, MachineSetDataType setDataType, Dictionary<string, double> values)
 ```
+
+##<a name="implement"></a> Implementing Your Own Protocal
+The main target of Modbus.Net is building a high extensable hardware communication protocal, so we allow everyone to extend the protocal.
+
+To extend Modbus.Net, first of all ValueHelper.cs in Modbus.Net is a really powerful tool that you can use to modify values in byte array.There are two ValueHelpers: ValueHelper(Little Endian) and BigEndianValueHelper(Big Endian). Remember using the correct one.
+
+In this tutorial I will use Modbus.Net.Modbus to tell you how to implement your own protocal.
+
+You should follow the following steps to implement your own protocal.
+
+1.Implement Protocal. (ModbusProtocal.cs, ModbusTcpProtocal.cs)
+First: Extend BaseProtocal to ModbusProtocal.
+```C#
+public abstract class ModbusProtocal : BaseProtocal
+public class ModbusTcpProtocal : ModbusProtocal
+```
+"abstract" keyword is optional because if user can use this protocal don't write abstract.
+
+Second: Extend ProtocalUnit, InputStruct and OutputStruct.
+```C#
+public class ReadDataModbusProtocal : ProtocalUnit
+{
+    public override byte[] Format(InputStruct message)
+    {
+        var r_message = (ReadDataModbusInputStruct)message;
+        return Format(r_message.BelongAddress, r_message.FunctionCode, r_message.StartAddress, r_message.GetCount);
+    }
+
+    public override OutputStruct Unformat(byte[] messageBytes, ref int pos)
+    {
+        byte belongAddress = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
+        byte functionCode = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
+        byte dataCount = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
+        byte[] dataValue = new byte[dataCount];
+        Array.Copy(messageBytes, 3, dataValue, 0, dataCount);
+        return new ReadDataModbusOutputStruct(belongAddress, functionCode, dataCount, dataValue);
+    }
+}
+```
+There are two types of ProtocalUnit: ProtocalUnit and SpecialProtocalUnit.
+If you see the implementation, you will find that there are no differences between ProtocalUnit and SpecialProtocalUnit. But actually there is a difference between them: SpecialProtocalUnit will not call ProtocalLinkerBytesExtend. If you don't want some protocals to call the ProtocalLinkerBytesExtend, extend those protocals from SpecialProtocalUnit.
+
+2.Implement Protocal based ProtocalLinker. (ModbusTcpProtocalLinker)
+ProtocalLinker connect the Protocal to the BaseConnector, so that byte array can be sended using some specific way like Ethenet.
+```
+public class ModbusTcpProtocalLinker : TcpProtocalLinker
+{
+    public override bool CheckRight(byte[] content)
+```
+CheckRight is the return check function, if you got the wrong bytes answer, you can return false or throw exceptions.
+
+3.Implement Connector based ProtocalLinker and BaseConnector. (TcpProtocalLinker.cs, TcpConnector.cs) (Optional)
+If you want to connect to hardware using another way, please implement your own ProtocalLinker and BaseConnector. And please remember that if you want to connector hardware using serial line, please don't use ComConnector in Modbus.Net and implement your own ComConnector.
+You should implement all of these functions in BaseConnector.
+```C#
+public abstract string ConnectionToken { get; }
+public abstract bool IsConnected { get; }
+public abstract bool Connect();
+public abstract Task<bool> ConnectAsync();
+public abstract bool Disconnect();
+public abstract bool SendMsgWithoutReturn(byte[] message);
+public abstract Task<bool> SendMsgWithoutReturnAsync(byte[] message);
+public abstract byte[] SendMsg(byte[] message);
+public abstract Task<byte[]> SendMsgAsync(byte[] message);
+```
+
+4.Implement ProtocalLinkerBytesExtend (ModbusProtocalLinkerBytesExtend.cs)
+If you want to use extend bytes when you send your bytes array to the hardware, you can set ProtocalLinkerBytesExtend.
+The name of ProtocalLinkerBytesExtend is ProtocalLinker name + BytesExtend, like ModbusTcpProtocalLinkerBytesExtend.
+```C#
+public class ModbusTcpProtocalLinkerBytesExtend : ProtocalLinkerBytesExtend
+{
+    public override byte[] BytesExtend(byte[] content)
+    {        
+        byte[] newFormat = new byte[6 + content.Length];
+        int tag = 0;
+        ushort leng = (ushort)content.Length;
+        Array.Copy(BigEndianValueHelper.Instance.GetBytes(tag), 0, newFormat, 0, 4);
+        Array.Copy(BigEndianValueHelper.Instance.GetBytes(leng), 0, newFormat, 4, 2);
+        Array.Copy(content, 0, newFormat, 6, content.Length);
+        return newFormat;
+    }
+
+    public override byte[] BytesDecact(byte[] content)
+    {
+        byte[] newContent = new byte[content.Length - 6];
+        Array.Copy(content, 6, newContent, 0, newContent.Length);
+        return newContent;
+    }
+}
+```
+For example modbus tcp has a 6 bytes head: 4 bytes 0 and 2 bytes length. And when you get the bytes, please remove the head to fit the ModbusProtocal Unformat function.
+
+5.Implement BaseUtility.cs (ModbusUtility.cs)
+Implement low level api for Modbus.
+You need to implement three functions.
+```C#
+public override void SetConnectionType(int connectionType)
+protected override async Task<byte[]> GetDatasAsync(byte belongAddress, byte masterAddress, string startAddress, int getByteCount)
+public override async Task<bool> SetDatasAsync(byte belongAddress, byte masterAddress, string startAddress, object[] setContents)
+```
+And don't remember set default AddressTranslator and Protocal.
+```C#
+AddressTranslator = new AddressTranslatorModbus();
+Wrapper = ConnectionString == null ? new ModbusTcpProtocal() : new ModbusTcpProtocal(ConnectionString);
+```
+
+6.Implement BaseMachine.cs (ModbusMachine.cs)
+Implement middle level api for Modbus.
+```C#
+public class ModbusMachine : BaseMachine
+{
+    public ModbusMachine(ModbusType connectionType, string connectionString,
+        IEnumerable<AddressUnit> getAddresses, bool keepConnect) : base(getAddresses, keepConnect)
+    {
+        BaseUtility = new ModbusUtility(connectionType, connectionString);
+        AddressFormater = new AddressFormaterModbus();
+        AddressCombiner = new AddressCombinerContinus();
+    }
+}
+```
+Set BaseUtility, default AddressFormater and AddressCombiner.
+
+7.Implement your own AddressFormater, AddressTranslator and AddressCombiner. (AddressFormaterModbus.cs, AddressTranslatorModbus.cs) (Optional)
+If some devices have its own address rule, you should implement your own address formating system.
+```C#
+public class AddressFormaterNA200H : AddressFormater
+{
+    public override string FormatAddress(string area, int address)
+}
+
+public class AddressTranslatorNA200H : AddressTranslator
+{
+    protected Dictionary<string, int> TransDictionary;
+    protected Dictionary<string, int> ReadFunctionCodeDictionary;
+    protected Dictionary<string, int> WriteFunctionCodeDictionary;
+    public override KeyValuePair<int, int> AddressTranslate(string address, bool isRead)
+}
+```
+
