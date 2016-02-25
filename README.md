@@ -348,7 +348,7 @@ task.TaskStart();
 ```
 
 5.And don't forget that there is also a SetDatasAsync Api in the TaskManager.
-```
+```C#
 public async Task<bool> SetDatasAsync(string connectionToken, MachineSetDataType setDataType, Dictionary<string, double> values)
 ```
 
@@ -395,7 +395,7 @@ If you see the implementation, you will find that there are no differences betwe
 
 2.Implement Protocal based ProtocalLinker. (ModbusTcpProtocalLinker)
 ProtocalLinker connect the Protocal to the BaseConnector, so that byte array can be sended using some specific way like Ethenet.
-```
+```C#
 public class ModbusTcpProtocalLinker : TcpProtocalLinker
 {
     public override bool CheckRight(byte[] content)
