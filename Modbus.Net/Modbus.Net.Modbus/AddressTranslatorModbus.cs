@@ -54,17 +54,23 @@ namespace Modbus.Net.Modbus
             };
         }
 
-        public override KeyValuePair<int, int> AddressTranslate(string address, bool isRead)
+        public override AddressDef AddressTranslate(string address, bool isRead)
         {
             address = address.ToUpper();
             string[] splitString = address.Split(' ');
             string head = splitString[0];
             string tail = splitString[1];
             return isRead
-                ? new KeyValuePair<int, int>(TransDictionary[head] + int.Parse(tail) - 1,
-                    ReadFunctionCodeDictionary[head])
-                : new KeyValuePair<int, int>(TransDictionary[head] + int.Parse(tail) - 1,
-                    WriteFunctionCodeDictionary[head]);
+                ? new AddressDef()
+                {
+                    Area = ReadFunctionCodeDictionary[head],
+                    Address = TransDictionary[head] + int.Parse(tail) - 1,
+                }
+                : new AddressDef()
+                {
+                    Area = WriteFunctionCodeDictionary[head],
+                    Address = TransDictionary[head] + int.Parse(tail) - 1,
+                };
         }
     }
 
@@ -92,17 +98,23 @@ namespace Modbus.Net.Modbus
             };
         }
 
-        public override KeyValuePair<int, int> AddressTranslate(string address, bool isRead)
+        public override AddressDef AddressTranslate(string address, bool isRead)
         {
             address = address.ToUpper();
             string[] splitString = address.Split(' ');
             string head = splitString[0];
             string tail = splitString[1];
             return isRead
-                ? new KeyValuePair<int, int>(int.Parse(tail) - 1,
-                    ReadFunctionCodeDictionary[head])
-                : new KeyValuePair<int, int>(int.Parse(tail) - 1,
-                    WriteFunctionCodeDictionary[head]);
+                ? new AddressDef()
+                {
+                    Area = ReadFunctionCodeDictionary[head],
+                    Address = int.Parse(tail) - 1,
+                }
+                : new AddressDef()
+                {
+                    Area = WriteFunctionCodeDictionary[head],
+                    Address = int.Parse(tail) - 1,
+                };
         }
     }
 }

@@ -58,9 +58,9 @@ namespace Modbus.Net.Modbus
         public ReadDataModbusInputStruct(byte belongAddress, string startAddress, ushort getCount, AddressTranslator addressTranslator)
         {
             BelongAddress = belongAddress;
-            KeyValuePair<int, int> translateAddress = addressTranslator.AddressTranslate(startAddress, true);
-            FunctionCode = (byte)translateAddress.Value;
-            StartAddress = (ushort)translateAddress.Key;
+            var translateAddress = addressTranslator.AddressTranslate(startAddress, true);
+            FunctionCode = (byte)translateAddress.Area;
+            StartAddress = (ushort)translateAddress.Address;
             GetCount = getCount;
         }
 
@@ -121,9 +121,9 @@ namespace Modbus.Net.Modbus
         public WriteDataModbusInputStruct(byte belongAddress, string startAddress, object[] writeValue, AddressTranslator addressTranslator)
         {
             BelongAddress = belongAddress;
-            KeyValuePair<int, int> translateAddress = addressTranslator.AddressTranslate(startAddress, false);
-            FunctionCode = (byte)translateAddress.Value;
-            StartAddress = (ushort)translateAddress.Key;
+            var translateAddress = addressTranslator.AddressTranslate(startAddress, false);
+            FunctionCode = (byte)translateAddress.Area;
+            StartAddress = (ushort)translateAddress.Address;
             WriteCount = (ushort)writeValue.Length;
             WriteByteCount = 0;
             WriteValue = writeValue;

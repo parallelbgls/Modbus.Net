@@ -190,8 +190,8 @@ namespace Modbus.Net.Siemens
             PduRef = pduRef;
             TypeCode = (byte) getType;
             var address = addressTranslator.AddressTranslate(startAddress, true);
-            Offset = address.Key;
-            int area = address.Value;
+            Offset = address.Address;
+            int area = address.Area;
             Area = (byte)(area%256);
             DbBlock = Area == 0x84 ? (ushort)(area/256) : (ushort)0;
             NumberOfElements = getCount;         
@@ -272,8 +272,8 @@ namespace Modbus.Net.Siemens
         {
             PduRef = pduRef;
             var address = addressTranslator.AddressTranslate(startAddress, true);
-            Offset = address.Key;
-            int area = address.Value;
+            Offset = address.Address;
+            int area = address.Area;
             Area = (byte)(area % 256);
             DbBlock = Area == 0x84 ? (ushort)(area / 256) : (ushort)0;
             WriteValue = writeValue;

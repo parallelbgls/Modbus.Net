@@ -135,14 +135,16 @@ namespace Modbus.Net
                 foreach (var communicateAddress in CommunicateAddresses)
                 {
                     //获取数据
-                    var datas =
+                    var datasReturn =
                         await
-                            BaseUtility.GetDatasAsync<byte>(2, 0,
+                            BaseUtility.GetDatasAsync(2, 0,
                                 AddressFormater.FormatAddress(communicateAddress.Area, communicateAddress.Address),
                                 (int)
                                     Math.Ceiling(communicateAddress.GetCount*
                                                  BigEndianValueHelper.Instance.ByteLength[
                                                      communicateAddress.DataType.FullName]));
+                    var datas = datasReturn.ReturnValue;
+
                     //如果没有数据，终止
                     if (datas == null || datas.Length == 0 || datas.Length != 
                                 (int)
@@ -165,8 +167,9 @@ namespace Modbus.Net
                                 {
                                     PlcValue =
                                         Double.Parse(
-                                            BigEndianValueHelper.Instance.GetValue(datas, ref pos, address.DataType)
-                                                .ToString())*address.Zoom,
+                                            datasReturn.IsLittleEndian ? ValueHelper.Instance.GetValue(datas, ref pos, address.DataType)
+                                                .ToString() : BigEndianValueHelper.Instance.GetValue(datas, ref pos, address.DataType)
+                                                .ToString()) *address.Zoom,
                                     UnitExtend = address.UnitExtend
                                 });
                         }

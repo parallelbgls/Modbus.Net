@@ -121,7 +121,7 @@ namespace Modbus.Net.Siemens
             ConnectionType = (SiemensType) connectionType;
         }
 
-        protected override async Task<byte[]> GetDatasAsync(byte belongAddress, byte materAddress, string startAddress, int getByteCount)
+        public override async Task<GetDataReturnDef> GetDatasAsync(byte belongAddress, byte materAddress, string startAddress, int getByteCount)
         {
             try
             {
@@ -130,7 +130,11 @@ namespace Modbus.Net.Siemens
                     await
                         Wrapper.SendReceiveAsync(Wrapper[typeof (ReadRequestSiemensProtocal)],
                             readRequestSiemensInputStruct) as ReadRequestSiemensOutputStruct;
-                return readRequestSiemensOutputStruct?.GetValue;
+                return new GetDataReturnDef()
+                {
+                    ReturnValue = readRequestSiemensOutputStruct?.GetValue,
+                    IsLittleEndian = Wrapper[typeof (ReadRequestSiemensProtocal)].IsLittleEndian
+                };
             }
             catch (Exception)
             {

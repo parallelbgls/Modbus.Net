@@ -39,7 +39,7 @@ namespace Modbus.Net.FBox
             };
         }
 
-        public override KeyValuePair<int, int> AddressTranslate(string address, bool isRead)
+        public override AddressDef AddressTranslate(string address, bool isRead)
         {
             var tmpAddress = address.Trim().ToUpper();
             if (tmpAddress.Substring(0, 2) == "DB")
@@ -47,15 +47,21 @@ namespace Modbus.Net.FBox
                 var addressSplit = tmpAddress.Split(' ');
                 if (addressSplit.Length != 2) throw new FormatException();
                 addressSplit[0] = addressSplit[0].Substring(2);
-                return new KeyValuePair<int, int>(int.Parse(addressSplit[1]),
-                    int.Parse(addressSplit[0]) + AreaCodeDictionary["DB"]);
+                return new AddressDef()
+                {
+                    Area = int.Parse(addressSplit[0]) + AreaCodeDictionary["DB"],
+                    Address = int.Parse(addressSplit[1])
+                };
             }
             var tmpAddressArray = (tmpAddress.Split(' '));
             string head = tmpAddressArray[0];
             string tail = tmpAddressArray[1];
             return
-                new KeyValuePair<int, int>(int.Parse(tail),
-                    AreaCodeDictionary[head]);
+                new AddressDef()
+                {
+                    Area = AreaCodeDictionary[head],
+                    Address = int.Parse(tail)
+                };
         }
 
         public string GetAreaName(int code)

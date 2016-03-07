@@ -43,14 +43,14 @@ namespace Siemens_S7_200.UI.WPF.TaskTest
             {
                 //唯一的参数包含返回值，是一个唯一标识符（machine的第二个参数），返回值（类型ReturnUnit）的键值对。
                 value = new List<string>();
-                if (returnValues.Value != null)
+                if (returnValues.ReturnValues != null)
                 {
-                    value = from val in returnValues.Value select val.Key + " " + val.Value.PlcValue;
+                    value = from val in returnValues.ReturnValues select val.Key + " " + val.Value.PlcValue;
                     siemensItems.Dispatcher.Invoke(() => siemensItems.ItemsSource = value);
                 }
                 else
                 {
-                    Console.WriteLine($"ip {returnValues.Key} not return value");
+                    Console.WriteLine($"ip {returnValues.MachineId} not return value");
                 }
             };
             //启动任务

@@ -26,8 +26,8 @@ namespace Modbus.Net.FBox
         public ReadRequestFBoxInputStruct(string startAddress, ushort getCount, AddressTranslator addressTranslator)
         {
             var address = addressTranslator.AddressTranslate(startAddress, true);
-            Address = address.Key;
-            Area = address.Value;
+            Address = address.Address;
+            Area = address.Area;
             GetCount = getCount;
         }
 

@@ -65,7 +65,7 @@ namespace Modbus.Net.Modbus
             ModbusType = (ModbusType) connectionType;
         }
 
-        protected override async Task<byte[]> GetDatasAsync(byte belongAddress, byte masterAddress, string startAddress, int getByteCount)
+        public override async Task<GetDataReturnDef> GetDatasAsync(byte belongAddress, byte masterAddress, string startAddress, int getByteCount)
         {
             try
             {
@@ -74,7 +74,11 @@ namespace Modbus.Net.Modbus
                 var outputStruct = await
                     Wrapper.SendReceiveAsync(Wrapper[typeof (ReadDataModbusProtocal)], inputStruct) as
                     ReadDataModbusOutputStruct;
-                return outputStruct?.DataValue;
+                return new GetDataReturnDef()
+                {
+                    ReturnValue = outputStruct?.DataValue,
+                    IsLittleEndian = Wrapper[typeof(ReadDataModbusProtocal)].IsLittleEndian,
+                };
             }
             catch
             {

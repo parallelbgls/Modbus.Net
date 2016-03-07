@@ -19,7 +19,7 @@ namespace Modbus.Net.OPC
         {
         }
 
-        protected override async Task<byte[]> GetDatasAsync(byte belongAddress, byte masterAddress, string startAddress, int getByteCount)
+        public override async Task<GetDataReturnDef> GetDatasAsync(byte belongAddress, byte masterAddress, string startAddress, int getByteCount)
         {
             try
             {
@@ -27,7 +27,11 @@ namespace Modbus.Net.OPC
                 var readRequestOpcOutputStruct =
                      await
                          Wrapper.SendReceiveAsync(Wrapper[typeof(ReadRequestOpcProtocal)], readRequestOpcInputStruct) as ReadRequestOpcOutputStruct;
-                return readRequestOpcOutputStruct?.GetValue;
+                return new GetDataReturnDef()
+                {
+                    ReturnValue = readRequestOpcOutputStruct?.GetValue,
+                    IsLittleEndian = Wrapper[typeof (ReadRequestOpcProtocal)].IsLittleEndian
+                };
             }
             catch (Exception)
             {

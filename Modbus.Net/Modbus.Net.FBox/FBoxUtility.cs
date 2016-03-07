@@ -60,7 +60,7 @@ namespace Modbus.Net.FBox
             ConnectionType = (FBoxType) connectionType;
         }
 
-        protected override async Task<byte[]> GetDatasAsync(byte belongAddress, byte masterAddress, string startAddress, int getByteCount)
+        public override async Task<GetDataReturnDef> GetDatasAsync(byte belongAddress, byte masterAddress, string startAddress, int getByteCount)
         {
             try
             {
@@ -68,7 +68,11 @@ namespace Modbus.Net.FBox
                 var readRequestSiemensOutputStruct =
                      await
                          Wrapper.SendReceiveAsync(Wrapper[typeof(ReadRequestFBoxProtocal)], readRequestFBoxInputStruct) as ReadRequestFBoxOutputStruct;
-                return readRequestSiemensOutputStruct?.GetValue;
+                return new GetDataReturnDef()
+                {
+                    ReturnValue = readRequestSiemensOutputStruct?.GetValue,
+                    IsLittleEndian = Wrapper[typeof (ReadRequestFBoxProtocal)].IsLittleEndian
+                };
             }
             catch (Exception)
             {

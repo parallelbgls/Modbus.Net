@@ -4,6 +4,8 @@ namespace Modbus.Net
 {
     public abstract class ProtocalUnit : IProtocalFormatting
     {
+        public bool IsLittleEndian { get; protected set; } = false;
+
         /// <summary>
         /// 从输入结构格式化
         /// </summary>
@@ -18,7 +20,7 @@ namespace Modbus.Net
         /// <returns>格式化后的字节流</returns>
         public virtual byte[] Format(params object[] message)
         {
-            return TranslateContent(message);
+            return TranslateContent(IsLittleEndian, message);
         }
 
         /// <summary>
@@ -32,17 +34,19 @@ namespace Modbus.Net
         /// <summary>
         /// 转换静态方法，把对象数组转换为字节数组。
         /// </summary>
+        /// <param name="isLittleEndian">是否是小端格式</param>
         /// <param name="contents">对象数组</param>
         /// <returns>字节数组</returns>
-        public static byte[] TranslateContent(params object[] contents)
+        public static byte[] TranslateContent(bool isLittleEndian, params object[] contents)
         {
-            return BigEndianValueHelper.Instance.ObjectArrayToByteArray(contents);
+            return isLittleEndian
+                ? ValueHelper.Instance.ObjectArrayToByteArray(contents)
+                : BigEndianValueHelper.Instance.ObjectArrayToByteArray(contents);
         }
     }
 
     public abstract class SpecialProtocalUnit : ProtocalUnit
     {
-        
     }
 
     /// <summary>

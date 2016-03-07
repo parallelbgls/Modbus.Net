@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Modbus.Net.FBox</id>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <title>Modbus.Net.FBox</title>
     <authors>Chris L.(Luo Sheng)</authors>
     <owners>Hangzhou Delian Information and Science Technology Co., Ltd.</owners>
@@ -13,7 +13,7 @@
     <copyright>Copyright 2015 Hangzhou Delian Science and Technology Co.,Ltd.</copyright>
     <tags>hardware communicate protocal fbox Delian</tags>
     <dependencies>
-      <dependency id="Modbus.Net" version="1.0.0"></dependency>
+      <dependency id="Modbus.Net" version="1.1.0"></dependency>
       <dependency id="Thinktecture.IdentityModel.Client" version="4.0.0"></dependency>
       <dependency id="Microsoft.AspNet.SignalR.Client" version="2.2.0"></dependency>
     </dependencies>

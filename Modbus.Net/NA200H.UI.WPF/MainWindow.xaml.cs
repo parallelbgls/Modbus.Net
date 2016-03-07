@@ -52,10 +52,10 @@ namespace NA200H.UI.WPF
             //machine.AddressTranslator = new AddressTranslatorNA200H();
             machine = new SiemensMachine(SiemensType.Tcp, "192.168.3.11", SiemensMachineModel.S7_300, new List<AddressUnit>()
             {
-                new AddressUnit() {Id = 1, Area = "V", Address = 1, CommunicationTag = "Add1", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
-                new AddressUnit() {Id = 2, Area = "V", Address = 3, CommunicationTag = "Add2", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
-                new AddressUnit() {Id = 3, Area = "V", Address = 5, CommunicationTag = "Add3", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
-                new AddressUnit() {Id = 4, Area = "V", Address = 7, CommunicationTag = "Ans",  DataType = typeof(ushort), Zoom = 1, DecimalPos = 0}
+                new AddressUnit() {Id = 1, Area = "V", Address = 0, CommunicationTag = "Add1", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
+                new AddressUnit() {Id = 2, Area = "V", Address = 2, CommunicationTag = "Add2", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
+                new AddressUnit() {Id = 3, Area = "V", Address = 4, CommunicationTag = "Add3", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
+                new AddressUnit() {Id = 4, Area = "V", Address = 6, CommunicationTag = "Ans",  DataType = typeof(ushort), Zoom = 1, DecimalPos = 0}
             });
             var result = machine.GetDatas();
             var resultFormat = BaseMachine.MapGetValuesToSetValues(result);

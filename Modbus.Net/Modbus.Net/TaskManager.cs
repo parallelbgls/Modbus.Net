@@ -7,6 +7,12 @@ using System.Threading.Tasks;
 
 namespace Modbus.Net
 {
+    public class TaskReturnDef
+    {
+        public int MachineId { get; set; }
+        public Dictionary<string, ReturnUnit> ReturnValues { get; set; }
+    }
+
     public static class TimeRestore
     {
         public static int Restore = 0;
@@ -215,7 +221,7 @@ namespace Modbus.Net
         /// 返回数据代理
         /// </summary>
         /// <param name="returnValue"></param>
-        public delegate void ReturnValuesDelegate(KeyValuePair<int, Dictionary<string,ReturnUnit>> returnValue);
+        public delegate void ReturnValuesDelegate(TaskReturnDef returnValue);
 
         /// <summary>
         /// 返回数据事件
@@ -559,7 +565,11 @@ namespace Modbus.Net
                 {
                     MoveMachineToLinked(machine.Id);
                 }
-                ReturnValues?.Invoke(new KeyValuePair<int, Dictionary<string,ReturnUnit>>(machine.Id, ans));
+                ReturnValues?.Invoke(new TaskReturnDef()
+                {
+                    MachineId = machine.Id,
+                    ReturnValues = ans
+                });
             }
             catch (Exception e)
             {
@@ -567,7 +577,11 @@ namespace Modbus.Net
                 {
                     MoveMachineToUnlinked(machine.Id);
                 }
-                ReturnValues?.Invoke(new KeyValuePair<int, Dictionary<string,ReturnUnit>>(machine.Id, null));
+                ReturnValues?.Invoke(new TaskReturnDef()
+                {
+                    MachineId = machine.Id,
+                    ReturnValues = null
+                });
             }
         }
     }
