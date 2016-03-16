@@ -75,7 +75,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ModBus.Net\Modbus.Net.csproj">
+    <ProjectReference Include="..\Modbus.Net\Modbus.Net.csproj">
       <Project>{124ebef2-8960-4447-84cf-1d683b1ef7cc}</Project>
       <Name>Modbus.Net</Name>
     </ProjectReference>
