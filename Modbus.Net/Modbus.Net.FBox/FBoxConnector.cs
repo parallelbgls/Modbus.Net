@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR.Client;
 using Newtonsoft.Json;
-using Thinktecture.IdentityModel.Client;
+using IdentityModel.Client;
 
 namespace Modbus.Net.FBox
 {
@@ -24,7 +24,7 @@ namespace Modbus.Net.FBox
 
     public class FBoxConnector : BaseConnector
     {
-        private OAuth2Client _oauth2;
+        private TokenClient _oauth2;
         private string _refreshToken; 
 
         private HttpClient _httpClient { get; set; }
@@ -61,7 +61,7 @@ namespace Modbus.Net.FBox
         public FBoxConnector(string machineId, string localSequence, SignalRSigninMsg msg)
         {
             Constants.SignalRServer = msg.SignalRServer;
-            System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+            //System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
             ConnectionToken = machineId + "," + localSequence;
             Msg = msg;
             _data = new Dictionary<string, double>();
@@ -102,8 +102,8 @@ namespace Modbus.Net.FBox
             try
             {
 
-                _oauth2 = new OAuth2Client(
-                    new Uri(Constants.TokenEndpoint),
+                _oauth2 = new TokenClient(
+                    Constants.TokenEndpoint,
                     Msg.ClientId,
                     Msg.ClientSecret
                     );
