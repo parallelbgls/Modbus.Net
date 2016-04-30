@@ -22,5 +22,10 @@
         {
             
         }
+
+        public ModbusTcpProtocalLinker(string ip, int port) : base(ip, port)
+        {
+            
+        }
     }
 }

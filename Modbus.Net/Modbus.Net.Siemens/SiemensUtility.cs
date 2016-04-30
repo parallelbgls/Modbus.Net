@@ -29,7 +29,34 @@ namespace Modbus.Net.Siemens
         private readonly ushort _maxCalling;
         private readonly ushort _maxCalled;
         private readonly ushort _maxPdu;
-        
+
+        protected string ConnectionStringIp
+        {
+            get
+            {
+                if (ConnectionString == null) return null;
+                return ConnectionString.Contains(":") ? ConnectionString.Split(':')[0] : ConnectionString;
+            }
+        }
+
+        protected int? ConnectionStringPort
+        {
+            get
+            {
+                if (ConnectionString == null) return null;
+                if (!ConnectionString.Contains(":")) return null;
+                var connectionStringSplit = ConnectionString.Split(':');
+                try
+                {
+                    return connectionStringSplit.Length < 2 ? (int?)null : int.Parse(connectionStringSplit[1]);
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+        }
+
         private SiemensType _siemensType;
 
         public SiemensType ConnectionType
@@ -53,7 +80,7 @@ namespace Modbus.Net.Siemens
                     //    }
                     case SiemensType.Tcp:
                     {
-                        Wrapper = ConnectionString == null ? new SiemensTcpProtocal(_tdpuSize, _taspSrc, _tsapDst, _maxCalling, _maxCalled, _maxPdu) : new SiemensTcpProtocal(_tdpuSize, _taspSrc, _tsapDst, _maxCalling, _maxCalled, _maxPdu, ConnectionString);
+                        Wrapper = ConnectionString == null ? new SiemensTcpProtocal(_tdpuSize, _taspSrc, _tsapDst, _maxCalling, _maxCalled, _maxPdu) : (ConnectionStringPort == null ? new SiemensTcpProtocal(_tdpuSize, _taspSrc, _tsapDst, _maxCalling, _maxCalled, _maxPdu, ConnectionString) : new SiemensTcpProtocal(_tdpuSize, _taspSrc, _tsapDst, _maxCalling, _maxCalled, _maxPdu, ConnectionStringIp, ConnectionStringPort.Value));
                         break;
                     }
                 }

@@ -13,5 +13,10 @@
         {
             ProtocalLinker = new ModbusTcpProtocalLinker(ip);
         }
+
+        public ModbusTcpProtocal(string ip, int port)
+        {
+            ProtocalLinker = new ModbusTcpProtocalLinker(ip, port);
+        }
     }
 }

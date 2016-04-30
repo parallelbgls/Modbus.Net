@@ -33,5 +33,11 @@ namespace Modbus.Net.Siemens
         {
             
         }
+
+        public SiemensTcpProtocalLinker(string ip, int port)
+            : base(ip, port)
+        {
+            
+        }
     }
 }

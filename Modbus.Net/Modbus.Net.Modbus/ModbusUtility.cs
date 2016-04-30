@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace Modbus.Net.Modbus
 {
@@ -21,6 +22,34 @@ namespace Modbus.Net.Modbus
     {
         private ModbusType _modbusType;
 
+        protected string ConnectionStringIp
+        {
+            get
+            {
+                if (ConnectionString == null) return null;
+                return ConnectionString.Contains(":") ? ConnectionString.Split(':')[0] : ConnectionString;
+            }
+        }
+
+        protected int? ConnectionStringPort
+        {
+            get
+            {
+                if (ConnectionString == null) return null;
+                if (!ConnectionString.Contains(":")) return null;
+                var connectionStringSplit = ConnectionString.Split(':');
+                try
+                {
+                    return connectionStringSplit.Length < 2 ? (int?)null : int.Parse(connectionStringSplit[1]);
+                }
+                catch
+                {
+                    return null;
+                }
+                
+            }
+        }
+
         public ModbusType ModbusType
         {
             get
@@ -39,7 +68,7 @@ namespace Modbus.Net.Modbus
                     }
                     case ModbusType.Tcp:
                     {
-                        Wrapper = ConnectionString == null ? new ModbusTcpProtocal() : new ModbusTcpProtocal(ConnectionString);
+                        Wrapper = ConnectionString == null ? new ModbusTcpProtocal() : (ConnectionStringPort == null ? new ModbusTcpProtocal(ConnectionString) : new ModbusTcpProtocal(ConnectionStringIp,ConnectionStringPort.Value));
                         break;
                     }
                 }
