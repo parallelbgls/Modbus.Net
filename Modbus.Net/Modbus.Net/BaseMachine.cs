@@ -22,6 +22,9 @@ namespace Modbus.Net
 
     public abstract class BaseMachine : IMachineProperty
     {
+        private int ErrorCount { get; set; } = 0;
+        private int _maxErrorCount = 3;
+
         /// <summary>
         /// 设备的Id
         /// </summary>
@@ -186,11 +189,17 @@ namespace Modbus.Net
                 }
                 //返回数据
                 if (ans.Count == 0) ans = null;
+                ErrorCount = 0;
                 return ans;
             }
             catch (Exception e)
             {
                 Console.WriteLine(ConnectionToken + " " + e.Message);
+                ErrorCount++;
+                if (ErrorCount >= _maxErrorCount)
+                {
+                    Disconnect();
+                }
                 return null;
             }
         }
