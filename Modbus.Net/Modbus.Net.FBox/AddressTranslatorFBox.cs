@@ -14,6 +14,7 @@ namespace Modbus.Net.FBox
         {
             AreaCodeDictionary = new Dictionary<string, int>
             {
+                {"LW", 0},
                 {"V", 1},
                 {"VW", 2},
                 {"VD", 3},
@@ -35,6 +36,10 @@ namespace Modbus.Net.FBox
                 {"2X", 22},
                 {"3X", 23},
                 {"4X", 24},
+                {"SD", 30},
+                {"D", 31},
+                {"T_word", 32},
+                {"C_word", 33},
                 {"DB", 10000},
             };
         }
