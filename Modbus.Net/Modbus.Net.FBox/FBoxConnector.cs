@@ -124,9 +124,11 @@ namespace Modbus.Net.FBox
                         _connected = true;
                         _timer = new Timer(ChangeToken, null, 3600*1000*4, 3600*1000*4);
                         Console.WriteLine("SignalR Connected success");
+                        _connectionState = 1;
                         return true;
                     }
                 }
+                _connectionState = 0;
                 return false;
             }
             catch (Exception e)
@@ -134,6 +136,7 @@ namespace Modbus.Net.FBox
                 _oauth2 = null;
                 Console.WriteLine("SignalR Connected failed " + e.Message);
                 Clear();
+                _connectionState = 0;
                 return false;
             }
         }
@@ -175,14 +178,8 @@ namespace Modbus.Net.FBox
                         var signalrUrl = box.Box.CommServer.SignalRUrl;
                         var boxUid = box.Box.Uid;
                         var boxNo = box.Box.BoxNo;
-                        var connectionState = box.Box.ConnectionState;
 
                         if (boxNo != MachineId) continue;
-                        if (connectionState != 1)
-                        {
-                            _connected = false;
-                            return false;
-                        }
 
                         _httpClient2 = new HttpClient
                         {
@@ -206,7 +203,6 @@ namespace Modbus.Net.FBox
 
                         _boxSessionId = sessionId;
                         _boxNo = boxNo;
-                        _connectionState = connectionState;
 
                         _hubConnection = new HubConnection(signalrUrl);
                         _hubConnection.Headers.Add("Authorization", "Bearer " + token);
@@ -282,7 +278,7 @@ namespace Modbus.Net.FBox
                                 sessionId = newConnectionToken;
                                 _boxSessionId = sessionId;
 
-                                _connectionState = newStatus;
+                                //_connectionState = newStatus;
 
                                 if (!IsConnected || _httpClient2 == null || _hubConnection == null)
                                 {
@@ -302,31 +298,32 @@ namespace Modbus.Net.FBox
                                     
                                     _hubConnection.Headers["X-FBox-Session"] = sessionId.ToString();
                                     await _hubConnection.Start();
-
-                                    if (newStatus == 1)
-                                    {
-                                        if (IsConnected)
-                                        {
+                                    _data.Clear();
+                                    //if (newStatus == 1)
+                                    //{
+                                        //if (IsConnected)
+                                        //{
                                             await
                                                 _httpClient2.PostAsync(
                                                     "dmon/group/" + _dataGroup.Uid + "/start", null);
-                                        }
-                                    }
+                                        //}
+                                    //}
 
-                                    else
-                                    {
-                                        lock (_data)
-                                        {
-                                            _data.Clear();
-                                        }
+                                    //else
+                                    //{
+                                        //lock (_data)
+                                        //{
+                                            //_data.Clear();
+                                        //}
                                         //await DisconnectAsync();
                                         //_connected = false;
-                                    }
+                                    //}
                                 }
                                 catch (Exception ex)
                                 {
                                     Console.WriteLine("SignalR boxSessionId change error: " + ex.Message);
                                     await DisconnectAsync();
+                                    _connected = false;
                                 }
                             });
 
@@ -350,11 +347,11 @@ namespace Modbus.Net.FBox
                         var groupUid = _dataGroup.Uid;
                         var groupName = _dataGroup.Name;
 
-                        if (groupName != "(Default)" && groupName != "默认组" && _connectionState == 1)
+                        if (groupName != "(Default)" && groupName != "默认组")
                         {
                             _groupUid = groupUid;
                         }
-                        if (groupName != "(Default)" && groupName != "默认组" && _connectionState == 1)
+                        if (groupName != "(Default)" && groupName != "默认组")
                         {
                             _boxUid = boxUid;
                         }
@@ -490,6 +487,7 @@ namespace Modbus.Net.FBox
                 }
                 Clear();
                 Console.WriteLine("SignalR Disconnect success");
+                _connectionState = 0;
                 return true;
 
             }
@@ -497,6 +495,7 @@ namespace Modbus.Net.FBox
             {
                 Console.WriteLine("SignalR Disconnect failed " + e.Message);
                 Clear();
+                _connectionState = 0;
                 return false;
             }
         }
