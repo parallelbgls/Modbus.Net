@@ -31,23 +31,33 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Opc.Ua.Client">
-      <HintPath>..\packages_local\Opc.Ua.Client.dll</HintPath>
+    <Reference Include="h-opc, Version=0.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\H.Opc.0.7.0\lib\h-opc.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Opc.Ua.Configuration">
-      <HintPath>..\packages_local\Opc.Ua.Configuration.dll</HintPath>
+    <Reference Include="Opc.Ua.Client, Version=1.2.334.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\H.Opc.0.7.0\lib\Opc.Ua.Client.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Opc.Ua.Core">
-      <HintPath>..\packages_local\Opc.Ua.Core.dll</HintPath>
+    <Reference Include="Opc.Ua.Configuration, Version=1.2.334.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\H.Opc.0.7.0\lib\Opc.Ua.Configuration.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="OpcComRcw">
-      <HintPath>..\packages_local\OpcComRcw.dll</HintPath>
+    <Reference Include="Opc.Ua.Core, Version=1.2.334.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\H.Opc.0.7.0\lib\Opc.Ua.Core.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="OpcNetApi">
-      <HintPath>..\packages_local\OpcNetApi.dll</HintPath>
+    <Reference Include="OpcComRcw, Version=2.0.105.1, Culture=neutral, PublicKeyToken=9a40e993cbface53, processorArchitecture=MSIL">
+      <HintPath>..\packages\H.Opc.0.7.0\lib\OpcComRcw.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="OpcNetApi.Com">
-      <HintPath>..\packages_local\OpcNetApi.Com.dll</HintPath>
+    <Reference Include="OpcNetApi, Version=2.1.105.1, Culture=neutral, PublicKeyToken=9a40e993cbface53, processorArchitecture=MSIL">
+      <HintPath>..\packages\H.Opc.0.7.0\lib\OpcNetApi.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="OpcNetApi.Com, Version=2.1.105.1, Culture=neutral, PublicKeyToken=9a40e993cbface53, processorArchitecture=MSIL">
+      <HintPath>..\packages\H.Opc.0.7.0\lib\OpcNetApi.Com.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -71,10 +81,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\h-opc\h-opc.csproj">
-      <Project>{4f43b6f0-0c32-4c34-978e-9b8b5b0b6e80}</Project>
-      <Name>h-opc</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ModBus.Net\Modbus.Net.csproj">
       <Project>{124ebef2-8960-4447-84cf-1d683b1ef7cc}</Project>
       <Name>Modbus.Net</Name>
@@ -82,6 +88,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Modbus.Net.OPC.nuspec" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

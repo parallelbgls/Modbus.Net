@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Hylasoft.Opc.Common;
+using Hylasoft.Opc.Da;
+using Opc;
 using Opc.Da;
 
-namespace Hylasoft.Opc.Da
+namespace Modbus.Net.OPC
 {
 
     /// <summary>
@@ -25,7 +28,7 @@ namespace Hylasoft.Opc.Da
         public OpcValueResult Read(string tag)
         {
             var item = new Item { ItemName = tag };
-            var result = _server.Read(new[] { item })[0];
+            var result = Server.Read(new[] { item })[0];
             CheckResult(result, tag);
             return new OpcValueResult()
             {
@@ -45,6 +48,14 @@ namespace Hylasoft.Opc.Da
 
         public MyDaClient(Uri serverUrl) : base(serverUrl)
         {
+        }
+
+        private static void CheckResult(IResult result, string tag)
+        {
+            if (result == null)
+                throw new OpcException("The server replied with an empty response");
+            if (result.ResultID.ToString() != "S_OK")
+                throw new OpcException(string.Format("Invalid response from the server. (Response Status: {0}, Opc Tag: {1})", result.ResultID, tag));
         }
     }
 }
