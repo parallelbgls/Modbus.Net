@@ -72,7 +72,7 @@ namespace Modbus.Net
         /// <summary>
         /// 与设备实际通讯的连续地址
         /// </summary>
-        protected IEnumerable<CommunicationUnit> CommunicateAddresses => AddressCombiner.Combine(GetAddresses);
+        protected IEnumerable<CommunicationUnit> CommunicateAddresses => GetAddresses != null ? AddressCombiner.Combine(GetAddresses) : null;
 
         /// <summary>
         /// 描述需要与设备通讯的地址
@@ -253,7 +253,15 @@ namespace Modbus.Net
                             break;
                         }
                     }
-                    if (address == null) return false;
+                    if (address == null)
+                    {
+                        Console.WriteLine($"Machine {ConnectionToken} Address {value.Key} doesn't exist.");
+                        continue;
+                    }
+                    if (!address.CanWrite)
+                    {
+                        Console.WriteLine($"Machine {ConnectionToken} Address {value.Key} cannot write.");
+                    }
                     addresses.Add(address);
                 }
                 //将地址编码成与实际设备通讯的地址，注意这个地址必须是连续的
@@ -455,6 +463,10 @@ namespace Modbus.Net
         /// 单位
         /// </summary>
         public string Unit { get; set; }
+        /// <summary>
+        /// 是否可写，默认可写
+        /// </summary>
+        public bool CanWrite { get; set; } = true;
         /// <summary>
         /// 扩展
         /// </summary>
