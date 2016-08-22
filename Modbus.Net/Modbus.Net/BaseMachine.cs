@@ -6,6 +6,21 @@ using System.Threading.Tasks;
 namespace Modbus.Net
 {
     /// <summary>
+    /// 获取设备值的方式
+    /// </summary>
+    public enum MachineGetDataType
+    {
+        /// <summary>
+        /// 地址
+        /// </summary>
+        Address,
+        /// <summary>
+        /// 通讯标识
+        /// </summary>
+        CommunicationTag
+    }
+
+    /// <summary>
     /// 向设备设置值的方式
     /// </summary>
     public enum MachineSetDataType
@@ -113,16 +128,18 @@ namespace Modbus.Net
         /// 读取数据
         /// </summary>
         /// <returns>从设备读取的数据</returns>
-        public Dictionary<string, ReturnUnit> GetDatas()
+        public Dictionary<string, ReturnUnit> GetDatas(MachineGetDataType getDataType)
         {
-            return AsyncHelper.RunSync(GetDatasAsync);
+            return AsyncHelper.RunSync(()=>GetDatasAsync(getDataType));
         }
+
+
 
         /// <summary>
         /// 读取数据
         /// </summary>
         /// <returns>从设备读取的数据</returns>
-        public async Task<Dictionary<string,ReturnUnit>> GetDatasAsync()
+        public async Task<Dictionary<string,ReturnUnit>> GetDatasAsync(MachineGetDataType getDataType)
         {
             try
             {
@@ -164,8 +181,28 @@ namespace Modbus.Net
                                 p => p.Area == communicateAddress.Area && p.Address == pos + communicateAddress.Address);
                         if (address != null)
                         {
+                            string key;
+                            switch (getDataType)
+                            {
+                                case MachineGetDataType.CommunicationTag:
+                                    {
+                                        key = address.CommunicationTag;
+                                        break;
+                                    }
+                                case MachineGetDataType.Address:
+                                    {
+                                        key = AddressFormater.FormatAddress(address.Area, address.Address);
+                                        break;
+                                    }
+                                default:
+                                    {
+                                        key = address.CommunicationTag;
+                                        break;
+                                    }
+                            }
+                            
                             //将获取的数据和对应的通讯标识对应
-                            ans.Add(address.CommunicationTag,
+                            ans.Add(key,
                                 new ReturnUnit
                                 {
                                     PlcValue =

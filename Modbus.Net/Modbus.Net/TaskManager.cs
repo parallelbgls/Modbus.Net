@@ -279,6 +279,8 @@ namespace Modbus.Net
             }
         }
 
+        public MachineGetDataType GetDataType { get; set; }
+
         /*public int MaxRunningTasks
         {
             get { return _scheduler.MaximumConcurrencyLevel; }
@@ -295,13 +297,14 @@ namespace Modbus.Net
         /// <param name="maxRunningTask">同时可以运行的任务数</param>
         /// <param name="getCycle">读取数据的时间间隔（秒）</param>
         /// <param name="keepConnect">读取数据后是否保持连接</param>
-        public TaskManager(/*int maxRunningTask,*/ int getCycle, bool keepConnect)
+        public TaskManager(/*int maxRunningTask,*/ int getCycle, bool keepConnect, MachineGetDataType getDataType = MachineGetDataType.CommunicationTag)
         {
             //_scheduler = new LimitedConcurrencyLevelTaskScheduler(maxRunningTask);
             _machines = new HashSet<BaseMachine>(new BaseMachineEqualityComparer());
             _unlinkedMachines = new HashSet<BaseMachine>(new BaseMachineEqualityComparer());
             _getCycle = getCycle;
             KeepConnect = keepConnect;
+            GetDataType = getDataType;
         }
 
         /// <summary>
@@ -556,7 +559,7 @@ namespace Modbus.Net
                 //超时后取消任务
                 cts.CancelAfter(TimeSpan.FromSeconds(_getCycle));
                 //读取数据
-                var ans = await machine.GetDatasAsync().WithCancellation(cts.Token);
+                var ans = await machine.GetDatasAsync(GetDataType).WithCancellation(cts.Token);
                 if (!machine.IsConnected)
                 {
                     MoveMachineToUnlinked(machine.Id);
