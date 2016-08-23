@@ -9,7 +9,7 @@ namespace Modbus.Net
 {
     public class TaskReturnDef
     {
-        public int MachineId { get; set; }
+        public string MachineId { get; set; }
         public Dictionary<string, ReturnUnit> ReturnValues { get; set; }
     }
 
@@ -279,6 +279,8 @@ namespace Modbus.Net
             }
         }
 
+        public MachineGetDataType GetDataType { get; set; }
+
         /*public int MaxRunningTasks
         {
             get { return _scheduler.MaximumConcurrencyLevel; }
@@ -295,13 +297,14 @@ namespace Modbus.Net
         /// <param name="maxRunningTask">同时可以运行的任务数</param>
         /// <param name="getCycle">读取数据的时间间隔（秒）</param>
         /// <param name="keepConnect">读取数据后是否保持连接</param>
-        public TaskManager(/*int maxRunningTask,*/ int getCycle, bool keepConnect)
+        public TaskManager(/*int maxRunningTask,*/ int getCycle, bool keepConnect, MachineGetDataType getDataType = MachineGetDataType.CommunicationTag)
         {
             //_scheduler = new LimitedConcurrencyLevelTaskScheduler(maxRunningTask);
             _machines = new HashSet<BaseMachine>(new BaseMachineEqualityComparer());
             _unlinkedMachines = new HashSet<BaseMachine>(new BaseMachineEqualityComparer());
             _getCycle = getCycle;
             KeepConnect = keepConnect;
+            GetDataType = getDataType;
         }
 
         /// <summary>
@@ -352,7 +355,7 @@ namespace Modbus.Net
         /// 根据设备的id移除设备
         /// </summary>
         /// <param name="id">设备的id</param>
-        public void RemoveMachineWithId(int id)
+        public void RemoveMachineWithId(string id)
         {
             lock (_machines)
             {
@@ -368,7 +371,7 @@ namespace Modbus.Net
         /// 将设备指定为未连接
         /// </summary>
         /// <param name="id">设备的id</param>
-        public void MoveMachineToUnlinked(int id)
+        public void MoveMachineToUnlinked(string id)
         {
             IEnumerable<BaseMachine> machines;
             lock(_machines)
@@ -390,7 +393,7 @@ namespace Modbus.Net
         /// 将设备指定为已连接
         /// </summary>
         /// <param name="id">设备的id</param>
-        public void MoveMachineToLinked(int id)
+        public void MoveMachineToLinked(string id)
         {
             IEnumerable<BaseMachine> machines;
             lock (_unlinkedMachines)
@@ -556,7 +559,7 @@ namespace Modbus.Net
                 //超时后取消任务
                 cts.CancelAfter(TimeSpan.FromSeconds(_getCycle));
                 //读取数据
-                var ans = await machine.GetDatasAsync().WithCancellation(cts.Token);
+                var ans = await machine.GetDatasAsync(GetDataType).WithCancellation(cts.Token);
                 if (!machine.IsConnected)
                 {
                     MoveMachineToUnlinked(machine.Id);
