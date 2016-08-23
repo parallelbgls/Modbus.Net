@@ -9,7 +9,7 @@ namespace Modbus.Net
 {
     public class TaskReturnDef
     {
-        public int MachineId { get; set; }
+        public string MachineId { get; set; }
         public Dictionary<string, ReturnUnit> ReturnValues { get; set; }
     }
 
@@ -355,7 +355,7 @@ namespace Modbus.Net
         /// 根据设备的id移除设备
         /// </summary>
         /// <param name="id">设备的id</param>
-        public void RemoveMachineWithId(int id)
+        public void RemoveMachineWithId(string id)
         {
             lock (_machines)
             {
@@ -371,7 +371,7 @@ namespace Modbus.Net
         /// 将设备指定为未连接
         /// </summary>
         /// <param name="id">设备的id</param>
-        public void MoveMachineToUnlinked(int id)
+        public void MoveMachineToUnlinked(string id)
         {
             IEnumerable<BaseMachine> machines;
             lock(_machines)
@@ -393,7 +393,7 @@ namespace Modbus.Net
         /// 将设备指定为已连接
         /// </summary>
         /// <param name="id">设备的id</param>
-        public void MoveMachineToLinked(int id)
+        public void MoveMachineToLinked(string id)
         {
             IEnumerable<BaseMachine> machines;
             lock (_unlinkedMachines)

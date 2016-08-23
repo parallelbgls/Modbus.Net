@@ -43,7 +43,7 @@ namespace Modbus.Net
         /// <summary>
         /// 设备的Id
         /// </summary>
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         /// <summary>
         /// 设备所在工程的名称
@@ -494,7 +494,7 @@ namespace Modbus.Net
         /// <summary>
         /// 数据单元Id
         /// </summary>
-        public int Id { get; set; }
+        public string Id { get; set; }
         /// <summary>
         /// 数据所属的区域
         /// </summary>
@@ -558,7 +558,7 @@ namespace Modbus.Net
         /// <summary>
         /// Id
         /// </summary>
-        int Id { get; set; }
+        string Id { get; set; }
         /// <summary>
         /// 工程名
         /// </summary>
