@@ -30,8 +30,8 @@ namespace Siemens_S7_200.UI.WPF.TaskTest
             //增加需要通信的PLC地址
             List<AddressUnit> addressUnits = new List<AddressUnit>
             {
-                new AddressUnit() {Id = 0, Area = "V", Address = 1, CommunicationTag = "D1", DataType = typeof (ushort), Zoom = 1},
-                new AddressUnit() {Id = 1, Area = "V", Address = 3, CommunicationTag = "D2", DataType = typeof (float), Zoom = 1}
+                new AddressUnit() {Id = "0", Area = "V", Address = 1, CommunicationTag = "D1", DataType = typeof (ushort), Zoom = 1},
+                new AddressUnit() {Id = "1", Area = "V", Address = 3, CommunicationTag = "D2", DataType = typeof (float), Zoom = 1}
             };
             //初始化任务管理器
             TaskManager task = new TaskManager(300, true);
