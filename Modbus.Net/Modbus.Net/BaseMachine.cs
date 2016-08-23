@@ -163,14 +163,26 @@ namespace Modbus.Net
                                     Math.Ceiling(communicateAddress.GetCount*
                                                  BigEndianValueHelper.Instance.ByteLength[
                                                      communicateAddress.DataType.FullName]));
-                    var datas = datasReturn.ReturnValue;
 
-                    //如果没有数据，终止
-                    if (datas == null || datas.Length == 0 || datas.Length != 
-                                (int)
-                                    Math.Ceiling(communicateAddress.GetCount *
-                                                 BigEndianValueHelper.Instance.ByteLength[
-                                                     communicateAddress.DataType.FullName])) return null;
+                    byte[] datas;
+
+                    //如果设备本身能获取到数据但是没有数据
+                    if (datasReturn == null)
+                    {
+                        datas = null;
+                    }
+                    else
+                    {
+                        datas = datasReturn.ReturnValue;
+
+                        //如果没有数据，终止
+                        if (datas == null || datas.Length == 0 || datas.Length !=
+                                    (int)
+                                        Math.Ceiling(communicateAddress.GetCount *
+                                                     BigEndianValueHelper.Instance.ByteLength[
+                                                         communicateAddress.DataType.FullName])) return null;
+                    }
+                    
                     int pos = 0;
                     //解码数据
                     while (pos < communicateAddress.GetCount)
@@ -200,18 +212,33 @@ namespace Modbus.Net
                                         break;
                                     }
                             }
-                            
-                            //将获取的数据和对应的通讯标识对应
-                            ans.Add(key,
-                                new ReturnUnit
+
+                            if (datas == null)
+                            {
+                                ans.Add(key, new ReturnUnit
                                 {
-                                    PlcValue =
-                                        Double.Parse(
-                                            datasReturn.IsLittleEndian ? ValueHelper.Instance.GetValue(datas, ref pos, address.DataType)
-                                                .ToString() : BigEndianValueHelper.Instance.GetValue(datas, ref pos, address.DataType)
-                                                .ToString()) *address.Zoom,
+                                    PlcValue = null,
                                     UnitExtend = address.UnitExtend
                                 });
+                                pos += (int)ValueHelper.Instance.ByteLength[address.DataType.ToString()];
+                            }
+                            else
+                            {
+                                //将获取的数据和对应的通讯标识对应
+                                ans.Add(key,
+                                    new ReturnUnit
+                                    {
+                                        PlcValue =
+                                            Double.Parse(
+                                                datasReturn.IsLittleEndian
+                                                    ? ValueHelper.Instance.GetValue(datas, ref pos, address.DataType)
+                                                        .ToString()
+                                                    : BigEndianValueHelper.Instance.GetValue(datas, ref pos,
+                                                        address.DataType)
+                                                        .ToString())*address.Zoom,
+                                        UnitExtend = address.UnitExtend
+                                    });
+                            }
                         }
                         else
                         {
@@ -398,8 +425,8 @@ namespace Modbus.Net
         public static Dictionary<string, double> MapGetValuesToSetValues(Dictionary<string, ReturnUnit> getValues)
         {
             if (getValues == null) return null;
-            return (from getValue in getValues
-                select new KeyValuePair<string, double>(getValue.Key, getValue.Value.PlcValue)).ToDictionary(p=>p.Key,p=>p.Value);
+            return (from getValue in getValues where getValue.Value.PlcValue != null
+                select new KeyValuePair<string, double>(getValue.Key, getValue.Value.PlcValue.Value)).ToDictionary(p=>p.Key,p=>p.Value);
         } 
     }
 
@@ -455,7 +482,7 @@ namespace Modbus.Net
         /// <summary>
         /// 返回的数据
         /// </summary>
-        public double PlcValue { get; set; }
+        public double? PlcValue { get; set; }
         /// <summary>
         /// 数据的扩展
         /// </summary>
