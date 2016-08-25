@@ -4,9 +4,14 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-
 namespace Modbus.Net
 {
+    public enum MachineDataType
+    {
+        Address,
+        CommunicationTag,
+    }
+
     public class TaskReturnDef
     {
         public string MachineId { get; set; }
@@ -279,7 +284,30 @@ namespace Modbus.Net
             }
         }
 
+        public MachineDataType MachineDataType
+        {
+            set
+            {
+                switch (value)
+                {
+                     case MachineDataType.Address:
+                    {
+                        GetDataType = MachineGetDataType.Address;
+                        SetDataType=MachineSetDataType.Address;
+                        break;
+                    }
+                    case MachineDataType.CommunicationTag:
+                    {
+                        GetDataType = MachineGetDataType.CommunicationTag;
+                        SetDataType = MachineSetDataType.CommunicationTag;
+                        break;
+                    }
+                }
+            }
+        }
+
         public MachineGetDataType GetDataType { get; set; }
+        public MachineSetDataType SetDataType { get; set; }
 
         /*public int MaxRunningTasks
         {
@@ -297,14 +325,15 @@ namespace Modbus.Net
         /// <param name="maxRunningTask">同时可以运行的任务数</param>
         /// <param name="getCycle">读取数据的时间间隔（秒）</param>
         /// <param name="keepConnect">读取数据后是否保持连接</param>
-        public TaskManager(/*int maxRunningTask,*/ int getCycle, bool keepConnect, MachineGetDataType getDataType = MachineGetDataType.CommunicationTag)
+        /// <param name="dataType">获取与设置数据的方式</param>
+        public TaskManager(/*int maxRunningTask,*/ int getCycle, bool keepConnect, MachineDataType dataType = MachineDataType.CommunicationTag)
         {
             //_scheduler = new LimitedConcurrencyLevelTaskScheduler(maxRunningTask);
             _machines = new HashSet<BaseMachine>(new BaseMachineEqualityComparer());
             _unlinkedMachines = new HashSet<BaseMachine>(new BaseMachineEqualityComparer());
             _getCycle = getCycle;
             KeepConnect = keepConnect;
-            GetDataType = getDataType;
+            MachineDataType = dataType;
         }
 
         /// <summary>
@@ -494,10 +523,9 @@ namespace Modbus.Net
         /// 设置数据
         /// </summary>
         /// <param name="connectionToken">设备的连接标识</param>
-        /// <param name="setDataType">设置类型</param>
         /// <param name="values">需要设置的数据</param>
         /// <returns>是否设置成功</returns>
-        public async Task<bool> SetDatasAsync(string connectionToken, MachineSetDataType setDataType,
+        public async Task<bool> SetDatasAsync(string connectionToken,
             Dictionary<string, double> values)
         {
             BaseMachine machine = null;
@@ -506,7 +534,7 @@ namespace Modbus.Net
                 machine = _machines.FirstOrDefault(p => p.ConnectionToken == connectionToken);
             }
             if (machine == null) return false;
-            return await machine.SetDatasAsync(setDataType, values);
+            return await machine.SetDatasAsync(SetDataType, values);
         }
 
         /// <summary>

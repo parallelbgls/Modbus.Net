@@ -71,9 +71,14 @@ namespace Modbus.Net
         public AddressFormater AddressFormater { get; set; }
 
         /// <summary>
-        /// 地址解码器
+        /// 获取地址组合器
         /// </summary>
         public AddressCombiner AddressCombiner { get; set; }
+
+        /// <summary>
+        /// 写入地址组合器
+        /// </summary>
+        public AddressCombiner AddressCombinerSet { get; set; }
 
         /// <summary>
         /// 地址转换器
@@ -329,7 +334,7 @@ namespace Modbus.Net
                     addresses.Add(address);
                 }
                 //将地址编码成与实际设备通讯的地址，注意这个地址必须是连续的
-                var communcationUnits = new AddressCombinerContinus().Combine(addresses);
+                var communcationUnits = AddressCombinerSet.Combine(addresses);
                 //遍历每条通讯的连续地址
                 foreach (var communicateAddress in communcationUnits)
                 {
@@ -366,13 +371,13 @@ namespace Modbus.Net
                                 //获取要写入的值
                                 var value = values.SingleOrDefault(p => p.Key == address);
                                 //将要写入的值加入队列
-                                datasList.Add(Convert.ChangeType(value.Value, dataType));
+                                datasList.Add(Convert.ChangeType(value.Value / addressUnit.Zoom, dataType));
                                 break;
                             }
                             case MachineSetDataType.CommunicationTag:
                             {
                                 var value = values.SingleOrDefault(p => p.Key == addressUnit.CommunicationTag);
-                                datasList.Add(Convert.ChangeType(value.Value, dataType));
+                                datasList.Add(Convert.ChangeType(value.Value / addressUnit.Zoom, dataType));
                                 break;
                             }
                         }

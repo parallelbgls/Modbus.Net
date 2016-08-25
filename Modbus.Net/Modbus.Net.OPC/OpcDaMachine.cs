@@ -13,6 +13,7 @@ namespace Modbus.Net.OPC
         {          
             BaseUtility = new OpcDaUtility(connectionString);
             AddressCombiner = new AddressCombinerSingle();
+            AddressCombinerSet = new AddressCombinerSingle();
         }
 
         public OpcDaMachine(string connectionString, IEnumerable<AddressUnit> getAddresses)
