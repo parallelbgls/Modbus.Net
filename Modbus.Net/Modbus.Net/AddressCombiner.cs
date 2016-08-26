@@ -22,6 +22,8 @@ namespace Modbus.Net
     /// </summary>
     public class AddressCombinerContinus : AddressCombiner
     {
+        protected AddressTranslator AddressTranslator { get; set; }
+
         public override IEnumerable<CommunicationUnit> Combine(IEnumerable<AddressUnit> addresses)
         {
             var groupedAddresses = from address in addresses
@@ -33,34 +35,44 @@ namespace Modbus.Net
             foreach (var groupedAddress in groupedAddresses)
             {
                 string area = groupedAddress.Key;
-                int initNum = -1;
-                int preNum = -1;
+                double initNum = -1;
+                double preNum = -1;
                 Type preType = null;
-                int getCount = 0;
+                double getCount = 0;
+                double byteCount = 0;
+                List<AddressUnit> originalAddresses = new List<AddressUnit>();
                 foreach (var address in groupedAddress.OrderBy(address => address.Address))
                 {
                     if (initNum < 0)
                     {
-                        initNum = address.Address;
-                        getCount = (int) BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName];
+                        initNum = address.Address + (address.SubAddress + 1) * 0.125;
+                        getCount = BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName] / AddressTranslator.GetAreaByteLength(address.Area);
+                        byteCount = BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName];
+                        originalAddresses.Add(address);
                     }
                     else
                     {
-                        if (address.Address > preNum + BigEndianValueHelper.Instance.ByteLength[preType.FullName])
+                        if (address.Address > preNum + (int) (BigEndianValueHelper.Instance.ByteLength[preType.FullName] / AddressTranslator.GetAreaByteLength(address.Area)))
                         {
                             ans.Add(new CommunicationUnit()
                             {
                                 Area = area,
-                                Address = initNum,
-                                GetCount = getCount,
-                                DataType = typeof (byte)
+                                Address = (int)Math.Floor(initNum),
+                                GetCount = (int)Math.Ceiling(byteCount),
+                                DataType = typeof (byte),
+                                OriginalAddresses = originalAddresses.ToList(),
                             });
                             initNum = address.Address;
-                            getCount = (int) BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName];
+                            getCount = BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName] / AddressTranslator.GetAreaByteLength(address.Area);
+                            byteCount = BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName];
+                            originalAddresses.Clear();
+                            originalAddresses.Add(address);
                         }
                         else
                         {
-                            getCount += (int) BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName];
+                            getCount += BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName]/ AddressTranslator.GetAreaByteLength(address.Area);
+                            byteCount += BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName];
+                            originalAddresses.Add(address);
                         }
                     }
                     preNum = address.Address;
@@ -69,12 +81,18 @@ namespace Modbus.Net
                 ans.Add(new CommunicationUnit()
                 {
                     Area = area,
-                    Address = initNum,
-                    GetCount = getCount,
-                    DataType = typeof (byte)
+                    Address = (int)Math.Floor(initNum),
+                    GetCount = (int)Math.Ceiling(byteCount),
+                    DataType = typeof (byte),
+                    OriginalAddresses = originalAddresses.ToList()
                 });
             }
             return ans;
+        }
+
+        public AddressCombinerContinus(AddressTranslator addressTranslator)
+        {
+            AddressTranslator = addressTranslator;
         }
     }
 
@@ -90,7 +108,8 @@ namespace Modbus.Net
                             Area = address.Area,
                             Address = address.Address,
                             DataType = address.DataType,
-                            GetCount = 1
+                            GetCount = 1,
+                            OriginalAddresses = new List<AddressUnit>() {address}
                         }).ToList();
         }
     }
@@ -101,18 +120,18 @@ namespace Modbus.Net
         public int GapNumber { get; set; }
     }
 
-    public class AddressCombinerNumericJump : AddressCombiner
+    public class AddressCombinerNumericJump : AddressCombinerContinus
     {
         private int JumpNumber { get; }
 
-        public AddressCombinerNumericJump(int jumpNumber)
+        public AddressCombinerNumericJump(int jumpByteCount, AddressTranslator addressTranslator) : base(addressTranslator)
         {
-            JumpNumber = jumpNumber;
+            JumpNumber = jumpByteCount;
         }
 
         public override IEnumerable<CommunicationUnit> Combine(IEnumerable<AddressUnit> addresses)
         {
-            var continusAddresses = new AddressCombinerContinus().Combine(addresses).ToList();
+            var continusAddresses = base.Combine(addresses).ToList();
             List<CommunicationUnitGap> addressesGaps = new List<CommunicationUnitGap>();
             CommunicationUnit preCommunicationUnit = null;
             foreach (var continusAddress in continusAddresses)
@@ -127,7 +146,7 @@ namespace Modbus.Net
                     var gap = new CommunicationUnitGap()
                     {
                         EndUnit = continusAddress,
-                        GapNumber = continusAddress.Address - preCommunicationUnit.Address - (int)(preCommunicationUnit.GetCount * BigEndianValueHelper.Instance.ByteLength[preCommunicationUnit.DataType.FullName])
+                        GapNumber = (int)Math.Ceiling((continusAddress.Address - preCommunicationUnit.Address) * AddressTranslator.GetAreaByteLength(continusAddress.Area) - preCommunicationUnit.GetCount * BigEndianValueHelper.Instance.ByteLength[preCommunicationUnit.DataType.FullName])
                     };
                     addressesGaps.Add(gap);
                 }
@@ -155,7 +174,8 @@ namespace Modbus.Net
                         orderedGap.GapNumber +
                         (int)
                             (nowAddress.GetCount*BigEndianValueHelper.Instance.ByteLength[nowAddress.DataType.FullName]),
-                    DataType = typeof (byte)
+                    DataType = typeof (byte),
+                    OriginalAddresses = preAddress.OriginalAddresses.ToList().Union(nowAddress.OriginalAddresses)
                 };
                 continusAddresses.Insert(index, newAddress);
             }
@@ -163,13 +183,13 @@ namespace Modbus.Net
         }
     }
 
-    public class AddressCombinerPercentageJump : AddressCombiner
+    public class AddressCombinerPercentageJump : AddressCombinerContinus
     {
         private double Percentage { get; }
 
-        public AddressCombinerPercentageJump(double percentage)
+        public AddressCombinerPercentageJump(double percentage, AddressTranslator addressTranslator) :base (addressTranslator)
         {
-            if (percentage < 0 || percentage > 100) throw new ArgumentException();
+            if (percentage < 0) percentage = 0;
             Percentage = percentage;
         }
 
@@ -177,7 +197,7 @@ namespace Modbus.Net
         {
             var addressUnits = addresses as IList<AddressUnit> ?? addresses.ToList();
             double count = addressUnits.Sum(address => BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName]);
-            return new AddressCombinerNumericJump((int)(count * Percentage / 100.0)).Combine(addressUnits);
+            return new AddressCombinerNumericJump((int)(count * Percentage / 100.0), AddressTranslator).Combine(addressUnits);
         }
     }
 }

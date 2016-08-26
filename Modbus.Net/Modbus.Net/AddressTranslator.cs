@@ -9,6 +9,12 @@ namespace Modbus.Net
         public int Address { get; set; }
     }
 
+    public class AreaOutputDef
+    {
+        public int Code { get; set; }
+        public double AreaWidth { get; set; }
+    }
+
     /// <summary>
     /// 地址翻译器
     /// </summary>
@@ -21,6 +27,8 @@ namespace Modbus.Net
         /// <param name="isRead">是否为读取，是为读取，否为写入</param>
         /// <returns>Key为转换后的地址，Value为辅助码</returns>
         public abstract AddressDef AddressTranslate(string address, bool isRead);
+
+        public abstract double GetAreaByteLength(string area);
     }
 
     /// <summary>
@@ -42,6 +50,11 @@ namespace Modbus.Net
                 };
             }
             throw new FormatException();
+        }
+
+        public override double GetAreaByteLength(string area)
+        {
+            return 1;
         }
     }
 }

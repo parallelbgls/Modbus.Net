@@ -205,9 +205,10 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="data"></param>
         /// <param name="pos"></param>
+        /// <param name="subPos"></param>
         /// <param name="t"></param>
         /// <returns></returns>
-        public virtual object GetValue(byte[] data, ref int pos, Type t)
+        public virtual object GetValue(byte[] data, ref int pos, ref int subPos, Type t)
         {
             switch (t.FullName)
             {
@@ -254,6 +255,11 @@ namespace Modbus.Net
                 case "System.Byte":
                     {
                         byte value = _Instance.GetByte(data, ref pos);
+                        return value;
+                    }
+                case "System.Boolean":
+                    {
+                        bool value = Instance.GetBit(data, ref pos, ref subPos);
                         return value;
                     }
                 default:
@@ -400,6 +406,38 @@ namespace Modbus.Net
         }
 
         /// <summary>
+        /// 获取一个byte中相对应的bit数组展开中第n个位置中的bit元素。
+        /// </summary>
+        /// <param name="number">byte数字</param>
+        /// <param name="pos">bit数组中的对应位置</param>
+        /// <param name="subPos">小数位</param>
+        /// <returns>对应位置的bit元素</returns>
+        public bool GetBit(byte number, ref int pos, ref int subPos)
+        {
+            if (subPos < 0 && subPos > 8) throw new IndexOutOfRangeException();
+            int ans = number % 2;
+            int i = 7;
+            while (i >= subPos)
+            {
+                ans = number % 2;
+                number /= 2;
+                i--;
+            }
+            subPos += 1;
+            if (subPos >= 8)
+            {
+                pos++;
+                subPos = 0;
+            }
+            return ans > 0;
+        }
+
+        public virtual bool GetBit(byte[] number, ref int pos, ref int subPos)
+        {
+            return GetBit(number[pos], ref pos, ref subPos);
+        }
+
+        /// <summary>
         /// 将待转换的对象数组转换为需要发送的byte数组
         /// </summary>
         /// <param name="contents"></param>
@@ -538,6 +576,13 @@ namespace Modbus.Net
             return ByteArrayToObjectArray(contents, new List<KeyValuePair<Type, int>>() {translateTypeAndCount});
         }
 
+        public virtual T[] ByteArrayToDestinationArray<T>(byte[] contents, int getCount)
+        {
+            var objectArray = _Instance.ByteArrayToObjectArray(contents,
+                new KeyValuePair<Type, int>(typeof (T), getCount));
+            return _Instance.ObjectArrayToDestinationArray<T>(objectArray);
+        }
+
         /// <summary>
         /// 将byte数组转换为用户指定类型的数组，通过object数组的方式返回，用户需要再把object转换为自己需要的类型，或调用ObjectArrayToDestinationArray返回单一类型的目标数组。
         /// </summary>
@@ -653,40 +698,13 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 获取一个byte中相对应的bit数组展开中第n个位置中的bit元素。
-        /// </summary>
-        /// <param name="number">byte数字</param>
-        /// <param name="pos">bit数组中的对应位置</param>
-        /// <returns>对应位置的bit元素</returns>
-        public bool GetBit(byte number, ref int pos)
-        {           
-            if (pos < 0 && pos > 8) throw new IndexOutOfRangeException();
-            int ans = number % 2;
-            int i = 7;
-            while (i >= pos)
-            {
-                ans = number%2;
-                number /= 2;
-                i--;
-            }
-            pos += 1;
-            return ans > 0;
-        }
-
-        public virtual bool GetBit(byte[] number, ref int pos)
-        {
-            var tpos = pos%8;
-            return GetBit(number[pos++/8], ref tpos);
-        }
-
-        /// <summary>
         /// 设置对应数字中相应位置的bit的值
         /// </summary>
         /// <param name="number">byte数子</param>
-        /// <param name="pos">设置位置</param>
+        /// <param name="subPos">设置位置</param>
         /// <param name="setBit">设置bit大小，true为1，false为0</param>
         /// <returns></returns>
-        public byte SetBit(byte number, int pos, bool setBit)
+        public byte SetBit(byte number, int subPos, bool setBit)
         {
             int creation = 0;
             if (setBit)
@@ -694,7 +712,7 @@ namespace Modbus.Net
                 for (int i = 0; i < 8; i++)
                 {
                     creation *= 2;
-                    if (i == pos) creation++;
+                    if (i == subPos) creation++;
                 }
                 return (byte) (number | creation);
             }
@@ -703,17 +721,16 @@ namespace Modbus.Net
                 for (int i = 0; i < 8; i++)
                 {
                     creation *= 2;
-                    if (i != pos) creation++;
+                    if (i != subPos) creation++;
                 }
                 return (byte) (number & creation);
             }
         }
 
-        public virtual ushort SetBit(byte[] number, int pos, bool setBit)
+        public virtual byte SetBit(byte[] number, int pos, int subPos, bool setBit)
         {
-            SetBit(number[pos / 8], pos % 8, setBit);
-            var tpos = 0;
-            return GetUShort(number, ref tpos);
+            SetBit(number[pos], subPos, setBit);
+            return GetByte(number, ref pos);
         }
     }
 
@@ -836,10 +853,12 @@ namespace Modbus.Net
             return t;
         }
 
-        public override bool GetBit(byte[] number, ref int pos)
+        public override bool GetBit(byte[] number, ref int pos, ref int subPos)
         {
-            var tpos = pos % 8;
-            return base.GetBit(number[number.Length - 1 - (pos++ / 8)], ref tpos);
+            var tpos = 7 - subPos;
+            var bit = base.GetBit(number[pos], ref pos, ref tpos);
+            subPos = tpos - 7;
+            return bit;
         }
 
         public override bool[] GetBits(byte[] data, ref int pos)
@@ -855,10 +874,10 @@ namespace Modbus.Net
             return t;
         }
 
-        public override ushort SetBit(byte[] number, int pos, bool setBit)
+        public override byte SetBit(byte[] number, int pos, int subPos, bool setBit)
         {
             Array.Reverse(number);
-            return base.SetBit(number, pos, setBit);
+            return base.SetBit(number, pos, subPos, setBit);
         }
 
         private Byte[] Reverse(Byte[] data)

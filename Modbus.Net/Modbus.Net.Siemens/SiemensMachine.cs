@@ -9,8 +9,8 @@ namespace Modbus.Net.Siemens
         {
             BaseUtility = new SiemensUtility(connectionType, connectionString, model);
             AddressFormater = new AddressFormaterSiemens();
-            AddressCombiner = new AddressCombinerContinus();
-            AddressCombinerSet = new AddressCombinerContinus();
+            AddressCombiner = new AddressCombinerContinus(AddressTranslator);
+            AddressCombinerSet = new AddressCombinerContinus(AddressTranslator);
         }
 
         public SiemensMachine(SiemensType connectionType, string connectionString, SiemensMachineModel model,

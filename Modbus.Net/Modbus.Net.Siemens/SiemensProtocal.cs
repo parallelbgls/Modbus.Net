@@ -340,6 +340,7 @@ namespace Modbus.Net.Siemens
         }
     }
 
+    /*
     public class ReadTimeSiemensInputStruct : InputStruct
     {
         public ReadTimeSiemensInputStruct(ushort pduRef)
@@ -415,6 +416,7 @@ namespace Modbus.Net.Siemens
             throw new NotImplementedException();
         }
     }
+    */
 
     public class SiemensProtocalErrorException : ProtocalErrorException
     {

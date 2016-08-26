@@ -78,5 +78,10 @@ namespace Modbus.Net.Siemens
                     Address = int.Parse(tail)
                 };
         }
+
+        public override double GetAreaByteLength(string area)
+        {
+            return 1;
+        }
     }
 }

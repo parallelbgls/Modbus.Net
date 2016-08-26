@@ -1,4 +1,4 @@
-﻿namespace Modbus.Net.Siemens
+﻿/*namespace Modbus.Net.Siemens
 {
     public struct TodClockStatus
     {
@@ -88,3 +88,4 @@
         public ushort TodValue { get; set; }
     }
 }
+*/

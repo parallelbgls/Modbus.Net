@@ -9,8 +9,8 @@ namespace Modbus.Net.Modbus
         {
             BaseUtility = new ModbusUtility(connectionType, connectionString);
             AddressFormater = new AddressFormaterModbus();
-            AddressCombiner = new AddressCombinerContinus();
-            AddressCombinerSet = new AddressCombinerContinus();
+            AddressCombiner = new AddressCombinerContinus(AddressTranslator);
+            AddressCombinerSet = new AddressCombinerContinus(AddressTranslator);
         }
 
         public ModbusMachine(ModbusType connectionType, string connectionString,
