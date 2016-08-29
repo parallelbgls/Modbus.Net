@@ -27,7 +27,7 @@ namespace Modbus.Net
         public override IEnumerable<CommunicationUnit> Combine(IEnumerable<AddressUnit> addresses)
         {
             var groupedAddresses = from address in addresses
-                orderby address.Address
+                orderby address.Address + address.SubAddress * (0.125 / AddressTranslator.GetAreaByteLength(address.Area))
                 group address by address.Area
                 into grouped
                 select grouped;
@@ -41,18 +41,18 @@ namespace Modbus.Net
                 double getCount = 0;
                 double byteCount = 0;
                 List<AddressUnit> originalAddresses = new List<AddressUnit>();
-                foreach (var address in groupedAddress.OrderBy(address => address.Address))
+                foreach (var address in groupedAddress.OrderBy(address => address.Address + address.SubAddress * (0.125 / AddressTranslator.GetAreaByteLength(address.Area))))
                 {
                     if (initNum < 0)
                     {
-                        initNum = address.Address + (address.SubAddress + 1) * 0.125;
+                        initNum = address.Address + address.SubAddress * (0.125 / AddressTranslator.GetAreaByteLength(address.Area));
                         getCount = BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName] / AddressTranslator.GetAreaByteLength(address.Area);
                         byteCount = BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName];
                         originalAddresses.Add(address);
                     }
                     else
                     {
-                        if (address.Address > preNum + (int) (BigEndianValueHelper.Instance.ByteLength[preType.FullName] / AddressTranslator.GetAreaByteLength(address.Area)))
+                        if (address.Address + address.SubAddress * (0.125 / AddressTranslator.GetAreaByteLength(address.Area)) > preNum + BigEndianValueHelper.Instance.ByteLength[preType.FullName] / AddressTranslator.GetAreaByteLength(address.Area))
                         {
                             ans.Add(new CommunicationUnit()
                             {
@@ -70,12 +70,12 @@ namespace Modbus.Net
                         }
                         else
                         {
-                            getCount += BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName]/ AddressTranslator.GetAreaByteLength(address.Area);
+                            getCount += BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName] / AddressTranslator.GetAreaByteLength(address.Area);
                             byteCount += BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName];
                             originalAddresses.Add(address);
                         }
                     }
-                    preNum = address.Address;
+                    preNum = address.Address + address.SubAddress * (0.125 / AddressTranslator.GetAreaByteLength(address.Area));
                     preType = address.DataType;
                 }
                 ans.Add(new CommunicationUnit()

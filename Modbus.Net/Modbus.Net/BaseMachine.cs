@@ -163,7 +163,7 @@ namespace Modbus.Net
                     var datasReturn =
                         await
                             BaseUtility.GetDatasAsync(2, 0,
-                                AddressFormater.FormatAddress(communicateAddress.Area, communicateAddress.Address),
+                                AddressFormater.FormatAddress(communicateAddress.Area, communicateAddress.Address, 0),
                                 (int)
                                     Math.Ceiling(communicateAddress.GetCount*
                                                  BigEndianValueHelper.Instance.ByteLength[
@@ -181,7 +181,7 @@ namespace Modbus.Net
                         datas = datasReturn.ReturnValue;
 
                         //如果没有数据，终止
-                        if (datas == null || datas.Length == 0 || datas.Length !=
+                        if (datas == null || datas.Length == 0 || datas.Length <
                                     (int)
                                         Math.Ceiling(communicateAddress.GetCount *
                                                      BigEndianValueHelper.Instance.ByteLength[
@@ -191,8 +191,8 @@ namespace Modbus.Net
 
                     foreach (var address in communicateAddress.OriginalAddresses)
                     {
-                        var localPos = ((address.Address - communicateAddress.Address)*8 + address.SubAddress)*
-                                       AddressTranslator.GetAreaByteLength(communicateAddress.Area)/8.0;
+                        var localPos = (address.Address - communicateAddress.Address)*
+                                       AddressTranslator.GetAreaByteLength(communicateAddress.Area)+address.SubAddress/8.0;
                         var localMainPos = (int) localPos;
                         var localSubPos = (int) ((localPos - localMainPos)*8);
 
@@ -206,7 +206,7 @@ namespace Modbus.Net
                                 }
                             case MachineGetDataType.Address:
                                 {
-                                    key = AddressFormater.FormatAddress(address.Area, address.Address);
+                                    key = AddressFormater.FormatAddress(address.Area, address.Address, address.SubAddress);
                                     break;
                                 }
                             default:
@@ -231,13 +231,12 @@ namespace Modbus.Net
                                 new ReturnUnit
                                 {
                                     PlcValue =
-                                        Double.Parse(
+                                        Convert.ToDouble(
                                             datasReturn.IsLittleEndian
                                                 ? ValueHelper.Instance.GetValue(datas, ref localMainPos, ref localSubPos, address.DataType)
                                                     .ToString()
                                                 : BigEndianValueHelper.Instance.GetValue(datas, ref localMainPos, ref localSubPos,
-                                                    address.DataType)
-                                                    .ToString()) * address.Zoom,
+                                                    address.DataType)) * address.Zoom,
                                     UnitExtend = address.UnitExtend
                                 });
                         }
@@ -304,7 +303,7 @@ namespace Modbus.Net
                         case MachineSetDataType.Address:
                         {
                             address =
-                                GetAddresses.SingleOrDefault(p => AddressFormater.FormatAddress(p.Area, p.Address) == value.Key);
+                                GetAddresses.SingleOrDefault(p => AddressFormater.FormatAddress(p.Area, p.Address, p.SubAddress) == value.Key || (p.DataType != typeof(bool) && AddressFormater.FormatAddress(p.Area, p.Address) == value.Key));
                             break;
                         }
                         case MachineSetDataType.CommunicationTag:

@@ -60,16 +60,29 @@ namespace Modbus.Net.Modbus
             string[] splitString = address.Split(' ');
             string head = splitString[0];
             string tail = splitString[1];
+            string sub;
+            if (tail.Contains('.'))
+            {
+                string[] splitString2 = tail.Split('.');
+                sub = splitString2[1];
+                tail = splitString2[0];
+            }
+            else
+            {
+                sub = "0";
+            }
             return isRead
                 ? new AddressDef()
                 {
                     Area = ReadFunctionCodeDictionary[head].Code,
                     Address = TransDictionary[head] + int.Parse(tail) - 1,
+                    SubAddress = int.Parse(sub),
                 }
                 : new AddressDef()
                 {
                     Area = WriteFunctionCodeDictionary[head].Code,
                     Address = TransDictionary[head] + int.Parse(tail) - 1,
+                    SubAddress = int.Parse(sub),
                 };
         }
 
@@ -109,16 +122,29 @@ namespace Modbus.Net.Modbus
             string[] splitString = address.Split(' ');
             string head = splitString[0];
             string tail = splitString[1];
+            string sub;
+            if (tail.Contains('.'))
+            {
+                string[] splitString2 = tail.Split('.');
+                sub = splitString2[1];
+                tail = splitString2[0];
+            }
+            else
+            {
+                sub = "0";
+            }
             return isRead
                 ? new AddressDef()
                 {
                     Area = ReadFunctionCodeDictionary[head].Code,
                     Address = int.Parse(tail) - 1,
+                    SubAddress = int.Parse(sub),
                 }
                 : new AddressDef()
                 {
                     Area = WriteFunctionCodeDictionary[head].Code,
                     Address = int.Parse(tail) - 1,
+                    SubAddress = int.Parse(sub),
                 };
         }
 

@@ -30,5 +30,10 @@ namespace Modbus.Net.OPC
             ans = ans.Substring(0, ans.Length - 1);
             return ans;
         }
+
+        public override string FormatAddress(string area, int address, int subAddress)
+        {
+            return FormatAddress(area, address);
+        }
     }
 }

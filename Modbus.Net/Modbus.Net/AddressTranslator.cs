@@ -7,6 +7,7 @@ namespace Modbus.Net
     {
         public int Area { get; set; }
         public int Address { get; set; }
+        public int SubAddress { get; set; }
     }
 
     public class AreaOutputDef
@@ -38,16 +39,30 @@ namespace Modbus.Net
     {
         public override AddressDef AddressTranslate(string address, bool isRead)
         {
-            int num1,num2;
+            int num1,num2,num3;
             string[] split = address.Split(':');
-            if (split.Length != 2) throw new FormatException();
-            if (int.TryParse(split[0], out num1) && int.TryParse(split[1], out num2))
+            if (split.Length == 2)
             {
-                return new AddressDef()
+                if (int.TryParse(split[0], out num1) && int.TryParse(split[1], out num2))
                 {
-                    Area = num1,
-                    Address = num2
-                };
+                    return new AddressDef()
+                    {
+                        Area = num1,
+                        Address = num2
+                    };
+                }
+            }
+            else if (split.Length == 3)
+            {
+                if (int.TryParse(split[0], out num1) && int.TryParse(split[1], out num2) && int.TryParse(split[3], out num3))
+                {
+                    return new AddressDef()
+                    {
+                        Area = num1,
+                        Address = num2,
+                        SubAddress = num3,
+                    };
+                }
             }
             throw new FormatException();
         }
