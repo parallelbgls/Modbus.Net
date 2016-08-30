@@ -52,25 +52,39 @@ namespace Modbus.Net
                     }
                     else
                     {
-                        if (address.Address + address.SubAddress * (0.125 / AddressTranslator.GetAreaByteLength(address.Area)) > preNum + BigEndianValueHelper.Instance.ByteLength[preType.FullName] / AddressTranslator.GetAreaByteLength(address.Area))
+                        if (address.Address +
+                            address.SubAddress*(0.125/AddressTranslator.GetAreaByteLength(address.Area)) <
+                            preNum +
+                            BigEndianValueHelper.Instance.ByteLength[preType.FullName]/
+                            AddressTranslator.GetAreaByteLength(address.Area))
+                        {
+                            continue;
+                        }
+                        else if (address.Address +
+                            address.SubAddress*(0.125/AddressTranslator.GetAreaByteLength(address.Area)) >
+                            preNum +
+                            BigEndianValueHelper.Instance.ByteLength[preType.FullName]/
+                            AddressTranslator.GetAreaByteLength(address.Area))
                         {
                             ans.Add(new CommunicationUnit()
                             {
                                 Area = area,
-                                Address = (int)Math.Floor(initNum),
-                                GetCount = (int)Math.Ceiling(byteCount),
+                                Address = (int) Math.Floor(initNum),
+                                GetCount = (int) Math.Ceiling(byteCount),
                                 DataType = typeof (byte),
                                 OriginalAddresses = originalAddresses.ToList(),
                             });
                             initNum = address.Address;
-                            getCount = BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName] / AddressTranslator.GetAreaByteLength(address.Area);
+                            getCount = BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName]/
+                                       AddressTranslator.GetAreaByteLength(address.Area);
                             byteCount = BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName];
                             originalAddresses.Clear();
                             originalAddresses.Add(address);
                         }
                         else
                         {
-                            getCount += BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName] / AddressTranslator.GetAreaByteLength(address.Area);
+                            getCount += BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName]/
+                                        AddressTranslator.GetAreaByteLength(address.Area);
                             byteCount += BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName];
                             originalAddresses.Add(address);
                         }

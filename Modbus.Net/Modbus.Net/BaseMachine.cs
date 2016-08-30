@@ -340,19 +340,24 @@ namespace Modbus.Net
                     var addressStart = AddressFormater.FormatAddress(communicateAddress.Area,
                             communicateAddress.Address);
                     
-                    while (setCount > 0.001)
+                    while (setCount > 0)
                     {
                         var localPos = (allBytes - setCount) / AddressTranslator.GetAreaByteLength(communicateAddress.Area);
                         //编码当前地址
+                        var subPos = (int)((localPos - (int)localPos) / (0.125 / AddressTranslator.GetAreaByteLength(communicateAddress.Area)));
                         var address = AddressFormater.FormatAddress(communicateAddress.Area,
-                            communicateAddress.Address + (int) localPos);
+                            communicateAddress.Address + (int) localPos, subPos);
+                        var address2 = subPos != 0
+                            ? null
+                            : AddressFormater.FormatAddress(communicateAddress.Area,
+                                communicateAddress.Address + (int) localPos);
                         //找到对应的描述地址
                         var addressUnit =
                             GetAddresses.SingleOrDefault(
                                 p =>
                                     p.Area == communicateAddress.Area &&
                                     p.Address == communicateAddress.Address + (int) localPos &&
-                                    p.SubAddress == (int) ((localPos - (int) localPos)/0.125));
+                                    p.SubAddress == subPos);
                         //如果没有相应地址，跳过
                         if (addressUnit == null) continue;
                         //获取写入类型
@@ -362,7 +367,7 @@ namespace Modbus.Net
                             case MachineSetDataType.Address:
                             {
                                 //获取要写入的值
-                                var value = values.SingleOrDefault(p => p.Key == address);
+                                var value = values.SingleOrDefault(p => p.Key == address || (address2 != null && p.Key == address2));
                                 //将要写入的值加入队列
                                 datasList.Add(Convert.ChangeType(value.Value / addressUnit.Zoom, dataType));
                                 break;
