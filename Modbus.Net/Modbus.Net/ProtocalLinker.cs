@@ -64,7 +64,7 @@ namespace Modbus.Net
         {
             byte[] extBytes = BytesExtend(content);
             byte[] receiveBytes = await SendReceiveWithoutExtAndDecAsync(extBytes);
-            return receiveBytes == null ? null : BytesDecact(receiveBytes);
+            return receiveBytes == null ? null : receiveBytes.Length == 0 ? receiveBytes : BytesDecact(receiveBytes);
         }
 
         /// <summary>
@@ -87,7 +87,8 @@ namespace Modbus.Net
             //发送数据
             byte[] receiveBytes = await _baseConnector.SendMsgAsync(content);
             //容错处理
-            return !CheckRight(receiveBytes) ? null : receiveBytes;
+            var checkRight = CheckRight(receiveBytes);
+            return checkRight == null ? new byte[0] : (!checkRight.Value ? null : receiveBytes);
             //返回字符
         }
 
@@ -96,7 +97,7 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="content">接收协议的内容</param>
         /// <returns>协议是否是正确的</returns>
-        public virtual bool CheckRight(byte[] content)
+        public virtual bool? CheckRight(byte[] content)
         {
             if (content != null) return true;
             Disconnect();

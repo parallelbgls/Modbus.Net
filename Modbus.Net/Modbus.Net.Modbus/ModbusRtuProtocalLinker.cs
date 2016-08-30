@@ -2,9 +2,9 @@
 {
     class ModbusRtuProtocalLinker : ComProtocalLinker
     {
-        public override bool CheckRight(byte[] content)
+        public override bool? CheckRight(byte[] content)
         {
-            if (!base.CheckRight(content)) return false;
+            if (!base.CheckRight(content).Value) return false;
             //CRC校验失败
             if (!Crc16.GetInstance().CrcEfficacy(content))
             {

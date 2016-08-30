@@ -22,6 +22,9 @@ namespace Modbus.Net.Modbus
     {
         private ModbusType _modbusType;
 
+        public override bool GetLittleEndian => Wrapper[typeof (ReadDataModbusProtocal)].IsLittleEndian;
+        public override bool SetLittleEndian => Wrapper[typeof (WriteDataModbusProtocal)].IsLittleEndian;
+
         protected string ConnectionStringIp
         {
             get
@@ -94,7 +97,7 @@ namespace Modbus.Net.Modbus
             ModbusType = (ModbusType) connectionType;
         }
 
-        public override async Task<GetDataReturnDef> GetDatasAsync(byte belongAddress, byte masterAddress, string startAddress, int getByteCount)
+        public override async Task<byte[]> GetDatasAsync(byte belongAddress, byte masterAddress, string startAddress, int getByteCount)
         {
             try
             {
@@ -103,11 +106,7 @@ namespace Modbus.Net.Modbus
                 var outputStruct = await
                     Wrapper.SendReceiveAsync(Wrapper[typeof (ReadDataModbusProtocal)], inputStruct) as
                     ReadDataModbusOutputStruct;
-                return new GetDataReturnDef()
-                {
-                    ReturnValue = outputStruct?.DataValue,
-                    IsLittleEndian = Wrapper[typeof(ReadDataModbusProtocal)].IsLittleEndian,
-                };
+                return  outputStruct?.DataValue;
             }
             catch
             {

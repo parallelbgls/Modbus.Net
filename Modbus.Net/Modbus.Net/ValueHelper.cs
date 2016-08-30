@@ -259,7 +259,7 @@ namespace Modbus.Net
                     }
                 case "System.Boolean":
                     {
-                        bool value = Instance.GetBit(data, ref pos, ref subPos);
+                        bool value = _Instance.GetBit(data, ref pos, ref subPos);
                         return value;
                     }
                 default:
@@ -413,8 +413,8 @@ namespace Modbus.Net
         /// <param name="subPos">小数位</param>
         /// <returns>对应位置的bit元素</returns>
         public bool GetBit(byte number, ref int pos, ref int subPos)
-        {
-            if (subPos < 0 && subPos > 8) throw new IndexOutOfRangeException();
+        { 
+            if (subPos < 0 && subPos >= 8) throw new IndexOutOfRangeException();
             int ans = number % 2;
             int i = 7;
             while (i >= subPos)
@@ -424,7 +424,7 @@ namespace Modbus.Net
                 i--;
             }
             subPos += 1;
-            if (subPos >= 8)
+            if (subPos < 0)
             {
                 pos++;
                 subPos = 0;
@@ -697,6 +697,90 @@ namespace Modbus.Net
             return array;
         }
 
+        public bool SetValue(byte[] contents, int setPos, int subPos, object setValue)
+        {
+            var type = setValue.GetType();
+
+            switch (type.FullName)
+            {
+                case "System.Int16":
+                {
+                    bool success = _Instance.SetValue(contents, setPos, (short)setValue);
+                    return success;
+                }
+                case "System.Int32":
+                {
+                    bool success = _Instance.SetValue(contents, setPos, (int) setValue);
+                    return success;
+                }
+                case "System.Int64":
+                {
+                    bool success = _Instance.SetValue(contents, setPos, (long) setValue);
+                    return success;
+                }
+                case "System.UInt16":
+                {
+                    bool success = _Instance.SetValue(contents, setPos, (ushort) setValue);
+                    return success;
+                }
+                case "System.UInt32":
+                {
+                    bool success = _Instance.SetValue(contents, setPos, (uint) setValue);
+                    return success;
+                }
+                case "System.UInt64":
+                {
+                    bool success = _Instance.SetValue(contents, setPos, (ulong) setValue);
+                    return success;
+                }
+                case "System.Single":
+                {
+                    bool success = _Instance.SetValue(contents, setPos, (float) setValue);
+                    return success;
+                }
+                case "System.Double":
+                {
+                    bool success = _Instance.SetValue(contents, setPos, (double) setValue);
+                    return success;
+                }
+                case "System.Byte":
+                {
+                    bool success = _Instance.SetValue(contents, setPos, (byte) setValue);
+                    return success;
+                }
+                case "System.Boolean":
+                {
+                    bool success = _Instance.SetBit(contents, setPos, subPos, (bool) setValue);
+                    return success;
+                }
+                default:
+                {
+                    throw new NotImplementedException("没有实现除整数以外的其它转换方式");
+                }
+            }
+        }
+
+        /// <summary>
+        /// 将short值设置到byte数组中
+        /// </summary>
+        /// <param name="contents">待设置的byte数组</param>
+        /// <param name="pos">设置的位置</param>
+        /// <param name="setValue">要设置的值</param>
+        /// <returns></returns>
+        public virtual bool SetValue(byte[] contents, int pos, object setValue)
+        {
+            try
+            {
+                byte[] datas = _Instance.GetBytes(setValue, setValue.GetType());
+                Array.Copy(datas, 0, contents, pos, datas.Length);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
         /// <summary>
         /// 设置对应数字中相应位置的bit的值
         /// </summary>
@@ -709,28 +793,43 @@ namespace Modbus.Net
             int creation = 0;
             if (setBit)
             {
-                for (int i = 0; i < 8; i++)
+                for (int i = 7; i >= 0; i--)
                 {
                     creation *= 2;
                     if (i == subPos) creation++;
                 }
-                return (byte) (number | creation);
+                return (byte)(number | creation);
             }
             else
             {
-                for (int i = 0; i < 8; i++)
+                for (int i = 7; i >= 0; i--)
                 {
                     creation *= 2;
                     if (i != subPos) creation++;
                 }
-                return (byte) (number & creation);
+                return (byte)(number & creation);
             }
         }
 
-        public virtual byte SetBit(byte[] number, int pos, int subPos, bool setBit)
+        /// <summary>
+        /// 设置一组数据中的一个bit
+        /// </summary>
+        /// <param name="contents">待设置的字节数组</param>
+        /// <param name="pos">位置</param>
+        /// <param name="subPos">bit位置</param>
+        /// <param name="setValue">bit数</param>
+        /// <returns></returns>
+        public virtual bool SetBit(byte[] contents, int pos, int subPos, bool setValue)
         {
-            SetBit(number[pos], subPos, setBit);
-            return GetByte(number, ref pos);
+            try
+            {
+                contents[pos] = SetBit(contents[pos], subPos, setValue);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }          
         }
     }
 
@@ -855,9 +954,16 @@ namespace Modbus.Net
 
         public override bool GetBit(byte[] number, ref int pos, ref int subPos)
         {
-            var tpos = 7 - subPos;
-            var bit = base.GetBit(number[pos], ref pos, ref tpos);
-            subPos = tpos - 7;
+            if (subPos < 0 && subPos > 7) throw new IndexOutOfRangeException();
+            var tspos = 7 - subPos;
+            var tpos = pos;
+            var bit = GetBit(number[pos], ref tpos, ref tspos);
+            subPos += 1;
+            if (subPos > 7)
+            {
+                pos++;
+                subPos = 0;
+            }
             return bit;
         }
 
@@ -874,10 +980,9 @@ namespace Modbus.Net
             return t;
         }
 
-        public override byte SetBit(byte[] number, int pos, int subPos, bool setBit)
+        public override bool SetBit(byte[] number, int pos, int subPos, bool setBit)
         {
-            Array.Reverse(number);
-            return base.SetBit(number, pos, subPos, setBit);
+            return base.SetBit(number, pos, 7 - subPos, setBit);
         }
 
         private Byte[] Reverse(Byte[] data)

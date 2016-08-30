@@ -144,7 +144,7 @@ namespace Modbus.Net
         /// 读取数据
         /// </summary>
         /// <returns>从设备读取的数据</returns>
-        public async Task<Dictionary<string,ReturnUnit>> GetDatasAsync(MachineGetDataType getDataType)
+        public async Task<Dictionary<string, ReturnUnit>> GetDatasAsync(MachineGetDataType getDataType)
         {
             try
             {
@@ -160,7 +160,7 @@ namespace Modbus.Net
                 foreach (var communicateAddress in CommunicateAddresses)
                 {
                     //获取数据
-                    var datasReturn =
+                    var datas =
                         await
                             BaseUtility.GetDatasAsync(2, 0,
                                 AddressFormater.FormatAddress(communicateAddress.Area, communicateAddress.Address, 0),
@@ -169,30 +169,21 @@ namespace Modbus.Net
                                                  BigEndianValueHelper.Instance.ByteLength[
                                                      communicateAddress.DataType.FullName]));
 
-                    byte[] datas;
 
-                    //如果设备本身能获取到数据但是没有数据
-                    if (datasReturn == null)
-                    {
-                        datas = null;
-                    }
-                    else
-                    {
-                        datas = datasReturn.ReturnValue;
+                    //如果没有数据，终止
+                    if (datas == null || (datas.Length != 0 && datas.Length <
+                        (int)
+                            Math.Ceiling(communicateAddress.GetCount*
+                                         BigEndianValueHelper.Instance.ByteLength[
+                                             communicateAddress.DataType.FullName])))
+                        return null;
 
-                        //如果没有数据，终止
-                        if (datas == null || datas.Length == 0 || datas.Length <
-                                    (int)
-                                        Math.Ceiling(communicateAddress.GetCount *
-                                                     BigEndianValueHelper.Instance.ByteLength[
-                                                         communicateAddress.DataType.FullName]))
-                            return null;
-                    }
 
                     foreach (var address in communicateAddress.OriginalAddresses)
                     {
                         var localPos = (address.Address - communicateAddress.Address)*
-                                       AddressTranslator.GetAreaByteLength(communicateAddress.Area)+address.SubAddress/8.0;
+                                       AddressTranslator.GetAreaByteLength(communicateAddress.Area) +
+                                       address.SubAddress/8.0;
                         var localMainPos = (int) localPos;
                         var localSubPos = (int) ((localPos - localMainPos)*8);
 
@@ -200,23 +191,23 @@ namespace Modbus.Net
                         switch (getDataType)
                         {
                             case MachineGetDataType.CommunicationTag:
-                                {
-                                    key = address.CommunicationTag;
-                                    break;
-                                }
+                            {
+                                key = address.CommunicationTag;
+                                break;
+                            }
                             case MachineGetDataType.Address:
-                                {
-                                    key = AddressFormater.FormatAddress(address.Area, address.Address, address.SubAddress);
-                                    break;
-                                }
+                            {
+                                key = AddressFormater.FormatAddress(address.Area, address.Address, address.SubAddress);
+                                break;
+                            }
                             default:
-                                {
-                                    key = address.CommunicationTag;
-                                    break;
-                                }
+                            {
+                                key = address.CommunicationTag;
+                                break;
+                            }
                         }
 
-                        if (datas == null)
+                        if (datas.Length == 0)
                         {
                             ans.Add(key, new ReturnUnit
                             {
@@ -232,11 +223,13 @@ namespace Modbus.Net
                                 {
                                     PlcValue =
                                         Convert.ToDouble(
-                                            datasReturn.IsLittleEndian
-                                                ? ValueHelper.Instance.GetValue(datas, ref localMainPos, ref localSubPos, address.DataType)
+                                            BaseUtility.GetLittleEndian
+                                                ? ValueHelper.Instance.GetValue(datas, ref localMainPos, ref localSubPos,
+                                                    address.DataType)
                                                     .ToString()
-                                                : BigEndianValueHelper.Instance.GetValue(datas, ref localMainPos, ref localSubPos,
-                                                    address.DataType)) * address.Zoom,
+                                                : BigEndianValueHelper.Instance.GetValue(datas, ref localMainPos,
+                                                    ref localSubPos,
+                                                    address.DataType))*address.Zoom,
                                     UnitExtend = address.UnitExtend
                                 });
                         }
@@ -297,13 +290,17 @@ namespace Modbus.Net
                 foreach (var value in values)
                 {
                     //根据设置类型找到对应的地址描述
-                    AddressUnit address = null;                   
+                    AddressUnit address = null;
                     switch (setDataType)
                     {
                         case MachineSetDataType.Address:
                         {
                             address =
-                                GetAddresses.SingleOrDefault(p => AddressFormater.FormatAddress(p.Area, p.Address, p.SubAddress) == value.Key || (p.DataType != typeof(bool) && AddressFormater.FormatAddress(p.Area, p.Address) == value.Key));
+                                GetAddresses.SingleOrDefault(
+                                    p =>
+                                        AddressFormater.FormatAddress(p.Area, p.Address, p.SubAddress) == value.Key ||
+                                        (p.DataType != typeof (bool) &&
+                                         AddressFormater.FormatAddress(p.Area, p.Address) == value.Key));
                             break;
                         }
                         case MachineSetDataType.CommunicationTag:
@@ -324,42 +321,57 @@ namespace Modbus.Net
                     }
                     addresses.Add(address);
                 }
-                //将地址编码成与实际设备通讯的地址，注意这个地址必须是连续的
+                //将地址编码成与实际设备通讯的地址
                 var communcationUnits = AddressCombinerSet.Combine(addresses);
                 //遍历每条通讯的连续地址
                 foreach (var communicateAddress in communcationUnits)
                 {
-                    List<object> datasList = new List<object>();
-                    //需要设置的字节数，计数
-                    var setCount =
-                        communicateAddress.GetCount*
-                        BigEndianValueHelper.Instance.ByteLength[communicateAddress.DataType.FullName];
-                    //总数
-                    var allBytes = setCount;
                     //编码开始地址
                     var addressStart = AddressFormater.FormatAddress(communicateAddress.Area,
-                            communicateAddress.Address);
-                    
-                    while (setCount > 0)
+                        communicateAddress.Address);
+
+                    var datasReturn = await BaseUtility.GetDatasAsync(2, 0,
+                        AddressFormater.FormatAddress(communicateAddress.Area, communicateAddress.Address, 0),
+                        (int)
+                            Math.Ceiling(communicateAddress.GetCount*
+                                         BigEndianValueHelper.Instance.ByteLength[
+                                             communicateAddress.DataType.FullName]));
+
+                    var valueHelper = BaseUtility.SetLittleEndian
+                        ? ValueHelper.Instance
+                        : BigEndianValueHelper.Instance;
+                    //如果设备本身能获取到数据但是没有数据
+                    var datas = datasReturn;
+
+                    //如果没有数据，终止
+                    if (datas == null || datas.Length <
+                        (int)
+                            Math.Ceiling(communicateAddress.GetCount*
+                                         BigEndianValueHelper.Instance.ByteLength[
+                                             communicateAddress.DataType.FullName]))
+                        return false;
+
+                    foreach (var addressUnit in communicateAddress.OriginalAddresses)
                     {
-                        var localPos = (allBytes - setCount) / AddressTranslator.GetAreaByteLength(communicateAddress.Area);
+                        var byteCount = (addressUnit.Address - communicateAddress.Address +
+                                        addressUnit.SubAddress*0.125/
+                                        AddressTranslator.GetAreaByteLength(communicateAddress.Area)) *
+                                        AddressTranslator.GetAreaByteLength(communicateAddress.Area);
+                        var mainByteCount = (int) byteCount;
+                        var localByteCount = (int) ((byteCount - (int) byteCount)*8);
+
+                        var localPos = byteCount/AddressTranslator.GetAreaByteLength(communicateAddress.Area);
                         //编码当前地址
-                        var subPos = (int)((localPos - (int)localPos) / (0.125 / AddressTranslator.GetAreaByteLength(communicateAddress.Area)));
+                        var subPos =
+                            (int)
+                                ((localPos - (int) localPos)/
+                                 (0.125/AddressTranslator.GetAreaByteLength(communicateAddress.Area)));
                         var address = AddressFormater.FormatAddress(communicateAddress.Area,
                             communicateAddress.Address + (int) localPos, subPos);
                         var address2 = subPos != 0
                             ? null
                             : AddressFormater.FormatAddress(communicateAddress.Area,
                                 communicateAddress.Address + (int) localPos);
-                        //找到对应的描述地址
-                        var addressUnit =
-                            GetAddresses.SingleOrDefault(
-                                p =>
-                                    p.Area == communicateAddress.Area &&
-                                    p.Address == communicateAddress.Address + (int) localPos &&
-                                    p.SubAddress == subPos);
-                        //如果没有相应地址，跳过
-                        if (addressUnit == null) continue;
                         //获取写入类型
                         Type dataType = addressUnit.DataType;
                         switch (setDataType)
@@ -367,22 +379,31 @@ namespace Modbus.Net
                             case MachineSetDataType.Address:
                             {
                                 //获取要写入的值
-                                var value = values.SingleOrDefault(p => p.Key == address || (address2 != null && p.Key == address2));
+                                var value =
+                                    values.SingleOrDefault(
+                                        p => p.Key == address || (address2 != null && p.Key == address2));
                                 //将要写入的值加入队列
-                                datasList.Add(Convert.ChangeType(value.Value / addressUnit.Zoom, dataType));
+                                var data = Convert.ChangeType(value.Value/addressUnit.Zoom, dataType);
+
+                                if (!valueHelper.SetValue(datas, mainByteCount, localByteCount, data))
+                                    return false;
                                 break;
                             }
                             case MachineSetDataType.CommunicationTag:
                             {
                                 var value = values.SingleOrDefault(p => p.Key == addressUnit.CommunicationTag);
-                                datasList.Add(Convert.ChangeType(value.Value / addressUnit.Zoom, dataType));
+                                var data = Convert.ChangeType(value.Value/addressUnit.Zoom, dataType);
+                                if (!valueHelper.SetValue(datas, mainByteCount, localByteCount, data))
+                                    return false;
                                 break;
                             }
                         }
-                        setCount -= BigEndianValueHelper.Instance.ByteLength[dataType.FullName];
                     }
                     //写入数据
-                    await BaseUtility.SetDatasAsync(2, 0, addressStart, datasList.ToArray());
+                    await
+                        BaseUtility.SetDatasAsync(2, 0, addressStart,
+                            valueHelper.ByteArrayToObjectArray(datas,
+                                new KeyValuePair<Type, int>(typeof (byte), datas.Length)));
                 }
             }
             catch (Exception e)

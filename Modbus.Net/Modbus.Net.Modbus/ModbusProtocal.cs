@@ -124,7 +124,7 @@ namespace Modbus.Net.Modbus
             var translateAddress = addressTranslator.AddressTranslate(startAddress, false);
             FunctionCode = (byte)translateAddress.Area;
             StartAddress = (ushort)translateAddress.Address;
-            WriteCount = (ushort)writeValue.Length;
+            WriteCount = (ushort)Math.Ceiling(writeValue.Length / 2.0);
             WriteByteCount = 0;
             WriteValue = writeValue;
         }

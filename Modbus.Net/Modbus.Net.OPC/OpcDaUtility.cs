@@ -8,6 +8,9 @@ namespace Modbus.Net.OPC
 {
     public class OpcDaUtility : BaseUtility
     {
+        public override bool GetLittleEndian => Wrapper[typeof (ReadRequestOpcProtocal)].IsLittleEndian;
+        public override bool SetLittleEndian => Wrapper[typeof (WriteRequestOpcProtocal)].IsLittleEndian;
+
         public OpcDaUtility(string connectionString)
         {
             ConnectionString = connectionString;
@@ -19,19 +22,15 @@ namespace Modbus.Net.OPC
         {
         }
 
-        public override async Task<GetDataReturnDef> GetDatasAsync(byte belongAddress, byte masterAddress, string startAddress, int getByteCount)
+        public override async Task<byte[]> GetDatasAsync(byte belongAddress, byte masterAddress, string startAddress, int getByteCount)
         {
             try
             {
-                var readRequestOpcInputStruct = new ReadRequestOpcInputStruct(startAddress, getByteCount);
+                var readRequestOpcInputStruct = new ReadRequestOpcInputStruct(startAddress);
                 var readRequestOpcOutputStruct =
                      await
                          Wrapper.SendReceiveAsync(Wrapper[typeof(ReadRequestOpcProtocal)], readRequestOpcInputStruct) as ReadRequestOpcOutputStruct;
-                return new GetDataReturnDef()
-                {
-                    ReturnValue = readRequestOpcOutputStruct?.GetValue,
-                    IsLittleEndian = Wrapper[typeof (ReadRequestOpcProtocal)].IsLittleEndian
-                };
+                return readRequestOpcOutputStruct?.GetValue;
             }
             catch (Exception)
             {
@@ -39,9 +38,20 @@ namespace Modbus.Net.OPC
             }
         }
 
-        public override Task<bool> SetDatasAsync(byte belongAddress, byte masterAddress, string startAddress, object[] setContents)
+        public override async Task<bool> SetDatasAsync(byte belongAddress, byte masterAddress, string startAddress, object[] setContents)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var writeRequestOpcInputStruct = new WriteRequestOpcInputStruct(startAddress, setContents[0]);
+                var writeRequestOpcOutputStruct =
+                     await
+                         Wrapper.SendReceiveAsync(Wrapper[typeof(WriteRequestOpcProtocal)], writeRequestOpcInputStruct) as WriteRequestOpcOutputStruct;
+                return writeRequestOpcOutputStruct?.WriteResult == true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }

@@ -30,6 +30,9 @@ namespace Modbus.Net.Siemens
         private readonly ushort _maxCalled;
         private readonly ushort _maxPdu;
 
+        public override bool GetLittleEndian => Wrapper[typeof (ReadRequestSiemensProtocal)].IsLittleEndian;
+        public override bool SetLittleEndian => Wrapper[typeof (WriteRequestSiemensProtocal)].IsLittleEndian;
+
         protected string ConnectionStringIp
         {
             get
@@ -148,7 +151,7 @@ namespace Modbus.Net.Siemens
             ConnectionType = (SiemensType) connectionType;
         }
 
-        public override async Task<GetDataReturnDef> GetDatasAsync(byte belongAddress, byte materAddress, string startAddress, int getByteCount)
+        public override async Task<byte[]> GetDatasAsync(byte belongAddress, byte materAddress, string startAddress, int getByteCount)
         {
             try
             {
@@ -157,11 +160,7 @@ namespace Modbus.Net.Siemens
                     await
                         Wrapper.SendReceiveAsync(Wrapper[typeof (ReadRequestSiemensProtocal)],
                             readRequestSiemensInputStruct) as ReadRequestSiemensOutputStruct;
-                return new GetDataReturnDef()
-                {
-                    ReturnValue = readRequestSiemensOutputStruct?.GetValue,
-                    IsLittleEndian = Wrapper[typeof (ReadRequestSiemensProtocal)].IsLittleEndian
-                };
+                return readRequestSiemensOutputStruct?.GetValue;
             }
             catch (Exception)
             {

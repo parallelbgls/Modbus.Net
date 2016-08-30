@@ -5,12 +5,6 @@ using System.Threading.Tasks;
 
 namespace Modbus.Net
 {
-    public class GetDataReturnDef
-    {
-        public byte[] ReturnValue { get; set; }
-        public bool IsLittleEndian { get; set; }
-    }
-
     public abstract class BaseUtility
     {
         /// <summary>
@@ -18,6 +12,15 @@ namespace Modbus.Net
         /// </summary>
         protected BaseProtocal Wrapper;
         protected string ConnectionString { get; set; }
+
+        /// <summary>
+        /// 获取协议是否遵循小端格式
+        /// </summary>
+        public abstract bool GetLittleEndian { get; }
+        /// <summary>
+        /// 设置协议是否遵循小端格式
+        /// </summary>
+        public abstract bool SetLittleEndian { get; }
 
         /// <summary>
         /// 设备是否已经连接
@@ -56,7 +59,7 @@ namespace Modbus.Net
         /// <param name="startAddress">开始地址</param>
         /// <param name="getByteCount">获取字节数个数</param>
         /// <returns>接收到的byte数据</returns>
-        public virtual GetDataReturnDef GetDatas(byte belongAddress, byte masterAddress, string startAddress, int getByteCount)
+        public virtual byte[] GetDatas(byte belongAddress, byte masterAddress, string startAddress, int getByteCount)
         {
             return AsyncHelper.RunSync(() => GetDatasAsync(belongAddress, masterAddress, startAddress, getByteCount));
         }
@@ -69,7 +72,7 @@ namespace Modbus.Net
         /// <param name="startAddress">开始地址</param>
         /// <param name="getByteCount">获取字节数个数</param>
         /// <returns>接收到的byte数据</returns>
-        public abstract Task<GetDataReturnDef> GetDatasAsync(byte belongAddress, byte masterAddress, string startAddress, int getByteCount);
+        public abstract Task<byte[]> GetDatasAsync(byte belongAddress, byte masterAddress, string startAddress, int getByteCount);
 
         /// <summary>
         /// 获取数据
@@ -102,8 +105,8 @@ namespace Modbus.Net
                 double bCount = BigEndianValueHelper.Instance.ByteLength[typeName];
                 var getReturnValue = await GetDatasAsync(belongAddress, masterAddress, startAddress,
                     (int)Math.Ceiling(bCount * getTypeAndCount.Value));
-                var getBytes = getReturnValue.ReturnValue;
-                return getReturnValue.IsLittleEndian
+                var getBytes = getReturnValue;
+                return GetLittleEndian
                     ? ValueHelper.Instance.ByteArrayToObjectArray(getBytes, getTypeAndCount)
                     : BigEndianValueHelper.Instance.ByteArrayToObjectArray(getBytes, getTypeAndCount);
             }
@@ -187,8 +190,8 @@ namespace Modbus.Net
                     let bCount = BigEndianValueHelper.Instance.ByteLength[typeName]
                     select (int) Math.Ceiling(bCount*getTypeAndCount.Value)).Sum();
                 var getReturnValue = await GetDatasAsync(belongAddress, masterAddress, startAddress, bAllCount);
-                byte[] getBytes = getReturnValue.ReturnValue;
-                return getReturnValue.IsLittleEndian
+                byte[] getBytes = getReturnValue;
+                return GetLittleEndian
                     ? ValueHelper.Instance.ByteArrayToObjectArray(getBytes, translateTypeAndCount)
                     : BigEndianValueHelper.Instance.ByteArrayToObjectArray(getBytes, translateTypeAndCount);
             }

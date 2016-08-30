@@ -41,7 +41,12 @@ namespace Modbus.Net
                 double getCount = 0;
                 double byteCount = 0;
                 List<AddressUnit> originalAddresses = new List<AddressUnit>();
-                foreach (var address in groupedAddress.OrderBy(address => address.Address + address.SubAddress * (0.125 / AddressTranslator.GetAreaByteLength(address.Area))))
+                var orderedAddresses =
+                    groupedAddress.OrderBy(
+                        address =>
+                            address.Address +
+                            address.SubAddress*(0.125/AddressTranslator.GetAreaByteLength(address.Area)));
+                foreach (var address in orderedAddresses)
                 {
                     if (initNum < 0)
                     {
@@ -70,7 +75,7 @@ namespace Modbus.Net
                             {
                                 Area = area,
                                 Address = (int) Math.Floor(initNum),
-                                GetCount = (int) Math.Ceiling(byteCount),
+                                GetCount = (int)Math.Ceiling(((int)Math.Floor(preNum) - (int)Math.Floor(initNum) + 1) * AddressTranslator.GetAreaByteLength(address.Area)),
                                 DataType = typeof (byte),
                                 OriginalAddresses = originalAddresses.ToList(),
                             });
@@ -96,7 +101,7 @@ namespace Modbus.Net
                 {
                     Area = area,
                     Address = (int)Math.Floor(initNum),
-                    GetCount = (int)Math.Ceiling(byteCount),
+                    GetCount = (int)Math.Ceiling(((int)Math.Floor(preNum) - (int)Math.Floor(initNum) + 1) * AddressTranslator.GetAreaByteLength(area)),
                     DataType = typeof (byte),
                     OriginalAddresses = originalAddresses.ToList()
                 });

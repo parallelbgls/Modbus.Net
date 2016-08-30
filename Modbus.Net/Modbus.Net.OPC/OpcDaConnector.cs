@@ -95,15 +95,58 @@ namespace Modbus.Net.OPC
         {
             try
             {
-                string tag = Encoding.UTF8.GetString(message);
-                var result = await _daClient.ReadAsync(tag);
-                if (result.QualityGood)
+                var pos = 0;
+                var protocal = BigEndianValueHelper.Instance.GetByte(message, ref pos);
+                if (protocal == 0)
                 {
-                    return BigEndianValueHelper.Instance.GetBytes(result.Value, result.Value.GetType());
+                    byte[] tagBytes = new byte[message.Length - 1];
+                    Array.Copy(message, 1, tagBytes, 0, tagBytes.Length);
+                    string tag = Encoding.UTF8.GetString(tagBytes);
+                    var result = await _daClient.ReadAsync(tag);
+                    if (result.QualityGood)
+                    {
+                        return BigEndianValueHelper.Instance.GetBytes(result.Value, result.Value.GetType());
+                    }
+                    else
+                    {
+                        return Encoding.ASCII.GetBytes("NoData");
+                    }
                 }
                 else
                 {
-                    return Encoding.ASCII.GetBytes("NoData");
+                    int index = 0;
+                    for (int i = 1; i < message.Length - 3; i++)
+                    {
+                        if (message[i] == 0x00 && message[i + 1] == 0xff && message[i + 2] == 0xff &&
+                            message[i + 3] == 0x00)
+                        {
+                            index = i;
+                            break;
+                        }
+                    }
+
+                    int index2 = 0;
+                    for (int i = index + 4; i < message.Length - 3; i++)
+                    {
+                        if (message[i] == 0x00 && message[i + 1] == 0xff && message[i + 2] == 0xff &&
+                            message[i + 3] == 0x00)
+                        {
+                            index = i;
+                            break;
+                        }
+                    }
+                    byte[] tagBytes = new byte[index - 1];
+                    Array.Copy(message, 1, tagBytes, 0, tagBytes.Length);
+                    string tag = Encoding.UTF8.GetString(tagBytes);
+                    byte[] typeBytes = new byte[index2 - index - 4];
+                    Array.Copy(message, index + 4, typeBytes, 0, typeBytes.Length);
+                    Type type = Type.GetType(Encoding.UTF8.GetString(typeBytes));
+                    byte[] valueBytes = new byte[message.Length - index2 - 4];
+                    Array.Copy(message, index2 + 4, valueBytes, 0, valueBytes.Length);
+                    int mainpos = 0, subpos = 0;
+                    object value = BigEndianValueHelper.Instance.GetValue(valueBytes, ref mainpos, ref subpos, type);
+                    await _daClient.WriteAsync(tag, value);
+                    return new byte[] {1};
                 }
             }
             catch (Exception e)
@@ -111,8 +154,7 @@ namespace Modbus.Net.OPC
                 //AddInfo("opc client exception:" + e);
                 return Encoding.ASCII.GetBytes("NoData");
                 //return null;
-            }
-            
+            }           
         }
 
         private void AddInfo(string message)

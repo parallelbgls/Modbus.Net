@@ -4,9 +4,9 @@ namespace Modbus.Net.Siemens
 {
     public class SiemensTcpProtocalLinker : TcpProtocalLinker
     {
-        public override bool CheckRight(byte[] content)
+        public override bool? CheckRight(byte[] content)
         {
-            if (!base.CheckRight(content)) return false;
+            if (!base.CheckRight(content).Value) return false;
             switch (content[5])
             {
                 case 0xd0:

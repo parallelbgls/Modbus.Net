@@ -18,11 +18,11 @@ namespace Modbus.Net.OPC
             _baseConnector = OpcDaConnector.Instance(host);
         }
 
-        public override bool CheckRight(byte[] content)
+        public override bool? CheckRight(byte[] content)
         {
             if (content != null && content.Length == 6 && Encoding.ASCII.GetString(content) == "NoData")
             {
-                return false;
+                return null;
             }
             return base.CheckRight(content);
         }
