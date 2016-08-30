@@ -424,7 +424,7 @@ namespace Modbus.Net
                 i--;
             }
             subPos += 1;
-            if (subPos < 0)
+            if (subPos > 7)
             {
                 pos++;
                 subPos = 0;
