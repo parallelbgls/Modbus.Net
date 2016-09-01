@@ -46,7 +46,7 @@ namespace NA200H.UI.WPF
         {
             if (machine == null)
             { 
-                //machine = new ModbusMachine(ModbusType.Tcp, "192.168.3.11", new List<AddressUnit>()
+                //machine = new ModbusMachine(ModbusType.Tcp, "192.168.3.12", new List<AddressUnit>()
                 //{
                     //new AddressUnit() {Id = "1", Area = "MW", Address = 1, CommunicationTag = "Add1", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
                     //new AddressUnit() {Id = "2", Area = "MW", Address = 2, CommunicationTag = "Add2", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
