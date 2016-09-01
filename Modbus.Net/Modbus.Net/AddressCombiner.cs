@@ -81,7 +81,7 @@ namespace Modbus.Net
                             {
                                 Area = area,
                                 Address = (int) Math.Floor(initNum),
-                                GetCount = (int)Math.Ceiling((Math.Floor(preNum) - (int)Math.Floor(initNum)) * AddressTranslator.GetAreaByteLength(address.Area) + BigEndianValueHelper.Instance.ByteLength[preType.FullName]),
+                                GetCount = (int)Math.Ceiling((preNum - (int)Math.Floor(initNum)) * AddressTranslator.GetAreaByteLength(address.Area) + BigEndianValueHelper.Instance.ByteLength[preType.FullName]),
                                 DataType = typeof (byte),
                                 OriginalAddresses = originalAddresses.ToList(),
                             });
@@ -101,7 +101,7 @@ namespace Modbus.Net
                 {
                     Area = area,
                     Address = (int)Math.Floor(initNum),
-                    GetCount = (int)Math.Ceiling((Math.Floor(preNum) - (int)Math.Floor(initNum)) * AddressTranslator.GetAreaByteLength(area) + BigEndianValueHelper.Instance.ByteLength[preType.FullName]),
+                    GetCount = (int)Math.Ceiling((preNum - (int)Math.Floor(initNum)) * AddressTranslator.GetAreaByteLength(area) + BigEndianValueHelper.Instance.ByteLength[preType.FullName]),
                     DataType = typeof (byte),
                     OriginalAddresses = originalAddresses.ToList()
                 });
