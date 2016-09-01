@@ -6,11 +6,9 @@ namespace Modbus.Net.Modbus
     {
         public ModbusMachine(ModbusType connectionType, string connectionString,
             IEnumerable<AddressUnit> getAddresses, bool keepConnect, byte slaveAddress, byte masterAddress)
-            : base(getAddresses, keepConnect)
+            : base(getAddresses, keepConnect, slaveAddress, masterAddress)
         {
             BaseUtility = new ModbusUtility(connectionType, connectionString, slaveAddress, masterAddress);
-            SlaveAddress = slaveAddress;
-            MasterAddress = masterAddress;
             AddressFormater = new AddressFormaterModbus();
             AddressCombiner = new AddressCombinerContinus(AddressTranslator);
             AddressCombinerSet = new AddressCombinerContinus(AddressTranslator);
