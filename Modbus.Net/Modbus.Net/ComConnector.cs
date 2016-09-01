@@ -8,28 +8,50 @@ namespace Modbus.Net
 {
     public class ComConnector : BaseConnector, IDisposable
     {
-        public override string ConnectionToken { get { return _com; }
-    }
+        public override string ConnectionToken => _com;
 
         private SerialPort _serialPort1;
+
+        private SerialPort SerialPort1
+        {
+            get
+            {
+                if (_serialPort1 == null)
+                {
+                    _serialPort1 = new SerialPort
+                    {
+                        PortName = _com,
+                        BaudRate = _baudRate,
+                        Parity = _parity,
+                        StopBits = _stopBits,
+                        DataBits = _dataBits,
+                        ReadTimeout = _timeoutTime,
+                    };
+                }
+                return _serialPort1;
+            }
+            
+        }
 
         public delegate byte[] GetDate(byte[] bts);
 
         //private GetDate mygetDate;
         private readonly string _com;
+        private readonly int _timeoutTime;
+        private readonly int _baudRate;
+        private readonly Parity _parity;
+        private readonly StopBits _stopBits;
+        private readonly int _dataBits;
 
-        public ComConnector(string com, int timeoutTime)
+        public ComConnector(string com, int baudRate, Parity parity, StopBits stopBits, int dataBits, int timeoutTime)
         {
-            this._com = com;
-            _serialPort1 = new SerialPort
-            {
-                PortName = com,
-                BaudRate = 9600,
-                Parity = Parity.None,
-                StopBits = StopBits.One,
-                DataBits = 8,
-                ReadTimeout = timeoutTime,
-            };
+            _com = com;
+            _timeoutTime = timeoutTime;
+            _baudRate = baudRate;
+            _parity = parity;
+            _stopBits = stopBits;
+            _dataBits = dataBits;
+
             //端口号 
             //比特率 
             //奇偶校验 
@@ -41,24 +63,20 @@ namespace Modbus.Net
 
         public override bool IsConnected
         {
-            get { return _serialPort1 != null && _serialPort1.IsOpen; }
+            get { return SerialPort1 != null && SerialPort1.IsOpen; }
         }
 
         public override bool Connect()
         {
-            if (_serialPort1 != null)
+            try
             {
-                try
-                {
-                    _serialPort1.Open();
-                    return true;
-                }
-                catch
-                {
-                    return false;
-                }
+                SerialPort1.Open();
+                return true;
             }
-            return false;
+            catch
+            {
+                return false;
+            }
         }
 
         public override Task<bool> ConnectAsync()
@@ -68,11 +86,11 @@ namespace Modbus.Net
 
         public override bool Disconnect()
         {
-            if (_serialPort1 != null)
+            if (SerialPort1 != null)
             {
                 try
                 {
-                    _serialPort1.Close();
+                    Dispose();
                     return true;
                 }
                 catch
@@ -100,16 +118,24 @@ namespace Modbus.Net
         {
             try
             {
-                if (!_serialPort1.IsOpen)
+                if (!SerialPort1.IsOpen)
                 {
-                    _serialPort1.Open();
+                    try
+                    {
+                        SerialPort1.Open();
+                    }
+                    catch (Exception)
+                    {
+                        Dispose();
+                        SerialPort1.Open();
+                    }                    
                 }
-                _serialPort1.Write(sendbytes, 0, sendbytes.Length);
+                SerialPort1.Write(sendbytes, 0, sendbytes.Length);
                 return ReadMsg();
             }
             catch
             {
-                _serialPort1.Close();
+                Dispose();
                 return null;
             }
         }
@@ -123,7 +149,7 @@ namespace Modbus.Net
         {
             try
             {
-                _serialPort1.Write(sendbytes, 0, sendbytes.Length);
+                SerialPort1.Write(sendbytes, 0, sendbytes.Length);
                 return true;
             }
             catch (Exception)
@@ -148,22 +174,21 @@ namespace Modbus.Net
         {
             try
             {
-                if (!_serialPort1.IsOpen)
+                if (!SerialPort1.IsOpen)
                 {
-                    _serialPort1.Open();
+                    SerialPort1.Open();
                 }
 
-                byte[] data = new byte[200];
+                byte[] data;
                 Thread.Sleep(100);
-                int i = _serialPort1.Read(data, 0, _serialPort1.BytesToRead);
+                int i = ReadComm(out data, 10, 5000, 1000);
                 byte[] returndata = new byte[i];
                 Array.Copy(data, 0, returndata, 0, i);
-                _serialPort1.Close();
                 return returndata;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                _serialPort1.Close();
+                Dispose();
                 return null;
             }     
         }
@@ -181,33 +206,35 @@ namespace Modbus.Net
         public int ReadComm(out Byte[] readBuf, int bufRoom, int HowTime, int ByteTime)
         {
             //throw new System.NotImplementedException(); 
-            readBuf = new Byte[64];
+            readBuf = new Byte[1023];
             Array.Clear(readBuf, 0, readBuf.Length);
 
             int nReadLen, nBytelen;
-            if (_serialPort1.IsOpen == false)
+            if (SerialPort1.IsOpen == false)
                 return -1;
             nBytelen = 0;
-            _serialPort1.ReadTimeout = HowTime;
+            SerialPort1.ReadTimeout = HowTime;
 
 
             try
             {
-                readBuf[nBytelen] = (byte) _serialPort1.ReadByte();
-                byte[] bTmp = new byte[1023];
-                Array.Clear(bTmp, 0, bTmp.Length);
-
-                nReadLen = ReadBlock(out bTmp, bufRoom - 1, ByteTime);
-
-                if (nReadLen > 0)
+                while (SerialPort1.BytesToRead > 0)
                 {
-                    Array.Copy(bTmp, 0, readBuf, 1, nReadLen);
-                    nBytelen = 1 + nReadLen;
+                    readBuf[nBytelen] = (byte) SerialPort1.ReadByte();
+                    byte[] bTmp = new byte[bufRoom];
+                    Array.Clear(bTmp, 0, bTmp.Length);
 
+                    nReadLen = ReadBlock(bTmp, bufRoom, ByteTime);
+
+                    if (nReadLen > 0)
+                    {
+                        Array.Copy(bTmp, 0, readBuf, nBytelen + 1, nReadLen);
+                        nBytelen += 1 + nReadLen;
+                    }
+
+                    else if (nReadLen == 0)
+                        nBytelen += 1;
                 }
-
-                else if (nReadLen == 0)
-                    nBytelen = 1;
             }
             catch (Exception ex)
             {
@@ -225,25 +252,21 @@ namespace Modbus.Net
         ///  <param name="ReadRoom">串口数据缓冲空间大小 </param> 
         ///  <param name="ByteTime">字节间隔最大时间 </param> 
         ///  <returns>从串口实际读入的字节个数 </returns> 
-        public int ReadBlock(out byte[] ReadBuf, int ReadRoom, int ByteTime)
+        public int ReadBlock(byte[] ReadBuf, int ReadRoom, int ByteTime)
         {
-            //throw new System.NotImplementedException(); 
-            ReadBuf = new byte[1024];
-            Array.Clear(ReadBuf, 0, ReadBuf.Length);
-
             sbyte nBytelen;
             //long nByteRead; 
 
-            if (_serialPort1.IsOpen == false)
+            if (SerialPort1.IsOpen == false)
                 return 0;
             nBytelen = 0;
-            _serialPort1.ReadTimeout = ByteTime;
+            SerialPort1.ReadTimeout = ByteTime;
 
-            while (nBytelen < (ReadRoom - 1))
+            while (nBytelen < ReadRoom - 1 && SerialPort1.BytesToRead > 0)
             {
                 try
                 {
-                    ReadBuf[nBytelen] = (byte) _serialPort1.ReadByte();
+                    ReadBuf[nBytelen] = (byte) SerialPort1.ReadByte();
                     nBytelen++; // add one 
                 }
                 catch (Exception ex)
@@ -253,7 +276,6 @@ namespace Modbus.Net
             }
             ReadBuf[nBytelen] = 0x00;
             return nBytelen;
-
         }
 
 
@@ -342,6 +364,7 @@ namespace Modbus.Net
             {
                 _serialPort1.Close();
                 _serialPort1.Dispose();
+                _serialPort1 = null;
             }
         }
     }

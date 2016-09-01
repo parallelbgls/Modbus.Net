@@ -45,6 +45,8 @@
     <Compile Include="AddressFormaterSiemens.cs" />
     <Compile Include="AddressTranslatorSiemens.cs" />
     <Compile Include="SiemensMachine.cs" />
+    <Compile Include="SiemensPpiProtocal.cs" />
+    <Compile Include="SiemensPpiProtocalLinker.cs" />
     <Compile Include="SiemensProtocal.cs" />
     <Compile Include="SiemensProtocalLinkerBytesExtend.cs" />
     <Compile Include="SiemensStructDefinition.cs" />

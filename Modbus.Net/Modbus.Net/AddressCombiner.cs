@@ -38,8 +38,6 @@ namespace Modbus.Net
                 double initNum = -1;
                 double preNum = -1;
                 Type preType = null;
-                double getCount = 0;
-                double byteCount = 0;
                 List<AddressUnit> originalAddresses = new List<AddressUnit>();
                 var orderedAddresses =
                     groupedAddress.OrderBy(
@@ -51,8 +49,6 @@ namespace Modbus.Net
                     if (initNum < 0)
                     {
                         initNum = address.Address + address.SubAddress * (0.125 / AddressTranslator.GetAreaByteLength(address.Area));
-                        getCount = BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName] / AddressTranslator.GetAreaByteLength(address.Area);
-                        byteCount = BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName];
                         originalAddresses.Add(address);
                     }
                     else
@@ -63,7 +59,17 @@ namespace Modbus.Net
                             BigEndianValueHelper.Instance.ByteLength[preType.FullName]/
                             AddressTranslator.GetAreaByteLength(address.Area))
                         {
-                            continue;
+                            originalAddresses.Add(address);
+                            if (address.Address +
+                                address.SubAddress*(0.125/AddressTranslator.GetAreaByteLength(address.Area)) +
+                                BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName]/
+                                AddressTranslator.GetAreaByteLength(address.Area) <=
+                                preNum +
+                                BigEndianValueHelper.Instance.ByteLength[preType.FullName]/
+                                AddressTranslator.GetAreaByteLength(address.Area))
+                            {                               
+                                continue;
+                            }
                         }
                         else if (address.Address +
                             address.SubAddress*(0.125/AddressTranslator.GetAreaByteLength(address.Area)) >
@@ -75,22 +81,16 @@ namespace Modbus.Net
                             {
                                 Area = area,
                                 Address = (int) Math.Floor(initNum),
-                                GetCount = (int)Math.Ceiling(((int)Math.Floor(preNum) - (int)Math.Floor(initNum) + 1) * AddressTranslator.GetAreaByteLength(address.Area)),
+                                GetCount = (int)Math.Ceiling(((int)Math.Floor(preNum) - (int)Math.Floor(initNum)) * AddressTranslator.GetAreaByteLength(address.Area) + BigEndianValueHelper.Instance.ByteLength[preType.FullName]),
                                 DataType = typeof (byte),
                                 OriginalAddresses = originalAddresses.ToList(),
                             });
                             initNum = address.Address;
-                            getCount = BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName]/
-                                       AddressTranslator.GetAreaByteLength(address.Area);
-                            byteCount = BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName];
                             originalAddresses.Clear();
                             originalAddresses.Add(address);
                         }
                         else
                         {
-                            getCount += BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName]/
-                                        AddressTranslator.GetAreaByteLength(address.Area);
-                            byteCount += BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName];
                             originalAddresses.Add(address);
                         }
                     }
@@ -101,7 +101,7 @@ namespace Modbus.Net
                 {
                     Area = area,
                     Address = (int)Math.Floor(initNum),
-                    GetCount = (int)Math.Ceiling(((int)Math.Floor(preNum) - (int)Math.Floor(initNum) + 1) * AddressTranslator.GetAreaByteLength(area)),
+                    GetCount = (int)Math.Ceiling(((int)Math.Floor(preNum) - (int)Math.Floor(initNum)) * AddressTranslator.GetAreaByteLength(area) + BigEndianValueHelper.Instance.ByteLength[preType.FullName]),
                     DataType = typeof (byte),
                     OriginalAddresses = originalAddresses.ToList()
                 });

@@ -124,9 +124,10 @@ namespace Modbus.Net.Modbus
             var translateAddress = addressTranslator.AddressTranslate(startAddress, false);
             FunctionCode = (byte)translateAddress.Area;
             StartAddress = (ushort)translateAddress.Address;
-            WriteCount = (ushort)Math.Ceiling(writeValue.Length / 2.0);
-            WriteByteCount = 0;
-            WriteValue = writeValue;
+            var writeByteValue = BigEndianValueHelper.Instance.ObjectArrayToByteArray(writeValue);
+            WriteCount = (ushort)(writeByteValue.Length / 2);
+            WriteByteCount = (byte)writeByteValue.Length;
+            WriteValue = writeByteValue;
         }
 
         public byte BelongAddress { get; private set; }
@@ -139,7 +140,7 @@ namespace Modbus.Net.Modbus
 
         public byte WriteByteCount { get; private set; }
 
-        public object[] WriteValue { get; private set; }
+        public byte[] WriteValue { get; private set; }
     }
 
     public class WriteDataModbusOutputStruct : OutputStruct
@@ -172,7 +173,6 @@ namespace Modbus.Net.Modbus
             var r_message = (WriteDataModbusInputStruct)message;
             byte[] formattingBytes = Format(r_message.BelongAddress, r_message.FunctionCode,
                 r_message.StartAddress, r_message.WriteCount, r_message.WriteByteCount, r_message.WriteValue);
-            formattingBytes[6] = (byte)(formattingBytes.Length - 7);
             return formattingBytes;
         }
 

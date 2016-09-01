@@ -37,6 +37,30 @@ namespace Modbus.Net.Siemens
 
     }
 
+    internal class ComCreateReferenceSiemensInputStruct : InputStruct
+    {
+        
+    }
+
+    internal class ComCreateReferenceSiemensOutputStruct : OutputStruct
+    {
+        
+    }
+
+    internal class ComCreateReferenceSiemensProtocal : SpecialProtocalUnit
+    {
+        public override byte[] Format(InputStruct message)
+        {
+            var r_message = (ComCreateReferenceSiemensInputStruct) message;
+            return Format((byte)0x10, (byte)0x02, (byte)0x00, (byte)0x49, (byte)0x4B, (byte)0x16);
+        }
+
+        public override OutputStruct Unformat(byte[] messageBytes, ref int pos)
+        {
+            return new ComCreateReferenceSiemensOutputStruct();
+        }
+    }
+
     internal class CreateReferenceSiemensInputStruct : InputStruct
     {
         public CreateReferenceSiemensInputStruct(byte tdpuSize, ushort srcTsap, ushort dstTsap)
@@ -116,6 +140,38 @@ namespace Modbus.Net.Siemens
                 }
             }
             return new CreateReferenceSiemensOutputStruct(tdpuSize, srcTsap, dstTsap);
+        }
+    }
+
+    internal class ComEstablishAssociationSiemensInputStruct : InputStruct
+    {
+    }
+
+    internal class ComConfirmSiemensOutputStruct : OutputStruct
+    {
+        public ComConfirmSiemensOutputStruct(byte confirmByte)
+        {
+            ConfirmByte = confirmByte;
+        }
+
+        public byte ConfirmByte { get; set; }
+    }
+
+    internal class ComEstablishAssociationSiemensProtocal : SpecialProtocalUnit
+    {
+        public override byte[] Format(InputStruct message)
+        {
+            var r_message = (ComEstablishAssociationSiemensInputStruct)message;
+            return Format((byte)0x10, (byte)0x02, (byte)0x00, (byte)0x5c, (byte)0x5e, (byte)0x16);
+        }
+
+        public override OutputStruct Unformat(byte[] messageBytes, ref int pos)
+        {
+            //if (messageBytes.Length == 1)
+            //{
+                var confirmByte = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
+                return new ComConfirmSiemensOutputStruct(confirmByte);
+            //}
         }
     }
 
@@ -245,7 +301,7 @@ namespace Modbus.Net.Siemens
             byte area = r_message.Area;
             int offsetBit = r_message.Offset*8;
             byte[] offsetBitBytes = BigEndianValueHelper.Instance.GetBytes(offsetBit);
-            return Format(new byte[7], protoId, rosctr, redId, pduRef, parLg, datLg, serviceId, numberOfVariables
+            return Format(new byte[6], (byte)0x6c, protoId, rosctr, redId, pduRef, parLg, datLg, serviceId, numberOfVariables
                 , variableSpec, vAddrLg, syntaxId, type, numberOfElements, dbBlock, area,
                 offsetBitBytes.Skip(1).ToArray());
         }
@@ -325,18 +381,26 @@ namespace Modbus.Net.Siemens
             const byte reserved = 0x00;
             const byte type = (byte)SiemensDataType.OtherAccess;
             ushort numberOfWriteBits = (ushort)(valueBytes.Length*8);
-            return Format(new byte[7], protoId, rosctr, redId, pduRef, parLg, datLg, serviceId, numberOfVariables
+            return Format(new byte[6], (byte)0x7c, protoId, rosctr, redId, pduRef, parLg, datLg, serviceId, numberOfVariables
                 , variableSpec, vAddrLg, syntaxId, typeR, numberOfElements, dbBlock, area,
                 offsetBitBytes.Skip(1).ToArray(), reserved, type, numberOfWriteBits, valueBytes);
         }
 
         public override OutputStruct Unformat(byte[] messageBytes, ref int pos)
         {
-            pos = 4;
-            ushort pduRef = BigEndianValueHelper.Instance.GetUShort(messageBytes, ref pos);
-            pos = 14;
-            byte accessResult = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
-            return new WriteRequestSiemensOutputStruct(pduRef, (SiemensAccessResult)accessResult);
+            if (messageBytes.Length == 1)
+            {
+                byte accessResult = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
+                return new WriteRequestSiemensOutputStruct(0, accessResult == 0xe5 ? SiemensAccessResult.NoError : SiemensAccessResult.InvalidAddress);
+            }
+            else
+            {
+                pos = 4;
+                ushort pduRef = BigEndianValueHelper.Instance.GetUShort(messageBytes, ref pos);
+                pos = 14;
+                byte accessResult = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
+                return new WriteRequestSiemensOutputStruct(pduRef, (SiemensAccessResult)accessResult);
+            }           
         }
     }
 

@@ -405,6 +405,11 @@ namespace Modbus.Net
                             valueHelper.ByteArrayToObjectArray(datas,
                                 new KeyValuePair<Type, int>(typeof (byte), datas.Length)));
                 }
+                //如果不保持连接，断开连接
+                if (!KeepConnect)
+                {
+                    BaseUtility.Disconnect();
+                }
             }
             catch (Exception e)
             {

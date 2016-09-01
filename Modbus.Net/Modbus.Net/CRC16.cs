@@ -26,6 +26,7 @@ namespace Modbus.Net
         /// 生成CRC码
         /// </summary>
         /// <param name="message">发送或返回的命令，CRC码除外</param>
+        /// <param name="Rcvbuf">存储CRC码的字节的数组</param>
         /// <param name="CRC">生成的CRC码</param>
         public short GetCRC(byte[] message, ref byte[] Rcvbuf)
         {
@@ -84,5 +85,106 @@ namespace Modbus.Net
         }
 
         #endregion
+
+        /// <summary>
+        /// 取模FF(255)
+        /// 取反+1
+        /// </summary>
+        /// <param name="writeUncheck"></param>
+        /// <returns></returns>
+        public bool LrcEfficacy(string message)
+        {
+            var index = message.IndexOf(Environment.NewLine, StringComparison.InvariantCulture);
+            var writeUncheck = message.Substring(1, index - 3);
+            var checkString = message.Substring(index - 3, 2);
+            char[] hexArray = new char[writeUncheck.Length];
+            hexArray = writeUncheck.ToCharArray();
+            int decNum = 0, decNumMSB = 0, decNumLSB = 0;
+            int decByte, decByteTotal = 0;
+
+            bool msb = true;
+
+            for (int t = 0; t <= hexArray.GetUpperBound(0); t++)
+            {
+                if ((hexArray[t] >= 48) && (hexArray[t] <= 57))
+
+                    decNum = (hexArray[t] - 48);
+
+                else if ((hexArray[t] >= 65) & (hexArray[t] <= 70))
+                    decNum = 10 + (hexArray[t] - 65);
+
+                if (msb)
+                {
+                    decNumMSB = decNum * 16;
+                    msb = false;
+                }
+                else
+                {
+                    decNumLSB = decNum;
+                    msb = true;
+                }
+                if (msb)
+                {
+                    decByte = decNumMSB + decNumLSB;
+                    decByteTotal += decByte;
+                }
+            }
+
+            decByteTotal = (255 - decByteTotal) + 1;
+            decByteTotal = decByteTotal & 255;
+
+            int a, b = 0;
+
+            string hexByte = "", hexTotal = "";
+            double i;
+
+            for (i = 0; decByteTotal > 0; i++)
+            {
+                //b = Convert.ToInt32(System.Math.Pow(16.0, i));
+                a = decByteTotal % 16;
+                decByteTotal /= 16;
+                if (a <= 9)
+                    hexByte = a.ToString();
+                else
+                {
+                    switch (a)
+                    {
+                        case 10:
+                            hexByte = "A";
+                            break;
+                        case 11:
+                            hexByte = "B";
+                            break;
+                        case 12:
+                            hexByte = "C";
+                            break;
+                        case 13:
+                            hexByte = "D";
+                            break;
+                        case 14:
+                            hexByte = "E";
+                            break;
+                        case 15:
+                            hexByte = "F";
+                            break;
+                    }
+                }
+                hexTotal = String.Concat(hexByte, hexTotal);
+            }
+            return hexTotal == checkString;
+        }
+
+        public string GetLRC(byte[] code)
+        {
+            int sum = 0;
+            foreach (byte b in code)
+            {
+                sum += b;
+            }
+            sum = sum % 255;//取模FF(255)
+            sum = ~sum + 1;//取反+1
+            string lrc = Convert.ToString(sum, 16);
+            return lrc;
+        }
     }
 }

@@ -43,6 +43,8 @@
   <ItemGroup>
     <Compile Include="AddressFormaterModbus.cs" />
     <Compile Include="AddressTranslatorModbus.cs" />
+    <Compile Include="ModbusAsciiProtocal.cs" />
+    <Compile Include="ModbusAsciiProtocalLinker.cs" />
     <Compile Include="ModbusMachine.cs" />
     <Compile Include="ModbusProtocal.cs" />
     <Compile Include="ModbusProtocalLinkerBytesExtend.cs" />

@@ -16,6 +16,10 @@ namespace Modbus.Net.Modbus
         /// Tcp连接
         /// </summary>
         Tcp = 1,
+        /// <summary>
+        /// Ascii连接
+        /// </summary>
+        Ascii = 2,
     }
 
     public class ModbusUtility : BaseUtility
@@ -72,6 +76,11 @@ namespace Modbus.Net.Modbus
                     case ModbusType.Tcp:
                     {
                         Wrapper = ConnectionString == null ? new ModbusTcpProtocal() : (ConnectionStringPort == null ? new ModbusTcpProtocal(ConnectionString) : new ModbusTcpProtocal(ConnectionStringIp,ConnectionStringPort.Value));
+                        break;
+                    }
+                    case ModbusType.Ascii:
+                    {
+                        Wrapper = ConnectionString == null ? new ModbusAsciiProtocal() : new ModbusAsciiProtocal(ConnectionString);
                         break;
                     }
                 }

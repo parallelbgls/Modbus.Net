@@ -1,4 +1,6 @@
-﻿namespace Modbus.Net.Modbus
+﻿using System.IO.Ports;
+
+namespace Modbus.Net.Modbus
 {
     class ModbusRtuProtocalLinker : ComProtocalLinker
     {
@@ -18,9 +20,9 @@
             return true;
         }
 
-        public ModbusRtuProtocalLinker(string com) : base(com)
+        public ModbusRtuProtocalLinker(string com) : base(com, 9600, Parity.None, StopBits.One, 8)
         {
-            
+
         }
     }
 }

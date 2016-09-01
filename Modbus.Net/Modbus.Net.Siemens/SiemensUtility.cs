@@ -73,10 +73,11 @@ namespace Modbus.Net.Siemens
                 _siemensType = value;
                 switch (_siemensType)
                 {
-                    //case SiemensType.Ppi:
-                    //    {
-                    //        throw new NotImplementedException();
-                    //    }
+                    case SiemensType.Ppi:
+                    {
+                        Wrapper = ConnectionString == null ? new SiemensPpiProtocal() : new SiemensPpiProtocal(ConnectionString);
+                        break;
+                    }
                     //case SiemensType.Mpi:
                     //    {
                     //        throw new NotImplementedException();

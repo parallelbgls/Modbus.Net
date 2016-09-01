@@ -416,12 +416,12 @@ namespace Modbus.Net
         { 
             if (subPos < 0 && subPos >= 8) throw new IndexOutOfRangeException();
             int ans = number % 2;
-            int i = 7;
-            while (i >= subPos)
+            int i = 0;
+            while (i <= subPos)
             {
                 ans = number % 2;
                 number /= 2;
-                i--;
+                i++;
             }
             subPos += 1;
             if (subPos > 7)
