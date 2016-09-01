@@ -62,13 +62,49 @@ namespace Modbus.Net
 
         public override bool IsConnected => _socketClient?.Client != null && _socketClient.Connected;
 
+        /// <summary>
+        　　　　/// 实现IDisposable接口
+        　　　　/// </summary>
         public void Dispose()
         {
-            if (_socketClient != null)
+            Dispose(true);
+            //.NET Framework 类库
+            // GC..::.SuppressFinalize 方法
+            //请求系统不要调用指定对象的终结器。
+            GC.SuppressFinalize(this);
+        }
+
+        private bool m_disposed = false;
+
+        /// <summary>
+        /// 虚方法，可供子类重写
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!m_disposed)
             {
-                CloseClientSocket();
-                _socketClient.Client.Dispose();
+                if (disposing)
+                {
+                    // Release managed resources
+                }
+                // Release unmanaged resources
+                if (_socketClient != null)
+                {
+                    CloseClientSocket();
+                    _socketClient.Client.Dispose();
+                }
+                m_disposed = true;
             }
+        }
+
+        /// <summary>
+        /// 析构函数
+        /// 当客户端没有显示调用Dispose()时由GC完成资源回收功能
+        /// </summary>
+        ~TcpConnector()
+        {
+            Dispose(false);
         }
 
         public override bool Connect()

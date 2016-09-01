@@ -366,14 +366,57 @@ namespace Modbus.Net
             return ByteToString(UnicodeEncoding.Default.GetBytes(InString));
         }
 
+        /// <summary>
+        　　　　/// 实现IDisposable接口
+        　　　　/// </summary>
         public void Dispose()
         {
-            if (_serialPort1 != null)
+            Dispose(true);
+            //.NET Framework 类库
+            // GC..::.SuppressFinalize 方法
+            //请求系统不要调用指定对象的终结器。
+            GC.SuppressFinalize(this);
+        }
+
+        private bool m_disposed = true;
+
+        /// <summary>
+        /// 虚方法，可供子类重写
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!m_disposed)
             {
-                _serialPort1.Close();
-                _serialPort1.Dispose();
-                _serialPort1 = null;
+                if (disposing)
+                {
+                    // Release managed resources
+                }
+                // Release unmanaged resources
+                if (_serialPort1 != null)
+                {
+                    try
+                    {
+                        _serialPort1.Close();
+                    }
+                    catch (Exception)
+                    {
+                        //ignore
+                    }
+                    _serialPort1.Dispose();
+                    _serialPort1 = null;
+                }
+                m_disposed = true;
             }
+        }
+
+        /// <summary>
+        /// 析构函数
+        /// 当客户端没有显示调用Dispose()时由GC完成资源回收功能
+        /// </summary>
+        ~ComConnector()
+        {
+            Dispose(false);
         }
     }
 }
