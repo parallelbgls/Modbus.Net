@@ -70,31 +70,31 @@ namespace Modbus.Net.Modbus
                 {
                     case ModbusType.Rtu:
                     {
-                        Wrapper = ConnectionString == null ? new ModbusRtuProtocal() : new ModbusRtuProtocal(ConnectionString);
+                        Wrapper = ConnectionString == null ? new ModbusRtuProtocal(BelongAddress, MasterAddress) : new ModbusRtuProtocal(ConnectionString, BelongAddress, MasterAddress);
                         break;
                     }
                     case ModbusType.Tcp:
                     {
-                        Wrapper = ConnectionString == null ? new ModbusTcpProtocal() : (ConnectionStringPort == null ? new ModbusTcpProtocal(ConnectionString) : new ModbusTcpProtocal(ConnectionStringIp,ConnectionStringPort.Value));
+                        Wrapper = ConnectionString == null ? new ModbusTcpProtocal(BelongAddress, MasterAddress) : (ConnectionStringPort == null ? new ModbusTcpProtocal(ConnectionString, BelongAddress, MasterAddress) : new ModbusTcpProtocal(ConnectionStringIp,ConnectionStringPort.Value, BelongAddress, MasterAddress));
                         break;
                     }
                     case ModbusType.Ascii:
                     {
-                        Wrapper = ConnectionString == null ? new ModbusAsciiProtocal() : new ModbusAsciiProtocal(ConnectionString);
+                        Wrapper = ConnectionString == null ? new ModbusAsciiProtocal(BelongAddress, MasterAddress) : new ModbusAsciiProtocal(ConnectionString, BelongAddress, MasterAddress);
                         break;
                     }
                 }
             }
         }
 
-        public ModbusUtility(int connectionType)
+        public ModbusUtility(int connectionType, byte belongAddress, byte masterAddress) : base(belongAddress, masterAddress)
         {
             ConnectionString = null;
             ModbusType = (ModbusType)connectionType;
             AddressTranslator = new AddressTranslatorModbus();
         }
 
-        public ModbusUtility(ModbusType connectionType, string connectionString)
+        public ModbusUtility(ModbusType connectionType, string connectionString, byte belongAddress, byte masterAddress) : base(belongAddress, masterAddress)
         {
             ConnectionString = connectionString;
             ModbusType = connectionType;
@@ -106,11 +106,11 @@ namespace Modbus.Net.Modbus
             ModbusType = (ModbusType) connectionType;
         }
 
-        public override async Task<byte[]> GetDatasAsync(byte belongAddress, byte masterAddress, string startAddress, int getByteCount)
+        public override async Task<byte[]> GetDatasAsync(string startAddress, int getByteCount)
         {
             try
             {
-                var inputStruct = new ReadDataModbusInputStruct(belongAddress, startAddress,
+                var inputStruct = new ReadDataModbusInputStruct(BelongAddress, startAddress,
                     getByteCount%2 == 0 ? (ushort) (getByteCount/2) : (ushort) (getByteCount/2 + 1), AddressTranslator);
                 var outputStruct = await
                     Wrapper.SendReceiveAsync(Wrapper[typeof (ReadDataModbusProtocal)], inputStruct) as
@@ -123,11 +123,11 @@ namespace Modbus.Net.Modbus
             }
         }
 
-        public override async Task<bool> SetDatasAsync(byte belongAddress, byte masterAddress, string startAddress, object[] setContents)
+        public override async Task<bool> SetDatasAsync(string startAddress, object[] setContents)
         {
             try
             {
-                var inputStruct = new WriteDataModbusInputStruct(belongAddress, startAddress, setContents,
+                var inputStruct = new WriteDataModbusInputStruct(BelongAddress, startAddress, setContents,
                     AddressTranslator);
                 var outputStruct = await
                     Wrapper.SendReceiveAsync(Wrapper[typeof (WriteDataModbusProtocal)], inputStruct) as
@@ -141,11 +141,11 @@ namespace Modbus.Net.Modbus
         }
 
         /*
-        public override DateTime GetTime(byte belongAddress)
+        public override DateTime GetTime()
         {
             try
             {
-                var inputStruct = new GetSystemTimeModbusInputStruct(belongAddress);
+                var inputStruct = new GetSystemTimeModbusInputStruct(BelongAddress);
                 var outputStruct =
                     Wrapper.SendReceive(Wrapper[typeof(GetSystemTimeModbusProtocal)], inputStruct) as
                         GetSystemTimeModbusOutputStruct;
@@ -157,11 +157,11 @@ namespace Modbus.Net.Modbus
             }
         }
 
-        public override bool SetTime(byte belongAddress, DateTime setTime)
+        public override bool SetTime(DateTime setTime)
         {
             try
             {
-                var inputStruct = new SetSystemTimeModbusInputStruct(belongAddress, setTime);
+                var inputStruct = new SetSystemTimeModbusInputStruct(BelongAddress, setTime);
                 var outputStruct =
                     Wrapper.SendReceive(Wrapper[typeof(SetSystemTimeModbusProtocal)], inputStruct) as
                         SetSystemTimeModbusOutputStruct;

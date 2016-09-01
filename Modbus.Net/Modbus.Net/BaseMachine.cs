@@ -105,6 +105,16 @@ namespace Modbus.Net
         public bool KeepConnect { get; set; }
 
         /// <summary>
+        /// 从站号
+        /// </summary>
+        public byte SlaveAddress { get; set; } = 2;
+
+        /// <summary>
+        /// 主站号
+        /// </summary>
+        public byte MasterAddress { get; set; } = 0;
+
+        /// <summary>
         /// 设备的连接器
         /// </summary>
         protected BaseUtility BaseUtility { get; set; }
@@ -127,6 +137,19 @@ namespace Modbus.Net
         {
             GetAddresses = getAddresses;
             KeepConnect = keepConnect;
+        }
+
+        /// <summary>
+        /// 构造器
+        /// </summary>
+        /// <param name="getAddresses">需要与设备通讯的地址</param>
+        /// <param name="keepConnect">是否保持连接</param>
+        /// <param name="slaveAddress">从站地址</param>
+        /// <param name="masterAddress">主站地址</param>
+        protected BaseMachine(IEnumerable<AddressUnit> getAddresses, bool keepConnect, byte slaveAddress, byte masterAddress) : this(getAddresses, keepConnect)
+        {
+            SlaveAddress = slaveAddress;
+            MasterAddress = masterAddress;
         }
 
         /// <summary>
@@ -162,7 +185,7 @@ namespace Modbus.Net
                     //获取数据
                     var datas =
                         await
-                            BaseUtility.GetDatasAsync(2, 0,
+                            BaseUtility.GetDatasAsync(
                                 AddressFormater.FormatAddress(communicateAddress.Area, communicateAddress.Address, 0),
                                 (int)
                                     Math.Ceiling(communicateAddress.GetCount*
@@ -330,7 +353,7 @@ namespace Modbus.Net
                     var addressStart = AddressFormater.FormatAddress(communicateAddress.Area,
                         communicateAddress.Address);
 
-                    var datasReturn = await BaseUtility.GetDatasAsync(2, 0,
+                    var datasReturn = await BaseUtility.GetDatasAsync(
                         AddressFormater.FormatAddress(communicateAddress.Area, communicateAddress.Address, 0),
                         (int)
                             Math.Ceiling(communicateAddress.GetCount*
@@ -401,7 +424,7 @@ namespace Modbus.Net
                     }
                     //写入数据
                     await
-                        BaseUtility.SetDatasAsync(2, 0, addressStart,
+                        BaseUtility.SetDatasAsync(addressStart,
                             valueHelper.ByteArrayToObjectArray(datas,
                                 new KeyValuePair<Type, int>(typeof (byte), datas.Length)));
                 }

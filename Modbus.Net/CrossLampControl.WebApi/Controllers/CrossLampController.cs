@@ -17,7 +17,7 @@ namespace CrossLampControl.WebApi.Controllers
 
         public CrossLampController()
         {
-            _utility = new SiemensUtility(SiemensType.Tcp, "192.168.3.241", SiemensMachineModel.S7_200);
+            _utility = new SiemensUtility(SiemensType.Tcp, "192.168.3.241", SiemensMachineModel.S7_200, 2, 0);
             _utility.AddressTranslator = new AddressTranslatorSiemens();
         }
 
@@ -25,7 +25,7 @@ namespace CrossLampControl.WebApi.Controllers
         public Lamp GetLamp()
         {
             Lamp light = new Lamp();
-            object[] lampsbyte = _utility.GetDatas(2, 0, "Q 0", new KeyValuePair<Type, int>(typeof(bool), 7));
+            object[] lampsbyte = _utility.GetDatas("Q 0", new KeyValuePair<Type, int>(typeof(bool), 7));
             bool[] lamps =
                 BigEndianValueHelper.Instance.ObjectArrayToDestinationArray<bool>(
                     lampsbyte);

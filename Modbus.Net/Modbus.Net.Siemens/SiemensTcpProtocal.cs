@@ -25,7 +25,7 @@ namespace Modbus.Net.Siemens
             
         }
 
-        public SiemensTcpProtocal(byte tdpuSize, ushort tsapSrc, ushort tsapDst, ushort maxCalling, ushort maxCalled, ushort maxPdu, string ip, int port)
+        public SiemensTcpProtocal(byte tdpuSize, ushort tsapSrc, ushort tsapDst, ushort maxCalling, ushort maxCalled, ushort maxPdu, string ip, int port) : base (0, 0)
         {
             _taspSrc = tsapSrc;
             _tsapDst = tsapDst;

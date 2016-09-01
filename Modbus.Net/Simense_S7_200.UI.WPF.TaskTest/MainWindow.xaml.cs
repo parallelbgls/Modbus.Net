@@ -37,7 +37,7 @@ namespace Siemens_S7_200.UI.WPF.TaskTest
             TaskManager task = new TaskManager(300, true);
             //向任务管理器中添加设备
             task.AddMachine(new SiemensMachine(SiemensType.Tcp, "192.168.3.11",SiemensMachineModel.S7_300, addressUnits,
-            true));
+            true, 2, 0));
             //增加值返回时的处理函数
             task.ReturnValues += (returnValues) =>
             {

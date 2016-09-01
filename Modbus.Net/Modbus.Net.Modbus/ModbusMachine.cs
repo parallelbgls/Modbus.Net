@@ -5,17 +5,20 @@ namespace Modbus.Net.Modbus
     public class ModbusMachine : BaseMachine
     {
         public ModbusMachine(ModbusType connectionType, string connectionString,
-            IEnumerable<AddressUnit> getAddresses, bool keepConnect) : base(getAddresses, keepConnect)
+            IEnumerable<AddressUnit> getAddresses, bool keepConnect, byte slaveAddress, byte masterAddress)
+            : base(getAddresses, keepConnect)
         {
-            BaseUtility = new ModbusUtility(connectionType, connectionString);
+            BaseUtility = new ModbusUtility(connectionType, connectionString, slaveAddress, masterAddress);
+            SlaveAddress = slaveAddress;
+            MasterAddress = masterAddress;
             AddressFormater = new AddressFormaterModbus();
             AddressCombiner = new AddressCombinerContinus(AddressTranslator);
             AddressCombinerSet = new AddressCombinerContinus(AddressTranslator);
         }
 
         public ModbusMachine(ModbusType connectionType, string connectionString,
-            IEnumerable<AddressUnit> getAddresses)
-            : this(connectionType, connectionString, getAddresses, false)
+            IEnumerable<AddressUnit> getAddresses, byte slaveAddress, byte masterAddress)
+            : this(connectionType, connectionString, getAddresses, false, slaveAddress, masterAddress)
         {
         }
     }

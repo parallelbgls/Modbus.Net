@@ -34,17 +34,35 @@ namespace Modbus.Net.Siemens
 
     public abstract class SiemensProtocal : BaseProtocal
     {
-
+        protected SiemensProtocal(byte belongAddress, byte masterAddress) : base(belongAddress, masterAddress)
+        {
+        }
     }
 
     internal class ComCreateReferenceSiemensInputStruct : InputStruct
     {
-        
+        public byte BelongAddress { get; set; }
+        public byte MasterAddress { get; set; }
+
+        public ComCreateReferenceSiemensInputStruct(byte belongAddress, byte masterAddress)
+        {
+            BelongAddress = belongAddress;
+            MasterAddress = masterAddress;
+        }
     }
 
     internal class ComCreateReferenceSiemensOutputStruct : OutputStruct
     {
-        
+        public byte BelongAddress { get; set; }
+        public byte MasterAddress { get; set; }
+        public byte ConfirmMessage { get; set; }
+
+        public ComCreateReferenceSiemensOutputStruct(byte belongAddress, byte masterAddress, byte confirmMessage)
+        {
+            BelongAddress = belongAddress;
+            MasterAddress = masterAddress;
+            ConfirmMessage = confirmMessage;
+        }
     }
 
     internal class ComCreateReferenceSiemensProtocal : SpecialProtocalUnit
@@ -52,12 +70,17 @@ namespace Modbus.Net.Siemens
         public override byte[] Format(InputStruct message)
         {
             var r_message = (ComCreateReferenceSiemensInputStruct) message;
-            return Format((byte)0x10, (byte)0x02, (byte)0x00, (byte)0x49, (byte)0x4B, (byte)0x16);
+            var crc = (r_message.BelongAddress + r_message.MasterAddress + 0x49)%256;
+            return Format((byte)0x10, r_message.BelongAddress, r_message.MasterAddress, (byte)0x49, (byte)crc, (byte)0x16);
         }
 
         public override OutputStruct Unformat(byte[] messageBytes, ref int pos)
         {
-            return new ComCreateReferenceSiemensOutputStruct();
+            pos = 1;
+            var masterAddress = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
+            var belongAddress = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
+            var confirmMessage = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
+            return new ComCreateReferenceSiemensOutputStruct(belongAddress, masterAddress, confirmMessage);
         }
     }
 
@@ -143,13 +166,21 @@ namespace Modbus.Net.Siemens
         }
     }
 
-    internal class ComEstablishAssociationSiemensInputStruct : InputStruct
+    public class ComConfirmMessageSiemensInputStruct : InputStruct
     {
+        public byte BelongAddress { get; set; }
+        public byte MasterAddress { get; set; }
+
+        public ComConfirmMessageSiemensInputStruct(byte belongAddress, byte masterAddress)
+        {
+            BelongAddress = belongAddress;
+            MasterAddress = masterAddress;
+        }
     }
 
-    internal class ComConfirmSiemensOutputStruct : OutputStruct
+    public class ComConfirmMessageSiemensOutputStruct : OutputStruct
     {
-        public ComConfirmSiemensOutputStruct(byte confirmByte)
+        public ComConfirmMessageSiemensOutputStruct(byte confirmByte)
         {
             ConfirmByte = confirmByte;
         }
@@ -157,21 +188,19 @@ namespace Modbus.Net.Siemens
         public byte ConfirmByte { get; set; }
     }
 
-    internal class ComEstablishAssociationSiemensProtocal : SpecialProtocalUnit
+    public class ComConfirmMessageSiemensProtocal : SpecialProtocalUnit
     {
         public override byte[] Format(InputStruct message)
         {
-            var r_message = (ComEstablishAssociationSiemensInputStruct)message;
-            return Format((byte)0x10, (byte)0x02, (byte)0x00, (byte)0x5c, (byte)0x5e, (byte)0x16);
+            var r_message = (ComConfirmMessageSiemensInputStruct)message;
+            var crc = r_message.BelongAddress + r_message.MasterAddress + 0x5c%256;
+            return Format((byte)0x10, r_message.BelongAddress, r_message.MasterAddress, (byte)0x5c, (byte)crc, (byte)0x16);
         }
 
         public override OutputStruct Unformat(byte[] messageBytes, ref int pos)
         {
-            //if (messageBytes.Length == 1)
-            //{
-                var confirmByte = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
-                return new ComConfirmSiemensOutputStruct(confirmByte);
-            //}
+            var confirmByte = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
+            return new ComConfirmMessageSiemensOutputStruct(confirmByte);
         }
     }
 
@@ -241,8 +270,10 @@ namespace Modbus.Net.Siemens
 
     public class ReadRequestSiemensInputStruct : InputStruct
     {
-        public ReadRequestSiemensInputStruct(ushort pduRef, SiemensTypeCode getType, string startAddress, ushort getCount, AddressTranslator addressTranslator)
+        public ReadRequestSiemensInputStruct(byte belongAddress, byte masterAddress, ushort pduRef, SiemensTypeCode getType, string startAddress, ushort getCount, AddressTranslator addressTranslator)
         {
+            BelongAddress = belongAddress;
+            MasterAddress = masterAddress;
             PduRef = pduRef;
             TypeCode = (byte) getType;
             var address = addressTranslator.AddressTranslate(startAddress, true);
@@ -253,6 +284,8 @@ namespace Modbus.Net.Siemens
             NumberOfElements = getCount;         
         }
 
+        public byte BelongAddress { get; set; }
+        public byte MasterAddress { get; set; }
         public ushort PduRef { get; private set; }
         public byte TypeCode { get; private set; }
         public ushort NumberOfElements { get; private set; }
@@ -284,6 +317,8 @@ namespace Modbus.Net.Siemens
         public override byte[] Format(InputStruct message)
         {
             var r_message = (ReadRequestSiemensInputStruct) message;
+            byte belongAddress = r_message.BelongAddress;
+            byte masterAddress = r_message.MasterAddress;
             const byte protoId = 0x32;
             const byte rosctr = 0x01;
             const ushort redId = 0x0000;
@@ -301,7 +336,7 @@ namespace Modbus.Net.Siemens
             byte area = r_message.Area;
             int offsetBit = r_message.Offset*8;
             byte[] offsetBitBytes = BigEndianValueHelper.Instance.GetBytes(offsetBit);
-            return Format(new byte[6], (byte)0x6c, protoId, rosctr, redId, pduRef, parLg, datLg, serviceId, numberOfVariables
+            return Format(new byte[4], belongAddress, masterAddress, (byte)0x6c, protoId, rosctr, redId, pduRef, parLg, datLg, serviceId, numberOfVariables
                 , variableSpec, vAddrLg, syntaxId, type, numberOfElements, dbBlock, area,
                 offsetBitBytes.Skip(1).ToArray());
         }
@@ -324,8 +359,10 @@ namespace Modbus.Net.Siemens
 
     public class WriteRequestSiemensInputStruct : InputStruct
     {
-        public WriteRequestSiemensInputStruct(ushort pduRef, string startAddress, object[] writeValue, AddressTranslator addressTranslator)
+        public WriteRequestSiemensInputStruct(byte belongAddress, byte masterAddress, ushort pduRef, string startAddress, object[] writeValue, AddressTranslator addressTranslator)
         {
+            BelongAddress = belongAddress;
+            MasterAddress = masterAddress;
             PduRef = pduRef;
             var address = addressTranslator.AddressTranslate(startAddress, true);
             Offset = address.Address;
@@ -335,6 +372,8 @@ namespace Modbus.Net.Siemens
             WriteValue = writeValue;
         }
 
+        public byte BelongAddress { get; set; }
+        public byte MasterAddress { get; set; }
         public ushort PduRef { get; private set; }
         public ushort DbBlock { get; private set; }
         public byte Area { get; private set; }
@@ -361,6 +400,8 @@ namespace Modbus.Net.Siemens
         {
             var r_message = (WriteRequestSiemensInputStruct) message;
             byte[] valueBytes = BigEndianValueHelper.Instance.ObjectArrayToByteArray(r_message.WriteValue);
+            byte belongAddress = r_message.BelongAddress;
+            byte masterAddress = r_message.MasterAddress;
             const byte protoId = 0x32;
             const byte rosctr = 0x01;
             const ushort redId = 0x0000;
@@ -381,7 +422,7 @@ namespace Modbus.Net.Siemens
             const byte reserved = 0x00;
             const byte type = (byte)SiemensDataType.OtherAccess;
             ushort numberOfWriteBits = (ushort)(valueBytes.Length*8);
-            return Format(new byte[6], (byte)0x7c, protoId, rosctr, redId, pduRef, parLg, datLg, serviceId, numberOfVariables
+            return Format(new byte[4], belongAddress, masterAddress, (byte)0x7c, protoId, rosctr, redId, pduRef, parLg, datLg, serviceId, numberOfVariables
                 , variableSpec, vAddrLg, syntaxId, typeR, numberOfElements, dbBlock, area,
                 offsetBitBytes.Skip(1).ToArray(), reserved, type, numberOfWriteBits, valueBytes);
         }

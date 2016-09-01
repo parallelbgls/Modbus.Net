@@ -25,7 +25,7 @@ namespace Modbus.Net.Siemens
         {
             byte[] newContent = new byte[content.Length + 2];
             Array.Copy(content, 0, newContent, 0, content.Length);
-            Array.Copy(new byte[] { 0x68, (byte)(content.Length - 4), (byte)(content.Length - 4), 0x68, 0x02, 0x00 }, 0, newContent, 0, 6);
+            Array.Copy(new byte[] { 0x68, (byte)(content.Length - 4), (byte)(content.Length - 4), 0x68 }, 0, newContent, 0, 4);
             int check = 0;
             for (int i = 4; i < newContent.Length - 2; i++)
             {

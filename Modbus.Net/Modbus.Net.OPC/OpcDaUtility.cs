@@ -11,7 +11,7 @@ namespace Modbus.Net.OPC
         public override bool GetLittleEndian => Wrapper[typeof (ReadRequestOpcProtocal)].IsLittleEndian;
         public override bool SetLittleEndian => Wrapper[typeof (WriteRequestOpcProtocal)].IsLittleEndian;
 
-        public OpcDaUtility(string connectionString)
+        public OpcDaUtility(string connectionString) : base(0,0)
         {
             ConnectionString = connectionString;
             AddressTranslator = null;
@@ -22,7 +22,7 @@ namespace Modbus.Net.OPC
         {
         }
 
-        public override async Task<byte[]> GetDatasAsync(byte belongAddress, byte masterAddress, string startAddress, int getByteCount)
+        public override async Task<byte[]> GetDatasAsync(string startAddress, int getByteCount)
         {
             try
             {
@@ -38,7 +38,7 @@ namespace Modbus.Net.OPC
             }
         }
 
-        public override async Task<bool> SetDatasAsync(byte belongAddress, byte masterAddress, string startAddress, object[] setContents)
+        public override async Task<bool> SetDatasAsync(string startAddress, object[] setContents)
         {
             try
             {

@@ -17,7 +17,7 @@ namespace NA200H.UI.ConsoleApp
         {
             string ip = "192.168.3.191";
             //先初始化一个协议转换器，这里构造Modbus/Tcp协议。
-            //BaseProtocal wrapper = new ModbusTcpProtocal(ip);
+            BaseProtocal wrapper = new ModbusTcpProtocal(ip, 2, 0);
 
             /*
             try
@@ -26,7 +26,7 @@ namespace NA200H.UI.ConsoleApp
                 //第一步：先生成一个输入信息的object数组
                 object[] inputObjects = new object[] {(byte) 0x02, (byte) 0x01, (short) 0x4e20, (short) 0x0004};
                 //第二步：向仪器发送这个信息，并接收信息
-                byte[] outputBytes = wrapper.SendReceive(inputObjects);
+                byte[] outputBytes = wrapper.SendReceive(false, inputObjects);
                 //第三步：输出信息
                 for (int i = 0; i < outputBytes.Length; i++)
                 {
@@ -46,7 +46,7 @@ namespace NA200H.UI.ConsoleApp
             //第一步：先生成一个输入信息的object数组
             object[] inputObjects = new object[]{(byte)0x02,(byte)0x01,(short)0x4e20,(short)0x0004};
             //第二步：向仪器发送这个信息，并接收信息
-            byte[] outputBytes = wrapper.SendReceive(inputObjects);
+            byte[] outputBytes = wrapper.SendReceive(false, inputObjects);
             //第三步：输出信息
             for (int i = 0; i < outputBytes.Length; i++)
             {
@@ -126,7 +126,7 @@ namespace NA200H.UI.ConsoleApp
             if (!wrapper.ProtocalLinker.IsConnected) return;
             AddressTranslator addressTranslator = new AddressTranslatorSiemens();
 
-            var readRequestSiemensInputStruct = new ReadRequestSiemensInputStruct(0xaacc, SiemensTypeCode.Byte, "V 0", 4, addressTranslator);
+            var readRequestSiemensInputStruct = new ReadRequestSiemensInputStruct(2, 0, 0xaacc, SiemensTypeCode.Byte, "V 0", 4, addressTranslator);
             var readRequestSiemensOutputStruct =
                 (ReadRequestSiemensOutputStruct)
                     wrapper.SendReceive(wrapper[typeof(ReadRequestSiemensProtocal)], readRequestSiemensInputStruct);
@@ -141,7 +141,7 @@ namespace NA200H.UI.ConsoleApp
             Console.Read();
             Console.Read();
 
-            var writeRequestSiemensInputStruct = new WriteRequestSiemensInputStruct(0xaadd, "V 100",
+            var writeRequestSiemensInputStruct = new WriteRequestSiemensInputStruct(2, 0, 0xaadd, "V 100",
                 new object[] { (ushort)280, (ushort)12, (ushort)56, (ushort)72, (ushort)88, (ushort)525, (ushort)477, (ushort)151, (ushort)52 }, addressTranslator);
             var writeRequestSiemensOutputStruct =
                 (WriteRequestSiemensOutputStruct)

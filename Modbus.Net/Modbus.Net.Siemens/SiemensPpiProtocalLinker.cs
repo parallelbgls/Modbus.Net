@@ -16,29 +16,45 @@ namespace Modbus.Net.Siemens
             byte[] extBytes = BytesExtend(content);
             if (extBytes[6] == 0x7c)
             {
-                var inputStruct2 = new ComEstablishAssociationSiemensInputStruct();
+                var inputStruct2 = new ComConfirmMessageSiemensInputStruct(content[4], content[5]);
                 var receiveBytes2 =
                     await SendReceiveWithoutExtAndDecAsync(
-                        new ComEstablishAssociationSiemensProtocal().Format(inputStruct2));
+                        new ComConfirmMessageSiemensProtocal().Format(inputStruct2));
             }
             var receiveBytes = await SendReceiveWithoutExtAndDecAsync(extBytes);
-            while (receiveBytes.Length == 1 && receiveBytes[0] == 0xf9)
-            {
-                Thread.Sleep(500);
-                var inputStruct2 = new ComEstablishAssociationSiemensInputStruct();
-                receiveBytes =
-                    await SendReceiveWithoutExtAndDecAsync(
-                        new ComEstablishAssociationSiemensProtocal().Format(inputStruct2));
-            }
             if (content.Length > 6 && receiveBytes.Length == 1 && receiveBytes[0] == 0xe5)
             {
-                var inputStruct2 = new ComEstablishAssociationSiemensInputStruct();
+                var inputStruct2 = new ComConfirmMessageSiemensInputStruct(content[4], content[5]);
                 var receiveBytes2 =
                     await SendReceiveWithoutExtAndDecAsync(
-                        new ComEstablishAssociationSiemensProtocal().Format(inputStruct2));
+                        new ComConfirmMessageSiemensProtocal().Format(inputStruct2));
                 return BytesDecact(receiveBytes2);
             }
             return BytesDecact(receiveBytes);
+        }
+
+        public override async Task<byte[]> SendReceiveWithoutExtAndDecAsync(byte[] content)
+        {
+            var ans = await base.SendReceiveWithoutExtAndDecAsync(content);
+            while (ans.Length == 1 && ans[0] == 0xf9)
+            {
+                Thread.Sleep(500);
+                if (content.Length <= 6)
+                {
+                    var inputStruct2 = new ComConfirmMessageSiemensInputStruct(content[1], content[2]);
+                    ans =
+                        await SendReceiveWithoutExtAndDecAsync(
+                            new ComConfirmMessageSiemensProtocal().Format(inputStruct2));
+                }
+                else
+                {
+                    var inputStruct2 = new ComConfirmMessageSiemensInputStruct(content[4], content[5]);
+                    ans =
+                        await SendReceiveWithoutExtAndDecAsync(
+                            new ComConfirmMessageSiemensProtocal().Format(inputStruct2));
+                }
+            }
+            return ans;
         }
 
         public override bool? CheckRight(byte[] content)

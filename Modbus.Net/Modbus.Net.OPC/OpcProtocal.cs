@@ -8,7 +8,9 @@ namespace Modbus.Net.OPC
 {
     public abstract class OpcProtocal : BaseProtocal
     {
-        
+        protected OpcProtocal() : base(0, 0)
+        {
+        }
     }
 
     public class ReadRequestOpcInputStruct : InputStruct

@@ -11,11 +11,11 @@ namespace Modbus.Net.Modbus
     /// </summary>
     public class ModbusAsciiProtocal : ModbusProtocal
     {
-        public ModbusAsciiProtocal() : this(ConfigurationManager.COM)
+        public ModbusAsciiProtocal(byte belongAddress, byte masterAddress) : this(ConfigurationManager.COM, belongAddress, masterAddress)
         {
         }
 
-        public ModbusAsciiProtocal(string com)
+        public ModbusAsciiProtocal(string com, byte belongAddress, byte masterAddress) : base(belongAddress, masterAddress)
         {
             ProtocalLinker = new ModbusAsciiProtocalLinker(com);
         }

@@ -50,6 +50,10 @@ namespace Modbus.Net.Modbus
         {
             return await ProtocalLinker.ConnectAsync();
         }
+
+        protected ModbusProtocal(byte belongAddress, byte masterAddress) : base(belongAddress, masterAddress)
+        {
+        }
     }
 
     #region 读PLC数据

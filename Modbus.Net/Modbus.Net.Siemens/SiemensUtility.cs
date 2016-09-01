@@ -75,7 +75,7 @@ namespace Modbus.Net.Siemens
                 {
                     case SiemensType.Ppi:
                     {
-                        Wrapper = ConnectionString == null ? new SiemensPpiProtocal() : new SiemensPpiProtocal(ConnectionString);
+                        Wrapper = ConnectionString == null ? new SiemensPpiProtocal(BelongAddress, MasterAddress) : new SiemensPpiProtocal(ConnectionString, BelongAddress, MasterAddress);
                         break;
                     }
                     //case SiemensType.Mpi:
@@ -91,7 +91,8 @@ namespace Modbus.Net.Siemens
             }
         }
 
-        public SiemensUtility(SiemensType connectionType, string connectionString, SiemensMachineModel model)
+        public SiemensUtility(SiemensType connectionType, string connectionString, SiemensMachineModel model,
+            byte belongAddress, byte masterAddress) : base(belongAddress, masterAddress)
         {
             ConnectionString = connectionString;
             switch (model)
@@ -144,7 +145,7 @@ namespace Modbus.Net.Siemens
                 }
             }
             ConnectionType = connectionType;
-            AddressTranslator = new AddressTranslatorSiemens();            
+            AddressTranslator = new AddressTranslatorSiemens();
         }
 
         public override void SetConnectionType(int connectionType)
@@ -152,11 +153,11 @@ namespace Modbus.Net.Siemens
             ConnectionType = (SiemensType) connectionType;
         }
 
-        public override async Task<byte[]> GetDatasAsync(byte belongAddress, byte materAddress, string startAddress, int getByteCount)
+        public override async Task<byte[]> GetDatasAsync(string startAddress, int getByteCount)
         {
             try
             {
-                var readRequestSiemensInputStruct = new ReadRequestSiemensInputStruct(0xd3c7, SiemensTypeCode.Byte, startAddress, (ushort)getByteCount, AddressTranslator);
+                var readRequestSiemensInputStruct = new ReadRequestSiemensInputStruct(BelongAddress, MasterAddress, 0xd3c7, SiemensTypeCode.Byte, startAddress, (ushort)getByteCount, AddressTranslator);
                 var readRequestSiemensOutputStruct =
                     await
                         Wrapper.SendReceiveAsync(Wrapper[typeof (ReadRequestSiemensProtocal)],
@@ -169,11 +170,11 @@ namespace Modbus.Net.Siemens
             }
         }
 
-        public override async Task<bool> SetDatasAsync(byte belongAddress, byte materAddress, string startAddress, object[] setContents)
+        public override async Task<bool> SetDatasAsync(string startAddress, object[] setContents)
         {
             try
             {
-                var writeRequestSiemensInputStruct = new WriteRequestSiemensInputStruct(0xd3c8, startAddress, setContents, AddressTranslator);
+                var writeRequestSiemensInputStruct = new WriteRequestSiemensInputStruct(BelongAddress, MasterAddress, 0xd3c8, startAddress, setContents, AddressTranslator);
                 var writeRequestSiemensOutputStruct =
                     await
                         Wrapper.SendReceiveAsync(Wrapper[typeof (WriteRequestSiemensProtocal)],

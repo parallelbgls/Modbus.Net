@@ -31,13 +31,13 @@ namespace NA200H.UI.WPF
         {
             if (utility == null)
             {
-                utility = new ModbusUtility(ModbusType.Tcp, "192.168.3.12");
+                utility = new ModbusUtility(ModbusType.Tcp, "192.168.3.12", 2, 0);
                 utility.AddressTranslator = new AddressTranslatorNA200H();
-                //utility = new SiemensUtility(SiemensType.Tcp, "192.168.3.11", SiemensMachineModel.S7_300);
+                //utility = new SiemensUtility(SiemensType.Tcp, "192.168.3.11", SiemensMachineModel.S7_300, 2, 0);
                 //utility.AddressTranslator = new AddressTranslatorSiemens();
             }
-            object[] getNum = utility.GetDatas(0x02, 0x00, "NW 1", new KeyValuePair<Type, int>(typeof(ushort), 4));           
-            //object[] getNum = utility.GetDatas(0x02, 0x00, "V 1", new KeyValuePair<Type, int>(typeof(ushort), 4));
+            object[] getNum = utility.GetDatas("NW 1", new KeyValuePair<Type, int>(typeof(ushort), 4));           
+            //object[] getNum = utility.GetDatas("V 1", new KeyValuePair<Type, int>(typeof(ushort), 4));
             ushort[] getNumUshorts = BigEndianValueHelper.Instance.ObjectArrayToDestinationArray<ushort>(getNum);
             SetValue(getNumUshorts);
         }
@@ -52,7 +52,7 @@ namespace NA200H.UI.WPF
                     //new AddressUnit() {Id = "2", Area = "MW", Address = 2, CommunicationTag = "Add2", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
                     //new AddressUnit() {Id = "3", Area = "MW", Address = 3, CommunicationTag = "Add3", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
                     //new AddressUnit() {Id = "4", Area = "MW", Address = 4, CommunicationTag = "Ans",  DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
-                //});
+                //}, 2, 0);
                 //machine.AddressFormater = new AddressFormaterNA200H();
                 //machine.AddressTranslator = new AddressTranslatorNA200H();
                 //machine.AddressCombiner = new AddressCombinerContinus(machine.AddressTranslator);
@@ -63,7 +63,7 @@ namespace NA200H.UI.WPF
                     new AddressUnit() {Id = "2", Area = "V", Address = 2, CommunicationTag = "Add2", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
                     new AddressUnit() {Id = "3", Area = "V", Address = 4, CommunicationTag = "Add3", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
                     new AddressUnit() {Id = "4", Area = "V", Address = 6, CommunicationTag = "Ans",  DataType = typeof(ushort), Zoom = 1, DecimalPos = 0}
-                });
+                }, 2, 0);
                 machine.AddressCombiner = new AddressCombinerContinus(machine.AddressTranslator);
                 machine.AddressCombinerSet = new AddressCombinerContinus(machine.AddressTranslator);
             }
@@ -92,8 +92,8 @@ namespace NA200H.UI.WPF
             ushort.TryParse(Add1.Text, out add1);
             ushort.TryParse(Add2.Text, out add2);
             ushort.TryParse(Add3.Text, out add3);
-            //utility.SetDatas(0x02, 0x00, "NW 1", new object[] { add1, add2, add3 });
-            utility.SetDatas(0x02, 0x00, "V 1", new object[] { add1, add2, add3 });
+            //utility.SetDatas("NW 1", new object[] { add1, add2, add3 });
+            utility.SetDatas("V 1", new object[] { add1, add2, add3 });
             Thread.Sleep(100);
             GetUtilityEnter();
         }

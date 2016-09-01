@@ -13,6 +13,9 @@ namespace Modbus.Net
         protected BaseProtocal Wrapper;
         protected string ConnectionString { get; set; }
 
+        public byte BelongAddress { get; set; }
+        public byte MasterAddress { get; set; }
+
         /// <summary>
         /// 获取协议是否遵循小端格式
         /// </summary>
@@ -40,8 +43,10 @@ namespace Modbus.Net
         /// <summary>
         /// 构造器
         /// </summary>
-        protected BaseUtility()
+        protected BaseUtility(byte belongAddress, byte masterAddress)
         {
+            BelongAddress = belongAddress;
+            MasterAddress = masterAddress;
             AddressTranslator = new AddressTranslatorBase();
         }
 
@@ -54,25 +59,21 @@ namespace Modbus.Net
         /// <summary>
         /// 获取数据
         /// </summary>
-        /// <param name="belongAddress">从站地址</param>
-        /// <param name="masterAddress">主站地址</param>
         /// <param name="startAddress">开始地址</param>
         /// <param name="getByteCount">获取字节数个数</param>
         /// <returns>接收到的byte数据</returns>
-        public virtual byte[] GetDatas(byte belongAddress, byte masterAddress, string startAddress, int getByteCount)
+        public virtual byte[] GetDatas(string startAddress, int getByteCount)
         {
-            return AsyncHelper.RunSync(() => GetDatasAsync(belongAddress, masterAddress, startAddress, getByteCount));
+            return AsyncHelper.RunSync(() => GetDatasAsync(startAddress, getByteCount));
         }
 
         /// <summary>
         /// 获取数据
         /// </summary>
-        /// <param name="belongAddress">从站地址</param>
-        /// <param name="masterAddress">主站地址</param>
         /// <param name="startAddress">开始地址</param>
         /// <param name="getByteCount">获取字节数个数</param>
         /// <returns>接收到的byte数据</returns>
-        public abstract Task<byte[]> GetDatasAsync(byte belongAddress, byte masterAddress, string startAddress, int getByteCount);
+        public abstract Task<byte[]> GetDatasAsync(string startAddress, int getByteCount);
 
         /// <summary>
         /// 获取数据
@@ -82,10 +83,10 @@ namespace Modbus.Net
         /// <param name="startAddress">开始地址</param>
         /// <param name="getTypeAndCount">获取类型和个数</param>
         /// <returns>接收到的对应的类型和数据</returns>
-        public virtual object[] GetDatas(byte belongAddress, byte masterAddress, string startAddress,
+        public virtual object[] GetDatas(string startAddress,
             KeyValuePair<Type, int> getTypeAndCount)
         {
-            return AsyncHelper.RunSync(() => GetDatasAsync(belongAddress, masterAddress, startAddress, getTypeAndCount));
+            return AsyncHelper.RunSync(() => GetDatasAsync(startAddress, getTypeAndCount));
         }
 
         /// <summary>
@@ -96,14 +97,14 @@ namespace Modbus.Net
         /// <param name="startAddress">开始地址</param>
         /// <param name="getTypeAndCount">获取类型和个数</param>
         /// <returns>接收到的对应的类型和数据</returns>
-        public virtual async Task<object[]> GetDatasAsync(byte belongAddress, byte masterAddress, string startAddress,
+        public virtual async Task<object[]> GetDatasAsync(string startAddress,
             KeyValuePair<Type, int> getTypeAndCount)
         {
             try
             {
                 string typeName = getTypeAndCount.Key.FullName;
                 double bCount = BigEndianValueHelper.Instance.ByteLength[typeName];
-                var getReturnValue = await GetDatasAsync(belongAddress, masterAddress, startAddress,
+                var getReturnValue = await GetDatasAsync(startAddress,
                     (int)Math.Ceiling(bCount * getTypeAndCount.Value));
                 var getBytes = getReturnValue;
                 return GetLittleEndian
@@ -125,10 +126,10 @@ namespace Modbus.Net
         /// <param name="startAddress">开始地址</param>
         /// <param name="getByteCount">获取字节数个数</param>
         /// <returns>接收到的对应的类型和数据</returns>
-        public virtual T[] GetDatas<T>(byte belongAddress, byte masterAddress, string startAddress,
+        public virtual T[] GetDatas<T>(string startAddress,
             int getByteCount)
         {
-            return AsyncHelper.RunSync(() => GetDatasAsync<T>(belongAddress, masterAddress, startAddress, getByteCount));
+            return AsyncHelper.RunSync(() => GetDatasAsync<T>(startAddress, getByteCount));
         }
 
         /// <summary>
@@ -140,12 +141,12 @@ namespace Modbus.Net
         /// <param name="startAddress">开始地址</param>
         /// <param name="getByteCount">获取字节数个数</param>
         /// <returns>接收到的对应的类型和数据</returns>
-        public virtual async Task<T[]> GetDatasAsync<T>(byte belongAddress, byte masterAddress, string startAddress,
+        public virtual async Task<T[]> GetDatasAsync<T>(string startAddress,
             int getByteCount)
         {
             try
             {
-                var getBytes = await GetDatasAsync(belongAddress, masterAddress, startAddress,
+                var getBytes = await GetDatasAsync(startAddress,
                     new KeyValuePair<Type, int>(typeof(T), getByteCount));
                 return BigEndianValueHelper.Instance.ObjectArrayToDestinationArray<T>(getBytes);
             }
@@ -158,26 +159,22 @@ namespace Modbus.Net
         /// <summary>
         /// 获取数据
         /// </summary>
-        /// <param name="belongAddress">从站地址</param>
-        /// <param name="masterAddress">主站地址</param>
         /// <param name="startAddress">开始地址</param>
         /// <param name="getTypeAndCountList">获取类型和个数的队列</param>
         /// <returns>获取数据的对象数组，请强制转换成相应类型</returns>
-        public virtual object[] GetDatas(byte belongAddress, byte masterAddress, string startAddress,
+        public virtual object[] GetDatas(string startAddress,
             IEnumerable<KeyValuePair<Type, int>> getTypeAndCountList)
         {
             return
-                AsyncHelper.RunSync(() => GetDatasAsync(belongAddress, masterAddress, startAddress, getTypeAndCountList));
+                AsyncHelper.RunSync(() => GetDatasAsync(startAddress, getTypeAndCountList));
         }
 
         /// <summary>
         /// 获取数据
         /// </summary>
-        /// <param name="belongAddress">从站地址</param>
-        /// <param name="masterAddress">主站地址</param>
         /// <param name="startAddress">开始地址</param>
         /// <param name="getTypeAndCountList">获取类型和个数的队列</param>
-        public virtual async Task<object[]> GetDatasAsync(byte belongAddress, byte masterAddress, string startAddress,
+        public virtual async Task<object[]> GetDatasAsync(string startAddress,
             IEnumerable<KeyValuePair<Type, int>> getTypeAndCountList)
         {
             try
@@ -189,7 +186,7 @@ namespace Modbus.Net
                     let typeName = getTypeAndCount.Key.FullName
                     let bCount = BigEndianValueHelper.Instance.ByteLength[typeName]
                     select (int) Math.Ceiling(bCount*getTypeAndCount.Value)).Sum();
-                var getReturnValue = await GetDatasAsync(belongAddress, masterAddress, startAddress, bAllCount);
+                var getReturnValue = await GetDatasAsync(startAddress, bAllCount);
                 byte[] getBytes = getReturnValue;
                 return GetLittleEndian
                     ? ValueHelper.Instance.ByteArrayToObjectArray(getBytes, translateTypeAndCount)
@@ -204,41 +201,35 @@ namespace Modbus.Net
         /// <summary>
         /// 设置数据
         /// </summary>
-        /// <param name="belongAddress">从站地址</param>
-        /// <param name="masterAddress">主站地址</param>
         /// <param name="startAddress">开始地址</param>
         /// <param name="setContents">设置数据</param>
         /// <returns>是否设置成功</returns>
-        public virtual bool SetDatas(byte belongAddress, byte masterAddress, string startAddress, object[] setContents)
+        public virtual bool SetDatas(string startAddress, object[] setContents)
         {
-            return AsyncHelper.RunSync(() => SetDatasAsync(belongAddress, masterAddress, startAddress, setContents));
+            return AsyncHelper.RunSync(() => SetDatasAsync(startAddress, setContents));
         }
 
         /// <summary>
         /// 设置数据
         /// </summary>
-        /// <param name="belongAddress">从站地址</param>
-        /// <param name="masterAddress">主站地址</param>
         /// <param name="startAddress">开始地址</param>
         /// <param name="setContents">设置数据</param>
         /// <returns>是否设置成功</returns>
-        public abstract Task<bool> SetDatasAsync(byte belongAddress, byte masterAddress, string startAddress, object[] setContents);
+        public abstract Task<bool> SetDatasAsync(string startAddress, object[] setContents);
         
         /*
         /// <summary>
         /// 获取PLC时间
         /// </summary>
-        /// <param name="belongAddress">从站地址</param>
         /// <returns>PLC时间</returns>
-        public abstract DateTime GetTime(byte belongAddress);
+        public abstract DateTime GetTime();
 
         /// <summary>
         /// 设置PLC时间
         /// </summary>
-        /// <param name="belongAddress">从站地址</param>
         /// <param name="setTime">设置PLC时间</param>
         /// <returns>设置是否成功</returns>
-        public abstract bool SetTime(byte belongAddress, DateTime setTime);
+        public abstract bool SetTime(DateTime setTime);
         */
 
         /// <summary>

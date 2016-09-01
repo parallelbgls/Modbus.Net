@@ -5,11 +5,11 @@
     /// </summary>
     public class ModbusRtuProtocal : ModbusProtocal
     {
-        public ModbusRtuProtocal() : this(ConfigurationManager.COM)
+        public ModbusRtuProtocal(byte belongAddress, byte masterAddress) : this(ConfigurationManager.COM, belongAddress, masterAddress)
         {
         }
 
-        public ModbusRtuProtocal(string com)
+        public ModbusRtuProtocal(string com, byte belongAddress, byte masterAddress) : base(belongAddress, masterAddress)
         {
             ProtocalLinker = new ModbusRtuProtocalLinker(com);
         }

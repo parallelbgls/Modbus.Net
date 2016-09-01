@@ -10,6 +10,9 @@ namespace Modbus.Net
     /// </summary>
     public abstract class BaseProtocal
     {
+        public byte BelongAddress { get; set; }
+        public byte MasterAddress { get; set; }
+
         /// <summary>
         /// 协议的连接器
         /// </summary>
@@ -18,9 +21,11 @@ namespace Modbus.Net
         /// <summary>
         /// 构造器
         /// </summary>
-        protected BaseProtocal()
+        protected BaseProtocal(byte belongAddress, byte masterAddress)
         {
             Protocals = new Dictionary<string, ProtocalUnit>();
+            BelongAddress = belongAddress;
+            MasterAddress = masterAddress;
         }
 
         /// <summary>
