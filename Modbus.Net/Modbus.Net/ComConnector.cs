@@ -63,7 +63,15 @@ namespace Modbus.Net
 
         public override bool IsConnected
         {
-            get { return SerialPort1 != null && SerialPort1.IsOpen; }
+            get
+            {
+                if (_serialPort1 != null && !SerialPort1.IsOpen)
+                {
+                    _serialPort1.Dispose();
+                    _serialPort1 = null;
+                }
+                return _serialPort1 != null && _serialPort1.IsOpen;
+            }
         }
 
         public override bool Connect()
