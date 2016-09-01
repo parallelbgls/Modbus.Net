@@ -24,6 +24,15 @@ namespace Modbus.Net.Siemens
             return AsyncHelper.RunSync(() => SendReceiveAsync(isLittleEndian, content));
         }
 
+        public override async Task<byte[]> SendReceiveAsync(bool isLittleEndian, params object[] content)
+        {
+            if (ProtocalLinker == null || !ProtocalLinker.IsConnected)
+            {
+                await ConnectAsync();
+            }
+            return await base.SendReceiveAsync(isLittleEndian, content);
+        }
+
         private async Task<OutputStruct> ForceSendReceiveAsync(ProtocalUnit unit, InputStruct content)
         {
             return await base.SendReceiveAsync(unit, content);
