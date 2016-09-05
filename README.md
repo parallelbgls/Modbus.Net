@@ -1,7 +1,11 @@
 Modbus.Net
 ===================
 
+(Document Version 1.1.0)
+
 An hardware communication Library written by C#.
+
+Two Cautions will be removed in version 1.2.0
 
 Caution: I really want to implement the COM communication system, but nowaday Usb to Serial cable is really hard to be driven in Win8.1 and Win10. So finally, I'm really sorry to tell that the maintainence of ComConnector has been stopped. Although Modbus RTU will remain in this project, maintanence will also be stopped. And there are no future support for Modbus ASCII, Siemens PPI and Siemens MPI.
 
@@ -490,4 +494,15 @@ public class AddressTranslatorNA200H : AddressTranslator
     public override KeyValuePair<int, int> AddressTranslate(string address, bool isRead)
 }
 ```
+##RoadMap
 
+###Version 1.2.0
+
+Modbus ASCII Support (Not test)
+Siemens PPI Support (Complete)
+Siemens MPI Support (Not Complete)
+OPC Write Data (Not test)
+ComConnector (Complete)
+Get and set bit value (Complete)
+New Protocal Pipeline System (Not Complete)
+Unit test (Not Complete)
