@@ -264,7 +264,7 @@ namespace Modbus.Net
                     BaseUtility.Disconnect();
                 }
                 //返回数据
-                if (ans.Count == 0) ans = null;
+                if (ans.All(p => p.Value.PlcValue == null)) ans = null;
                 ErrorCount = 0;
                 return ans;
             }
