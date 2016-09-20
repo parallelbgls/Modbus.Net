@@ -512,14 +512,14 @@ namespace Modbus.Net
         /// <returns></returns>
         private async Task MaintainTasks2Async()
         {
-            var tasks = new List<Task>();
-            HashSet<BaseMachine> saveMachines = new HashSet<BaseMachine>();
-            lock (_unlinkedMachines)
-            {
-                saveMachines.UnionWith(_unlinkedMachines);
-            }
             try
             {
+                var tasks = new List<Task>();
+                HashSet<BaseMachine> saveMachines = new HashSet<BaseMachine>();
+                lock (_unlinkedMachines)
+                {
+                    saveMachines.UnionWith(_unlinkedMachines);
+                }
                 foreach (var machine in saveMachines)
                 {
                     CancellationTokenSource cts = new CancellationTokenSource();
@@ -527,7 +527,7 @@ namespace Modbus.Net
                     var task = _tasks.StartNew(() => RunTask(machine).WithCancellation(cts.Token));
                     tasks.Add(task);
                 }
-                await Task.WhenAll();
+                await Task.WhenAll(tasks);
             }
             catch
             {
