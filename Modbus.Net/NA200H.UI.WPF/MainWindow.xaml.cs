@@ -46,26 +46,24 @@ namespace NA200H.UI.WPF
         {
             if (machine == null)
             { 
-                machine = new ModbusMachine(ModbusType.Ascii, "COM3", new List<AddressUnit>()
-                {
-                    new AddressUnit() {Id = "1", Area = "4X", Address = 1, CommunicationTag = "Add1", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
-                    new AddressUnit() {Id = "2", Area = "4X", Address = 2, CommunicationTag = "Add2", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
-                    new AddressUnit() {Id = "3", Area = "4X", Address = 3, CommunicationTag = "Add3", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
-                    new AddressUnit() {Id = "4", Area = "4X", Address = 4, CommunicationTag = "Ans",  DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
-                }, 2, 0);
-                //machine.AddressFormater = new AddressFormaterNA200H();
-                //machine.AddressTranslator = new AddressTranslatorNA200H();
-                machine.AddressCombiner = new AddressCombinerContinus(machine.AddressTranslator);
-                machine.AddressCombinerSet = new AddressCombinerContinus(machine.AddressTranslator);
-                //machine = new SiemensMachine(SiemensType.Tcp, "192.168.3.11", SiemensMachineModel.S7_300, new List<AddressUnit>()
+                //machine = new ModbusMachine(ModbusType.Rtu, "COM3", new List<AddressUnit>()
                 //{
-                    //new AddressUnit() {Id = "1", Area = "V", Address = 0, CommunicationTag = "Add1", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
-                    //new AddressUnit() {Id = "2", Area = "V", Address = 2, CommunicationTag = "Add2", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
-                    //new AddressUnit() {Id = "3", Area = "V", Address = 4, CommunicationTag = "Add3", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
-                    //new AddressUnit() {Id = "4", Area = "V", Address = 6, CommunicationTag = "Ans",  DataType = typeof(ushort), Zoom = 1, DecimalPos = 0}
+                   //new AddressUnit() {Id = "1", Area = "4X", Address = 1, CommunicationTag = "Add1", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
+                    //new AddressUnit() {Id = "2", Area = "4X", Address = 2, CommunicationTag = "Add2", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
+                    //new AddressUnit() {Id = "3", Area = "4X", Address = 3, CommunicationTag = "Add3", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
+                    //new AddressUnit() {Id = "4", Area = "4X", Address = 4, CommunicationTag = "Ans",  DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
                 //}, 2, 0);
                 //machine.AddressCombiner = new AddressCombinerContinus(machine.AddressTranslator);
                 //machine.AddressCombinerSet = new AddressCombinerContinus(machine.AddressTranslator);
+                machine = new SiemensMachine(SiemensType.Tcp, "192.168.3.11", SiemensMachineModel.S7_300, new List<AddressUnit>()
+                {
+                    new AddressUnit() {Id = "1", Area = "V", Address = 0, CommunicationTag = "Add1", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
+                    new AddressUnit() {Id = "2", Area = "V", Address = 2, CommunicationTag = "Add2", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
+                    new AddressUnit() {Id = "3", Area = "V", Address = 4, CommunicationTag = "Add3", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
+                    new AddressUnit() {Id = "4", Area = "V", Address = 6, CommunicationTag = "Ans",  DataType = typeof(ushort), Zoom = 1, DecimalPos = 0}
+                }, 2, 0);
+                machine.AddressCombiner = new AddressCombinerContinus(machine.AddressTranslator);
+                machine.AddressCombinerSet = new AddressCombinerContinus(machine.AddressTranslator);
             }
             var result = machine.GetDatas(MachineGetDataType.CommunicationTag);
             var resultFormat = BaseMachine.MapGetValuesToSetValues(result);

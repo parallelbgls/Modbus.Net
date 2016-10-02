@@ -34,7 +34,7 @@ namespace Siemens_S7_200.UI.WPF.TaskTest
                 new AddressUnit() {Id = "1", Area = "V", Address = 3, CommunicationTag = "D2", DataType = typeof (float), Zoom = 1}
             };
             //初始化任务管理器
-            TaskManager task = new TaskManager(300, true);
+            TaskManager task = new TaskManager(10, 300, true);
             //向任务管理器中添加设备
             task.AddMachine(new SiemensMachine(SiemensType.Tcp, "192.168.3.11",SiemensMachineModel.S7_300, addressUnits,
             true, 2, 0));
