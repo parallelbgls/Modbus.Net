@@ -892,6 +892,7 @@ namespace Modbus.Net
         {
             Array.Reverse(data, pos, 2);
             short t = BitConverter.ToInt16(data, pos);
+            Array.Reverse(data, pos, 2);
             pos += 2;
             return t;
         }
@@ -900,6 +901,7 @@ namespace Modbus.Net
         {
             Array.Reverse(data, pos, 4);
             int t = BitConverter.ToInt32(data, pos);
+            Array.Reverse(data, pos, 4);
             pos += 4;
             return t;
         }
@@ -908,6 +910,7 @@ namespace Modbus.Net
         {
             Array.Reverse(data, pos, 8);
             long t = BitConverter.ToInt64(data, pos);
+            Array.Reverse(data, pos, 8);
             pos += 8;
             return t;
         }
@@ -916,6 +919,7 @@ namespace Modbus.Net
         {
             Array.Reverse(data, pos, 2);
             ushort t = BitConverter.ToUInt16(data, pos);
+            Array.Reverse(data, pos, 2);
             pos += 2;
             return t;
         }
@@ -924,6 +928,7 @@ namespace Modbus.Net
         {
             Array.Reverse(data, pos, 4);
             uint t = BitConverter.ToUInt32(data, pos);
+            Array.Reverse(data, pos, 4);
             pos += 4;
             return t;
         }
@@ -932,6 +937,7 @@ namespace Modbus.Net
         {
             Array.Reverse(data, pos, 8);
             ulong t = BitConverter.ToUInt64(data, pos);
+            Array.Reverse(data, pos, 8);
             pos += 8;
             return t;
         }
@@ -940,6 +946,7 @@ namespace Modbus.Net
         {
             Array.Reverse(data, pos, 4);
             float t = BitConverter.ToSingle(data, pos);
+            Array.Reverse(data, pos, 4);
             pos += 4;
             return t;
         }
@@ -948,6 +955,7 @@ namespace Modbus.Net
         {
             Array.Reverse(data, pos, 8);
             double t = BitConverter.ToDouble(data, pos);
+            Array.Reverse(data, pos, 8);
             pos += 8;
             return t;
         }
