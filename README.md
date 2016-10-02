@@ -498,11 +498,13 @@ public class AddressTranslatorNA200H : AddressTranslator
 
 ###Version 1.2.0
 
-Modbus ASCII Support (Not test)
+Modbus ASCII Support (Complete)
 Siemens PPI Support (Complete)
-Siemens MPI Support (Not Complete)
 OPC Write Data (Not test)
 ComConnector (Complete)
 Get and set bit value (Complete)
-New Protocal Pipeline System (Not Complete)
 Unit test (Not Complete)
+
+###Version 1.3.0
+Siemens MPI Support (Not Complete)
+New Protocal Pipeline System (Not Complete)
