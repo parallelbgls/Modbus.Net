@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace Modbus.Net.Modbus
@@ -60,7 +61,7 @@ namespace Modbus.Net.Modbus
             newContent.AddRange(Encoding.ASCII.GetBytes(":"));
             foreach (var number in content)
             {
-                newContent.AddRange(Encoding.ASCII.GetBytes(number.ToString()));
+                newContent.AddRange(Encoding.ASCII.GetBytes(number.ToString("X2")));
             }
             newContent.AddRange(Encoding.ASCII.GetBytes(Crc16.GetInstance().GetLRC(content)));
             newContent.Add(0x0d);
@@ -76,7 +77,7 @@ namespace Modbus.Net.Modbus
             ans = ans.Substring(1, index - 1);
             for (int i = 0; i < ans.Length; i += 2)
             {
-                var number = byte.Parse(ans.Substring(i, 2));
+                var number = byte.Parse(ans.Substring(i, 2), NumberStyles.HexNumber);
                 newContent.Add(number);
             }
             newContent.RemoveAt(newContent.Count-1);

@@ -95,8 +95,8 @@ namespace Modbus.Net
         public bool LrcEfficacy(string message)
         {
             var index = message.IndexOf(Environment.NewLine, StringComparison.InvariantCulture);
-            var writeUncheck = message.Substring(1, index - 3);
-            var checkString = message.Substring(index - 3, 2);
+            var writeUncheck = message.Substring(1, index - 2);
+            var checkString = message.Substring(index - 2, 2);
             char[] hexArray = new char[writeUncheck.Length];
             hexArray = writeUncheck.ToCharArray();
             int decNum = 0, decNumMSB = 0, decNumLSB = 0;
@@ -176,14 +176,13 @@ namespace Modbus.Net
 
         public string GetLRC(byte[] code)
         {
-            int sum = 0;
+            byte sum = 0;
             foreach (byte b in code)
             {
                 sum += b;
             }
-            sum = sum % 255;//取模FF(255)
-            sum = ~sum + 1;//取反+1
-            string lrc = Convert.ToString(sum, 16);
+            sum = (byte)(~sum + 1);//取反+1
+            string lrc = sum.ToString("X2");
             return lrc;
         }
     }

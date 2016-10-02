@@ -81,7 +81,7 @@ namespace Modbus.Net
                 SerialPort1.Open();
                 return true;
             }
-            catch
+            catch (Exception e)
             {
                 return false;
             }
