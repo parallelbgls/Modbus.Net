@@ -12,9 +12,13 @@ namespace Modbus.Net.OPC
 
         protected Func<BaseMachine, AddressUnit, string[]> TagGeter { get; set; }
 
-        public AddressFormaterOpc(Func<BaseMachine, AddressUnit, string[]> tagGeter)
+        protected char Seperator { get; set; }
+
+        public AddressFormaterOpc(Func<BaseMachine, AddressUnit, string[]> tagGeter, BaseMachine machine, char seperator = '/')
         {
+            Machine = machine;
             TagGeter = tagGeter;
+            Seperator = seperator;
         }
 
         public override string FormatAddress(string area, int address)
@@ -25,7 +29,7 @@ namespace Modbus.Net.OPC
             var ans = "";
             for (int i = 0; i < strings.Length; i++)
             {
-                ans += strings[i].Trim().Replace(" ", "") + ".";
+                ans += strings[i].Trim().Replace(" ", "") + Seperator;
             }
             ans = ans.Substring(0, ans.Length - 1);
             return ans;

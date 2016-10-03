@@ -14,7 +14,7 @@ namespace Modbus.Net.OPC
         public OpcDaUtility(string connectionString) : base(0,0)
         {
             ConnectionString = connectionString;
-            AddressTranslator = null;
+            AddressTranslator = new AddressTranslatorOpc();
             Wrapper = new OpcDaProtocal(ConnectionString);
         }
 
@@ -48,7 +48,7 @@ namespace Modbus.Net.OPC
                          Wrapper.SendReceiveAsync(Wrapper[typeof(WriteRequestOpcProtocal)], writeRequestOpcInputStruct) as WriteRequestOpcOutputStruct;
                 return writeRequestOpcOutputStruct?.WriteResult == true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return false;
             }

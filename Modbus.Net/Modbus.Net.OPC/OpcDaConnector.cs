@@ -131,7 +131,7 @@ namespace Modbus.Net.OPC
                         if (message[i] == 0x00 && message[i + 1] == 0xff && message[i + 2] == 0xff &&
                             message[i + 3] == 0x00)
                         {
-                            index = i;
+                            index2 = i;
                             break;
                         }
                     }

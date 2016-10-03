@@ -70,13 +70,14 @@ namespace Modbus.Net.OPC
 
     }
 
-    public class WriteRequestOpcProtocal : ProtocalUnit
+    public class WriteRequestOpcProtocal : SpecialProtocalUnit
     {
         public override byte[] Format(InputStruct message)
         {
             var r_message = (WriteRequestOpcInputStruct)message;
             byte[] tag = Encoding.UTF8.GetBytes(r_message.Tag);
-            return Format((byte)0x00, tag, (int)0x00ffff00, r_message.SetValue.GetType().FullName, (int)0x00ffff00, r_message.SetValue);
+            byte[] fullName = Encoding.UTF8.GetBytes(r_message.SetValue.GetType().FullName);
+            return Format((byte)0x01, tag, (int)0x00ffff00, fullName, (int)0x00ffff00, r_message.SetValue);
         }
 
         public override OutputStruct Unformat(byte[] messageBytes, ref int pos)

@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AddressFormaterOpc.cs" />
+    <Compile Include="AddressTranslatorOpc.cs" />
     <Compile Include="DaClientExtend.cs" />
     <Compile Include="FBox\FBoxOpcDaManchine.cs" />
     <Compile Include="OpcDaConnector.cs" />

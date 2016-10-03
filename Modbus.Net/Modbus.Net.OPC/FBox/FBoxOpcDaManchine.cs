@@ -19,13 +19,12 @@ namespace Modbus.Net.OPC.FBox
             LinkerName = linkerName;
             AddressFormater =
                 new AddressFormaterOpc(
-                    ((machine, unit) =>
+                    (machine, unit) =>
                         new string[]
                         {
                             "他人分享", ((FBoxOpcDaMachine) machine).LinkerName, ((FBoxOpcDaMachine) machine).LocalSequence,
                             unit.Name
-                        }));
-            ((AddressFormaterOpc)AddressFormater).Machine = this;
+                        }, this, '.');
         }
 
         public FBoxOpcDaMachine(string localSequence, string linkerName,
