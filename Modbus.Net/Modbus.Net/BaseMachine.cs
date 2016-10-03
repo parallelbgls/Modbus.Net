@@ -423,20 +423,10 @@ namespace Modbus.Net
                         }
                     }
                     //写入数据
-                    if (AddressCombinerSet is AddressCombinerSingle)
-                    {
-                        await
-                            BaseUtility.SetDatasAsync(addressStart,
-                                valueHelper.ByteArrayToObjectArray(datas,
-                                    new KeyValuePair<Type, int>(communicateAddress.DataType, 1)));
-                    }
-                    else
-                    {
-                        await
-                            BaseUtility.SetDatasAsync(addressStart,
-                                valueHelper.ByteArrayToObjectArray(datas,
-                                    new KeyValuePair<Type, int>(typeof (byte), datas.Length)));
-                    }
+                    await
+                        BaseUtility.SetDatasAsync(addressStart,
+                            valueHelper.ByteArrayToObjectArray(datas,
+                                new KeyValuePair<Type, int>(communicateAddress.DataType, communicateAddress.GetCount)));
                 }
                 //如果不保持连接，断开连接
                 if (!KeepConnect)
