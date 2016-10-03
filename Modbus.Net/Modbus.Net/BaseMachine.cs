@@ -423,7 +423,7 @@ namespace Modbus.Net
                         }
                     }
                     //写入数据
-                    if (AddressCombiner is AddressCombinerSingle)
+                    if (AddressCombinerSet is AddressCombinerSingle)
                     {
                         await
                             BaseUtility.SetDatasAsync(addressStart,
