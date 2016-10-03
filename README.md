@@ -500,7 +500,7 @@ public class AddressTranslatorNA200H : AddressTranslator
 
 Modbus ASCII Support (Complete)
 Siemens PPI Support (Complete)
-OPC Write Data (Not test)
+OPC Write Data (Complete)
 ComConnector (Complete)
 Get and set bit value (Complete)
 Unit test (Not Complete)
