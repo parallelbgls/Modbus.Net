@@ -558,7 +558,7 @@ namespace Modbus.Net
         /// <summary>
         /// 放缩比例
         /// </summary>
-        public double Zoom { get; set; }
+        public double Zoom { get; set; } = 1;
         /// <summary>
         /// 小数位数
         /// </summary>
