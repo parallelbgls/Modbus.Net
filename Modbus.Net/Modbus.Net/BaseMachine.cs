@@ -468,18 +468,6 @@ namespace Modbus.Net
         {
             return BaseUtility.Disconnect();
         }
-
-        /// <summary>
-        /// 将获取的数据转换成可以向设备写入的数据格式
-        /// </summary>
-        /// <param name="getValues">获取的数据</param>
-        /// <returns>写入的数据</returns>
-        public static Dictionary<string, double> MapGetValuesToSetValues(Dictionary<string, ReturnUnit> getValues)
-        {
-            if (getValues == null) return null;
-            return (from getValue in getValues where getValue.Value.PlcValue != null
-                select new KeyValuePair<string, double>(getValue.Key, getValue.Value.PlcValue.Value)).ToDictionary(p=>p.Key,p=>p.Value);
-        } 
     }
 
     public class BaseMachineEqualityComparer : IEqualityComparer<BaseMachine>

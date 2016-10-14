@@ -65,8 +65,7 @@ namespace NA200H.UI.WPF
                 machine.AddressCombiner = new AddressCombinerContinus(machine.AddressTranslator);
                 machine.AddressCombinerSet = new AddressCombinerContinus(machine.AddressTranslator);
             }
-            var result = machine.GetDatas(MachineGetDataType.CommunicationTag);
-            var resultFormat = BaseMachine.MapGetValuesToSetValues(result);
+            var resultFormat = machine.GetDatas(MachineGetDataType.CommunicationTag).MapGetValuesToSetValues();
             SetValue(new ushort[4] {(ushort)resultFormat["Add1"], (ushort)resultFormat["Add2"], (ushort)resultFormat["Add3"], (ushort)resultFormat["Ans"]});           
         }
 

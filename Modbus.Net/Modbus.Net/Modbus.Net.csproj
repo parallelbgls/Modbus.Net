@@ -54,6 +54,7 @@
     <Compile Include="AddressFormater.cs" />
     <Compile Include="AddressTranslator.cs" />
     <Compile Include="AsyncHelper.cs" />
+    <Compile Include="BaseMachineExtend.cs" />
     <Compile Include="BaseProtocal.cs" />
     <Compile Include="BaseUtility.cs" />
     <Compile Include="BaseMachine.cs" />
