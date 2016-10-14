@@ -1,17 +1,9 @@
 Modbus.Net
 ===================
 
-(Document Version 1.1.0)
+(Document Version 1.2.0)
 
 An hardware communication Library written by C#.
-
-Two Cautions will be removed in version 1.2.0
-
-Caution: I really want to implement the COM communication system, but nowaday Usb to Serial cable is really hard to be driven in Win8.1 and Win10. So finally, I'm really sorry to tell that the maintainence of ComConnector has been stopped. Although Modbus RTU will remain in this project, maintanence will also be stopped. And there are no future support for Modbus ASCII, Siemens PPI and Siemens MPI.
-
-Caution2: In the current version, you can't get bit or set bit in this library. Please get a byte, change the bit value in the byte, and set to PLC. I will fix this bug in future.
-
-Reference: <b>"h-opc"</b> is linked by [https://github.com/hylasoft-usa/h-opc](https://github.com/hylasoft-usa/h-opc)
 
 Table of Content:
 * [Features](#features)
@@ -87,23 +79,24 @@ The fastest way you can write is to use TaskManager. TaskTest Project is a good 
 ```C#
 List<AddressUnit> addressUnits = new List<AddressUnit>
 {
-new AddressUnit() {Id = 0, Area = "V", Address = 0, CommunicationTag = "D1", DataType = typeof (ushort), Zoom = 1},
-new AddressUnit() {Id = 1, Area = "V", Address = 2, CommunicationTag = "D2", DataType = typeof (float), Zoom = 1}
+    new AddressUnit() {Id = "0", Area = "V", Address = 1, CommunicationTag = "D1", DataType = typeof (ushort), Zoom = 1},
+    new AddressUnit() {Id = "1", Area = "V", Address = 3, CommunicationTag = "D2", DataType = typeof (float), Zoom = 1}
 };
-TaskManager task = new TaskManager(300, true);
-task.AddMachine(new SiemensMachine(SiemensType.Tcp, "192.168.3.191",SiemensMachineModel.S7_200, addressUnits, true));
+TaskManager task = new TaskManager(10, 300, true);
+task.AddMachine(new SiemensMachine(SiemensType.Tcp, "192.168.3.11",SiemensMachineModel.S7_300, addressUnits,
+    true, 2, 0));
 task.ReturnValues += (returnValues) =>
 {
-value = new List<string>();
-if (returnValues.Value != null)
-{
-value = from val in returnValues.Value select val.Key + val.Value;
-siemensItems.Dispatcher.Invoke(() => siemensItems.ItemsSource = value);
-}
-else
-{
-Console.WriteLine(String.Format("ip {0} not return value", returnValues.Key));
-}
+    value = new List<string>();
+    if (returnValues.ReturnValues != null)
+    {
+        value = from val in returnValues.ReturnValues select val.Key + " " + val.Value.PlcValue;
+        siemensItems.Dispatcher.Invoke(() => siemensItems.ItemsSource = value);
+    }
+    else
+    {
+        Console.WriteLine($"ip {returnValues.MachineId} not return value");
+    }
 };
 task.TaskStart();
 ```
@@ -112,7 +105,7 @@ task.TaskStart();
 Here are the details to use the TaskManager.
 
 1. Initialize the task manager.
-Three arguments are: <s>the max tasks you can run in a same time;</s> How long did the next send message call happens(milliseconds); and you should keep the connection when a single message called complete.
+Three arguments are: the max tasks you can run in a same time; How long did the next send message call happens(milliseconds); and you should keep the connection when a single message called complete.
 
 2. Add the addresses that you want to communicate to PLC. Area are defined in AddressTranslator in each type of communiction.
 Basically you can write only Id, Area, Address, CommunicationTag, DataType and Zoom, and it should work. And there are other fields that you can use.
@@ -139,10 +132,10 @@ BaseUtility is a low level api, in this level you can get or set data only by by
 
 ```C#
 string ip = "192.168.0.10";
-BaseUtility utility = new ModbusUtility(ModbusType.Tcp, ip);
+BaseUtility utility = new ModbusUtility(ModbusType.Tcp, ip, 0x02, 0x00);
 utility.AddressTranslator = new AddressTranslatorNA200H();
-object[] getNum = utility.GetDatas(0x02, 0x00, "NW 1", new KeyValuePair<Type, int>(typeof(ushort), 4));
-utility.SetDatas(0x02, 0x00, "NW 1", new object[] { (ushort)1, (ushort)2, (ushort)3 });
+object[] getNum = utility.GetDatas("NW 1", new KeyValuePair<Type, int>(typeof(ushort), 4));
+utility.SetDatas("NW 1", new object[] { (ushort)1, (ushort)2, (ushort)3 });
 ```
 
 BaseUtility is an abstract class. You can check all apis in BaseUtility.cs in Modbus.Net project.
@@ -151,7 +144,7 @@ To use BaseUtility, follow these steps.
 
 1.New a BaseUtility instance, but remember BaseUtility is an abstract class, you should new class inherit from it.
 ```C#
-BaseUtility utility = new ModbusUtility(ModbusType.Tcp, ip);
+BaseUtility utility = new ModbusUtility(ModbusType.Tcp, ip, 0x02, 0x00);
 ```
 
 2.If you want to change the AddressTranslator, you can write your own AddressTranslator and change it using
@@ -166,15 +159,15 @@ Return value key is Area Code and value is Address.
 
 3.Use GetData and SetData Api in BaseUtility, like
 ```C#
-object[] getNum = utility.GetDatas(0x02, 0x00, "NW 1", new KeyValuePair<Type, int>(typeof(ushort), 4));
+object[] getNum = utility.GetDatas("NW 1", new KeyValuePair<Type, int>(typeof(ushort), 4));
 
-utility.SetDatas(0x02, 0x00, "NW 1", new object[] { (ushort)1, (ushort)2, (ushort)3 });
+utility.SetDatas("NW 1", new object[] { (ushort)1, (ushort)2, (ushort)3 });
 ```
 Remember force set type of numbers because GetData and SetData Apis are type sensitive.
 
 You can also use async functions like
 ```C#
-object[] getNum = await utility.GetDatasAsync(0x02, 0x00, "NW 1", new KeyValuePair<Type, int>(typeof(ushort), 4));
+object[] getNum = await utility.GetDatasAsync("NW 1", new KeyValuePair<Type, int>(typeof(ushort), 4));
 ```
 
 ###BaseMachine
@@ -183,16 +176,18 @@ To understand this class, you have to see the AddressUnit first.
 ```C#
 public class AddressUnit
 {
-public int Id { get; set; }
-public string Area { get; set; }
-public int Address { get; set; }
-public Type DataType { get; set; }
-public double Zoom { get; set; }
-public int DecimalPos { get; set; }
-public string CommunicationTag { get; set; }
-public string Name { get; set; }
-public string Unit { get; set; }
-public UnitExtend UnitExtend { get; set; }
+    public string Id { get; set; }
+    public string Area { get; set; }
+    public int Address { get; set; }
+    public int SubAddress { get; set; } = 0;
+    public Type DataType { get; set; }
+    public double Zoom { get; set; }
+    public int DecimalPos { get; set; }
+    public string CommunicationTag { get; set; }
+    public string Name { get; set; }
+    public string Unit { get; set; }
+    public bool CanWrite { get; set; } = true;
+    public UnitExtend UnitExtend { get; set; }
 }
 ```
 For some reasons, AddressUnit has two keys: Id and CommunicationTag, one is integer and the other is string.
@@ -211,17 +206,19 @@ Then using BaseMachine like this.
 ```C#
 BaseMachine machine = new ModbusMachine(ModbusType.Tcp, "192.168.3.12", new List<AddressUnit>()
 {
-new AddressUnit() {Id = 1, Area = "NW", Address = 1, CommunicationTag = "Add1", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
-new AddressUnit() {Id = 2, Area = "NW", Address = 3, CommunicationTag = "Add2", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
-new AddressUnit() {Id = 3, Area = "NW", Address = 5, CommunicationTag = "Add3", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
-new AddressUnit() {Id = 4, Area = "NW", Address = 7, CommunicationTag = "Ans",  DataType = typeof(ushort), Zoom = 1, DecimalPos = 0}
-});
-machine.AddressFormater = new AddressFormaterNA200H();
-machine.AddressTranslator = new AddressTranslatorNA200H();
+machine = new ModbusMachine(ModbusType.Rtu, "COM3", new List<AddressUnit>()
+{
+    new AddressUnit() {Id = "1", Area = "4X", Address = 1, CommunicationTag = "Add1", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
+    new AddressUnit() {Id = "2", Area = "4X", Address = 2, CommunicationTag = "Add2", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
+    new AddressUnit() {Id = "3", Area = "4X", Address = 3, CommunicationTag = "Add3", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
+    new AddressUnit() {Id = "4", Area = "4X", Address = 4, CommunicationTag = "Ans",  DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
+}, 2, 0);
+machine.AddressCombiner = new AddressCombinerContinus(machine.AddressTranslator);
+machine.AddressCombinerSet = new AddressCombinerContinus(machine.AddressTranslator);
 machine.AddressCombiner = new AddressCombinerPercentageJump(20.0);
-var result = machine.GetDatas();
+var result = machine.GetDatas(MachineGetDataType.CommunicationTag);
 var add1 = result["Add1"].PlcValue;
-var resultFormat = BaseMachine.MapGetValuesToSetValues(result);
+var resultFormat = result.MapGetValuesToSetValues();
 machine.SetDatas(MachineSetDataType.CommunicationTag, resultFormat);
 ```
 
@@ -230,13 +227,13 @@ To use BaseMachine, follow these steps.
 1.New a BaseMachine instance. Remeber BaseMachine is an abstract class.
 
 ```C#
-BaseMachine machine = new ModbusMachine(ModbusType.Tcp, "192.168.3.12", new List<AddressUnit>()
+machine = new ModbusMachine(ModbusType.Rtu, "COM3", new List<AddressUnit>()
 {
-new AddressUnit() {Id = 1, Area = "NW", Address = 1, CommunicationTag = "Add1", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
-new AddressUnit() {Id = 2, Area = "NW", Address = 3, CommunicationTag = "Add2", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
-new AddressUnit() {Id = 3, Area = "NW", Address = 5, CommunicationTag = "Add3", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
-new AddressUnit() {Id = 4, Area = "NW", Address = 7, CommunicationTag = "Ans",  DataType = typeof(ushort), Zoom = 1, DecimalPos = 0}
-});
+    new AddressUnit() {Id = "1", Area = "4X", Address = 1, CommunicationTag = "Add1", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
+    new AddressUnit() {Id = "2", Area = "4X", Address = 2, CommunicationTag = "Add2", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
+    new AddressUnit() {Id = "3", Area = "4X", Address = 3, CommunicationTag = "Add3", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
+    new AddressUnit() {Id = "4", Area = "4X", Address = 4, CommunicationTag = "Ans",  DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
+}, 2, 0);
 ```
 If you want to change address, you can set machine.GetAddresses.
 
@@ -259,8 +256,8 @@ There are 4 AddressCombiners implemented in the platform.
 
 3.Use GetDatas Api.
 ```C#
-var result = machine.GetDatas();
-//var result = await machine.GetDatasAsync();
+var result = machine.GetDatas(MachineGetDataType.CommunicationTag);
+//var result = await machine.GetDatasAsync(MachineGetDataType.CommunicationTag);
 ```
 
 4.Retrive data from result.
@@ -270,7 +267,7 @@ var add1 = result["Add1"].PlcValue;
 
 5.Format result to SetData format.
 ```C#
-var resultFormat = BaseMachine.MapGetValuesToSetValues(result);
+var resultFormat = result.MapGetValuesToSetValues();
 ```
 
 6.SetData to machine or another machine.
@@ -287,7 +284,7 @@ machine.SetDatas has two types. It is referenced as the first parameter.
 TaskManager is a high level api that you can manage and control many machines together. Remenber if you want to use this class, all communications must be asyncronized.
 Sample of TaskManager calls like this.
 ```C#
-TaskManager task = new TaskManager(2000, true);
+TaskManager task = new TaskManager(10, 2000, true);
 List<AddressUnit> addressUnits = new List<AddressUnit>
 {
     new AddressUnit() {Id = 0, Area = "V", Address = 1, CommunicationTag = "D1", DataType = typeof (ushort), Zoom = 1},
@@ -314,7 +311,7 @@ To use the TaskManager, use following steps.
 
 1.New A TaskManager instance.
 ```C#
-TaskManager task = new TaskManager(2000, true);
+TaskManager task = new TaskManager(10, 2000, true);
 ```
 
 2.Add a machine to TaskManager.
@@ -455,43 +452,48 @@ You need to implement three functions.
 public override void SetConnectionType(int connectionType)
 protected override async Task<byte[]> GetDatasAsync(byte belongAddress, byte masterAddress, string startAddress, int getByteCount)
 public override async Task<bool> SetDatasAsync(byte belongAddress, byte masterAddress, string startAddress, object[] setContents)
+public override bool GetLittleEndian
+public override bool SetLittleEndian
 ```
-And don't remember set default AddressTranslator and Protocal.
+And don't remember set default AddressTranslator, belongAddress, masterAddress and Protocal.
 ```C#
-AddressTranslator = new AddressTranslatorModbus();
-Wrapper = ConnectionString == null ? new ModbusTcpProtocal() : new ModbusTcpProtocal(ConnectionString);
+public ModbusUtility(int connectionType, byte belongAddress, byte masterAddress) : base(belongAddress, masterAddress)
+{
+    ConnectionString = null;
+    ModbusType = (ModbusType)connectionType;
+    AddressTranslator = new AddressTranslatorModbus();
+}
 ```
 
 6.Implement BaseMachine.cs (ModbusMachine.cs)
 Implement middle level api for Modbus.
 ```C#
-public class ModbusMachine : BaseMachine
+public ModbusMachine(ModbusType connectionType, string connectionString,
+	IEnumerable<AddressUnit> getAddresses, bool keepConnect, byte slaveAddress, byte masterAddress)
+	: base(getAddresses, keepConnect, slaveAddress, masterAddress)
 {
-    public ModbusMachine(ModbusType connectionType, string connectionString,
-        IEnumerable<AddressUnit> getAddresses, bool keepConnect) : base(getAddresses, keepConnect)
-    {
-        BaseUtility = new ModbusUtility(connectionType, connectionString);
-        AddressFormater = new AddressFormaterModbus();
-        AddressCombiner = new AddressCombinerContinus();
-    }
+	BaseUtility = new ModbusUtility(connectionType, connectionString, slaveAddress, masterAddress);
+	AddressFormater = new AddressFormaterModbus();
+	AddressCombiner = new AddressCombinerContinus(AddressTranslator);
+	AddressCombinerSet = new AddressCombinerContinus(AddressTranslator);
 }
 ```
-Set BaseUtility, default AddressFormater and AddressCombiner.
+Set BaseUtility, default AddressFormater, AddressCombiner and AddressCombinerSet.
 
 7.Implement your own AddressFormater, AddressTranslator and AddressCombiner. (AddressFormaterModbus.cs, AddressTranslatorModbus.cs) (Optional)
 If some devices have its own address rule, you should implement your own address formating system.
 ```C#
-public class AddressFormaterNA200H : AddressFormater
+public class AddressFormaterModbus : AddressFormater
 {
     public override string FormatAddress(string area, int address)
-}
+    {
+        return area + " " + address;
+    }
 
-public class AddressTranslatorNA200H : AddressTranslator
-{
-    protected Dictionary<string, int> TransDictionary;
-    protected Dictionary<string, int> ReadFunctionCodeDictionary;
-    protected Dictionary<string, int> WriteFunctionCodeDictionary;
-    public override KeyValuePair<int, int> AddressTranslate(string address, bool isRead)
+    public override string FormatAddress(string area, int address, int subAddress)
+    {
+        return area + " " + address  + "." + subAddress;
+    }
 }
 ```
 ##RoadMap
