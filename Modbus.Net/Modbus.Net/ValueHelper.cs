@@ -437,6 +437,18 @@ namespace Modbus.Net
             return GetBit(number[pos], ref pos, ref subPos);
         }
 
+        public virtual byte ReverseByte(byte originalByte)
+        {
+            byte result = 0;
+            for (int i = 0; i < 8; i++)
+            {
+                result <<= 1;
+                result |= (byte)(originalByte & 1);
+                originalByte >>= 1;
+            }
+            return result;
+        }
+
         /// <summary>
         /// 将待转换的对象数组转换为需要发送的byte数组
         /// </summary>

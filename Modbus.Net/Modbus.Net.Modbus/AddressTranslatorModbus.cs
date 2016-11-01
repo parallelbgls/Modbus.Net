@@ -74,12 +74,14 @@ namespace Modbus.Net.Modbus
             return isRead
                 ? new AddressDef()
                 {
+                    AreaString = head,
                     Area = ReadFunctionCodeDictionary[head].Code,
                     Address = TransDictionary[head] + int.Parse(tail) - 1,
                     SubAddress = int.Parse(sub),
                 }
                 : new AddressDef()
                 {
+                    AreaString = head,
                     Area = WriteFunctionCodeDictionary[head].Code,
                     Address = TransDictionary[head] + int.Parse(tail) - 1,
                     SubAddress = int.Parse(sub),
@@ -136,12 +138,14 @@ namespace Modbus.Net.Modbus
             return isRead
                 ? new AddressDef()
                 {
+                    AreaString = head,
                     Area = ReadFunctionCodeDictionary[head].Code,
                     Address = int.Parse(tail) - 1,
                     SubAddress = int.Parse(sub),
                 }
                 : new AddressDef()
                 {
+                    AreaString = head,
                     Area = WriteFunctionCodeDictionary[head].Code,
                     Address = int.Parse(tail) - 1,
                     SubAddress = int.Parse(sub),

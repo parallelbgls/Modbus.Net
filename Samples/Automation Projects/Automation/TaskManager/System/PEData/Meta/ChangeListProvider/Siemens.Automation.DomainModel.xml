@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClMetaProvider xmlns="http://www.siemens.com/Automation/2004/04/ObjectFrame/ClMetaProvider" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.siemens.com/Automation/2004/04/ObjectFrame/ClMetaProvider Automation-ObjectFrame-ChangeList-Provider-v1.0.xsd">
+    <Package name="Siemens.Automation.DomainModel" version="1.1.0.0">
+        <ProviderObject name="Siemens.Automation.DomainModel.ReferenceTagData">
+            <Interface name="IBlTag">
+                <TrackedObject name="Siemens.Automation.DomainModel.ControllerRootTagBaseData">
+                    <TrackedRelation name="ReferencedByRefTagAsRoot">
+                        <Property name="CompileTime">
+                            <TrackedAttribute name="Siemens.Automation.DomainServices.CommonTypeSystem.IStructureRoot.CompileTime" />
+                        </Property>
+                        <Property name="IsValid">
+                            <TrackedAttribute name="Siemens.Automation.DomainServices.CommonTypeSystem.IStructureRoot.IsValid" />
+                        </Property>
+                    </TrackedRelation>
+                </TrackedObject>
+                <TrackedObject name="Siemens.Automation.DomainModel.EAMTZTagData">
+                    <TrackedRelation name="ReferencedByRefTag">
+                        <Property name="DataTypeName">
+                            <TrackedAttribute name="Siemens.Automation.DomainServices.CommonTypeSystem.IStructureItem.DisplayTypeName" />
+                        </Property>
+                        <Property name="LogicalAddress">
+                            <TrackedAttribute name="Siemens.Automation.DomainModel.ITagAddress.LogicalAddress" />
+                        </Property>
+                        <Property name="Name">
+                            <TrackedAttribute name="Siemens.Automation.ObjectFrame.ICoreAttributes.Name" />
+                        </Property>
+                    </TrackedRelation>
+                </TrackedObject>
+            </Interface>
+        </ProviderObject>
+    </Package>
+</ClMetaProvider>

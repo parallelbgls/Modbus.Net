@@ -499,14 +499,25 @@ public class AddressFormaterModbus : AddressFormater
 ##RoadMap
 
 ###Version 1.2.0
+* Modbus ASCII Support (Complete)
+* Siemens PPI Support (Complete)
+* OPC Write Data (Complete)
+* Get and set bit value (Complete)
+* Unit test (Not Complete)
+* New Document (Not Complete)       
+* New Samples (Not Complete)
 
-Modbus ASCII Support (Complete)
-Siemens PPI Support (Complete)
-OPC Write Data (Complete)
-ComConnector (Complete)
-Get and set bit value (Complete)
-Unit test (Not Complete)
+###Version 1.2.1
+* Address Utility (In Road)
+
+###Version 1.2.2
+* OPC UA Support (In Road)
 
 ###Version 1.3.0
-Siemens MPI Support (Not Complete)
-New Protocal Pipeline System (Not Complete)
+* New Protocal Pipeline System (In Road)
+* New ComConnector (In Road)
+* Multi station Modbus RTU, ASCII and Siemens PPI (In Road)
+* Siemens MPI Support (In Road)
+
+###Version 1.4.0
+* .NET Core Support (Undetermined)

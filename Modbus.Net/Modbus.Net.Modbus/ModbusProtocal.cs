@@ -65,7 +65,7 @@ namespace Modbus.Net.Modbus
             var translateAddress = addressTranslator.AddressTranslate(startAddress, true);
             FunctionCode = (byte)translateAddress.Area;
             StartAddress = (ushort)translateAddress.Address;
-            GetCount = getCount;
+            GetCount = (ushort)Math.Ceiling(getCount / addressTranslator.GetAreaByteLength(translateAddress.AreaString));
         }
 
         public byte BelongAddress { get; private set; }
@@ -113,6 +113,13 @@ namespace Modbus.Net.Modbus
             byte dataCount = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
             byte[] dataValue = new byte[dataCount];
             Array.Copy(messageBytes, 3, dataValue, 0, dataCount);
+            if (functionCode == 1 || functionCode == 2)
+            {
+                for (int i = 0; i < dataValue.Length; i++)
+                {
+                    dataValue[i] = BigEndianValueHelper.Instance.ReverseByte(dataValue[i]);
+                }
+            }
             return new ReadDataModbusOutputStruct(belongAddress, functionCode, dataCount, dataValue);
         }
     }
@@ -129,7 +136,7 @@ namespace Modbus.Net.Modbus
             FunctionCode = (byte)translateAddress.Area;
             StartAddress = (ushort)translateAddress.Address;
             var writeByteValue = BigEndianValueHelper.Instance.ObjectArrayToByteArray(writeValue);
-            WriteCount = (ushort)(writeByteValue.Length / 2);
+            WriteCount = (ushort)(writeByteValue.Length / addressTranslator.GetAreaByteLength(translateAddress.AreaString));
             WriteByteCount = (byte)writeByteValue.Length;
             WriteValue = writeByteValue;
         }
@@ -175,8 +182,17 @@ namespace Modbus.Net.Modbus
         public override byte[] Format(InputStruct message)
         {
             var r_message = (WriteDataModbusInputStruct)message;
+            var functionCode = r_message.FunctionCode;
+            byte[] dataValue = Format(r_message.WriteValue);
+            if (functionCode == 5 || functionCode == 15)
+            {
+                for (int i = 0; i < dataValue.Length; i++)
+                {
+                    dataValue[i] = BigEndianValueHelper.Instance.ReverseByte(dataValue[i]);
+                }
+            }
             byte[] formattingBytes = Format(r_message.BelongAddress, r_message.FunctionCode,
-                r_message.StartAddress, r_message.WriteCount, r_message.WriteByteCount, r_message.WriteValue);
+                r_message.StartAddress, r_message.WriteCount, r_message.WriteByteCount, dataValue);
             return formattingBytes;
         }
 

@@ -49,6 +49,7 @@ namespace Modbus.Net.Siemens
                 head = head.Substring(2);
                 return new AddressDef()
                 {
+                    AreaString = "DB"+head,
                     Area = int.Parse(head)*256 + AreaCodeDictionary["DB"],
                     Address = int.Parse(tail),
                     SubAddress = int.Parse(sub),
@@ -57,6 +58,7 @@ namespace Modbus.Net.Siemens
             return 
                 new AddressDef()
                 {
+                    AreaString = head,
                     Area = AreaCodeDictionary[head],
                     Address = int.Parse(tail),
                     SubAddress = int.Parse(sub),

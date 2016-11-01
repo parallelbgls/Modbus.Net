@@ -5,6 +5,7 @@ namespace Modbus.Net
 {
     public class AddressDef
     {
+        public string AreaString { get; set; }
         public int Area { get; set; }
         public int Address { get; set; }
         public int SubAddress { get; set; }

@@ -111,7 +111,7 @@ namespace Modbus.Net.Modbus
             try
             {
                 var inputStruct = new ReadDataModbusInputStruct(BelongAddress, startAddress,
-                    getByteCount%2 == 0 ? (ushort) (getByteCount/2) : (ushort) (getByteCount/2 + 1), AddressTranslator);
+                    (ushort)getByteCount, AddressTranslator);
                 var outputStruct = await
                     Wrapper.SendReceiveAsync(Wrapper[typeof (ReadDataModbusProtocal)], inputStruct) as
                     ReadDataModbusOutputStruct;
