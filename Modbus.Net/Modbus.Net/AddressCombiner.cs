@@ -126,6 +126,7 @@ namespace Modbus.Net
                         {
                             Area = address.Area,
                             Address = address.Address,
+                            SubAddress = address.SubAddress,
                             DataType = address.DataType,
                             GetCount = 1,
                             OriginalAddresses = new List<AddressUnit>() {address}

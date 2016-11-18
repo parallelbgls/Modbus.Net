@@ -186,7 +186,7 @@ namespace Modbus.Net
                     var datas =
                         await
                             BaseUtility.GetDatasAsync(
-                                AddressFormater.FormatAddress(communicateAddress.Area, communicateAddress.Address, 0),
+                                AddressFormater.FormatAddress(communicateAddress.Area, communicateAddress.Address, communicateAddress.SubAddress),
                                 (int)
                                     Math.Ceiling(communicateAddress.GetCount*
                                                  BigEndianValueHelper.Instance.ByteLength[
@@ -496,6 +496,10 @@ namespace Modbus.Net
         /// 地址
         /// </summary>
         public int Address { get; set; }
+        /// <summary>
+        /// 子地址
+        /// </summary>
+        public int SubAddress { get; set; } = 0;
         /// <summary>
         /// 获取个数
         /// </summary>
