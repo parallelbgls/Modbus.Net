@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Text;
 
 namespace Modbus.Net
 {
@@ -383,6 +384,21 @@ namespace Modbus.Net
         {
             double t = BitConverter.ToDouble(data, pos);
             pos += 8;
+            return t;
+        }
+
+        /// <summary>
+        /// 将byte数组中相应的位置转换为字符串
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="count"></param>
+        /// <param name="pos"></param>
+        /// <param name="encoding"></param>
+        /// <returns></returns>
+        public virtual string GetString(byte[] data, int count, ref int pos, Encoding encoding)
+        {
+            string t = encoding.GetString(data, pos, count);
+            pos += count;
             return t;
         }
 
