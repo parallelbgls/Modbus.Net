@@ -1,7 +1,6 @@
 Modbus.Net
 ===================
-
-(Document Version 1.2.0)
+[![Build Status](https://travis-ci.org/parallelbgls/Modbus.Net.svg?branch=master)](https://travis-ci.org/parallelbgls/Modbus.Net) [![NuGet](https://img.shields.io/nuget/v/Modbus.Net.svg)](https://www.nuget.org/packages/Modbus.Net/)
 
 An hardware communication Library written by C#.
 
@@ -199,7 +198,7 @@ For some reasons, AddressUnit has two keys: Id and CommunicationTag, one is inte
     * Zoom : Scale the return value. For example if zoom is 0.1 then return value 150 will change to 15.
     * DecimalPos : Keep to the places after decimal. For example if DecimalPos is 2 then 150.353 will change to 150.35.
     * Name : Name of the Address.
-    * Unit : Unit of the Address. For example "¡æ".
+    * Unit : Unit of the Address. For example "Â¡Ã¦".
     * UnitExtend : If you want to get something else when value returns, extend the class and give it to here.
 
 Then using BaseMachine like this.
