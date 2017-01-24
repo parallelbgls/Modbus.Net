@@ -89,6 +89,7 @@
     <None Include="ModBus.Net.nuspec">
       <SubType>Designer</SubType>
     </None>
+    <None Include="README.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
