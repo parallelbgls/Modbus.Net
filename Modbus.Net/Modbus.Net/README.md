@@ -11,6 +11,7 @@ Table of Content:
 * [Quick Start](#quick_start)
 * [Tutorial](#tutorial)
 * [Implement](#implement)
+* [Addition](#addition)
 
 ##<a name="features"></a> Features
 * A open platform that you can easy to extend a industrial communication protocal.
@@ -499,7 +500,7 @@ public class AddressFormaterModbus : AddressFormater
 }
 ```
 
-##Addition
+##<a name="addition"></a> Addition
 
 ###For Subpos System
 Subpos system is implemented for reading and writing of bits.
@@ -520,6 +521,8 @@ Version 1.0 and 1.1 used abstract coordinate so you need to convert the address.
 For example if you want the get a value from the 6th byte in Hold Register. In traditional modbus you can only get 400003 of 2 bytes and get the 2nd byte from it. But in Modbus.Net there is an easy way to get it.
 ```
 Modbus 400003 2nd byte 
+
+Donnot wonder I use real number to implement subpos counter. There are no tolerances because only (1/2 pow n) could be used to count subpos.
 
 ==
 
@@ -551,7 +554,6 @@ Remember subpos system cannot cross a byte in current version. If you want to cr
 * Address Utility (In Road)
 * Move SlaveAddress parameter to GetData and SetData. (In Road)
 * More functions in TaskManager. (In Road)
-* Fix reverse bit bug in Modbus. (In Road)
 
 ###Version 1.2.3
 * OPC UA Support (In Road)
@@ -563,4 +565,4 @@ Remember subpos system cannot cross a byte in current version. If you want to cr
 * Siemens MPI Support (In Road)
 
 ###Version 1.4.0
-* .NET Core Support (Undetermined)
+* .NET Core Support (In Road)
