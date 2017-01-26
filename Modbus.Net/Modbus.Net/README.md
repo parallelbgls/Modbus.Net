@@ -547,12 +547,13 @@ Remember subpos system cannot cross a byte in current version. If you want to cr
 * New Document (Not Complete)       
 * New Samples (Complete)
 
-###Version 1.2.1
+###Version 1.2.2
 * Address Utility (In Road)
 * Move SlaveAddress parameter to GetData and SetData. (In Road)
 * More functions in TaskManager. (In Road)
+* Fix reverse bit bug in Modbus. (In Road)
 
-###Version 1.2.2
+###Version 1.2.3
 * OPC UA Support (In Road)
 
 ###Version 1.3.0
