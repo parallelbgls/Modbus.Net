@@ -17,26 +17,29 @@ Table of Content:
 * Modbus Tcp protocal.
 * Siemens Tcp protocal (acturally it is the same as Profinet)
 * OPC DA protocal.
-* All communications can be asyncronized.
+* All communications could be asynchronized.
 * A task manager that you can easily manage multiple connections.
-* .net framework 4.5 and Visual Studio 2015 support.
+* .NET Framework 4.5 and Visual Studio 2015 support.
 
 ##<a name="usage"></a> Usage
 
 ###Samples:
 
 There are four samples in the project. All sample project recommand running in Siemens 200 PLC.
+PLC Program could be opened by Siemens Portal V13 (Step 7 V13).
 
-* NA200H.UI.ConsoleApp -- The simplest and lowest api test, they are all commented and you can uncomment any part to see the sample.
-* NA200H.UI.WPF -- A three number add sample project.
-* CrossLampControl.Webapi -- A web api project that show and control a cross lamp sample code in Siemens 200 PLC(PLC code is also in the project).
-* Siemens_S7_200.UI.WPF.TaskTest -- A sample code using Task Manager.
+Modbus TCP connection and Siemens Ethenet Connection are supported at the same time.
+
+* TripleAdd -- Add three numbers in PLC.
+* TaskManager -- Sample usage of TaskManager.
+* AnyType -- Get any type in registers.
+* CrossLamp -- A sample singal lamp controller.
 
 ##<a name="architecture"></a> Architecture
 
 ###Connector
 
-Connector implements the basic connecting method, like Socket and SignalR.
+Connector implements the basic connecting methods, like Socket, Com and SignalR.
 
 ###ProtocalLinker
 
@@ -66,13 +69,25 @@ Manage several types of Protocal to a same calling interface.
 
 Shows the Hardware PLC or other types of machine and implement a high level send and receive api.
 
+###AddressFormater
+
+Format address from definite address to string.
+
+###AddressTranslator
+
+Translate address from string to definite address.
+
+###AddressCombiner
+
+Combine duplicated addresses to organized addresses, each organized addresses communicate once to a device.
+
 ###TaskManager
 
 The highest api that you can manage many PLC links and all links are async so there are no block in all connections.
 
 ##<a name="quick_start"></a> Quick Start.
 
-The fastest way you can write is to use TaskManager. TaskTest Project is a good example.
+The fastest way you can write is to use TaskManager. TaskManager Project is a good example.
 
 
 ```C#
@@ -118,7 +133,7 @@ The argument return values is a key value pair. The architechture is:
 
 * Key : the link address of machine (in sample is the second parameter).
 * Value : Dictionary.
-* Key : CommunicationTag in AddressUnit.
+* Key : CommunicationTag/Address(string) in AddressUnit.
 * Value : ReturnUnit.
 * PlcValue : The return data, all in double type.
 * UnitExtend : UnitExtend in AddressUnit. You should cast this class to your own class extends by UnitExtend.
@@ -132,9 +147,7 @@ BaseUtility is a low level api, in this level you can get or set data only by by
 ```C#
 string ip = "192.168.0.10";
 BaseUtility utility = new ModbusUtility(ModbusType.Tcp, ip, 0x02, 0x00);
-utility.AddressTranslator = new AddressTranslatorNA200H();
-object[] getNum = utility.GetDatas("NW 1", new KeyValuePair<Type, int>(typeof(ushort), 4));
-utility.SetDatas("NW 1", new object[] { (ushort)1, (ushort)2, (ushort)3 });
+object[] getNum = utility.GetDatas("4X 1", new KeyValuePair<Type, int>(typeof(ushort), 4));
 ```
 
 BaseUtility is an abstract class. You can check all apis in BaseUtility.cs in Modbus.Net project.
@@ -146,27 +159,17 @@ To use BaseUtility, follow these steps.
 BaseUtility utility = new ModbusUtility(ModbusType.Tcp, ip, 0x02, 0x00);
 ```
 
-2.If you want to change the AddressTranslator, you can write your own AddressTranslator and change it using
+2.Use GetData and SetData Api in BaseUtility, like
 ```C#
-utility.AddressTranslator = new AddressTranslatorNA200H();
-```
-To write your own AddressTranslator, inherit AddressTranslator from AddressTranslator.cs in Modbus.Net and implement this function.
-```C#
-public abstract KeyValuePair<int,int> AddressTranslate(string address, bool isRead);
-```
-Return value key is Area Code and value is Address.
+object[] getNum = utility.GetDatas("4X 1", new KeyValuePair<Type, int>(typeof(ushort), 4));
 
-3.Use GetData and SetData Api in BaseUtility, like
-```C#
-object[] getNum = utility.GetDatas("NW 1", new KeyValuePair<Type, int>(typeof(ushort), 4));
-
-utility.SetDatas("NW 1", new object[] { (ushort)1, (ushort)2, (ushort)3 });
+utility.SetDatas("4X 1", new object[] { (ushort)1, (ushort)2, (ushort)3 });
 ```
 Remember force set type of numbers because GetData and SetData Apis are type sensitive.
 
 You can also use async functions like
 ```C#
-object[] getNum = await utility.GetDatasAsync("NW 1", new KeyValuePair<Type, int>(typeof(ushort), 4));
+object[] getNum = await utility.GetDatasAsync("4X 1", new KeyValuePair<Type, int>(typeof(ushort), 4));
 ```
 
 ###BaseMachine
@@ -264,7 +267,7 @@ var result = machine.GetDatas(MachineGetDataType.CommunicationTag);
 var add1 = result["Add1"].PlcValue;
 ```
 
-5.Format result to SetData format.
+5.Format result to SetData parameter.
 ```C#
 var resultFormat = result.MapGetValuesToSetValues();
 ```
@@ -495,6 +498,44 @@ public class AddressFormaterModbus : AddressFormater
     }
 }
 ```
+
+##Addition
+
+###For Subpos System
+Subpos system is implemented for reading and writing of bits.
+```C#
+public class AddressUnit
+{
+    public int SubAddress { get; set; } = 0;
+}
+```
+First of all, there are two types of coordinates in Modbus.Net Address System - Protocal Coordinate and Abstract Coordinate.
+
+Here is an example of the differences between them:
+
+In Register of Modbus, the minimum type is short, but Modbus.Net use type of byte to show the result. If you want to get value from 400003 in protocal coordinate, you actually get 5th and 6th byte value in abstract coordinate.
+
+Version 1.0 and 1.1 used abstract coordinate so you need to convert the address. But fortunatly after 1.2, AddressUnit uses Protocal Coordinate so that you donnot need the convert the address descripted by modbus protocal itself, but this means if you want to get a bit or byte value in modbus, you need to use the subpos system.
+
+For example if you want the get a value from the 6th byte in Hold Register. In traditional modbus you can only get 400003 of 2 bytes and get the 2nd byte from it. But in Modbus.Net there is an easy way to get it.
+```
+Modbus 400003 2nd byte 
+
+==
+
+class AddressUnit
+{
+Area = "4X"
+Address = 3
+SubAddress = 8
+type = typeof(byte)
+}
+```
+
+SubAddress 8 means it starts from the 8th bit in that short value.
+
+Remember subpos system cannot cross a byte in current version. If you want to cross a byte, you can change the function "GetValue" in ValueHelper.cs 
+
 ##RoadMap
 
 ###Version 1.2.0
@@ -504,10 +545,12 @@ public class AddressFormaterModbus : AddressFormater
 * Get and set bit value (Complete)
 * Unit test (Not Complete)
 * New Document (Not Complete)       
-* New Samples (Not Complete)
+* New Samples (Complete)
 
 ###Version 1.2.1
 * Address Utility (In Road)
+* Move SlaveAddress parameter to GetData and SetData. (In Road)
+* More functions in TaskManager. (In Road)
 
 ###Version 1.2.2
 * OPC UA Support (In Road)
