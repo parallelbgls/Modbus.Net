@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO.Ports;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
+﻿using System.IO.Ports;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,9 +6,14 @@ namespace Modbus.Net.Siemens
 {
     public class SiemensPpiProtocalLinker : ComProtocalLinker
     {
+        public SiemensPpiProtocalLinker(string com)
+            : base(com, 9600, Parity.Even, StopBits.One, 8)
+        {
+        }
+
         public override async Task<byte[]> SendReceiveAsync(byte[] content)
         {
-            byte[] extBytes = BytesExtend(content);
+            var extBytes = BytesExtend(content);
             if (extBytes[6] == 0x7c)
             {
                 var inputStruct2 = new ComConfirmMessageSiemensInputStruct(content[4], content[5]);
@@ -60,13 +60,13 @@ namespace Modbus.Net.Siemens
         public override bool? CheckRight(byte[] content)
         {
             if (!base.CheckRight(content).Value) return false;
-            int fcsCheck = 0;
+            var fcsCheck = 0;
             if (content.Length == 1 && content[0] == 0xe5)
             {
                 return true;
             }
             if (content.Length == 6 && content[3] == 0) return true;
-            for (int i = 4; i < content.Length - 2; i++)
+            for (var i = 4; i < content.Length - 2; i++)
             {
                 fcsCheck += content[i];
             }
@@ -75,11 +75,6 @@ namespace Modbus.Net.Siemens
             if (content[content.Length - 1] != 0x16) return false;
             if (content[1] != content.Length - 6) return false;
             return true;
-        }
-
-        public SiemensPpiProtocalLinker(string com)
-            : base(com, 9600, Parity.Even, StopBits.One, 8)
-        {
         }
     }
 }

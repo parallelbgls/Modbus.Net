@@ -380,17 +380,17 @@ public class ReadDataModbusProtocal : ProtocalUnit
     public override byte[] Format(InputStruct message)
     {
         var r_message = (ReadDataModbusInputStruct)message;
-        return Format(r_message.BelongAddress, r_message.FunctionCode, r_message.StartAddress, r_message.GetCount);
+        return Format(r_message.SlaveAddress, r_message.FunctionCode, r_message.StartAddress, r_message.GetCount);
     }
 
     public override OutputStruct Unformat(byte[] messageBytes, ref int pos)
     {
-        byte belongAddress = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
+        byte slaveAddress = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
         byte functionCode = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
         byte dataCount = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
         byte[] dataValue = new byte[dataCount];
         Array.Copy(messageBytes, 3, dataValue, 0, dataCount);
-        return new ReadDataModbusOutputStruct(belongAddress, functionCode, dataCount, dataValue);
+        return new ReadDataModbusOutputStruct(slaveAddress, functionCode, dataCount, dataValue);
     }
 }
 ```
@@ -453,14 +453,14 @@ Implement low level api for Modbus.
 You need to implement three functions.
 ```C#
 public override void SetConnectionType(int connectionType)
-protected override async Task<byte[]> GetDatasAsync(byte belongAddress, byte masterAddress, string startAddress, int getByteCount)
-public override async Task<bool> SetDatasAsync(byte belongAddress, byte masterAddress, string startAddress, object[] setContents)
+protected override async Task<byte[]> GetDatasAsync(byte slaveAddress, byte masterAddress, string startAddress, int getByteCount)
+public override async Task<bool> SetDatasAsync(byte slaveAddress, byte masterAddress, string startAddress, object[] setContents)
 public override bool GetLittleEndian
 public override bool SetLittleEndian
 ```
-And don't remember set default AddressTranslator, belongAddress, masterAddress and Protocal.
+And don't remember set default AddressTranslator, slaveAddress, masterAddress and Protocal.
 ```C#
-public ModbusUtility(int connectionType, byte belongAddress, byte masterAddress) : base(belongAddress, masterAddress)
+public ModbusUtility(int connectionType, byte slaveAddress, byte masterAddress) : base(slaveAddress, masterAddress)
 {
     ConnectionString = null;
     ModbusType = (ModbusType)connectionType;
@@ -552,8 +552,8 @@ Remember subpos system cannot cross a byte in current version. If you want to cr
 
 ###Version 1.2.2
 * Address Utility (In Road)
-* Move SlaveAddress parameter to GetData and SetData. (In Road)
-* More functions in TaskManager. (In Road)
+* More functions in TaskManager (In Road)
+* More interfaces (In Road)
 
 ###Version 1.2.3
 * OPC UA Support (In Road)

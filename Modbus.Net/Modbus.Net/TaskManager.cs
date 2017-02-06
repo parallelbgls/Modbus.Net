@@ -1,4 +1,9 @@
-﻿using System;
+﻿/*
+ * LimitedConcurrencyLevelTaskScheduler类来自于MSDN官方样例，Modbus.Net的作者不保留对这个类的版权。
+ * LimitedConcurrencyLevelTaskScheduler class comes from offical samples of MSDN, the author of "Modbus.Net" "donnot" obtain the copyright of LimitedConcurrencyLevelTaskScheduler(only).
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -6,18 +11,27 @@ using System.Threading.Tasks;
 
 namespace Modbus.Net
 {
+    /// <summary>
+    ///     设备的读写方式
+    /// </summary>
     public enum MachineDataType
     {
         Address,
-        CommunicationTag,
+        CommunicationTag
     }
 
+    /// <summary>
+    ///     返回结果的定义类
+    /// </summary>
     public class TaskReturnDef
     {
         public string MachineId { get; set; }
         public Dictionary<string, ReturnUnit> ReturnValues { get; set; }
     }
 
+    /// <summary>
+    ///     时间定义
+    /// </summary>
     public static class TimeRestore
     {
         public static int Restore = 0;
@@ -26,29 +40,31 @@ namespace Modbus.Net
     public class LimitedConcurrencyLevelTaskScheduler : TaskScheduler
     {
         /// <summary>
-        /// Whether the current thread is processing work items.
+        ///     Whether the current thread is processing work items.
         /// </summary>
-        [ThreadStatic]
-        private static bool _currentThreadIsProcessingItems;
-        /// <summary>
-        /// The list of tasks to be executed.
-        /// </summary>
-        private readonly LinkedList<Task> _tasks = new LinkedList<Task>(); // protected by lock(_tasks)
-        /// <summary>
-        /// The maximum concurrency level allowed by this scheduler.
-        /// </summary>
-        private readonly int _maxDegreeOfParallelism;
-        /// <summary>
-        /// Whether the scheduler is currently processing work items.
-        /// </summary>
-        private int _delegatesQueuedOrRunning = 0; // protected by lock(_tasks)
+        [ThreadStatic] private static bool _currentThreadIsProcessingItems;
 
         /// <summary>
-        /// Initializes an instance of the LimitedConcurrencyLevelTaskScheduler class with the
-        /// specified degree of parallelism.
+        ///     The maximum concurrency level allowed by this scheduler.
+        /// </summary>
+        private readonly int _maxDegreeOfParallelism;
+
+        /// <summary>
+        ///     The list of tasks to be executed.
+        /// </summary>
+        private readonly LinkedList<Task> _tasks = new LinkedList<Task>(); // protected by lock(_tasks)
+
+        /// <summary>
+        ///     Whether the scheduler is currently processing work items.
+        /// </summary>
+        private int _delegatesQueuedOrRunning; // protected by lock(_tasks)
+
+        /// <summary>
+        ///     Initializes an instance of the LimitedConcurrencyLevelTaskScheduler class with the
+        ///     specified degree of parallelism.
         /// </summary>
         /// <param name="maxDegreeOfParallelism">
-        /// The maximum degree of parallelism provided by this scheduler.
+        ///     The maximum degree of parallelism provided by this scheduler.
         /// </param>
         public LimitedConcurrencyLevelTaskScheduler(int maxDegreeOfParallelism)
         {
@@ -57,10 +73,18 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// Queues a task to the scheduler.
+        ///     Gets the maximum concurrency level supported by this scheduler.
+        /// </summary>
+        public sealed override int MaximumConcurrencyLevel
+        {
+            get { return _maxDegreeOfParallelism; }
+        }
+
+        /// <summary>
+        ///     Queues a task to the scheduler.
         /// </summary>
         /// <param name="task">
-        /// The task to be queued.
+        ///     The task to be queued.
         /// </param>
         protected sealed override void QueueTask(Task task)
         {
@@ -78,7 +102,7 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// Informs the ThreadPool that there's work to be executed for this scheduler.
+        ///     Informs the ThreadPool that there's work to be executed for this scheduler.
         /// </summary>
         private void NotifyThreadPoolOfPendingWork()
         {
@@ -105,15 +129,18 @@ namespace Modbus.Net
 
                             // Get the next item from the queue
                             item = _tasks.First.Value;
-                            _tasks.RemoveFirst();                         
+                            _tasks.RemoveFirst();
                         }
 
                         // Execute the task we pulled out of the queue
-                        base.TryExecuteTask(item);
+                        TryExecuteTask(item);
                     }
                 }
-                // We're done processing items on the current thread
-                finally { _currentThreadIsProcessingItems = false; }
+                    // We're done processing items on the current thread
+                finally
+                {
+                    _currentThreadIsProcessingItems = false;
+                }
             }, null);
         }
 
@@ -130,17 +157,17 @@ namespace Modbus.Net
             if (taskWasPreviouslyQueued) TryDequeue(task);
 
             // Try to run the task.
-            return base.TryExecuteTask(task);
+            return TryExecuteTask(task);
         }
 
         /// <summary>
-        /// Attempts to remove a previously scheduled task from the scheduler.
+        ///     Attempts to remove a previously scheduled task from the scheduler.
         /// </summary>
         /// <param name="task">
-        /// The task to be removed.
+        ///     The task to be removed.
         /// </param>
         /// <returns>
-        /// Whether the task could be found and removed.
+        ///     Whether the task could be found and removed.
         /// </returns>
         protected sealed override bool TryDequeue(Task task)
         {
@@ -148,19 +175,14 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// Gets the maximum concurrency level supported by this scheduler.
-        /// </summary>
-        public sealed override int MaximumConcurrencyLevel { get { return _maxDegreeOfParallelism; } }
-
-        /// <summary>
-        /// Gets an enumerable of the tasks currently scheduled on this scheduler.
+        ///     Gets an enumerable of the tasks currently scheduled on this scheduler.
         /// </summary>
         /// <returns>
-        /// An enumerable of the tasks currently scheduled.
+        ///     An enumerable of the tasks currently scheduled.
         /// </returns>
         protected sealed override IEnumerable<Task> GetScheduledTasks()
         {
-            bool lockTaken = false;
+            var lockTaken = false;
             try
             {
                 Monitor.TryEnter(_tasks, ref lockTaken);
@@ -177,34 +199,73 @@ namespace Modbus.Net
     public class TaskManager
     {
         /// <summary>
-        /// 正在运行的设备
+        ///     返回数据代理
         /// </summary>
-        private HashSet<BaseMachine> _machines;
-        /// <summary>
-        /// 不在运行的设备
-        /// </summary>
-        private HashSet<BaseMachine> _unlinkedMachines;
+        /// <param name="returnValue"></param>
+        public delegate void ReturnValuesDelegate(TaskReturnDef returnValue);
 
-        private TaskFactory _tasks;
-        private TaskScheduler _scheduler;
+        /// <summary>
+        ///     正在运行的设备
+        /// </summary>
+        private readonly HashSet<BaseMachine> _machines;
+
+        /// <summary>
+        ///     不在运行的设备
+        /// </summary>
+        private readonly HashSet<BaseMachine> _unlinkedMachines;
+
         private CancellationTokenSource _cts;
 
         /// <summary>
-        /// 正常读取的计时器
+        ///     获取间隔
         /// </summary>
-        private Timer _timer;
-        /// <summary>
-        /// 重连计时器
-        /// </summary>
-        private Timer _timer2;
+        private int _getCycle;
 
         /// <summary>
-        /// 保持连接
+        ///     保持连接
         /// </summary>
         private bool _keepConnect;
 
         /// <summary>
-        /// 保持连接
+        ///     任务调度
+        /// </summary>
+        private TaskScheduler _scheduler;
+
+        /// <summary>
+        ///     任务工厂
+        /// </summary>
+        private TaskFactory _tasks;
+
+        /// <summary>
+        ///     正常读取的计时器
+        /// </summary>
+        private Timer _timer;
+
+        /// <summary>
+        ///     重连计时器
+        /// </summary>
+        private Timer _timer2;
+
+        /// <summary>
+        ///     构造一个TaskManager
+        /// </summary>
+        /// <param name="maxRunningTask">同时可以运行的任务数</param>
+        /// <param name="getCycle">读取数据的时间间隔（秒）</param>
+        /// <param name="keepConnect">读取数据后是否保持连接</param>
+        /// <param name="dataType">获取与设置数据的方式</param>
+        public TaskManager(int maxRunningTask, int getCycle, bool keepConnect,
+            MachineDataType dataType = MachineDataType.CommunicationTag)
+        {
+            _scheduler = new LimitedConcurrencyLevelTaskScheduler(maxRunningTask);
+            _machines = new HashSet<BaseMachine>(new BaseMachineEqualityComparer());
+            _unlinkedMachines = new HashSet<BaseMachine>(new BaseMachineEqualityComparer());
+            _getCycle = getCycle;
+            KeepConnect = keepConnect;
+            MachineDataType = dataType;
+        }
+
+        /// <summary>
+        ///     保持连接
         /// </summary>
         public bool KeepConnect
         {
@@ -224,23 +285,7 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 返回数据代理
-        /// </summary>
-        /// <param name="returnValue"></param>
-        public delegate void ReturnValuesDelegate(TaskReturnDef returnValue);
-
-        /// <summary>
-        /// 返回数据事件
-        /// </summary>
-        public event ReturnValuesDelegate ReturnValues;
-
-        /// <summary>
-        /// 获取间隔
-        /// </summary>
-        private int _getCycle;
-
-        /// <summary>
-        /// 获取间隔，毫秒
+        ///     获取间隔，毫秒
         /// </summary>
         public int GetCycle
         {
@@ -262,8 +307,8 @@ namespace Modbus.Net
                     }
                 }
                 else if (value < 0) return;
-                else 
-                {              
+                else
+                {
                     if (_timer != null)
                     {
                         _timer.Change(Timeout.Infinite, Timeout.Infinite);
@@ -278,7 +323,7 @@ namespace Modbus.Net
                         _getCycle = value;
                     }
                     _timer = new Timer(MaintainTasks, null, 0, _getCycle);
-                    _timer2 = new Timer(MaintainTasks2, null, _getCycle * 2, _getCycle * 2);  
+                    _timer2 = new Timer(MaintainTasks2, null, _getCycle*2, _getCycle*2);
                     //调试行，调试时请注释上面两行并取消下面一行的注释，每台设备只会执行一次数据获取。                
                     //MaintainTasks(null);
                 }
@@ -291,10 +336,10 @@ namespace Modbus.Net
             {
                 switch (value)
                 {
-                     case MachineDataType.Address:
+                    case MachineDataType.Address:
                     {
                         GetDataType = MachineGetDataType.Address;
-                        SetDataType=MachineSetDataType.Address;
+                        SetDataType = MachineSetDataType.Address;
                         break;
                     }
                     case MachineDataType.CommunicationTag:
@@ -310,35 +355,26 @@ namespace Modbus.Net
         public MachineGetDataType GetDataType { get; set; }
         public MachineSetDataType SetDataType { get; set; }
 
+        /// <summary>
+        ///     最大可执行任务数
+        /// </summary>
         public int MaxRunningTasks
         {
             get { return _scheduler.MaximumConcurrencyLevel; }
             set
             {
                 TaskStop();
-                _scheduler = new LimitedConcurrencyLevelTaskScheduler(value);           
+                _scheduler = new LimitedConcurrencyLevelTaskScheduler(value);
             }
         }
 
         /// <summary>
-        /// 构造一个TaskManager
+        ///     返回数据事件
         /// </summary>
-        /// <param name="maxRunningTask">同时可以运行的任务数</param>
-        /// <param name="getCycle">读取数据的时间间隔（秒）</param>
-        /// <param name="keepConnect">读取数据后是否保持连接</param>
-        /// <param name="dataType">获取与设置数据的方式</param>
-        public TaskManager(int maxRunningTask, int getCycle, bool keepConnect, MachineDataType dataType = MachineDataType.CommunicationTag)
-        {
-            _scheduler = new LimitedConcurrencyLevelTaskScheduler(maxRunningTask);
-            _machines = new HashSet<BaseMachine>(new BaseMachineEqualityComparer());
-            _unlinkedMachines = new HashSet<BaseMachine>(new BaseMachineEqualityComparer());
-            _getCycle = getCycle;
-            KeepConnect = keepConnect;
-            MachineDataType = dataType;
-        }
+        public event ReturnValuesDelegate ReturnValues;
 
         /// <summary>
-        /// 添加一台设备
+        ///     添加一台设备
         /// </summary>
         /// <param name="machine">设备</param>
         public void AddMachine(BaseMachine machine)
@@ -351,7 +387,7 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 添加多台设备
+        ///     添加多台设备
         /// </summary>
         /// <param name="machines">设备的列表</param>
         public void AddMachines(IEnumerable<BaseMachine> machines)
@@ -366,7 +402,7 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 根据设备的连接地址移除设备
+        ///     根据设备的连接地址移除设备
         /// </summary>
         /// <param name="machineToken">设备的连接地址</param>
         public void RemoveMachineWithToken(string machineToken)
@@ -382,7 +418,7 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 根据设备的id移除设备
+        ///     根据设备的id移除设备
         /// </summary>
         /// <param name="id">设备的id</param>
         public void RemoveMachineWithId(string id)
@@ -398,21 +434,21 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 将设备指定为未连接
+        ///     将设备指定为未连接
         /// </summary>
         /// <param name="id">设备的id</param>
         public void MoveMachineToUnlinked(string id)
         {
             IEnumerable<BaseMachine> machines;
-            lock(_machines)
+            lock (_machines)
             {
                 machines = _machines.Where(c => c.Id == id).ToList();
                 if (!machines.Any()) return;
                 _machines.RemoveWhere(p => p.Id == id);
             }
-            lock(_unlinkedMachines)
+            lock (_unlinkedMachines)
             {
-                foreach(var machine in machines)
+                foreach (var machine in machines)
                 {
                     _unlinkedMachines.Add(machine);
                 }
@@ -420,7 +456,7 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 将设备指定为已连接
+        ///     将设备指定为已连接
         /// </summary>
         /// <param name="id">设备的id</param>
         public void MoveMachineToLinked(string id)
@@ -442,7 +478,7 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 移除设备
+        ///     移除设备
         /// </summary>
         /// <param name="machine">设备的实例</param>
         public void RemoveMachine(BaseMachine machine)
@@ -458,7 +494,7 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 已连接设备更新
+        ///     已连接设备更新
         /// </summary>
         /// <param name="sender"></param>
         private void MaintainTasks(object sender)
@@ -467,7 +503,7 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 未连接设备更新
+        ///     未连接设备更新
         /// </summary>
         /// <param name="sender"></param>
         private void MaintainTasks2(object sender)
@@ -476,7 +512,7 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 已连接设备更新
+        ///     已连接设备更新
         /// </summary>
         /// <returns></returns>
         private async Task MaintainTasksAsync()
@@ -484,7 +520,7 @@ namespace Modbus.Net
             try
             {
                 var tasks = new List<Task>();
-                HashSet<BaseMachine> saveMachines = new HashSet<BaseMachine>();
+                var saveMachines = new HashSet<BaseMachine>();
                 IEnumerable<BaseMachine> saveMachinesEnum;
                 lock (_machines)
                 {
@@ -493,21 +529,21 @@ namespace Modbus.Net
                 }
                 foreach (var machine in saveMachinesEnum)
                 {
-                    CancellationTokenSource cts = new CancellationTokenSource();
-                    cts.CancelAfter(TimeSpan.FromSeconds(_getCycle * 10));
+                    var cts = new CancellationTokenSource();
+                    cts.CancelAfter(TimeSpan.FromSeconds(_getCycle*10));
                     var task = _tasks.StartNew(() => RunTask(machine).WithCancellation(cts.Token));
                     tasks.Add(task);
                 }
                 await Task.WhenAll(tasks);
             }
-            catch
+            catch(Exception)
             {
-                return;
+                //ignore
             }
         }
 
         /// <summary>
-        /// 未连接设备更新
+        ///     未连接设备更新
         /// </summary>
         /// <returns></returns>
         private async Task MaintainTasks2Async()
@@ -515,28 +551,28 @@ namespace Modbus.Net
             try
             {
                 var tasks = new List<Task>();
-                HashSet<BaseMachine> saveMachines = new HashSet<BaseMachine>();
+                var saveMachines = new HashSet<BaseMachine>();
                 lock (_unlinkedMachines)
                 {
                     saveMachines.UnionWith(_unlinkedMachines);
                 }
                 foreach (var machine in saveMachines)
                 {
-                    CancellationTokenSource cts = new CancellationTokenSource();
-                    cts.CancelAfter(TimeSpan.FromSeconds(_getCycle * 10));
+                    var cts = new CancellationTokenSource();
+                    cts.CancelAfter(TimeSpan.FromSeconds(_getCycle*10));
                     var task = _tasks.StartNew(() => RunTask(machine).WithCancellation(cts.Token));
                     tasks.Add(task);
                 }
                 await Task.WhenAll(tasks);
             }
-            catch
+            catch(Exception)
             {
-                return;
+                //ignore
             }
         }
 
         /// <summary>
-        /// 设置数据
+        ///     设置数据
         /// </summary>
         /// <param name="connectionToken">设备的连接标识</param>
         /// <param name="values">需要设置的数据</param>
@@ -554,7 +590,7 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 启动TaskManager
+        ///     启动TaskManager
         /// </summary>
         public void TaskStart()
         {
@@ -565,17 +601,14 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 停止TaskManager
+        ///     停止TaskManager
         /// </summary>
         public void TaskStop()
         {
             lock (_machines)
             {
                 GetCycle = Timeout.Infinite;
-                if (_cts != null)
-                {
-                    _cts.Cancel();
-                }
+                _cts?.Cancel();
                 if (_machines != null)
                 {
                     foreach (var machine in _machines)
@@ -588,7 +621,7 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 执行对具体设备的数据更新
+        ///     执行对具体设备的数据更新
         /// </summary>
         /// <param name="machine">设备的实例</param>
         /// <returns></returns>
@@ -599,7 +632,7 @@ namespace Modbus.Net
                 //调试代码，调试时取消下面一下代码的注释，会同步调用获取数据。
                 //var ans = machine.GetDatas();
                 //设置Cancellation Token
-                CancellationTokenSource cts = new CancellationTokenSource();
+                var cts = new CancellationTokenSource();
                 //超时后取消任务
                 cts.CancelAfter(TimeSpan.FromSeconds(_getCycle));
                 //读取数据
@@ -612,7 +645,7 @@ namespace Modbus.Net
                 {
                     MoveMachineToLinked(machine.Id);
                 }
-                ReturnValues?.Invoke(new TaskReturnDef()
+                ReturnValues?.Invoke(new TaskReturnDef
                 {
                     MachineId = machine.Id,
                     ReturnValues = ans
@@ -624,7 +657,7 @@ namespace Modbus.Net
                 {
                     MoveMachineToUnlinked(machine.Id);
                 }
-                ReturnValues?.Invoke(new TaskReturnDef()
+                ReturnValues?.Invoke(new TaskReturnDef
                 {
                     MachineId = machine.Id,
                     ReturnValues = null

@@ -1,15 +1,20 @@
-﻿using System;
+﻿/*
+ * Crc16来自于多个网络上的代码，Modbus.Net的作者不保留对Crc16类的版权。
+ * Crc16 class comes from mutiple websites, the author of "Modbus.Net" <b>donnot</b> obtain the copyright of Crc16(only).
+ */
+
+using System;
 
 namespace Modbus.Net
 {
     public class Crc16
     {
+        private static Crc16 _crc16;
+
         /// <summary>
-        /// CRC验证表
+        ///     CRC验证表
         /// </summary>
         public byte[] crc_table = new byte[512];
-
-        private static Crc16 _crc16 = null;
 
         public static Crc16 GetInstance()
         {
@@ -23,40 +28,40 @@ namespace Modbus.Net
         #region 生成CRC码
 
         /// <summary>
-        /// 生成CRC码
+        ///     生成CRC码
         /// </summary>
         /// <param name="message">发送或返回的命令，CRC码除外</param>
         /// <param name="Rcvbuf">存储CRC码的字节的数组</param>
         /// <param name="CRC">生成的CRC码</param>
         public short GetCRC(byte[] message, ref byte[] Rcvbuf)
         {
-            int  IX,IY,CRC;
-            int Len = message.Length;
-            CRC=0xFFFF;
+            int IX, IY, CRC;
+            var Len = message.Length;
+            CRC = 0xFFFF;
             //set all 1     
-            if (Len<=0)         
-                CRC = 0;      
-            else      
-            {         
-                Len--;                     
-                for (IX=0;IX<=Len;IX++)         
-                {                   
-                    CRC=CRC^(message[IX]);       
-                    for(IY=0;IY<=7;IY++)           
-                    {                           
-                        if ((CRC&1)!=0 )         
-                            CRC=(CRC>>1)^0xA001;           
-                        else                        
-                            CRC=CRC>>1;    
+            if (Len <= 0)
+                CRC = 0;
+            else
+            {
+                Len--;
+                for (IX = 0; IX <= Len; IX++)
+                {
+                    CRC = CRC ^ message[IX];
+                    for (IY = 0; IY <= 7; IY++)
+                    {
+                        if ((CRC & 1) != 0)
+                            CRC = (CRC >> 1) ^ 0xA001;
+                        else
+                            CRC = CRC >> 1;
                         //            
-                    }             
-                }        
-            }        
-            Rcvbuf[1] = (byte)((CRC & 0xff00)>>8);//高位置  
-            Rcvbuf[0] = (byte)(CRC & 0x00ff);  //低位置 
-            CRC= Rcvbuf[0]<<8;    
-            CRC+= Rcvbuf[1];     
-            return (short)CRC;
+                    }
+                }
+            }
+            Rcvbuf[1] = (byte) ((CRC & 0xff00) >> 8); //高位置  
+            Rcvbuf[0] = (byte) (CRC & 0x00ff); //低位置 
+            CRC = Rcvbuf[0] << 8;
+            CRC += Rcvbuf[1];
+            return (short) CRC;
         }
 
         #endregion
@@ -64,31 +69,28 @@ namespace Modbus.Net
         #region CRC验证
 
         /// <summary>
-        /// CRC校验
+        ///     CRC校验
         /// </summary>
         /// <param name="src">ST开头，&&结尾</param>
         /// <returns>十六进制数</returns>
         public bool CrcEfficacy(byte[] byteframe)
         {
-            byte[] recvbuff = new byte[2];
-            byte[] byteArr = new byte[byteframe.Length - 2];
+            var recvbuff = new byte[2];
+            var byteArr = new byte[byteframe.Length - 2];
             Array.Copy(byteframe, 0, byteArr, 0, byteArr.Length);
             GetCRC(byteArr, ref recvbuff);
             if (recvbuff[0] == byteframe[byteframe.Length - 2] && recvbuff[1] == byteframe[byteframe.Length - 1])
             {
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
         #endregion
 
         /// <summary>
-        /// 取模FF(255)
-        /// 取反+1
+        ///     取模FF(255)
+        ///     取反+1
         /// </summary>
         /// <param name="writeUncheck"></param>
         /// <returns></returns>
@@ -97,25 +99,25 @@ namespace Modbus.Net
             var index = message.IndexOf(Environment.NewLine, StringComparison.InvariantCulture);
             var writeUncheck = message.Substring(1, index - 2);
             var checkString = message.Substring(index - 2, 2);
-            char[] hexArray = new char[writeUncheck.Length];
+            var hexArray = new char[writeUncheck.Length];
             hexArray = writeUncheck.ToCharArray();
             int decNum = 0, decNumMSB = 0, decNumLSB = 0;
             int decByte, decByteTotal = 0;
 
-            bool msb = true;
+            var msb = true;
 
-            for (int t = 0; t <= hexArray.GetUpperBound(0); t++)
+            for (var t = 0; t <= hexArray.GetUpperBound(0); t++)
             {
                 if ((hexArray[t] >= 48) && (hexArray[t] <= 57))
 
-                    decNum = (hexArray[t] - 48);
+                    decNum = hexArray[t] - 48;
 
                 else if ((hexArray[t] >= 65) & (hexArray[t] <= 70))
                     decNum = 10 + (hexArray[t] - 65);
 
                 if (msb)
                 {
-                    decNumMSB = decNum * 16;
+                    decNumMSB = decNum*16;
                     msb = false;
                 }
                 else
@@ -130,7 +132,7 @@ namespace Modbus.Net
                 }
             }
 
-            decByteTotal = (255 - decByteTotal) + 1;
+            decByteTotal = 255 - decByteTotal + 1;
             decByteTotal = decByteTotal & 255;
 
             int a, b = 0;
@@ -141,7 +143,7 @@ namespace Modbus.Net
             for (i = 0; decByteTotal > 0; i++)
             {
                 //b = Convert.ToInt32(System.Math.Pow(16.0, i));
-                a = decByteTotal % 16;
+                a = decByteTotal%16;
                 decByteTotal /= 16;
                 if (a <= 9)
                     hexByte = a.ToString();
@@ -169,7 +171,7 @@ namespace Modbus.Net
                             break;
                     }
                 }
-                hexTotal = String.Concat(hexByte, hexTotal);
+                hexTotal = string.Concat(hexByte, hexTotal);
             }
             return hexTotal == checkString;
         }
@@ -177,12 +179,12 @@ namespace Modbus.Net
         public string GetLRC(byte[] code)
         {
             byte sum = 0;
-            foreach (byte b in code)
+            foreach (var b in code)
             {
                 sum += b;
             }
-            sum = (byte)(~sum + 1);//取反+1
-            string lrc = sum.ToString("X2");
+            sum = (byte) (~sum + 1); //取反+1
+            var lrc = sum.ToString("X2");
             return lrc;
         }
     }

@@ -53,6 +53,7 @@
     <Compile Include="AddressCombiner.cs" />
     <Compile Include="AddressFormater.cs" />
     <Compile Include="AddressTranslator.cs" />
+    <Compile Include="AddressHelper.cs" />
     <Compile Include="AsyncHelper.cs" />
     <Compile Include="BaseMachineExtend.cs" />
     <Compile Include="BaseProtocal.cs" />

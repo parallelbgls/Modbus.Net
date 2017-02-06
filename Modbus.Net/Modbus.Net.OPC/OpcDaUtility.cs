@@ -1,22 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Modbus.Net.OPC
 {
     public class OpcDaUtility : BaseUtility
     {
-        public override bool GetLittleEndian => Wrapper[typeof (ReadRequestOpcProtocal)].IsLittleEndian;
-        public override bool SetLittleEndian => Wrapper[typeof (WriteRequestOpcProtocal)].IsLittleEndian;
-
-        public OpcDaUtility(string connectionString) : base(0,0)
+        public OpcDaUtility(string connectionString) : base(0, 0)
         {
             ConnectionString = connectionString;
             AddressTranslator = new AddressTranslatorOpc();
             Wrapper = new OpcDaProtocal(ConnectionString);
         }
+
+        public override bool GetLittleEndian => Wrapper[typeof (ReadRequestOpcProtocal)].IsLittleEndian;
+        public override bool SetLittleEndian => Wrapper[typeof (WriteRequestOpcProtocal)].IsLittleEndian;
 
         public override void SetConnectionType(int connectionType)
         {
@@ -28,8 +25,9 @@ namespace Modbus.Net.OPC
             {
                 var readRequestOpcInputStruct = new ReadRequestOpcInputStruct(startAddress);
                 var readRequestOpcOutputStruct =
-                     await
-                         Wrapper.SendReceiveAsync(Wrapper[typeof(ReadRequestOpcProtocal)], readRequestOpcInputStruct) as ReadRequestOpcOutputStruct;
+                    await
+                        Wrapper.SendReceiveAsync(Wrapper[typeof (ReadRequestOpcProtocal)], readRequestOpcInputStruct) as
+                        ReadRequestOpcOutputStruct;
                 return readRequestOpcOutputStruct?.GetValue;
             }
             catch (Exception)
@@ -44,8 +42,9 @@ namespace Modbus.Net.OPC
             {
                 var writeRequestOpcInputStruct = new WriteRequestOpcInputStruct(startAddress, setContents[0]);
                 var writeRequestOpcOutputStruct =
-                     await
-                         Wrapper.SendReceiveAsync(Wrapper[typeof(WriteRequestOpcProtocal)], writeRequestOpcInputStruct) as WriteRequestOpcOutputStruct;
+                    await
+                        Wrapper.SendReceiveAsync(Wrapper[typeof (WriteRequestOpcProtocal)], writeRequestOpcInputStruct)
+                        as WriteRequestOpcOutputStruct;
                 return writeRequestOpcOutputStruct?.WriteResult == true;
             }
             catch (Exception e)

@@ -6,30 +6,30 @@ using System.Threading.Tasks;
 namespace Modbus.Net
 {
     /// <summary>
-    /// 基本协议
+    ///     基本协议
     /// </summary>
     public abstract class BaseProtocal
     {
-        public byte BelongAddress { get; set; }
+        /// <summary>
+        ///     构造器
+        /// </summary>
+        protected BaseProtocal(byte slaveAddress, byte masterAddress)
+        {
+            Protocals = new Dictionary<string, ProtocalUnit>();
+            SlaveAddress = slaveAddress;
+            MasterAddress = masterAddress;
+        }
+
+        public byte SlaveAddress { get; set; }
         public byte MasterAddress { get; set; }
 
         /// <summary>
-        /// 协议的连接器
+        ///     协议的连接器
         /// </summary>
         public ProtocalLinker ProtocalLinker { get; protected set; }
 
         /// <summary>
-        /// 构造器
-        /// </summary>
-        protected BaseProtocal(byte belongAddress, byte masterAddress)
-        {
-            Protocals = new Dictionary<string, ProtocalUnit>();
-            BelongAddress = belongAddress;
-            MasterAddress = masterAddress;
-        }
-
-        /// <summary>
-        /// 协议索引器，这是一个懒加载协议，当字典中不存在协议时自动加载协议，否则调用已经加载的协议
+        ///     协议索引器，这是一个懒加载协议，当字典中不存在协议时自动加载协议，否则调用已经加载的协议
         /// </summary>
         /// <param name="type">协议的类的GetType</param>
         /// <returns>协议的实例</returns>
@@ -37,7 +37,7 @@ namespace Modbus.Net
         {
             get
             {
-                string protocalName = type.FullName;
+                var protocalName = type.FullName;
                 if (Protocals.ContainsKey(protocalName))
                 {
                     return Protocals[protocalName];
@@ -52,12 +52,12 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 协议集合
+        ///     协议集合
         /// </summary>
         protected Dictionary<string, ProtocalUnit> Protocals { get; }
 
         /// <summary>
-        /// 注册一个协议
+        ///     注册一个协议
         /// </summary>
         /// <param name="linkProtocal">需要注册的协议</param>
         protected void Register(ProtocalUnit linkProtocal)
@@ -67,7 +67,7 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 发送协议内容并接收，一般方法
+        ///     发送协议内容并接收，一般方法
         /// </summary>
         /// <param name="isLittleEndian">是否是小端格式</param>
         /// <param name="content">写入的内容，使用对象数组描述</param>
@@ -78,7 +78,7 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 发送协议内容并接收，一般方法
+        ///     发送协议内容并接收，一般方法
         /// </summary>
         /// <param name="isLittleEndian">是否是小端格式</param>
         /// <param name="content">写入的内容，使用对象数组描述</param>
@@ -93,14 +93,11 @@ namespace Modbus.Net
             {
                 return await ProtocalLinker.SendReceiveAsync(ProtocalUnit.TranslateContent(isLittleEndian, content));
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         /// <summary>
-        /// 发送协议，通过传入需要使用的协议内容和输入结构
+        ///     发送协议，通过传入需要使用的协议内容和输入结构
         /// </summary>
         /// <param name="unit">协议的实例</param>
         /// <param name="content">输入信息的结构化描述</param>
@@ -111,14 +108,14 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 发送协议，通过传入需要使用的协议内容和输入结构
+        ///     发送协议，通过传入需要使用的协议内容和输入结构
         /// </summary>
         /// <param name="unit">协议的实例</param>
         /// <param name="content">输入信息的结构化描述</param>
         /// <returns>输出信息的结构化描述</returns>
         public virtual async Task<OutputStruct> SendReceiveAsync(ProtocalUnit unit, InputStruct content)
         {
-            int t = 0;          
+            var t = 0;
             var formatContent = unit.Format(content);
             if (formatContent != null)
             {
@@ -141,19 +138,19 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 协议连接开始
+        ///     协议连接开始
         /// </summary>
         /// <returns></returns>
         public abstract bool Connect();
 
         /// <summary>
-        /// 协议连接开始（异步）
+        ///     协议连接开始（异步）
         /// </summary>
         /// <returns></returns>
         public abstract Task<bool> ConnectAsync();
 
         /// <summary>
-        /// 协议连接断开
+        ///     协议连接断开
         /// </summary>
         /// <returns></returns>
         public virtual bool Disconnect()

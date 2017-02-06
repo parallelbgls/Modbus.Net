@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Modbus.Net.Modbus
+﻿namespace Modbus.Net.Modbus
 {
     public class AddressFormaterNA200H : AddressFormater
     {
@@ -28,7 +22,7 @@ namespace Modbus.Net.Modbus
 
         public override string FormatAddress(string area, int address, int subAddress)
         {
-            return area + " " + address  + "." + subAddress;
+            return area + " " + address + "." + subAddress;
         }
     }
 }

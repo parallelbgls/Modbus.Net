@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Modbus.Net.OPC
 {
     public class OpcDaProtocal : OpcProtocal
     {
-        private int _connectTryCount;
-
         private readonly string _host;
+        private int _connectTryCount;
 
         public OpcDaProtocal(string host)
         {

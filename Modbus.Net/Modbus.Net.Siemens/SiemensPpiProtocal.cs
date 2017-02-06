@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Modbus.Net.Siemens
 {
@@ -10,11 +6,13 @@ namespace Modbus.Net.Siemens
     {
         private readonly string _com;
 
-        public SiemensPpiProtocal(byte belongAddress, byte masterAddress) : this( ConfigurationManager.COM, belongAddress, masterAddress)
+        public SiemensPpiProtocal(byte slaveAddress, byte masterAddress)
+            : this(ConfigurationManager.COM, slaveAddress, masterAddress)
         {
         }
 
-        public SiemensPpiProtocal(string com, byte belongAddress, byte masterAddress) : base(belongAddress, masterAddress)
+        public SiemensPpiProtocal(string com, byte slaveAddress, byte masterAddress)
+            : base(slaveAddress, masterAddress)
         {
             _com = com;
         }
@@ -40,29 +38,29 @@ namespace Modbus.Net.Siemens
 
         public override bool Connect()
         {
-            return AsyncHelper.RunSync(()=>ConnectAsync());
+            return AsyncHelper.RunSync(() => ConnectAsync());
         }
 
         public override async Task<bool> ConnectAsync()
         {
             ProtocalLinker = new SiemensPpiProtocalLinker(_com);
-            var inputStruct = new ComCreateReferenceSiemensInputStruct(BelongAddress, MasterAddress);
+            var inputStruct = new ComCreateReferenceSiemensInputStruct(SlaveAddress, MasterAddress);
             var outputStruct =
                 await await
-                        ForceSendReceiveAsync(this[typeof (ComCreateReferenceSiemensProtocal)],
-                            inputStruct).
-                            ContinueWith(async answer =>
-                            {
-                                if (!ProtocalLinker.IsConnected) return false;
-                                var inputStruct2 = new ComConfirmMessageSiemensInputStruct(BelongAddress, MasterAddress);
-                                var outputStruct2 =
-                                    (ComConfirmMessageSiemensOutputStruct)
-                                        await
-                                            ForceSendReceiveAsync(this[typeof(ComConfirmMessageSiemensProtocal)],
-                                                inputStruct2);
-                                return outputStruct2 != null;
-                            });
-            return outputStruct != null;
+                    ForceSendReceiveAsync(this[typeof (ComCreateReferenceSiemensProtocal)],
+                        inputStruct).
+                        ContinueWith(async answer =>
+                        {
+                            if (!ProtocalLinker.IsConnected) return false;
+                            var inputStruct2 = new ComConfirmMessageSiemensInputStruct(SlaveAddress, MasterAddress);
+                            var outputStruct2 =
+                                (ComConfirmMessageSiemensOutputStruct)
+                                    await
+                                        ForceSendReceiveAsync(this[typeof (ComConfirmMessageSiemensProtocal)],
+                                            inputStruct2);
+                            return outputStruct2 != null;
+                        });
+            return outputStruct;
         }
     }
 }

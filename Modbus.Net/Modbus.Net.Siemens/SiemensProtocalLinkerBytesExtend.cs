@@ -6,14 +6,14 @@ namespace Modbus.Net.Siemens
     {
         public override byte[] BytesExtend(byte[] content)
         {
-            Array.Copy(new byte[]{0x03,0x00,0x00,0x00,0x02,0xf0,0x80}, 0, content, 0, 7);
-            Array.Copy(BigEndianValueHelper.Instance.GetBytes((ushort)content.Length), 0, content, 2, 2);
+            Array.Copy(new byte[] {0x03, 0x00, 0x00, 0x00, 0x02, 0xf0, 0x80}, 0, content, 0, 7);
+            Array.Copy(BigEndianValueHelper.Instance.GetBytes((ushort) content.Length), 0, content, 2, 2);
             return content;
         }
 
         public override byte[] BytesDecact(byte[] content)
         {
-            byte[] newContent = new byte[content.Length - 7];
+            var newContent = new byte[content.Length - 7];
             Array.Copy(content, 7, newContent, 0, newContent.Length);
             return newContent;
         }
@@ -23,11 +23,12 @@ namespace Modbus.Net.Siemens
     {
         public override byte[] BytesExtend(byte[] content)
         {
-            byte[] newContent = new byte[content.Length + 2];
+            var newContent = new byte[content.Length + 2];
             Array.Copy(content, 0, newContent, 0, content.Length);
-            Array.Copy(new byte[] { 0x68, (byte)(content.Length - 4), (byte)(content.Length - 4), 0x68 }, 0, newContent, 0, 4);
-            int check = 0;
-            for (int i = 4; i < newContent.Length - 2; i++)
+            Array.Copy(new byte[] {0x68, (byte) (content.Length - 4), (byte) (content.Length - 4), 0x68}, 0, newContent,
+                0, 4);
+            var check = 0;
+            for (var i = 4; i < newContent.Length - 2; i++)
             {
                 check += newContent[i];
             }
@@ -39,7 +40,7 @@ namespace Modbus.Net.Siemens
 
         public override byte[] BytesDecact(byte[] content)
         {
-            byte[] newContent = new byte[content.Length - 9];
+            var newContent = new byte[content.Length - 9];
             Array.Copy(content, 7, newContent, 0, newContent.Length);
             return newContent;
         }

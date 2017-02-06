@@ -15,17 +15,18 @@ namespace Modbus.Net.Siemens
         private readonly int _port;
         private int _connectTryCount;
 
-        public SiemensTcpProtocal(byte tdpuSize, ushort tsapSrc, ushort tsapDst, ushort maxCalling, ushort maxCalled, ushort maxPdu) : this(tdpuSize, tsapSrc, tsapDst, maxCalling, maxCalled, maxPdu, ConfigurationManager.IP)
+        public SiemensTcpProtocal(byte tdpuSize, ushort tsapSrc, ushort tsapDst, ushort maxCalling, ushort maxCalled,
+            ushort maxPdu) : this(tdpuSize, tsapSrc, tsapDst, maxCalling, maxCalled, maxPdu, ConfigurationManager.IP)
         {
         }
 
         public SiemensTcpProtocal(byte tdpuSize, ushort tsapSrc, ushort tsapDst, ushort maxCalling, ushort maxCalled,
-            ushort maxPdu, string ip) : this (tdpuSize, tsapSrc, tsapDst, maxCalling, maxCalled, maxPdu, ip, 0)
+            ushort maxPdu, string ip) : this(tdpuSize, tsapSrc, tsapDst, maxCalling, maxCalled, maxPdu, ip, 0)
         {
-            
         }
 
-        public SiemensTcpProtocal(byte tdpuSize, ushort tsapSrc, ushort tsapDst, ushort maxCalling, ushort maxCalled, ushort maxPdu, string ip, int port) : base (0, 0)
+        public SiemensTcpProtocal(byte tdpuSize, ushort tsapSrc, ushort tsapDst, ushort maxCalling, ushort maxCalled,
+            ushort maxPdu, string ip, int port) : base(0, 0)
         {
             _taspSrc = tsapSrc;
             _tsapDst = tsapDst;
@@ -61,7 +62,11 @@ namespace Modbus.Net.Siemens
         {
             if (ProtocalLinker != null && ProtocalLinker.IsConnected) return await base.SendReceiveAsync(unit, content);
             if (_connectTryCount > 10) return null;
-            return await await ConnectAsync().ContinueWith(answer => answer.Result ? base.SendReceiveAsync(unit, content) : null);
+            return
+                await
+                    await
+                        ConnectAsync()
+                            .ContinueWith(answer => answer.Result ? base.SendReceiveAsync(unit, content) : null);
         }
 
         private async Task<OutputStruct> ForceSendReceiveAsync(ProtocalUnit unit, InputStruct content)

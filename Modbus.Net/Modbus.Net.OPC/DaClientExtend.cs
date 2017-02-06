@@ -7,9 +7,8 @@ using Opc.Da;
 
 namespace Modbus.Net.OPC
 {
-
     /// <summary>
-    /// Read value full result
+    ///     Read value full result
     /// </summary>
     public class OpcValueResult
     {
@@ -20,17 +19,23 @@ namespace Modbus.Net.OPC
 
     public class MyDaClient : DaClient
     {
+        public MyDaClient(Uri serverUrl) : base(serverUrl)
+        {
+        }
+
         /// <summary>
-        /// Write a value on the specified opc tag
+        ///     Write a value on the specified opc tag
         /// </summary>
-        /// <param name="tag">The fully-qualified identifier of the tag. You can specify a subfolder by using a comma delimited name.
-        /// E.g: the tag `foo.bar` writes on the tag `bar` on the folder `foo`</param>
+        /// <param name="tag">
+        ///     The fully-qualified identifier of the tag. You can specify a subfolder by using a comma delimited name.
+        ///     E.g: the tag `foo.bar` writes on the tag `bar` on the folder `foo`
+        /// </param>
         public OpcValueResult Read(string tag)
         {
-            var item = new Item { ItemName = tag };
-            var result = Server.Read(new[] { item })[0];
+            var item = new Item {ItemName = tag};
+            var result = Server.Read(new[] {item})[0];
             CheckResult(result, tag);
-            return new OpcValueResult()
+            return new OpcValueResult
             {
                 Value = result.Value,
                 Timestamp = result.Timestamp,
@@ -39,15 +44,11 @@ namespace Modbus.Net.OPC
         }
 
         /// <summary>
-        /// Read a tag asynchronusly
+        ///     Read a tag asynchronusly
         /// </summary>
         public Task<OpcValueResult> ReadAsync(string tag)
         {
             return Task.Run(() => Read(tag));
-        }
-
-        public MyDaClient(Uri serverUrl) : base(serverUrl)
-        {
         }
 
         private static void CheckResult(IResult result, string tag)
@@ -55,7 +56,9 @@ namespace Modbus.Net.OPC
             if (result == null)
                 throw new OpcException("The server replied with an empty response");
             if (result.ResultID.ToString() != "S_OK")
-                throw new OpcException(string.Format("Invalid response from the server. (Response Status: {0}, Opc Tag: {1})", result.ResultID, tag));
+                throw new OpcException(
+                    string.Format("Invalid response from the server. (Response Status: {0}, Opc Tag: {1})",
+                        result.ResultID, tag));
         }
     }
 }

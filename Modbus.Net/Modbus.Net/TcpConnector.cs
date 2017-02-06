@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,20 +24,29 @@ namespace Modbus.Net
     /// </summary>
     public class TcpConnector : BaseConnector, IDisposable
     {
-        public override string ConnectionToken => _host;
-
         private readonly string _host;
-
-        private int _sendCount;
-        private int _receiveCount;
-        private int _errorCount;
+        private readonly int _port;
 
         // 2MB 的接收缓冲区，目的是一次接收完服务器发回的消息
         private readonly byte[] _receiveBuffer = new byte[1024];
-        private readonly int _port;
+        private int _errorCount;
+        private int _receiveCount;
+
+        private int _sendCount;
         private TcpClient _socketClient;
 
         private int _timeoutTime;
+
+        private bool m_disposed;
+
+        public TcpConnector(string ipaddress, int port, int timeoutTime)
+        {
+            _host = ipaddress;
+            _port = port;
+            TimeoutTime = timeoutTime;
+        }
+
+        public override string ConnectionToken => _host;
 
         public int TimeoutTime
         {
@@ -53,18 +61,11 @@ namespace Modbus.Net
             }
         }
 
-        public TcpConnector(string ipaddress, int port, int timeoutTime)
-        {
-            _host = ipaddress;
-            _port = port;
-            TimeoutTime = timeoutTime;
-        }
-
         public override bool IsConnected => _socketClient?.Client != null && _socketClient.Connected;
 
         /// <summary>
-        　　　　/// 实现IDisposable接口
-        　　　　/// </summary>
+        ///     实现IDisposable接口
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);
@@ -74,10 +75,8 @@ namespace Modbus.Net
             GC.SuppressFinalize(this);
         }
 
-        private bool m_disposed = false;
-
         /// <summary>
-        /// 虚方法，可供子类重写
+        ///     虚方法，可供子类重写
         /// </summary>
         /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
@@ -99,8 +98,8 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 析构函数
-        /// 当客户端没有显示调用Dispose()时由GC完成资源回收功能
+        ///     析构函数
+        ///     当客户端没有显示调用Dispose()时由GC完成资源回收功能
         /// </summary>
         ~TcpConnector()
         {
@@ -118,37 +117,37 @@ namespace Modbus.Net
             {
                 Disconnect();
             }
+            try
+            {
+                _socketClient = new TcpClient
+                {
+                    SendTimeout = TimeoutTime,
+                    ReceiveTimeout = TimeoutTime
+                };
+
                 try
                 {
-                    _socketClient = new TcpClient
-                    {
-                        SendTimeout = TimeoutTime,
-                        ReceiveTimeout = TimeoutTime
-                    };
-
-                    try
-                    {
-                        CancellationTokenSource cts = new CancellationTokenSource();
-                        cts.CancelAfter(TimeoutTime);
-                        await _socketClient.ConnectAsync(_host, _port).WithCancellation(cts.Token);                     
-                    }
-                    catch (Exception e)
-                    {
-                        AddInfo("client connected exception: " + e.Message);
-                    }
-                    if (_socketClient.Connected)
-                    {
-                        AddInfo("client connected.");
-                        return true;
-                    }
-                    AddInfo("connect failed.");
-                    return false;
+                    var cts = new CancellationTokenSource();
+                    cts.CancelAfter(TimeoutTime);
+                    await _socketClient.ConnectAsync(_host, _port).WithCancellation(cts.Token);
                 }
-                catch (Exception err)
+                catch (Exception e)
                 {
-                    AddInfo("client connect exception: " + err.Message);
-                    return false;
+                    AddInfo("client connected exception: " + e.Message);
                 }
+                if (_socketClient.Connected)
+                {
+                    AddInfo("client connected.");
+                    return true;
+                }
+                AddInfo("connect failed.");
+                return false;
+            }
+            catch (Exception err)
+            {
+                AddInfo("client connect exception: " + err.Message);
+                return false;
+            }
         }
 
         public override bool Disconnect()
@@ -192,7 +191,7 @@ namespace Modbus.Net
         /// <returns>是否发送成功</returns>
         public override async Task<bool> SendMsgWithoutReturnAsync(byte[] message)
         {
-            byte[] datagram = message;
+            var datagram = message;
 
             try
             {
@@ -228,7 +227,7 @@ namespace Modbus.Net
         /// <returns>是否发送成功</returns>
         public override async Task<byte[]> SendMsgAsync(byte[] message)
         {
-            byte[] datagram = message;
+            var datagram = message;
 
             try
             {
@@ -257,7 +256,7 @@ namespace Modbus.Net
         {
             try
             {
-                int len = await stream.ReadAsync(_receiveBuffer, 0, _receiveBuffer.Length);
+                var len = await stream.ReadAsync(_receiveBuffer, 0, _receiveBuffer.Length);
                 stream.Flush();
                 // 异步接收回答
                 if (len > 0)

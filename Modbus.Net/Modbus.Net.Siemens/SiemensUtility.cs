@@ -8,7 +8,7 @@ namespace Modbus.Net.Siemens
         Ppi = 0,
         Mpi = 1,
         Tcp = 2
-    };
+    }
 
     public enum SiemensMachineModel
     {
@@ -18,7 +18,7 @@ namespace Modbus.Net.Siemens
         S7_400 = 3,
         S7_1200 = 4,
         S7_1500 = 5
-    };
+    }
 
 
     public class SiemensUtility : BaseUtility
@@ -30,69 +30,10 @@ namespace Modbus.Net.Siemens
         private readonly ushort _maxCalled;
         private readonly ushort _maxPdu;
 
-        public override bool GetLittleEndian => Wrapper[typeof (ReadRequestSiemensProtocal)].IsLittleEndian;
-        public override bool SetLittleEndian => Wrapper[typeof (WriteRequestSiemensProtocal)].IsLittleEndian;
-
-        protected string ConnectionStringIp
-        {
-            get
-            {
-                if (ConnectionString == null) return null;
-                return ConnectionString.Contains(":") ? ConnectionString.Split(':')[0] : ConnectionString;
-            }
-        }
-
-        protected int? ConnectionStringPort
-        {
-            get
-            {
-                if (ConnectionString == null) return null;
-                if (!ConnectionString.Contains(":")) return null;
-                var connectionStringSplit = ConnectionString.Split(':');
-                try
-                {
-                    return connectionStringSplit.Length < 2 ? (int?)null : int.Parse(connectionStringSplit[1]);
-                }
-                catch
-                {
-                    return null;
-                }
-            }
-        }
-
         private SiemensType _siemensType;
 
-        public SiemensType ConnectionType
-        {
-            get
-            {
-                return _siemensType;
-            }
-            set
-            {
-                _siemensType = value;
-                switch (_siemensType)
-                {
-                    case SiemensType.Ppi:
-                    {
-                        Wrapper = ConnectionString == null ? new SiemensPpiProtocal(BelongAddress, MasterAddress) : new SiemensPpiProtocal(ConnectionString, BelongAddress, MasterAddress);
-                        break;
-                    }
-                    //case SiemensType.Mpi:
-                    //    {
-                    //        throw new NotImplementedException();
-                    //    }
-                    case SiemensType.Tcp:
-                    {
-                        Wrapper = ConnectionString == null ? new SiemensTcpProtocal(_tdpuSize, _taspSrc, _tsapDst, _maxCalling, _maxCalled, _maxPdu) : (ConnectionStringPort == null ? new SiemensTcpProtocal(_tdpuSize, _taspSrc, _tsapDst, _maxCalling, _maxCalled, _maxPdu, ConnectionString) : new SiemensTcpProtocal(_tdpuSize, _taspSrc, _tsapDst, _maxCalling, _maxCalled, _maxPdu, ConnectionStringIp, ConnectionStringPort.Value));
-                        break;
-                    }
-                }
-            }
-        }
-
         public SiemensUtility(SiemensType connectionType, string connectionString, SiemensMachineModel model,
-            byte belongAddress, byte masterAddress) : base(belongAddress, masterAddress)
+            byte slaveAddress, byte masterAddress) : base(slaveAddress, masterAddress)
         {
             ConnectionString = connectionString;
             switch (model)
@@ -148,6 +89,70 @@ namespace Modbus.Net.Siemens
             AddressTranslator = new AddressTranslatorSiemens();
         }
 
+        public override bool GetLittleEndian => Wrapper[typeof (ReadRequestSiemensProtocal)].IsLittleEndian;
+        public override bool SetLittleEndian => Wrapper[typeof (WriteRequestSiemensProtocal)].IsLittleEndian;
+
+        protected string ConnectionStringIp
+        {
+            get
+            {
+                if (ConnectionString == null) return null;
+                return ConnectionString.Contains(":") ? ConnectionString.Split(':')[0] : ConnectionString;
+            }
+        }
+
+        protected int? ConnectionStringPort
+        {
+            get
+            {
+                if (ConnectionString == null) return null;
+                if (!ConnectionString.Contains(":")) return null;
+                var connectionStringSplit = ConnectionString.Split(':');
+                try
+                {
+                    return connectionStringSplit.Length < 2 ? (int?) null : int.Parse(connectionStringSplit[1]);
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+        }
+
+        public SiemensType ConnectionType
+        {
+            get { return _siemensType; }
+            set
+            {
+                _siemensType = value;
+                switch (_siemensType)
+                {
+                    case SiemensType.Ppi:
+                    {
+                        Wrapper = ConnectionString == null
+                            ? new SiemensPpiProtocal(SlaveAddress, MasterAddress)
+                            : new SiemensPpiProtocal(ConnectionString, SlaveAddress, MasterAddress);
+                        break;
+                    }
+                    //case SiemensType.Mpi:
+                    //    {
+                    //        throw new NotImplementedException();
+                    //    }
+                    case SiemensType.Tcp:
+                    {
+                        Wrapper = ConnectionString == null
+                            ? new SiemensTcpProtocal(_tdpuSize, _taspSrc, _tsapDst, _maxCalling, _maxCalled, _maxPdu)
+                            : (ConnectionStringPort == null
+                                ? new SiemensTcpProtocal(_tdpuSize, _taspSrc, _tsapDst, _maxCalling, _maxCalled, _maxPdu,
+                                    ConnectionString)
+                                : new SiemensTcpProtocal(_tdpuSize, _taspSrc, _tsapDst, _maxCalling, _maxCalled, _maxPdu,
+                                    ConnectionStringIp, ConnectionStringPort.Value));
+                        break;
+                    }
+                }
+            }
+        }
+
         public override void SetConnectionType(int connectionType)
         {
             ConnectionType = (SiemensType) connectionType;
@@ -157,7 +162,8 @@ namespace Modbus.Net.Siemens
         {
             try
             {
-                var readRequestSiemensInputStruct = new ReadRequestSiemensInputStruct(BelongAddress, MasterAddress, 0xd3c7, SiemensTypeCode.Byte, startAddress, (ushort)getByteCount, AddressTranslator);
+                var readRequestSiemensInputStruct = new ReadRequestSiemensInputStruct(SlaveAddress, MasterAddress,
+                    0xd3c7, SiemensTypeCode.Byte, startAddress, (ushort) getByteCount, AddressTranslator);
                 var readRequestSiemensOutputStruct =
                     await
                         Wrapper.SendReceiveAsync(Wrapper[typeof (ReadRequestSiemensProtocal)],
@@ -174,7 +180,8 @@ namespace Modbus.Net.Siemens
         {
             try
             {
-                var writeRequestSiemensInputStruct = new WriteRequestSiemensInputStruct(BelongAddress, MasterAddress, 0xd3c8, startAddress, setContents, AddressTranslator);
+                var writeRequestSiemensInputStruct = new WriteRequestSiemensInputStruct(SlaveAddress, MasterAddress,
+                    0xd3c8, startAddress, setContents, AddressTranslator);
                 var writeRequestSiemensOutputStruct =
                     await
                         Wrapper.SendReceiveAsync(Wrapper[typeof (WriteRequestSiemensProtocal)],
@@ -188,12 +195,12 @@ namespace Modbus.Net.Siemens
         }
 
         /*
-        public override DateTime GetTime(byte belongAddress)
+        public override DateTime GetTime(byte slaveAddress)
         {
             throw new NotImplementedException();
         }
 
-        public override bool SetTime(byte belongAddress, DateTime setTime)
+        public override bool SetTime(byte slaveAddress, DateTime setTime)
         {
             throw new NotImplementedException();
         }

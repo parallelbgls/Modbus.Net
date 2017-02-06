@@ -1,25 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Modbus.Net.OPC
 {
     public class AddressFormaterOpc : AddressFormater
     {
-        public BaseMachine Machine { get; set; }
-
-        protected Func<BaseMachine, AddressUnit, string[]> TagGeter { get; set; }
-
-        protected char Seperator { get; set; }
-
-        public AddressFormaterOpc(Func<BaseMachine, AddressUnit, string[]> tagGeter, BaseMachine machine, char seperator = '/')
+        public AddressFormaterOpc(Func<BaseMachine, AddressUnit, string[]> tagGeter, BaseMachine machine,
+            char seperator = '/')
         {
             Machine = machine;
             TagGeter = tagGeter;
             Seperator = seperator;
         }
+
+        public BaseMachine Machine { get; set; }
+
+        protected Func<BaseMachine, AddressUnit, string[]> TagGeter { get; set; }
+
+        protected char Seperator { get; set; }
 
         public override string FormatAddress(string area, int address)
         {
@@ -27,7 +25,7 @@ namespace Modbus.Net.OPC
             if (findAddress == null) return null;
             var strings = TagGeter(Machine, findAddress);
             var ans = "";
-            for (int i = 0; i < strings.Length; i++)
+            for (var i = 0; i < strings.Length; i++)
             {
                 ans += strings[i].Trim().Replace(" ", "") + Seperator;
             }

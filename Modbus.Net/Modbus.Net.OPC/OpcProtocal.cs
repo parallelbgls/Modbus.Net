@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 
 namespace Modbus.Net.OPC
 {
@@ -20,7 +16,7 @@ namespace Modbus.Net.OPC
             Tag = tag;
         }
 
-        public string Tag { get; private set; }
+        public string Tag { get; }
     }
 
     public class ReadRequestOpcOutputStruct : OutputStruct
@@ -38,11 +34,11 @@ namespace Modbus.Net.OPC
         public override byte[] Format(InputStruct message)
         {
             var r_message = (ReadRequestOpcInputStruct) message;
-            return Format((byte)0x00, Encoding.UTF8.GetBytes(r_message.Tag));
+            return Format((byte) 0x00, Encoding.UTF8.GetBytes(r_message.Tag));
         }
 
         public override OutputStruct Unformat(byte[] messageBytes, ref int pos)
-        {          
+        {
             return new ReadRequestOpcOutputStruct(messageBytes);
         }
     }
@@ -55,8 +51,8 @@ namespace Modbus.Net.OPC
             SetValue = setValue;
         }
 
-        public string Tag { get; private set; }
-        public object SetValue { get; private set; }
+        public string Tag { get; }
+        public object SetValue { get; }
     }
 
     public class WriteRequestOpcOutputStruct : OutputStruct
@@ -67,17 +63,16 @@ namespace Modbus.Net.OPC
         }
 
         public bool WriteResult { get; private set; }
-
     }
 
     public class WriteRequestOpcProtocal : SpecialProtocalUnit
     {
         public override byte[] Format(InputStruct message)
         {
-            var r_message = (WriteRequestOpcInputStruct)message;
-            byte[] tag = Encoding.UTF8.GetBytes(r_message.Tag);
-            byte[] fullName = Encoding.UTF8.GetBytes(r_message.SetValue.GetType().FullName);
-            return Format((byte)0x01, tag, (int)0x00ffff00, fullName, (int)0x00ffff00, r_message.SetValue);
+            var r_message = (WriteRequestOpcInputStruct) message;
+            var tag = Encoding.UTF8.GetBytes(r_message.Tag);
+            var fullName = Encoding.UTF8.GetBytes(r_message.SetValue.GetType().FullName);
+            return Format((byte) 0x01, tag, 0x00ffff00, fullName, 0x00ffff00, r_message.SetValue);
         }
 
         public override OutputStruct Unformat(byte[] messageBytes, ref int pos)

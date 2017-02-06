@@ -1,30 +1,47 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Modbus.Net.Modbus
 {
     /// <summary>
-    /// Modbus连接类型
+    ///     Modbus连接类型
     /// </summary>
     public enum ModbusType
     {
         /// <summary>
-        /// Rtu连接
+        ///     Rtu连接
         /// </summary>
         Rtu = 0,
+
         /// <summary>
-        /// Tcp连接
+        ///     Tcp连接
         /// </summary>
         Tcp = 1,
+
         /// <summary>
-        /// Ascii连接
+        ///     Ascii连接
         /// </summary>
-        Ascii = 2,
+        Ascii = 2
     }
 
     public class ModbusUtility : BaseUtility
     {
         private ModbusType _modbusType;
+
+        public ModbusUtility(int connectionType, byte slaveAddress, byte masterAddress)
+            : base(slaveAddress, masterAddress)
+        {
+            ConnectionString = null;
+            ModbusType = (ModbusType) connectionType;
+            AddressTranslator = new AddressTranslatorModbus();
+        }
+
+        public ModbusUtility(ModbusType connectionType, string connectionString, byte slaveAddress, byte masterAddress)
+            : base(slaveAddress, masterAddress)
+        {
+            ConnectionString = connectionString;
+            ModbusType = connectionType;
+            AddressTranslator = new AddressTranslatorModbus();
+        }
 
         public override bool GetLittleEndian => Wrapper[typeof (ReadDataModbusProtocal)].IsLittleEndian;
         public override bool SetLittleEndian => Wrapper[typeof (WriteDataModbusProtocal)].IsLittleEndian;
@@ -47,22 +64,18 @@ namespace Modbus.Net.Modbus
                 var connectionStringSplit = ConnectionString.Split(':');
                 try
                 {
-                    return connectionStringSplit.Length < 2 ? (int?)null : int.Parse(connectionStringSplit[1]);
+                    return connectionStringSplit.Length < 2 ? (int?) null : int.Parse(connectionStringSplit[1]);
                 }
                 catch
                 {
                     return null;
                 }
-                
             }
         }
 
         public ModbusType ModbusType
         {
-            get
-            {
-                return _modbusType;
-            }
+            get { return _modbusType; }
             set
             {
                 _modbusType = value;
@@ -70,35 +83,30 @@ namespace Modbus.Net.Modbus
                 {
                     case ModbusType.Rtu:
                     {
-                        Wrapper = ConnectionString == null ? new ModbusRtuProtocal(BelongAddress, MasterAddress) : new ModbusRtuProtocal(ConnectionString, BelongAddress, MasterAddress);
+                        Wrapper = ConnectionString == null
+                            ? new ModbusRtuProtocal(SlaveAddress, MasterAddress)
+                            : new ModbusRtuProtocal(ConnectionString, SlaveAddress, MasterAddress);
                         break;
                     }
                     case ModbusType.Tcp:
                     {
-                        Wrapper = ConnectionString == null ? new ModbusTcpProtocal(BelongAddress, MasterAddress) : (ConnectionStringPort == null ? new ModbusTcpProtocal(ConnectionString, BelongAddress, MasterAddress) : new ModbusTcpProtocal(ConnectionStringIp,ConnectionStringPort.Value, BelongAddress, MasterAddress));
+                        Wrapper = ConnectionString == null
+                            ? new ModbusTcpProtocal(SlaveAddress, MasterAddress)
+                            : (ConnectionStringPort == null
+                                ? new ModbusTcpProtocal(ConnectionString, SlaveAddress, MasterAddress)
+                                : new ModbusTcpProtocal(ConnectionStringIp, ConnectionStringPort.Value, SlaveAddress,
+                                    MasterAddress));
                         break;
                     }
                     case ModbusType.Ascii:
                     {
-                        Wrapper = ConnectionString == null ? new ModbusAsciiProtocal(BelongAddress, MasterAddress) : new ModbusAsciiProtocal(ConnectionString, BelongAddress, MasterAddress);
+                        Wrapper = ConnectionString == null
+                            ? new ModbusAsciiProtocal(SlaveAddress, MasterAddress)
+                            : new ModbusAsciiProtocal(ConnectionString, SlaveAddress, MasterAddress);
                         break;
                     }
                 }
             }
-        }
-
-        public ModbusUtility(int connectionType, byte belongAddress, byte masterAddress) : base(belongAddress, masterAddress)
-        {
-            ConnectionString = null;
-            ModbusType = (ModbusType)connectionType;
-            AddressTranslator = new AddressTranslatorModbus();
-        }
-
-        public ModbusUtility(ModbusType connectionType, string connectionString, byte belongAddress, byte masterAddress) : base(belongAddress, masterAddress)
-        {
-            ConnectionString = connectionString;
-            ModbusType = connectionType;
-            AddressTranslator = new AddressTranslatorModbus();
         }
 
         public override void SetConnectionType(int connectionType)
@@ -110,12 +118,12 @@ namespace Modbus.Net.Modbus
         {
             try
             {
-                var inputStruct = new ReadDataModbusInputStruct(BelongAddress, startAddress,
-                    (ushort)getByteCount, AddressTranslator);
+                var inputStruct = new ReadDataModbusInputStruct(SlaveAddress, startAddress,
+                    (ushort) getByteCount, AddressTranslator);
                 var outputStruct = await
                     Wrapper.SendReceiveAsync(Wrapper[typeof (ReadDataModbusProtocal)], inputStruct) as
                     ReadDataModbusOutputStruct;
-                return  outputStruct?.DataValue;
+                return outputStruct?.DataValue;
             }
             catch
             {
@@ -127,7 +135,7 @@ namespace Modbus.Net.Modbus
         {
             try
             {
-                var inputStruct = new WriteDataModbusInputStruct(BelongAddress, startAddress, setContents,
+                var inputStruct = new WriteDataModbusInputStruct(SlaveAddress, startAddress, setContents,
                     AddressTranslator);
                 var outputStruct = await
                     Wrapper.SendReceiveAsync(Wrapper[typeof (WriteDataModbusProtocal)], inputStruct) as
@@ -145,7 +153,7 @@ namespace Modbus.Net.Modbus
         {
             try
             {
-                var inputStruct = new GetSystemTimeModbusInputStruct(BelongAddress);
+                var inputStruct = new GetSystemTimeModbusInputStruct(SlaveAddress);
                 var outputStruct =
                     Wrapper.SendReceive(Wrapper[typeof(GetSystemTimeModbusProtocal)], inputStruct) as
                         GetSystemTimeModbusOutputStruct;
@@ -161,7 +169,7 @@ namespace Modbus.Net.Modbus
         {
             try
             {
-                var inputStruct = new SetSystemTimeModbusInputStruct(BelongAddress, setTime);
+                var inputStruct = new SetSystemTimeModbusInputStruct(SlaveAddress, setTime);
                 var outputStruct =
                     Wrapper.SendReceive(Wrapper[typeof(SetSystemTimeModbusProtocal)], inputStruct) as
                         SetSystemTimeModbusOutputStruct;

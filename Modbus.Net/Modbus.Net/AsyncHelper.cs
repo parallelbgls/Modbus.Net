@@ -1,4 +1,9 @@
-﻿using System;
+﻿/* AsyncHelper 注释
+ * -- AsyncHelper来自于AsyncEx，为了引用方便直接拷贝了代码。Modbus.Net的作者不保留对AsyncHeloper类的版权。
+ * -- AsyncHelper copied from AsyncEx. The author of "Modbus.Net" <b>donnot</b> obtain the copyright of AsyncHelper(Only).
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,41 +13,41 @@ namespace Modbus.Net
     public static class AsyncHelper
     {
         private static readonly TaskFactory _myTaskFactory = new
-          TaskFactory(CancellationToken.None,
-                      TaskCreationOptions.None,
-                      TaskContinuationOptions.None,
-                      TaskScheduler.Default);
+            TaskFactory(CancellationToken.None,
+                TaskCreationOptions.None,
+                TaskContinuationOptions.None,
+                TaskScheduler.Default);
 
         /// <summary>
-        /// Run async method syncronized
+        ///     Run async method syncronized
         /// </summary>
         /// <typeparam name="TResult">Return type</typeparam>
         /// <param name="func">Async method with return</param>
         /// <returns>Return value</returns>
         public static TResult RunSync<TResult>(Func<Task<TResult>> func)
         {
-            return AsyncHelper._myTaskFactory
-              .StartNew<Task<TResult>>(func)
-              .Unwrap<TResult>()
-              .GetAwaiter()
-              .GetResult();
+            return _myTaskFactory
+                .StartNew(func)
+                .Unwrap()
+                .GetAwaiter()
+                .GetResult();
         }
 
         /// <summary>
-        /// Run async method syncronized.
+        ///     Run async method syncronized.
         /// </summary>
         /// <param name="func">Async method</param>
         public static void RunSync(Func<Task> func)
         {
-            AsyncHelper._myTaskFactory
-              .StartNew<Task>(func)
-              .Unwrap()
-              .GetAwaiter()
-              .GetResult();
+            _myTaskFactory
+                .StartNew(func)
+                .Unwrap()
+                .GetAwaiter()
+                .GetResult();
         }
 
         /// <summary>
-        /// Change async task to async task with cancellation token
+        ///     Change async task to async task with cancellation token
         /// </summary>
         /// <param name="task">Async task</param>
         /// <param name="token">Cancellation Token</param>
@@ -61,12 +66,12 @@ namespace Modbus.Net
     }
 
     /// <summary>
-    /// AsyncLock locks across one or several await calls.
+    ///     AsyncLock locks across one or several await calls.
     /// </summary>
     public class AsyncLock
     {
-        private readonly AsyncSemaphore _semaphore;
         private readonly Task<Releaser> _releaser;
+        private readonly AsyncSemaphore _semaphore;
 
         public AsyncLock()
         {
@@ -75,7 +80,7 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// Lock the async method. Call like: using (await asynclock.LockAsync())
+        ///     Lock the async method. Call like: using (await asynclock.LockAsync())
         /// </summary>
         /// <returns></returns>
         public Task<Releaser> LockAsync()
@@ -109,11 +114,11 @@ namespace Modbus.Net
     }
 
     /// <summary>
-    /// AsyncSemaphore semaphore the multi run tasks.
+    ///     AsyncSemaphore semaphore the multi run tasks.
     /// </summary>
     public class AsyncSemaphore
     {
-        private readonly static Task _completed = Task.FromResult(true);
+        private static readonly Task _completed = Task.FromResult(true);
         private readonly Queue<TaskCompletionSource<bool>> _waiters = new Queue<TaskCompletionSource<bool>>();
         private int _currentCount;
 
@@ -135,12 +140,9 @@ namespace Modbus.Net
                     _currentCount--;
                     return _completed;
                 }
-                else
-                {
-                    var waiter = new TaskCompletionSource<bool>();
-                    _waiters.Enqueue(waiter);
-                    return waiter.Task;
-                }
+                var waiter = new TaskCompletionSource<bool>();
+                _waiters.Enqueue(waiter);
+                return waiter.Task;
             }
         }
 

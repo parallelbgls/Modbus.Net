@@ -8,56 +8,58 @@ namespace Modbus.Net
     public abstract class BaseUtility
     {
         /// <summary>
-        /// 协议收发主体
+        ///     协议收发主体
         /// </summary>
         protected BaseProtocal Wrapper;
-        protected string ConnectionString { get; set; }
-
-        public byte BelongAddress { get; set; }
-        public byte MasterAddress { get; set; }
 
         /// <summary>
-        /// 获取协议是否遵循小端格式
+        ///     构造器
         /// </summary>
-        public abstract bool GetLittleEndian { get; }
-        /// <summary>
-        /// 设置协议是否遵循小端格式
-        /// </summary>
-        public abstract bool SetLittleEndian { get; }
-
-        /// <summary>
-        /// 设备是否已经连接
-        /// </summary>
-        public bool IsConnected => Wrapper?.ProtocalLinker != null && Wrapper.ProtocalLinker.IsConnected;
-
-        /// <summary>
-        /// 标识设备的连接关键字
-        /// </summary>
-        public string ConnectionToken => Wrapper.ProtocalLinker.ConnectionToken;
-
-        /// <summary>
-        /// 地址翻译器
-        /// </summary>
-        public AddressTranslator AddressTranslator { get; set; }
-
-        /// <summary>
-        /// 构造器
-        /// </summary>
-        protected BaseUtility(byte belongAddress, byte masterAddress)
+        protected BaseUtility(byte slaveAddress, byte masterAddress)
         {
-            BelongAddress = belongAddress;
+            SlaveAddress = slaveAddress;
             MasterAddress = masterAddress;
             AddressTranslator = new AddressTranslatorBase();
         }
 
+        protected string ConnectionString { get; set; }
+
+        public byte SlaveAddress { get; set; }
+        public byte MasterAddress { get; set; }
+
         /// <summary>
-        /// 设置连接类型
+        ///     获取协议是否遵循小端格式
+        /// </summary>
+        public abstract bool GetLittleEndian { get; }
+
+        /// <summary>
+        ///     设置协议是否遵循小端格式
+        /// </summary>
+        public abstract bool SetLittleEndian { get; }
+
+        /// <summary>
+        ///     设备是否已经连接
+        /// </summary>
+        public bool IsConnected => Wrapper?.ProtocalLinker != null && Wrapper.ProtocalLinker.IsConnected;
+
+        /// <summary>
+        ///     标识设备的连接关键字
+        /// </summary>
+        public string ConnectionToken => Wrapper.ProtocalLinker.ConnectionToken;
+
+        /// <summary>
+        ///     地址翻译器
+        /// </summary>
+        public AddressTranslator AddressTranslator { get; set; }
+
+        /// <summary>
+        ///     设置连接类型
         /// </summary>
         /// <param name="connectionType">连接类型</param>
         public abstract void SetConnectionType(int connectionType);
 
         /// <summary>
-        /// 获取数据
+        ///     获取数据
         /// </summary>
         /// <param name="startAddress">开始地址</param>
         /// <param name="getByteCount">获取字节数个数</param>
@@ -68,7 +70,7 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 获取数据
+        ///     获取数据
         /// </summary>
         /// <param name="startAddress">开始地址</param>
         /// <param name="getByteCount">获取字节数个数</param>
@@ -76,10 +78,8 @@ namespace Modbus.Net
         public abstract Task<byte[]> GetDatasAsync(string startAddress, int getByteCount);
 
         /// <summary>
-        /// 获取数据
+        ///     获取数据
         /// </summary>
-        /// <param name="belongAddress">从站地址</param>
-        /// <param name="masterAddress">主站地址</param>
         /// <param name="startAddress">开始地址</param>
         /// <param name="getTypeAndCount">获取类型和个数</param>
         /// <returns>接收到的对应的类型和数据</returns>
@@ -90,10 +90,8 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 获取数据
+        ///     获取数据
         /// </summary>
-        /// <param name="belongAddress">从站地址</param>
-        /// <param name="masterAddress">主站地址</param>
         /// <param name="startAddress">开始地址</param>
         /// <param name="getTypeAndCount">获取类型和个数</param>
         /// <returns>接收到的对应的类型和数据</returns>
@@ -102,10 +100,10 @@ namespace Modbus.Net
         {
             try
             {
-                string typeName = getTypeAndCount.Key.FullName;
-                double bCount = BigEndianValueHelper.Instance.ByteLength[typeName];
+                var typeName = getTypeAndCount.Key.FullName;
+                var bCount = BigEndianValueHelper.Instance.ByteLength[typeName];
                 var getReturnValue = await GetDatasAsync(startAddress,
-                    (int)Math.Ceiling(bCount * getTypeAndCount.Value));
+                    (int) Math.Ceiling(bCount*getTypeAndCount.Value));
                 var getBytes = getReturnValue;
                 return GetLittleEndian
                     ? ValueHelper.Instance.ByteArrayToObjectArray(getBytes, getTypeAndCount)
@@ -118,11 +116,9 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 获取数据
+        ///     获取数据
         /// </summary>
         /// <typeparam name="T">需要接收的类型</typeparam>
-        /// <param name="belongAddress">从站地址</param>
-        /// <param name="masterAddress">主站地址</param>
         /// <param name="startAddress">开始地址</param>
         /// <param name="getByteCount">获取字节数个数</param>
         /// <returns>接收到的对应的类型和数据</returns>
@@ -133,11 +129,9 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 获取数据
+        ///     获取数据
         /// </summary>
         /// <typeparam name="T">需要接收的类型</typeparam>
-        /// <param name="belongAddress">从站地址</param>
-        /// <param name="masterAddress">主站地址</param>
         /// <param name="startAddress">开始地址</param>
         /// <param name="getByteCount">获取字节数个数</param>
         /// <returns>接收到的对应的类型和数据</returns>
@@ -147,7 +141,7 @@ namespace Modbus.Net
             try
             {
                 var getBytes = await GetDatasAsync(startAddress,
-                    new KeyValuePair<Type, int>(typeof(T), getByteCount));
+                    new KeyValuePair<Type, int>(typeof (T), getByteCount));
                 return BigEndianValueHelper.Instance.ObjectArrayToDestinationArray<T>(getBytes);
             }
             catch (Exception)
@@ -157,7 +151,7 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 获取数据
+        ///     获取数据
         /// </summary>
         /// <param name="startAddress">开始地址</param>
         /// <param name="getTypeAndCountList">获取类型和个数的队列</param>
@@ -170,7 +164,7 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 获取数据
+        ///     获取数据
         /// </summary>
         /// <param name="startAddress">开始地址</param>
         /// <param name="getTypeAndCountList">获取类型和个数的队列</param>
@@ -181,13 +175,13 @@ namespace Modbus.Net
             {
                 var translateTypeAndCount = getTypeAndCountList as IList<KeyValuePair<Type, int>> ??
                                             getTypeAndCountList.ToList();
-                int bAllCount = (
+                var bAllCount = (
                     from getTypeAndCount in translateTypeAndCount
                     let typeName = getTypeAndCount.Key.FullName
                     let bCount = BigEndianValueHelper.Instance.ByteLength[typeName]
                     select (int) Math.Ceiling(bCount*getTypeAndCount.Value)).Sum();
                 var getReturnValue = await GetDatasAsync(startAddress, bAllCount);
-                byte[] getBytes = getReturnValue;
+                var getBytes = getReturnValue;
                 return GetLittleEndian
                     ? ValueHelper.Instance.ByteArrayToObjectArray(getBytes, translateTypeAndCount)
                     : BigEndianValueHelper.Instance.ByteArrayToObjectArray(getBytes, translateTypeAndCount);
@@ -199,7 +193,7 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 设置数据
+        ///     设置数据
         /// </summary>
         /// <param name="startAddress">开始地址</param>
         /// <param name="setContents">设置数据</param>
@@ -210,13 +204,13 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 设置数据
+        ///     设置数据
         /// </summary>
         /// <param name="startAddress">开始地址</param>
         /// <param name="setContents">设置数据</param>
         /// <returns>是否设置成功</returns>
         public abstract Task<bool> SetDatasAsync(string startAddress, object[] setContents);
-        
+
         /*
         /// <summary>
         /// 获取PLC时间
@@ -233,7 +227,7 @@ namespace Modbus.Net
         */
 
         /// <summary>
-        /// 连接设备
+        ///     连接设备
         /// </summary>
         /// <returns>设备是否连接成功</returns>
         public bool Connect()
@@ -242,7 +236,7 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 连接设备
+        ///     连接设备
         /// </summary>
         /// <returns>设备是否连接成功</returns>
         public async Task<bool> ConnectAsync()
@@ -251,13 +245,12 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 断开设备
+        ///     断开设备
         /// </summary>
         /// <returns>设备是否断开成功</returns>
         public bool Disconnect()
         {
             return Wrapper.Disconnect();
         }
-
     }
 }

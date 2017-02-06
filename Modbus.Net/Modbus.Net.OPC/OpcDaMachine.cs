@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Modbus.Net.OPC
 {
@@ -10,7 +6,7 @@ namespace Modbus.Net.OPC
     {
         public OpcDaMachine(string connectionString, IEnumerable<AddressUnit> getAddresses, bool keepConnect)
             : base(getAddresses, keepConnect)
-        {          
+        {
             BaseUtility = new OpcDaUtility(connectionString);
             AddressCombiner = new AddressCombinerSingle();
             AddressCombinerSet = new AddressCombinerSingle();

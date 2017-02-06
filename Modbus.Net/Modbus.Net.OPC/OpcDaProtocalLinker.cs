@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 
 namespace Modbus.Net.OPC
 {
@@ -10,12 +6,11 @@ namespace Modbus.Net.OPC
     {
         public OpcDaProtocalLinker() : this(ConfigurationManager.OpcDaHost)
         {
-
         }
 
         public OpcDaProtocalLinker(string host)
         {
-            _baseConnector = OpcDaConnector.Instance(host);
+            BaseConnector = OpcDaConnector.Instance(host);
         }
 
         public override bool? CheckRight(byte[] content)

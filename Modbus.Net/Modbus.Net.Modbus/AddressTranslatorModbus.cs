@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Modbus.Net.Modbus
 {
     /// <summary>
-    /// NA200H数据单元翻译器
+    ///     NA200H数据单元翻译器
     /// </summary>
     public class AddressTranslatorNA200H : AddressTranslator
     {
-        protected Dictionary<string, int> TransDictionary;
         protected Dictionary<string, AreaOutputDef> ReadFunctionCodeDictionary;
+        protected Dictionary<string, int> TransDictionary;
         protected Dictionary<string, AreaOutputDef> WriteFunctionCodeDictionary;
 
         public AddressTranslatorNA200H()
@@ -26,44 +23,136 @@ namespace Modbus.Net.Modbus
                 {"S", 10000},
                 {"IW", 0},
                 {"SW", 5000},
-                {"MW", 0},                
+                {"MW", 0},
                 {"QW", 20000},
-                {"NW", 21000},
+                {"NW", 21000}
             };
             ReadFunctionCodeDictionary = new Dictionary<string, AreaOutputDef>
             {
-                {"Q", new AreaOutputDef {Code = (int)ModbusProtocalReadDataFunctionCode.ReadCoilStatus, AreaWidth = 0.125}},
-                {"M", new AreaOutputDef {Code = (int)ModbusProtocalReadDataFunctionCode.ReadCoilStatus, AreaWidth = 0.125}},
-                {"N", new AreaOutputDef {Code = (int)ModbusProtocalReadDataFunctionCode.ReadCoilStatus, AreaWidth = 0.125}},
-                {"I", new AreaOutputDef {Code = (int)ModbusProtocalReadDataFunctionCode.ReadInputStatus, AreaWidth = 0.125}},
-                {"S", new AreaOutputDef {Code = (int)ModbusProtocalReadDataFunctionCode.ReadInputStatus, AreaWidth = 0.125}},
-                {"IW", new AreaOutputDef {Code = (int)ModbusProtocalReadDataFunctionCode.ReadInputRegister, AreaWidth = 2}},
-                {"SW", new AreaOutputDef {Code = (int)ModbusProtocalReadDataFunctionCode.ReadInputRegister, AreaWidth = 2}},
-                {"MW", new AreaOutputDef {Code = (int)ModbusProtocalReadDataFunctionCode.ReadHoldRegister, AreaWidth = 2}},
-                {"NW", new AreaOutputDef {Code = (int)ModbusProtocalReadDataFunctionCode.ReadHoldRegister, AreaWidth = 2}},
-                {"QW", new AreaOutputDef {Code = (int)ModbusProtocalReadDataFunctionCode.ReadHoldRegister, AreaWidth = 2}},
+                {
+                    "Q",
+                    new AreaOutputDef
+                    {
+                        Code = (int) ModbusProtocalReadDataFunctionCode.ReadCoilStatus,
+                        AreaWidth = 0.125
+                    }
+                },
+                {
+                    "M",
+                    new AreaOutputDef
+                    {
+                        Code = (int) ModbusProtocalReadDataFunctionCode.ReadCoilStatus,
+                        AreaWidth = 0.125
+                    }
+                },
+                {
+                    "N",
+                    new AreaOutputDef
+                    {
+                        Code = (int) ModbusProtocalReadDataFunctionCode.ReadCoilStatus,
+                        AreaWidth = 0.125
+                    }
+                },
+                {
+                    "I",
+                    new AreaOutputDef
+                    {
+                        Code = (int) ModbusProtocalReadDataFunctionCode.ReadInputStatus,
+                        AreaWidth = 0.125
+                    }
+                },
+                {
+                    "S",
+                    new AreaOutputDef
+                    {
+                        Code = (int) ModbusProtocalReadDataFunctionCode.ReadInputStatus,
+                        AreaWidth = 0.125
+                    }
+                },
+                {
+                    "IW",
+                    new AreaOutputDef {Code = (int) ModbusProtocalReadDataFunctionCode.ReadInputRegister, AreaWidth = 2}
+                },
+                {
+                    "SW",
+                    new AreaOutputDef {Code = (int) ModbusProtocalReadDataFunctionCode.ReadInputRegister, AreaWidth = 2}
+                },
+                {
+                    "MW",
+                    new AreaOutputDef {Code = (int) ModbusProtocalReadDataFunctionCode.ReadHoldRegister, AreaWidth = 2}
+                },
+                {
+                    "NW",
+                    new AreaOutputDef {Code = (int) ModbusProtocalReadDataFunctionCode.ReadHoldRegister, AreaWidth = 2}
+                },
+                {
+                    "QW",
+                    new AreaOutputDef {Code = (int) ModbusProtocalReadDataFunctionCode.ReadHoldRegister, AreaWidth = 2}
+                }
             };
             WriteFunctionCodeDictionary = new Dictionary<string, AreaOutputDef>
             {
-                {"Q", new AreaOutputDef {Code = (int)ModbusProtocalWriteDataFunctionCode.WriteMultiCoil, AreaWidth = 0.125}},
-                {"M", new AreaOutputDef {Code = (int)ModbusProtocalWriteDataFunctionCode.WriteMultiCoil, AreaWidth = 0.125}},
-                {"N", new AreaOutputDef {Code = (int)ModbusProtocalWriteDataFunctionCode.WriteMultiCoil, AreaWidth = 0.125}},
-                {"MW", new AreaOutputDef {Code = (int)ModbusProtocalWriteDataFunctionCode.WriteMultiRegister, AreaWidth = 2}},
-                {"NW", new AreaOutputDef {Code = (int)ModbusProtocalWriteDataFunctionCode.WriteMultiRegister, AreaWidth = 2}},
-                {"QW", new AreaOutputDef {Code = (int)ModbusProtocalWriteDataFunctionCode.WriteMultiRegister, AreaWidth = 2}},
+                {
+                    "Q",
+                    new AreaOutputDef
+                    {
+                        Code = (int) ModbusProtocalWriteDataFunctionCode.WriteMultiCoil,
+                        AreaWidth = 0.125
+                    }
+                },
+                {
+                    "M",
+                    new AreaOutputDef
+                    {
+                        Code = (int) ModbusProtocalWriteDataFunctionCode.WriteMultiCoil,
+                        AreaWidth = 0.125
+                    }
+                },
+                {
+                    "N",
+                    new AreaOutputDef
+                    {
+                        Code = (int) ModbusProtocalWriteDataFunctionCode.WriteMultiCoil,
+                        AreaWidth = 0.125
+                    }
+                },
+                {
+                    "MW",
+                    new AreaOutputDef
+                    {
+                        Code = (int) ModbusProtocalWriteDataFunctionCode.WriteMultiRegister,
+                        AreaWidth = 2
+                    }
+                },
+                {
+                    "NW",
+                    new AreaOutputDef
+                    {
+                        Code = (int) ModbusProtocalWriteDataFunctionCode.WriteMultiRegister,
+                        AreaWidth = 2
+                    }
+                },
+                {
+                    "QW",
+                    new AreaOutputDef
+                    {
+                        Code = (int) ModbusProtocalWriteDataFunctionCode.WriteMultiRegister,
+                        AreaWidth = 2
+                    }
+                }
             };
         }
 
         public override AddressDef AddressTranslate(string address, bool isRead)
         {
             address = address.ToUpper();
-            string[] splitString = address.Split(' ');
-            string head = splitString[0];
-            string tail = splitString[1];
+            var splitString = address.Split(' ');
+            var head = splitString[0];
+            var tail = splitString[1];
             string sub;
             if (tail.Contains('.'))
             {
-                string[] splitString2 = tail.Split('.');
+                var splitString2 = tail.Split('.');
                 sub = splitString2[1];
                 tail = splitString2[0];
             }
@@ -72,19 +161,19 @@ namespace Modbus.Net.Modbus
                 sub = "0";
             }
             return isRead
-                ? new AddressDef()
+                ? new AddressDef
                 {
                     AreaString = head,
                     Area = ReadFunctionCodeDictionary[head].Code,
                     Address = TransDictionary[head] + int.Parse(tail) - 1,
-                    SubAddress = int.Parse(sub),
+                    SubAddress = int.Parse(sub)
                 }
-                : new AddressDef()
+                : new AddressDef
                 {
                     AreaString = head,
                     Area = WriteFunctionCodeDictionary[head].Code,
                     Address = TransDictionary[head] + int.Parse(tail) - 1,
-                    SubAddress = int.Parse(sub),
+                    SubAddress = int.Parse(sub)
                 };
         }
 
@@ -95,7 +184,7 @@ namespace Modbus.Net.Modbus
     }
 
     /// <summary>
-    /// Modbus数据单元翻译器
+    ///     Modbus数据单元翻译器
     /// </summary>
     public class AddressTranslatorModbus : AddressTranslator
     {
@@ -106,28 +195,62 @@ namespace Modbus.Net.Modbus
         {
             ReadFunctionCodeDictionary = new Dictionary<string, AreaOutputDef>
             {
-                {"0X", new AreaOutputDef {Code = (int)ModbusProtocalReadDataFunctionCode.ReadCoilStatus, AreaWidth = 0.125}},
-                {"1X", new AreaOutputDef {Code = (int)ModbusProtocalReadDataFunctionCode.ReadInputStatus, AreaWidth = 0.125}},
-                {"3X", new AreaOutputDef {Code = (int)ModbusProtocalReadDataFunctionCode.ReadInputRegister, AreaWidth = 2}},
-                {"4X", new AreaOutputDef {Code = (int)ModbusProtocalReadDataFunctionCode.ReadHoldRegister, AreaWidth = 2}},
+                {
+                    "0X",
+                    new AreaOutputDef
+                    {
+                        Code = (int) ModbusProtocalReadDataFunctionCode.ReadCoilStatus,
+                        AreaWidth = 0.125
+                    }
+                },
+                {
+                    "1X",
+                    new AreaOutputDef
+                    {
+                        Code = (int) ModbusProtocalReadDataFunctionCode.ReadInputStatus,
+                        AreaWidth = 0.125
+                    }
+                },
+                {
+                    "3X",
+                    new AreaOutputDef {Code = (int) ModbusProtocalReadDataFunctionCode.ReadInputRegister, AreaWidth = 2}
+                },
+                {
+                    "4X",
+                    new AreaOutputDef {Code = (int) ModbusProtocalReadDataFunctionCode.ReadHoldRegister, AreaWidth = 2}
+                }
             };
             WriteFunctionCodeDictionary = new Dictionary<string, AreaOutputDef>
             {
-                {"0X", new AreaOutputDef {Code = (int)ModbusProtocalWriteDataFunctionCode.WriteMultiCoil, AreaWidth = 0.125}},
-                {"4X", new AreaOutputDef {Code = (int)ModbusProtocalWriteDataFunctionCode.WriteMultiRegister, AreaWidth = 2}},
+                {
+                    "0X",
+                    new AreaOutputDef
+                    {
+                        Code = (int) ModbusProtocalWriteDataFunctionCode.WriteMultiCoil,
+                        AreaWidth = 0.125
+                    }
+                },
+                {
+                    "4X",
+                    new AreaOutputDef
+                    {
+                        Code = (int) ModbusProtocalWriteDataFunctionCode.WriteMultiRegister,
+                        AreaWidth = 2
+                    }
+                }
             };
         }
 
         public override AddressDef AddressTranslate(string address, bool isRead)
         {
             address = address.ToUpper();
-            string[] splitString = address.Split(' ');
-            string head = splitString[0];
-            string tail = splitString[1];
+            var splitString = address.Split(' ');
+            var head = splitString[0];
+            var tail = splitString[1];
             string sub;
             if (tail.Contains('.'))
             {
-                string[] splitString2 = tail.Split('.');
+                var splitString2 = tail.Split('.');
                 sub = splitString2[1];
                 tail = splitString2[0];
             }
@@ -136,19 +259,19 @@ namespace Modbus.Net.Modbus
                 sub = "0";
             }
             return isRead
-                ? new AddressDef()
+                ? new AddressDef
                 {
                     AreaString = head,
                     Area = ReadFunctionCodeDictionary[head].Code,
                     Address = int.Parse(tail) - 1,
-                    SubAddress = int.Parse(sub),
+                    SubAddress = int.Parse(sub)
                 }
-                : new AddressDef()
+                : new AddressDef
                 {
                     AreaString = head,
                     Area = WriteFunctionCodeDictionary[head].Code,
                     Address = int.Parse(tail) - 1,
-                    SubAddress = int.Parse(sub),
+                    SubAddress = int.Parse(sub)
                 };
         }
 

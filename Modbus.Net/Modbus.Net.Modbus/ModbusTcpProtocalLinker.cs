@@ -2,6 +2,14 @@
 {
     public class ModbusTcpProtocalLinker : TcpProtocalLinker
     {
+        public ModbusTcpProtocalLinker(string ip) : base(ip, int.Parse(ConfigurationManager.ModbusPort))
+        {
+        }
+
+        public ModbusTcpProtocalLinker(string ip, int port) : base(ip, port)
+        {
+        }
+
         public override bool? CheckRight(byte[] content)
         {
             if (!base.CheckRight(content).Value) return false;
@@ -16,16 +24,6 @@
                 throw new ModbusProtocalErrorException(content[8]);
             }
             return true;
-        }
-
-        public ModbusTcpProtocalLinker(string ip) : base(ip, int.Parse(ConfigurationManager.ModbusPort))
-        {
-            
-        }
-
-        public ModbusTcpProtocalLinker(string ip, int port) : base(ip, port)
-        {
-            
         }
     }
 }

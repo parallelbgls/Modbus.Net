@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace Modbus.Net.Siemens
@@ -23,20 +22,20 @@ namespace Modbus.Net.Siemens
                 {"Q", 0x82},
                 {"M", 0x83},
                 {"DB", 0x84},
-                {"V", 0x184},
+                {"V", 0x184}
             };
         }
 
         public override AddressDef AddressTranslate(string address, bool isRead)
         {
             address = address.ToUpper();
-            string[] splitString = address.Split(' ');
-            string head = splitString[0];
-            string tail = splitString[1];
+            var splitString = address.Split(' ');
+            var head = splitString[0];
+            var tail = splitString[1];
             string sub;
             if (tail.Contains('.'))
             {
-                string[] splitString2 = tail.Split('.');
+                var splitString2 = tail.Split('.');
                 sub = splitString2[1];
                 tail = splitString2[0];
             }
@@ -47,21 +46,21 @@ namespace Modbus.Net.Siemens
             if (head.Length > 1 && head.Substring(0, 2) == "DB")
             {
                 head = head.Substring(2);
-                return new AddressDef()
+                return new AddressDef
                 {
-                    AreaString = "DB"+head,
+                    AreaString = "DB" + head,
                     Area = int.Parse(head)*256 + AreaCodeDictionary["DB"],
                     Address = int.Parse(tail),
-                    SubAddress = int.Parse(sub),
+                    SubAddress = int.Parse(sub)
                 };
             }
-            return 
-                new AddressDef()
+            return
+                new AddressDef
                 {
                     AreaString = head,
                     Area = AreaCodeDictionary[head],
                     Address = int.Parse(tail),
-                    SubAddress = int.Parse(sub),
+                    SubAddress = int.Parse(sub)
                 };
         }
 

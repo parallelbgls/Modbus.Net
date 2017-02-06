@@ -6,121 +6,43 @@ using System.Threading.Tasks;
 namespace Modbus.Net
 {
     /// <summary>
-    /// 获取设备值的方式
+    ///     获取设备值的方式
     /// </summary>
     public enum MachineGetDataType
     {
         /// <summary>
-        /// 地址
+        ///     地址
         /// </summary>
         Address,
+
         /// <summary>
-        /// 通讯标识
+        ///     通讯标识
         /// </summary>
         CommunicationTag
     }
 
     /// <summary>
-    /// 向设备设置值的方式
+    ///     向设备设置值的方式
     /// </summary>
     public enum MachineSetDataType
     {
         /// <summary>
-        /// 地址
+        ///     地址
         /// </summary>
         Address,
+
         /// <summary>
-        /// 通讯标识
+        ///     通讯标识
         /// </summary>
         CommunicationTag
     }
 
     public abstract class BaseMachine : IMachineProperty
     {
-        private int ErrorCount { get; set; } = 0;
-        private int _maxErrorCount = 3;
+        private readonly int _maxErrorCount = 3;
 
         /// <summary>
-        /// 设备的Id
-        /// </summary>
-        public string Id { get; set; }
-
-        /// <summary>
-        /// 设备所在工程的名称
-        /// </summary>
-        public string ProjectName { get; set; }
-
-        /// <summary>
-        /// 设备的名称
-        /// </summary>
-        public string MachineName { get; set; }
-
-        /// <summary>
-        /// 是否处于连接状态
-        /// </summary>
-        public bool IsConnected => BaseUtility.IsConnected;
-
-        /// <summary>
-        /// 标识设备的连接关键字
-        /// </summary>
-        public string ConnectionToken => BaseUtility.ConnectionToken;
-
-        /// <summary>
-        /// 地址编码器
-        /// </summary>
-        public AddressFormater AddressFormater { get; set; }
-
-        /// <summary>
-        /// 获取地址组合器
-        /// </summary>
-        public AddressCombiner AddressCombiner { get; set; }
-
-        /// <summary>
-        /// 写入地址组合器
-        /// </summary>
-        public AddressCombiner AddressCombinerSet { get; set; }
-
-        /// <summary>
-        /// 地址转换器
-        /// </summary>
-        public AddressTranslator AddressTranslator
-        {
-            get { return BaseUtility.AddressTranslator; }
-            set { BaseUtility.AddressTranslator = value; }
-        }
-
-        /// <summary>
-        /// 与设备实际通讯的连续地址
-        /// </summary>
-        protected IEnumerable<CommunicationUnit> CommunicateAddresses => GetAddresses != null ? AddressCombiner.Combine(GetAddresses) : null;
-
-        /// <summary>
-        /// 描述需要与设备通讯的地址
-        /// </summary>
-        public IEnumerable<AddressUnit> GetAddresses { get; set; }
-
-        /// <summary>
-        /// 是否保持连接
-        /// </summary>
-        public bool KeepConnect { get; set; }
-
-        /// <summary>
-        /// 从站号
-        /// </summary>
-        public byte SlaveAddress { get; set; } = 2;
-
-        /// <summary>
-        /// 主站号
-        /// </summary>
-        public byte MasterAddress { get; set; } = 0;
-
-        /// <summary>
-        /// 设备的连接器
-        /// </summary>
-        protected BaseUtility BaseUtility { get; set; }
-
-        /// <summary>
-        /// 构造器
+        ///     构造器
         /// </summary>
         /// <param name="getAddresses">需要与设备通讯的地址</param>
         protected BaseMachine(IEnumerable<AddressUnit> getAddresses)
@@ -129,7 +51,7 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 构造器
+        ///     构造器
         /// </summary>
         /// <param name="getAddresses">需要与设备通讯的地址</param>
         /// <param name="keepConnect">是否保持连接</param>
@@ -140,38 +62,120 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 构造器
+        ///     构造器
         /// </summary>
         /// <param name="getAddresses">需要与设备通讯的地址</param>
         /// <param name="keepConnect">是否保持连接</param>
         /// <param name="slaveAddress">从站地址</param>
         /// <param name="masterAddress">主站地址</param>
-        protected BaseMachine(IEnumerable<AddressUnit> getAddresses, bool keepConnect, byte slaveAddress, byte masterAddress) : this(getAddresses, keepConnect)
+        protected BaseMachine(IEnumerable<AddressUnit> getAddresses, bool keepConnect, byte slaveAddress,
+            byte masterAddress) : this(getAddresses, keepConnect)
         {
             SlaveAddress = slaveAddress;
             MasterAddress = masterAddress;
         }
 
+        private int ErrorCount { get; set; }
+
         /// <summary>
-        /// 读取数据
+        ///     是否处于连接状态
+        /// </summary>
+        public bool IsConnected => BaseUtility.IsConnected;
+
+        /// <summary>
+        ///     地址编码器
+        /// </summary>
+        public AddressFormater AddressFormater { get; set; }
+
+        /// <summary>
+        ///     获取地址组合器
+        /// </summary>
+        public AddressCombiner AddressCombiner { get; set; }
+
+        /// <summary>
+        ///     写入地址组合器
+        /// </summary>
+        public AddressCombiner AddressCombinerSet { get; set; }
+
+        /// <summary>
+        ///     地址转换器
+        /// </summary>
+        public AddressTranslator AddressTranslator
+        {
+            get { return BaseUtility.AddressTranslator; }
+            set { BaseUtility.AddressTranslator = value; }
+        }
+
+        /// <summary>
+        ///     与设备实际通讯的连续地址
+        /// </summary>
+        protected IEnumerable<CommunicationUnit> CommunicateAddresses
+            => GetAddresses != null ? AddressCombiner.Combine(GetAddresses) : null;
+
+        /// <summary>
+        ///     描述需要与设备通讯的地址
+        /// </summary>
+        public IEnumerable<AddressUnit> GetAddresses { get; set; }
+
+        /// <summary>
+        ///     是否保持连接
+        /// </summary>
+        public bool KeepConnect { get; set; }
+
+        /// <summary>
+        ///     从站号
+        /// </summary>
+        public byte SlaveAddress { get; set; } = 2;
+
+        /// <summary>
+        ///     主站号
+        /// </summary>
+        public byte MasterAddress { get; set; }
+
+        /// <summary>
+        ///     设备的连接器
+        /// </summary>
+        protected BaseUtility BaseUtility { get; set; }
+
+        /// <summary>
+        ///     设备的Id
+        /// </summary>
+        public string Id { get; set; }
+
+        /// <summary>
+        ///     设备所在工程的名称
+        /// </summary>
+        public string ProjectName { get; set; }
+
+        /// <summary>
+        ///     设备的名称
+        /// </summary>
+        public string MachineName { get; set; }
+
+        /// <summary>
+        ///     标识设备的连接关键字
+        /// </summary>
+        public string ConnectionToken => BaseUtility.ConnectionToken;
+
+        /// <summary>
+        ///     读取数据
         /// </summary>
         /// <returns>从设备读取的数据</returns>
         public Dictionary<string, ReturnUnit> GetDatas(MachineGetDataType getDataType)
         {
-            return AsyncHelper.RunSync(()=>GetDatasAsync(getDataType));
+            return AsyncHelper.RunSync(() => GetDatasAsync(getDataType));
         }
 
 
-
         /// <summary>
-        /// 读取数据
+        ///     读取数据
         /// </summary>
         /// <returns>从设备读取的数据</returns>
         public async Task<Dictionary<string, ReturnUnit>> GetDatasAsync(MachineGetDataType getDataType)
         {
             try
             {
-                Dictionary<string, ReturnUnit> ans = new Dictionary<string, ReturnUnit>();
+                var ans = new Dictionary<string, ReturnUnit>();
                 //检测并连接设备
                 if (!BaseUtility.IsConnected)
                 {
@@ -186,7 +190,8 @@ namespace Modbus.Net
                     var datas =
                         await
                             BaseUtility.GetDatasAsync(
-                                AddressFormater.FormatAddress(communicateAddress.Area, communicateAddress.Address, communicateAddress.SubAddress),
+                                AddressFormater.FormatAddress(communicateAddress.Area, communicateAddress.Address,
+                                    communicateAddress.SubAddress),
                                 (int)
                                     Math.Ceiling(communicateAddress.GetCount*
                                                  BigEndianValueHelper.Instance.ByteLength[
@@ -195,21 +200,26 @@ namespace Modbus.Net
 
                     //如果没有数据，终止
                     if (datas == null || (datas.Length != 0 && datas.Length <
-                        (int)
-                            Math.Ceiling(communicateAddress.GetCount*
-                                         BigEndianValueHelper.Instance.ByteLength[
-                                             communicateAddress.DataType.FullName])))
+                                          (int)
+                                              Math.Ceiling(communicateAddress.GetCount*
+                                                           BigEndianValueHelper.Instance.ByteLength[
+                                                               communicateAddress.DataType.FullName])))
                         return null;
 
 
                     foreach (var address in communicateAddress.OriginalAddresses)
                     {
-                        var localPos = (address.Address - communicateAddress.Address)*
-                                       AddressTranslator.GetAreaByteLength(communicateAddress.Area) +
-                                       address.SubAddress/8.0;
+                        //字节坐标的位置
+                        var localPos = AddressHelper.MapProtocalCoordinateToAbstractCoordinate(address.Address,
+                            communicateAddress.Address,
+                            AddressTranslator.GetAreaByteLength(communicateAddress.Area)) +
+                                       address.SubAddress*0.125;
+                        //字节坐标的主地址位置
                         var localMainPos = (int) localPos;
+                        //字节坐标的子地址位置
                         var localSubPos = (int) ((localPos - localMainPos)*8);
 
+                        //根据类型选择返回结果的键是通讯标识还是地址
                         string key;
                         switch (getDataType)
                         {
@@ -230,6 +240,7 @@ namespace Modbus.Net
                             }
                         }
 
+                        //如果没有数据返回空
                         if (datas.Length == 0)
                         {
                             ans.Add(key, new ReturnUnit
@@ -281,7 +292,7 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 写入数据
+        ///     写入数据
         /// </summary>
         /// <param name="setDataType">写入类型</param>
         /// <param name="values">需要写入的数据字典，当写入类型为Address时，键为需要写入的地址，当写入类型为CommunicationTag时，键为需要写入的单元的描述</param>
@@ -292,7 +303,7 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 写入数据
+        ///     写入数据
         /// </summary>
         /// <param name="setDataType">写入类型</param>
         /// <param name="values">需要写入的数据字典，当写入类型为Address时，键为需要写入的地址，当写入类型为CommunicationTag时，键为需要写入的单元的描述</param>
@@ -308,7 +319,7 @@ namespace Modbus.Net
                 }
                 //如果设备无法连接，终止
                 if (!BaseUtility.IsConnected) return false;
-                List<AddressUnit> addresses = new List<AddressUnit>();
+                var addresses = new List<AddressUnit>();
                 //遍历每个要设置的值
                 foreach (var value in values)
                 {
@@ -333,14 +344,17 @@ namespace Modbus.Net
                             break;
                         }
                     }
+                    //地址为空报错
                     if (address == null)
                     {
                         Console.WriteLine($"Machine {ConnectionToken} Address {value.Key} doesn't exist.");
                         continue;
                     }
+                    //不能写报错
                     if (!address.CanWrite)
                     {
                         Console.WriteLine($"Machine {ConnectionToken} Address {value.Key} cannot write.");
+                        continue;
                     }
                     addresses.Add(address);
                 }
@@ -376,27 +390,35 @@ namespace Modbus.Net
 
                     foreach (var addressUnit in communicateAddress.OriginalAddresses)
                     {
-                        var byteCount = (addressUnit.Address - communicateAddress.Address +
-                                        addressUnit.SubAddress*0.125/
-                                        AddressTranslator.GetAreaByteLength(communicateAddress.Area)) *
-                                        AddressTranslator.GetAreaByteLength(communicateAddress.Area);
+                        //字节坐标地址
+                        var byteCount =
+                            AddressHelper.MapProtocalGetCountToAbstractByteCount(
+                                addressUnit.Address - communicateAddress.Address +
+                                addressUnit.SubAddress*0.125/
+                                AddressTranslator.GetAreaByteLength(communicateAddress.Area),
+                                AddressTranslator.GetAreaByteLength(communicateAddress.Area), 0);
+                        //字节坐标主地址
                         var mainByteCount = (int) byteCount;
+                        //字节坐标自地址
                         var localByteCount = (int) ((byteCount - (int) byteCount)*8);
 
+                        //协议坐标地址
                         var localPos = byteCount/AddressTranslator.GetAreaByteLength(communicateAddress.Area);
-                        //编码当前地址
+                        //协议坐标子地址
                         var subPos =
                             (int)
                                 ((localPos - (int) localPos)/
                                  (0.125/AddressTranslator.GetAreaByteLength(communicateAddress.Area)));
+                        //协议主地址字符串
                         var address = AddressFormater.FormatAddress(communicateAddress.Area,
                             communicateAddress.Address + (int) localPos, subPos);
+                        //协议完整地址字符串
                         var address2 = subPos != 0
                             ? null
                             : AddressFormater.FormatAddress(communicateAddress.Area,
                                 communicateAddress.Address + (int) localPos);
                         //获取写入类型
-                        Type dataType = addressUnit.DataType;
+                        var dataType = addressUnit.DataType;
                         switch (setDataType)
                         {
                             case MachineSetDataType.Address:
@@ -443,7 +465,7 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 连接设备
+        ///     连接设备
         /// </summary>
         /// <returns>是否连接成功</returns>
         public bool Connect()
@@ -452,7 +474,7 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 连接设备
+        ///     连接设备
         /// </summary>
         /// <returns>是否连接成功</returns>
         public async Task<bool> ConnectAsync()
@@ -461,7 +483,7 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        /// 断开设备
+        ///     断开设备
         /// </summary>
         /// <returns>是否断开成功</returns>
         public bool Disconnect()
@@ -484,55 +506,60 @@ namespace Modbus.Net
     }
 
     /// <summary>
-    /// 通讯单元
+    ///     通讯单元
     /// </summary>
     public class CommunicationUnit
     {
         /// <summary>
-        /// 区域
+        ///     区域
         /// </summary>
         public string Area { get; set; }
+
         /// <summary>
-        /// 地址
+        ///     地址
         /// </summary>
         public int Address { get; set; }
+
         /// <summary>
-        /// 子地址
+        ///     子地址
         /// </summary>
         public int SubAddress { get; set; } = 0;
+
         /// <summary>
-        /// 获取个数
+        ///     获取个数
         /// </summary>
         public int GetCount { get; set; }
+
         /// <summary>
-        /// 数据类型
+        ///     数据类型
         /// </summary>
         public Type DataType { get; set; }
+
         /// <summary>
-        /// 原始的地址
+        ///     原始的地址
         /// </summary>
         public IEnumerable<AddressUnit> OriginalAddresses { get; set; }
     }
 
     /// <summary>
-    /// 数据单元扩展，返回数据时会同时将其返回
+    ///     数据单元扩展，返回数据时会同时将其返回
     /// </summary>
     public class UnitExtend
     {
-        
     }
 
     /// <summary>
-    /// 返回的数据单元
+    ///     返回的数据单元
     /// </summary>
     public class ReturnUnit
     {
         /// <summary>
-        /// 返回的数据
+        ///     返回的数据
         /// </summary>
         public double? PlcValue { get; set; }
+
         /// <summary>
-        /// 数据的扩展
+        ///     数据的扩展
         /// </summary>
         public UnitExtend UnitExtend { get; set; }
     }
@@ -540,55 +567,69 @@ namespace Modbus.Net
     public class AddressUnit
     {
         /// <summary>
-        /// 数据单元Id
+        ///     数据单元Id
         /// </summary>
         public string Id { get; set; }
+
         /// <summary>
-        /// 数据所属的区域
+        ///     数据所属的区域
         /// </summary>
         public string Area { get; set; }
+
         /// <summary>
-        /// 地址
+        ///     地址
         /// </summary>
         public int Address { get; set; }
+
         /// <summary>
-        /// bit位地址
+        ///     bit位地址
         /// </summary>
         public int SubAddress { get; set; } = 0;
+
         /// <summary>
-        /// 数据类型
+        ///     数据类型
         /// </summary>
         public Type DataType { get; set; }
+
         /// <summary>
-        /// 放缩比例
+        ///     放缩比例
         /// </summary>
         public double Zoom { get; set; } = 1;
+
         /// <summary>
-        /// 小数位数
+        ///     小数位数
         /// </summary>
         public int DecimalPos { get; set; }
+
         /// <summary>
-        /// 通讯标识名称
+        ///     通讯标识名称
         /// </summary>
         public string CommunicationTag { get; set; }
+
         /// <summary>
-        /// 名称
+        ///     名称
         /// </summary>
         public string Name { get; set; }
+
         /// <summary>
-        /// 单位
+        ///     单位
         /// </summary>
         public string Unit { get; set; }
+
         /// <summary>
-        /// 是否可写，默认可写
+        ///     是否可写，默认可写
         /// </summary>
         public bool CanWrite { get; set; } = true;
+
         /// <summary>
-        /// 扩展
+        ///     扩展
         /// </summary>
         public UnitExtend UnitExtend { get; set; }
     }
 
+    /// <summary>
+    ///     AddressUnit大小比较
+    /// </summary>
     public struct AddressUnitEqualityComparer : IEqualityComparer<AddressUnit>
     {
         public bool Equals(AddressUnit x, AddressUnit y)
@@ -603,24 +644,27 @@ namespace Modbus.Net
     }
 
     /// <summary>
-    /// 设备的抽象
+    ///     设备的抽象
     /// </summary>
     public interface IMachineProperty
     {
         /// <summary>
-        /// Id
+        ///     Id
         /// </summary>
         string Id { get; set; }
+
         /// <summary>
-        /// 工程名
+        ///     工程名
         /// </summary>
         string ProjectName { get; set; }
+
         /// <summary>
-        /// 设备名
+        ///     设备名
         /// </summary>
         string MachineName { get; set; }
+
         /// <summary>
-        /// 标识设备的连接关键字
+        ///     标识设备的连接关键字
         /// </summary>
         string ConnectionToken { get; }
     }

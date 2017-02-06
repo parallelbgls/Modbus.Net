@@ -2,8 +2,12 @@
 
 namespace Modbus.Net.Modbus
 {
-    class ModbusRtuProtocalLinker : ComProtocalLinker
+    public class ModbusRtuProtocalLinker : ComProtocalLinker
     {
+        public ModbusRtuProtocalLinker(string com) : base(com, 9600, Parity.None, StopBits.One, 8)
+        {
+        }
+
         public override bool? CheckRight(byte[] content)
         {
             if (!base.CheckRight(content).Value) return false;
@@ -18,11 +22,6 @@ namespace Modbus.Net.Modbus
                 throw new ModbusProtocalErrorException(content[2]);
             }
             return true;
-        }
-
-        public ModbusRtuProtocalLinker(string com) : base(com, 9600, Parity.None, StopBits.One, 8)
-        {
-
         }
     }
 }
