@@ -2,6 +2,9 @@
 
 namespace Modbus.Net.Modbus
 {
+    /// <summary>
+    ///     Modbus/Rtu协议连接器
+    /// </summary>
     public class ModbusRtuProtocalLinker : ComProtocalLinker
     {
         public ModbusRtuProtocalLinker(string com) : base(com, 9600, Parity.None, StopBits.One, 8)

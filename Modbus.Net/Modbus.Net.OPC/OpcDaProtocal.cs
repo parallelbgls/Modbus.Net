@@ -2,6 +2,9 @@
 
 namespace Modbus.Net.OPC
 {
+    /// <summary>
+    ///     OpcDa协议
+    /// </summary>
     public class OpcDaProtocal : OpcProtocal
     {
         private readonly string _host;

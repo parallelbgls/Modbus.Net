@@ -1,7 +1,7 @@
 ﻿namespace Modbus.Net.Modbus
 {
     /// <summary>
-    ///     Modbus/Rtu协议
+    ///     Modbus/Ascii码协议
     /// </summary>
     public class ModbusAsciiProtocal : ModbusProtocal
     {

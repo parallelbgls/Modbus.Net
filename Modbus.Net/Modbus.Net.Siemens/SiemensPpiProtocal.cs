@@ -2,6 +2,9 @@
 
 namespace Modbus.Net.Siemens
 {
+    /// <summary>
+    ///     西门子Ppi协议
+    /// </summary>
     public class SiemensPpiProtocal : SiemensProtocal
     {
         private readonly string _com;

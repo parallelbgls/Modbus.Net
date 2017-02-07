@@ -3,6 +3,9 @@ using System.Text;
 
 namespace Modbus.Net.Modbus
 {
+    /// <summary>
+    ///     Modbus/Ascii码协议连接器
+    /// </summary>
     public class ModbusAsciiProtocalLinker : ComProtocalLinker
     {
         public ModbusAsciiProtocalLinker(string com) : base(com, 9600, Parity.None, StopBits.One, 8)

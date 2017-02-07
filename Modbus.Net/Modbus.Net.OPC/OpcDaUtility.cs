@@ -3,6 +3,9 @@ using System.Threading.Tasks;
 
 namespace Modbus.Net.OPC
 {
+    /// <summary>
+    ///     Opc Da协议Api入口
+    /// </summary>
     public class OpcDaUtility : BaseUtility
     {
         public OpcDaUtility(string connectionString) : base(0, 0)

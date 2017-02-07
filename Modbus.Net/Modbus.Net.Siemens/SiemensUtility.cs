@@ -20,15 +20,17 @@ namespace Modbus.Net.Siemens
         S7_1500 = 5
     }
 
-
+    /// <summary>
+    ///     西门子通讯Api入口
+    /// </summary>
     public class SiemensUtility : BaseUtility
     {
-        private readonly byte _tdpuSize;
-        private readonly ushort _taspSrc;
-        private readonly ushort _tsapDst;
-        private readonly ushort _maxCalling;
         private readonly ushort _maxCalled;
+        private readonly ushort _maxCalling;
         private readonly ushort _maxPdu;
+        private readonly ushort _taspSrc;
+        private readonly byte _tdpuSize;
+        private readonly ushort _tsapDst;
 
         private SiemensType _siemensType;
 
@@ -119,6 +121,9 @@ namespace Modbus.Net.Siemens
             }
         }
 
+        /// <summary>
+        ///     西门子连接类型
+        /// </summary>
         public SiemensType ConnectionType
         {
             get { return _siemensType; }
@@ -127,6 +132,7 @@ namespace Modbus.Net.Siemens
                 _siemensType = value;
                 switch (_siemensType)
                 {
+                    //PPI
                     case SiemensType.Ppi:
                     {
                         Wrapper = ConnectionString == null
@@ -134,10 +140,12 @@ namespace Modbus.Net.Siemens
                             : new SiemensPpiProtocal(ConnectionString, SlaveAddress, MasterAddress);
                         break;
                     }
+                    //MPI
                     //case SiemensType.Mpi:
                     //    {
                     //        throw new NotImplementedException();
                     //    }
+                    //Ethenet
                     case SiemensType.Tcp:
                     {
                         Wrapper = ConnectionString == null
@@ -153,11 +161,21 @@ namespace Modbus.Net.Siemens
             }
         }
 
+        /// <summary>
+        ///     设置连接类型
+        /// </summary>
+        /// <param name="connectionType">需要设置的连接类型</param>
         public override void SetConnectionType(int connectionType)
         {
             ConnectionType = (SiemensType) connectionType;
         }
 
+        /// <summary>
+        ///     读数据
+        /// </summary>
+        /// <param name="startAddress">开始地址</param>
+        /// <param name="getByteCount">读取字节个数</param>
+        /// <returns>从设备中读取的数据</returns>
         public override async Task<byte[]> GetDatasAsync(string startAddress, int getByteCount)
         {
             try
@@ -176,6 +194,12 @@ namespace Modbus.Net.Siemens
             }
         }
 
+        /// <summary>
+        ///     写数据
+        /// </summary>
+        /// <param name="startAddress">开始地址</param>
+        /// <param name="setContents">需要写入的数据</param>
+        /// <returns>写入是否成功</returns>
         public override async Task<bool> SetDatasAsync(string startAddress, object[] setContents)
         {
             try

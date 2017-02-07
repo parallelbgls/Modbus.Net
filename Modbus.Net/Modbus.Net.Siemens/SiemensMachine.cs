@@ -2,6 +2,9 @@
 
 namespace Modbus.Net.Siemens
 {
+    /// <summary>
+    ///     西门子设备
+    /// </summary>
     public class SiemensMachine : BaseMachine
     {
         public SiemensMachine(SiemensType connectionType, string connectionString, SiemensMachineModel model,

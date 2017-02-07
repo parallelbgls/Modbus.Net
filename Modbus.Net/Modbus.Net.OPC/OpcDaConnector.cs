@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace Modbus.Net.OPC
 {
+    /// <summary>
+    ///     OpcDa协议连接实现
+    /// </summary>
     public class OpcDaConnector : BaseConnector
     {
         protected static Dictionary<string, OpcDaConnector> _instances = new Dictionary<string, OpcDaConnector>();

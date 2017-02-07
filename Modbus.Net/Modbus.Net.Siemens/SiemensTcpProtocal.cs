@@ -2,17 +2,19 @@
 
 namespace Modbus.Net.Siemens
 {
+    /// <summary>
+    ///     西门子Tcp协议
+    /// </summary>
     public class SiemensTcpProtocal : SiemensProtocal
     {
-        private readonly ushort _taspSrc;
-        private readonly ushort _tsapDst;
-        private readonly ushort _maxCalling;
-        private readonly ushort _maxCalled;
-        private readonly ushort _maxPdu;
-        private readonly byte _tdpuSize;
-
         private readonly string _ip;
+        private readonly ushort _maxCalled;
+        private readonly ushort _maxCalling;
+        private readonly ushort _maxPdu;
         private readonly int _port;
+        private readonly ushort _taspSrc;
+        private readonly byte _tdpuSize;
+        private readonly ushort _tsapDst;
         private int _connectTryCount;
 
         public SiemensTcpProtocal(byte tdpuSize, ushort tsapSrc, ushort tsapDst, ushort maxCalling, ushort maxCalled,
@@ -87,6 +89,7 @@ namespace Modbus.Net.Siemens
             _connectTryCount = 0;
             var inputStruct = new CreateReferenceSiemensInputStruct(_tdpuSize, _taspSrc, _tsapDst);
             return
+                //先建立连接，然后建立设备的引用
                 await await
                     ForceSendReceiveAsync(this[typeof (CreateReferenceSiemensProtocal)], inputStruct)
                         .ContinueWith(async answer =>

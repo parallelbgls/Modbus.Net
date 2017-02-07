@@ -2,6 +2,9 @@
 
 namespace Modbus.Net.Siemens
 {
+    /// <summary>
+    ///     西门子Tcp协议扩展
+    /// </summary>
     public class SiemensTcpProtocalLinkerBytesExtend : ProtocalLinkerBytesExtend
     {
         public override byte[] BytesExtend(byte[] content)
@@ -19,6 +22,9 @@ namespace Modbus.Net.Siemens
         }
     }
 
+    /// <summary>
+    ///     西门子Ppi协议扩展
+    /// </summary>
     public class SiemensPpiProtocalLinkerBytesExtend : ProtocalLinkerBytesExtend
     {
         public override byte[] BytesExtend(byte[] content)

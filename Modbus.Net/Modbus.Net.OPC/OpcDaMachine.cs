@@ -2,6 +2,9 @@
 
 namespace Modbus.Net.OPC
 {
+    /// <summary>
+    ///     OpcDa设备
+    /// </summary>
     public class OpcDaMachine : BaseMachine
     {
         public OpcDaMachine(string connectionString, IEnumerable<AddressUnit> getAddresses, bool keepConnect)

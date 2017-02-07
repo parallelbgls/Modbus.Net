@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace Modbus.Net
 {
+    /// <summary>
+    ///      基础Api入口
+    /// </summary>
     public abstract class BaseUtility
     {
         /// <summary>

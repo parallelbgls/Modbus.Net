@@ -4,31 +4,101 @@ using System.Linq;
 
 namespace Modbus.Net.Siemens
 {
+    /// <summary>
+    ///     西门子数据类型
+    /// </summary>
     public enum SiemensTypeCode : byte
     {
+        /// <summary>
+        ///     布尔
+        /// </summary>
         Bool = 0x01,
+
+        /// <summary>
+        ///     字节
+        /// </summary>
         Byte = 0x02,
+
+        /// <summary>
+        ///     字
+        /// </summary>
         Word = 0x03,
+
+        /// <summary>
+        ///     双字
+        /// </summary>
         DWord = 0x04,
+
+        /// <summary>
+        ///     计数器
+        /// </summary>
         C = 0x1E,
+
+        /// <summary>
+        ///     计时器
+        /// </summary>
         T = 0x1F,
+
+        /// <summary>
+        ///     高速计数器
+        /// </summary>
         HC = 0x20
     }
 
+    /// <summary>
+    ///     西门子通讯报错信息
+    /// </summary>
     public enum SiemensAccessResult : byte
     {
+        /// <summary>
+        ///     无错误
+        /// </summary>
         NoError = 0xFF,
+
+        /// <summary>
+        ///     硬件错误
+        /// </summary>
         HardwareFault = 0x01,
+
+        /// <summary>
+        ///     非法对象访问（Area错误）
+        /// </summary>
         IllegalObjectAccess = 0x03,
+
+        /// <summary>
+        ///     非法地址访问
+        /// </summary>
         InvalidAddress = 0x05,
+
+        /// <summary>
+        ///     不支持的数据类型
+        /// </summary>
         DataTypeNotSupport = 0x06,
+
+        /// <summary>
+        ///     对象不存在或长度超出允许范围
+        /// </summary>
         ObjNotExistOrLengthError = 0x0A
     }
 
+    /// <summary>
+    ///     西门子数据访问类型
+    /// </summary>
     public enum SiemensDataType : byte
     {
+        /// <summary>
+        ///     错误
+        /// </summary>
         Error = 0x00,
+
+        /// <summary>
+        ///     比特位访问
+        /// </summary>
         BitAccess = 0x03,
+
+        /// <summary>
+        ///     一般访问
+        /// </summary>
         OtherAccess = 0x04
     }
 
@@ -38,6 +108,8 @@ namespace Modbus.Net.Siemens
         {
         }
     }
+
+    #region 串口连接建立
 
     internal class ComCreateReferenceSiemensInputStruct : InputStruct
     {
@@ -84,6 +156,10 @@ namespace Modbus.Net.Siemens
             return new ComCreateReferenceSiemensOutputStruct(slaveAddress, masterAddress, confirmMessage);
         }
     }
+
+    #endregion
+
+    #region 以太网建立连接
 
     internal class CreateReferenceSiemensInputStruct : InputStruct
     {
@@ -167,6 +243,10 @@ namespace Modbus.Net.Siemens
         }
     }
 
+    #endregion
+
+    #region 串口消息确认 
+
     public class ComConfirmMessageSiemensInputStruct : InputStruct
     {
         public ComConfirmMessageSiemensInputStruct(byte slaveAddress, byte masterAddress)
@@ -205,6 +285,10 @@ namespace Modbus.Net.Siemens
             return new ComConfirmMessageSiemensOutputStruct(confirmByte);
         }
     }
+
+    #endregion
+
+    #region 以太网连接确认
 
     internal class EstablishAssociationSiemensInputStruct : InputStruct
     {
@@ -269,6 +353,10 @@ namespace Modbus.Net.Siemens
             return new EstablishAssociationSiemensOutputStruct(pduRef, maxCalling, maxCalled, maxPdu);
         }
     }
+
+    #endregion
+
+    #region 读数据请求
 
     public class ReadRequestSiemensInputStruct : InputStruct
     {
@@ -362,6 +450,10 @@ namespace Modbus.Net.Siemens
         }
     }
 
+    #endregion
+
+    #region 写数据请求
+
     public class WriteRequestSiemensInputStruct : InputStruct
     {
         public WriteRequestSiemensInputStruct(byte slaveAddress, byte masterAddress, ushort pduRef, string startAddress,
@@ -452,7 +544,10 @@ namespace Modbus.Net.Siemens
         }
     }
 
+    #endregion
+
     /*
+    #region 读时间请求
     public class ReadTimeSiemensInputStruct : InputStruct
     {
         public ReadTimeSiemensInputStruct(ushort pduRef)
@@ -490,6 +585,10 @@ namespace Modbus.Net.Siemens
         }
     }
 
+    #endregion
+
+    #region 写时间请求
+    
     public class WriteTimeSiemensInputStruct : InputStruct
     {
         public WriteTimeSiemensInputStruct(ushort pduRef, DateTime dateTime, TodClockStatus todClockStatus)
@@ -528,8 +627,13 @@ namespace Modbus.Net.Siemens
             throw new NotImplementedException();
         }
     }
+
+    #endregion
     */
 
+    /// <summary>
+    ///     西门子通讯报错信息
+    /// </summary>
     public class SiemensProtocalErrorException : ProtocalErrorException
     {
         private static readonly Dictionary<int, string> ProtocalErrorDictionary = new Dictionary<int, string>

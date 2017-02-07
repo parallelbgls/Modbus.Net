@@ -2,12 +2,17 @@
 
 namespace Modbus.Net.OPC
 {
+    /// <summary>
+    ///     Opc协议
+    /// </summary>
     public abstract class OpcProtocal : BaseProtocal
     {
         protected OpcProtocal() : base(0, 0)
         {
         }
     }
+
+    #region 读数据
 
     public class ReadRequestOpcInputStruct : InputStruct
     {
@@ -42,6 +47,10 @@ namespace Modbus.Net.OPC
             return new ReadRequestOpcOutputStruct(messageBytes);
         }
     }
+
+    #endregion
+
+    #region 写数据
 
     public class WriteRequestOpcInputStruct : InputStruct
     {
@@ -82,4 +91,6 @@ namespace Modbus.Net.OPC
             return new WriteRequestOpcOutputStruct(ans);
         }
     }
+
+    #endregion
 }

@@ -57,6 +57,7 @@ namespace Modbus.Net.Modbus
     {
         public override byte[] BytesExtend(byte[] content)
         {
+            //Modbus/Ascii协议扩张，前面增加:，后面增加LRC校验和尾字符
             var newContent = new List<byte>();
             newContent.AddRange(Encoding.ASCII.GetBytes(":"));
             foreach (var number in content)
@@ -71,6 +72,7 @@ namespace Modbus.Net.Modbus
 
         public override byte[] BytesDecact(byte[] content)
         {
+            //Modbus/Ascii协议收缩，抛弃头尾。
             var newContent = new List<byte>();
             var ans = Encoding.ASCII.GetString(content);
             var index = ans.IndexOf(Environment.NewLine);

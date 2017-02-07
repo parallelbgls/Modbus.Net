@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 
 namespace Modbus.Net.Modbus
 {
+    /// <summary>
+    ///     变量功能码
+    /// </summary>
     internal enum ModbusProtocalVariableFunctionCode : byte
     {
         ReadVariable = 20,
@@ -39,6 +42,9 @@ namespace Modbus.Net.Modbus
         WriteMultiRegister = 16
     }
 
+    /// <summary>
+    ///     Modbus协议
+    /// </summary>
     public abstract class ModbusProtocal : BaseProtocal
     {
         protected ModbusProtocal(byte slaveAddress, byte masterAddress) : base(slaveAddress, masterAddress)
