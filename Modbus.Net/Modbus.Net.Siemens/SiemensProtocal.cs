@@ -111,7 +111,7 @@ namespace Modbus.Net.Siemens
 
     #region 串口连接建立
 
-    internal class ComCreateReferenceSiemensInputStruct : InputStruct
+    internal class ComCreateReferenceSiemensInputStruct : IInputStruct
     {
         public ComCreateReferenceSiemensInputStruct(byte slaveAddress, byte masterAddress)
         {
@@ -123,7 +123,7 @@ namespace Modbus.Net.Siemens
         public byte MasterAddress { get; set; }
     }
 
-    internal class ComCreateReferenceSiemensOutputStruct : OutputStruct
+    internal class ComCreateReferenceSiemensOutputStruct : IOutputStruct
     {
         public ComCreateReferenceSiemensOutputStruct(byte slaveAddress, byte masterAddress, byte confirmMessage)
         {
@@ -137,9 +137,9 @@ namespace Modbus.Net.Siemens
         public byte ConfirmMessage { get; set; }
     }
 
-    internal class ComCreateReferenceSiemensProtocal : SpecialProtocalUnit
+    internal class ComCreateReferenceSiemensProtocal : ProtocalUnit, ISpecialProtocalUnit
     {
-        public override byte[] Format(InputStruct message)
+        public override byte[] Format(IInputStruct message)
         {
             var r_message = (ComCreateReferenceSiemensInputStruct) message;
             var crc = (r_message.SlaveAddress + r_message.MasterAddress + 0x49)%256;
@@ -147,7 +147,7 @@ namespace Modbus.Net.Siemens
                 (byte) 0x16);
         }
 
-        public override OutputStruct Unformat(byte[] messageBytes, ref int pos)
+        public override IOutputStruct Unformat(byte[] messageBytes, ref int pos)
         {
             pos = 1;
             var masterAddress = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
@@ -161,7 +161,7 @@ namespace Modbus.Net.Siemens
 
     #region 以太网建立连接
 
-    internal class CreateReferenceSiemensInputStruct : InputStruct
+    internal class CreateReferenceSiemensInputStruct : IInputStruct
     {
         public byte TdpuSize;
 
@@ -177,7 +177,7 @@ namespace Modbus.Net.Siemens
         }
     }
 
-    internal class CreateReferenceSiemensOutputStruct : OutputStruct
+    internal class CreateReferenceSiemensOutputStruct : IOutputStruct
     {
         public CreateReferenceSiemensOutputStruct(byte tdpuSize, ushort srcTsap, ushort dstTsap)
         {
@@ -191,9 +191,9 @@ namespace Modbus.Net.Siemens
         public ushort TsapDst { get; private set; }
     }
 
-    internal class CreateReferenceSiemensProtocal : SpecialProtocalUnit
+    internal class CreateReferenceSiemensProtocal : ProtocalUnit, ISpecialProtocalUnit
     {
-        public override byte[] Format(InputStruct message)
+        public override byte[] Format(IInputStruct message)
         {
             var r_message = (CreateReferenceSiemensInputStruct) message;
             const ushort head = 0x0300;
@@ -213,7 +213,7 @@ namespace Modbus.Net.Siemens
                 srcTsapCode, srcTsapContent, dstTsapCode, dstTsapContent);
         }
 
-        public override OutputStruct Unformat(byte[] messageBytes, ref int pos)
+        public override IOutputStruct Unformat(byte[] messageBytes, ref int pos)
         {
             pos = 11;
             byte tdpuSize = 0;
@@ -247,7 +247,7 @@ namespace Modbus.Net.Siemens
 
     #region 串口消息确认 
 
-    public class ComConfirmMessageSiemensInputStruct : InputStruct
+    public class ComConfirmMessageSiemensInputStruct : IInputStruct
     {
         public ComConfirmMessageSiemensInputStruct(byte slaveAddress, byte masterAddress)
         {
@@ -259,7 +259,7 @@ namespace Modbus.Net.Siemens
         public byte MasterAddress { get; set; }
     }
 
-    public class ComConfirmMessageSiemensOutputStruct : OutputStruct
+    public class ComConfirmMessageSiemensOutputStruct : IOutputStruct
     {
         public ComConfirmMessageSiemensOutputStruct(byte confirmByte)
         {
@@ -269,9 +269,9 @@ namespace Modbus.Net.Siemens
         public byte ConfirmByte { get; set; }
     }
 
-    public class ComConfirmMessageSiemensProtocal : SpecialProtocalUnit
+    public class ComConfirmMessageSiemensProtocal : ProtocalUnit, ISpecialProtocalUnit
     {
-        public override byte[] Format(InputStruct message)
+        public override byte[] Format(IInputStruct message)
         {
             var r_message = (ComConfirmMessageSiemensInputStruct) message;
             var crc = r_message.SlaveAddress + r_message.MasterAddress + 0x5c%256;
@@ -279,7 +279,7 @@ namespace Modbus.Net.Siemens
                 (byte) 0x16);
         }
 
-        public override OutputStruct Unformat(byte[] messageBytes, ref int pos)
+        public override IOutputStruct Unformat(byte[] messageBytes, ref int pos)
         {
             var confirmByte = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
             return new ComConfirmMessageSiemensOutputStruct(confirmByte);
@@ -290,7 +290,7 @@ namespace Modbus.Net.Siemens
 
     #region 以太网连接确认
 
-    internal class EstablishAssociationSiemensInputStruct : InputStruct
+    internal class EstablishAssociationSiemensInputStruct : IInputStruct
     {
         public EstablishAssociationSiemensInputStruct(ushort pduRef, ushort maxCalling, ushort maxCalled, ushort maxPdu)
         {
@@ -306,7 +306,7 @@ namespace Modbus.Net.Siemens
         public ushort MaxPdu { get; }
     }
 
-    internal class EstablishAssociationSiemensOutputStruct : OutputStruct
+    internal class EstablishAssociationSiemensOutputStruct : IOutputStruct
     {
         public EstablishAssociationSiemensOutputStruct(ushort pduRef, ushort maxCalling, ushort maxCalled, ushort maxPdu)
         {
@@ -324,7 +324,7 @@ namespace Modbus.Net.Siemens
 
     internal class EstablishAssociationSiemensProtocal : ProtocalUnit
     {
-        public override byte[] Format(InputStruct message)
+        public override byte[] Format(IInputStruct message)
         {
             var r_message = (EstablishAssociationSiemensInputStruct) message;
             const byte protoId = 0x32;
@@ -342,7 +342,7 @@ namespace Modbus.Net.Siemens
                 maxCalled, maxPdu);
         }
 
-        public override OutputStruct Unformat(byte[] messageBytes, ref int pos)
+        public override IOutputStruct Unformat(byte[] messageBytes, ref int pos)
         {
             pos = 4;
             var pduRef = BigEndianValueHelper.Instance.GetUShort(messageBytes, ref pos);
@@ -358,7 +358,7 @@ namespace Modbus.Net.Siemens
 
     #region 读数据请求
 
-    public class ReadRequestSiemensInputStruct : InputStruct
+    public class ReadRequestSiemensInputStruct : IInputStruct
     {
         public ReadRequestSiemensInputStruct(byte slaveAddress, byte masterAddress, ushort pduRef,
             SiemensTypeCode getType, string startAddress, ushort getCount, AddressTranslator addressTranslator)
@@ -385,7 +385,7 @@ namespace Modbus.Net.Siemens
         public int Offset { get; }
     }
 
-    public class ReadRequestSiemensOutputStruct : OutputStruct
+    public class ReadRequestSiemensOutputStruct : IOutputStruct
     {
         public ReadRequestSiemensOutputStruct(ushort pduRef, SiemensAccessResult accessResult, SiemensDataType dataType,
             ushort getLength, byte[] value)
@@ -406,7 +406,7 @@ namespace Modbus.Net.Siemens
 
     public class ReadRequestSiemensProtocal : ProtocalUnit
     {
-        public override byte[] Format(InputStruct message)
+        public override byte[] Format(IInputStruct message)
         {
             var r_message = (ReadRequestSiemensInputStruct) message;
             var slaveAddress = r_message.SlaveAddress;
@@ -434,7 +434,7 @@ namespace Modbus.Net.Siemens
                 offsetBitBytes.Skip(1).ToArray());
         }
 
-        public override OutputStruct Unformat(byte[] messageBytes, ref int pos)
+        public override IOutputStruct Unformat(byte[] messageBytes, ref int pos)
         {
             pos = 4;
             var pduRef = BigEndianValueHelper.Instance.GetUShort(messageBytes, ref pos);
@@ -454,7 +454,7 @@ namespace Modbus.Net.Siemens
 
     #region 写数据请求
 
-    public class WriteRequestSiemensInputStruct : InputStruct
+    public class WriteRequestSiemensInputStruct : IInputStruct
     {
         public WriteRequestSiemensInputStruct(byte slaveAddress, byte masterAddress, ushort pduRef, string startAddress,
             object[] writeValue, AddressTranslator addressTranslator)
@@ -479,7 +479,7 @@ namespace Modbus.Net.Siemens
         public object[] WriteValue { get; }
     }
 
-    public class WriteRequestSiemensOutputStruct : OutputStruct
+    public class WriteRequestSiemensOutputStruct : IOutputStruct
     {
         public WriteRequestSiemensOutputStruct(ushort pduRef, SiemensAccessResult accessResult)
         {
@@ -493,7 +493,7 @@ namespace Modbus.Net.Siemens
 
     public class WriteRequestSiemensProtocal : ProtocalUnit
     {
-        public override byte[] Format(InputStruct message)
+        public override byte[] Format(IInputStruct message)
         {
             var r_message = (WriteRequestSiemensInputStruct) message;
             var valueBytes = BigEndianValueHelper.Instance.ObjectArrayToByteArray(r_message.WriteValue);
@@ -525,7 +525,7 @@ namespace Modbus.Net.Siemens
                 offsetBitBytes.Skip(1).ToArray(), reserved, type, numberOfWriteBits, valueBytes);
         }
 
-        public override OutputStruct Unformat(byte[] messageBytes, ref int pos)
+        public override IOutputStruct Unformat(byte[] messageBytes, ref int pos)
         {
             if (messageBytes.Length == 1)
             {
@@ -548,7 +548,7 @@ namespace Modbus.Net.Siemens
 
     /*
     #region 读时间请求
-    public class ReadTimeSiemensInputStruct : InputStruct
+    public class ReadTimeSiemensInputStruct : IInputStruct
     {
         public ReadTimeSiemensInputStruct(ushort pduRef)
         {
@@ -558,7 +558,7 @@ namespace Modbus.Net.Siemens
         public ushort PduRef { get; private set; }
     }
 
-    public class ReadTimeSiemensOutputStruct : OutputStruct
+    public class ReadTimeSiemensOutputStruct : IOutputStruct
     {
         public ReadTimeSiemensOutputStruct(ushort pduRef, DateTime dateTime, TodClockStatus todClockStatus)
         {
@@ -574,12 +574,12 @@ namespace Modbus.Net.Siemens
 
     public class ReadTimeSiemensProtocal : ProtocalUnit
     {
-        public override byte[] Format(InputStruct message)
+        public override byte[] Format(IInputStruct message)
         {
             throw new NotImplementedException();
         }
 
-        public override OutputStruct Unformat(byte[] messageBytes, ref int pos)
+        public override IOutputStruct Unformat(byte[] messageBytes, ref int pos)
         {
             throw new NotImplementedException();
         }
@@ -589,7 +589,7 @@ namespace Modbus.Net.Siemens
 
     #region 写时间请求
     
-    public class WriteTimeSiemensInputStruct : InputStruct
+    public class WriteTimeSiemensInputStruct : IInputStruct
     {
         public WriteTimeSiemensInputStruct(ushort pduRef, DateTime dateTime, TodClockStatus todClockStatus)
         {
@@ -603,7 +603,7 @@ namespace Modbus.Net.Siemens
         public TodClockStatus TodClockStatus { get; private set; }
     }
 
-    public class WriteTimeSiemensOutputStruct : OutputStruct
+    public class WriteTimeSiemensOutputStruct : IOutputStruct
     {
         public WriteTimeSiemensOutputStruct(ushort pduRef, byte errCod)
         {
@@ -617,12 +617,12 @@ namespace Modbus.Net.Siemens
 
     public class WriteTimeSiemensProtocal : ProtocalUnit
     {
-        public override byte[] Format(InputStruct message)
+        public override byte[] Format(IInputStruct message)
         {
             throw new NotImplementedException();
         }
 
-        public override OutputStruct Unformat(byte[] messageBytes, ref int pos)
+        public override IOutputStruct Unformat(byte[] messageBytes, ref int pos)
         {
             throw new NotImplementedException();
         }

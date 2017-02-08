@@ -34,7 +34,7 @@ namespace Modbus.Net.Siemens
             return await base.SendReceiveAsync(isLittleEndian, content);
         }
 
-        private async Task<OutputStruct> ForceSendReceiveAsync(ProtocalUnit unit, InputStruct content)
+        private async Task<IOutputStruct> ForceSendReceiveAsync(ProtocalUnit unit, IInputStruct content)
         {
             return await base.SendReceiveAsync(unit, content);
         }

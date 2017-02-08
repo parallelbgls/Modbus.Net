@@ -8,9 +8,9 @@ namespace Modbus.Net.Modbus
     /// <summary>
     ///     Tcp协议字节伸缩
     /// </summary>
-    public class ModbusTcpProtocalLinkerBytesExtend : ProtocalLinkerBytesExtend
+    public class ModbusTcpProtocalLinkerBytesExtend : IProtocalLinkerBytesExtend
     {
-        public override byte[] BytesExtend(byte[] content)
+        public byte[] BytesExtend(byte[] content)
         {
             //Modbus/Tcp协议扩张，前面加6个字节，前面4个为0，后面两个为协议整体内容的长度
             var newFormat = new byte[6 + content.Length];
@@ -22,7 +22,7 @@ namespace Modbus.Net.Modbus
             return newFormat;
         }
 
-        public override byte[] BytesDecact(byte[] content)
+        public byte[] BytesDecact(byte[] content)
         {
             //Modbus/Tcp协议收缩，抛弃前面6个字节的内容
             var newContent = new byte[content.Length - 6];
@@ -31,9 +31,9 @@ namespace Modbus.Net.Modbus
         }
     }
 
-    public class ModbusRtuProtocalLinkerBytesExtend : ProtocalLinkerBytesExtend
+    public class ModbusRtuProtocalLinkerBytesExtend : IProtocalLinkerBytesExtend
     {
-        public override byte[] BytesExtend(byte[] content)
+        public byte[] BytesExtend(byte[] content)
         {
             var crc = new byte[2];
             //Modbus/Rtu协议扩张，增加CRC校验
@@ -44,7 +44,7 @@ namespace Modbus.Net.Modbus
             return newFormat;
         }
 
-        public override byte[] BytesDecact(byte[] content)
+        public byte[] BytesDecact(byte[] content)
         {
             //Modbus/Rtu协议收缩，抛弃后面2个字节的内容
             var newContent = new byte[content.Length - 2];
@@ -53,9 +53,9 @@ namespace Modbus.Net.Modbus
         }
     }
 
-    public class ModbusAsciiProtocalLinkerBytesExtend : ProtocalLinkerBytesExtend
+    public class ModbusAsciiProtocalLinkerBytesExtend : IProtocalLinkerBytesExtend
     {
-        public override byte[] BytesExtend(byte[] content)
+        public byte[] BytesExtend(byte[] content)
         {
             //Modbus/Ascii协议扩张，前面增加:，后面增加LRC校验和尾字符
             var newContent = new List<byte>();
@@ -70,7 +70,7 @@ namespace Modbus.Net.Modbus
             return newContent.ToArray();
         }
 
-        public override byte[] BytesDecact(byte[] content)
+        public byte[] BytesDecact(byte[] content)
         {
             //Modbus/Ascii协议收缩，抛弃头尾。
             var newContent = new List<byte>();

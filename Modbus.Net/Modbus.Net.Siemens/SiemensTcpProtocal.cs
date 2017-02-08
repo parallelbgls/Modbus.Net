@@ -55,12 +55,12 @@ namespace Modbus.Net.Siemens
             return await base.SendReceiveAsync(isLittleEndian, content);
         }
 
-        public override OutputStruct SendReceive(ProtocalUnit unit, InputStruct content)
+        public override IOutputStruct SendReceive(ProtocalUnit unit, IInputStruct content)
         {
             return AsyncHelper.RunSync(() => SendReceiveAsync(unit, content));
         }
 
-        public override async Task<OutputStruct> SendReceiveAsync(ProtocalUnit unit, InputStruct content)
+        public override async Task<IOutputStruct> SendReceiveAsync(ProtocalUnit unit, IInputStruct content)
         {
             if (ProtocalLinker != null && ProtocalLinker.IsConnected) return await base.SendReceiveAsync(unit, content);
             if (_connectTryCount > 10) return null;
@@ -71,7 +71,7 @@ namespace Modbus.Net.Siemens
                             .ContinueWith(answer => answer.Result ? base.SendReceiveAsync(unit, content) : null);
         }
 
-        private async Task<OutputStruct> ForceSendReceiveAsync(ProtocalUnit unit, InputStruct content)
+        private async Task<IOutputStruct> ForceSendReceiveAsync(ProtocalUnit unit, IInputStruct content)
         {
             return await base.SendReceiveAsync(unit, content);
         }

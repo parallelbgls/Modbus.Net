@@ -5,16 +5,16 @@ namespace Modbus.Net.Siemens
     /// <summary>
     ///     西门子Tcp协议扩展
     /// </summary>
-    public class SiemensTcpProtocalLinkerBytesExtend : ProtocalLinkerBytesExtend
+    public class SiemensTcpProtocalLinkerBytesExtend : IProtocalLinkerBytesExtend
     {
-        public override byte[] BytesExtend(byte[] content)
+        public byte[] BytesExtend(byte[] content)
         {
             Array.Copy(new byte[] {0x03, 0x00, 0x00, 0x00, 0x02, 0xf0, 0x80}, 0, content, 0, 7);
             Array.Copy(BigEndianValueHelper.Instance.GetBytes((ushort) content.Length), 0, content, 2, 2);
             return content;
         }
 
-        public override byte[] BytesDecact(byte[] content)
+        public byte[] BytesDecact(byte[] content)
         {
             var newContent = new byte[content.Length - 7];
             Array.Copy(content, 7, newContent, 0, newContent.Length);
@@ -25,9 +25,9 @@ namespace Modbus.Net.Siemens
     /// <summary>
     ///     西门子Ppi协议扩展
     /// </summary>
-    public class SiemensPpiProtocalLinkerBytesExtend : ProtocalLinkerBytesExtend
+    public class SiemensPpiProtocalLinkerBytesExtend : IProtocalLinkerBytesExtend
     {
-        public override byte[] BytesExtend(byte[] content)
+        public byte[] BytesExtend(byte[] content)
         {
             var newContent = new byte[content.Length + 2];
             Array.Copy(content, 0, newContent, 0, content.Length);
@@ -44,7 +44,7 @@ namespace Modbus.Net.Siemens
             return newContent;
         }
 
-        public override byte[] BytesDecact(byte[] content)
+        public byte[] BytesDecact(byte[] content)
         {
             var newContent = new byte[content.Length - 9];
             Array.Copy(content, 7, newContent, 0, newContent.Length);
