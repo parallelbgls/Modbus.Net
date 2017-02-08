@@ -2,15 +2,15 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>Modbus.Net</id>
-        <version>1.2.1</version>
+        <version>1.2.2</version>
         <title>Modbus.Net</title>
         <authors>Chris L.(Luo Sheng)</authors>
-        <owners>Hangzhou Delian Information and Science Technology Co.,Ltd.</owners>
+        <owners>Hangzhou Delian IoT Science Technology Co.,Ltd.</owners>
         <licenseUrl>https://github.com/parallelbgls/Modbus.Net/blob/master/LICENSE.md</licenseUrl>
         <projectUrl>https://github.com/parallelbgls/Modbus.Net/tree/master/Modbus.Net</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>High extensible hardware communication implementation platform</description>
-        <copyright>Copyright 2015 Hangzhou Delian Science and Technology Co.,Ltd.</copyright>
+        <copyright>Copyright 2017 Hangzhou Delian IoT Science Technology Co.,Ltd.</copyright>
         <tags>hardware communicate protocal Delian</tags>
     </metadata>
     <files>

@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Modbus.Net.Modbus")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("杭州德联物联网科技有限公司")]
 [assembly: AssemblyProduct("Modbus.Net.Modbus")]
-[assembly: AssemblyCopyright("Copyright ©  2016")]
+[assembly: AssemblyCopyright("Copyright © Chris L. 2017 HangZhou Delian IoT Science Technology Co.,Ltd.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
