@@ -121,13 +121,6 @@ namespace Modbus.Net.Modbus
             var dataCount = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
             var dataValue = new byte[dataCount];
             Array.Copy(messageBytes, 3, dataValue, 0, dataCount);
-            if (functionCode == 1 || functionCode == 2)
-            {
-                for (var i = 0; i < dataValue.Length; i++)
-                {
-                    dataValue[i] = dataValue[i];
-                }
-            }
             return new ReadDataModbusOutputStruct(slaveAddress, functionCode, dataCount, dataValue);
         }
     }
@@ -193,15 +186,7 @@ namespace Modbus.Net.Modbus
         public override byte[] Format(IInputStruct message)
         {
             var r_message = (WriteDataModbusInputStruct) message;
-            var functionCode = r_message.FunctionCode;
             var dataValue = Format(r_message.WriteValue);
-            if (functionCode == 5 || functionCode == 15)
-            {
-                for (var i = 0; i < dataValue.Length; i++)
-                {
-                    dataValue[i] = dataValue[i];
-                }
-            }
             var formattingBytes = Format(r_message.SlaveAddress, r_message.FunctionCode,
                 r_message.StartAddress, r_message.WriteCount, r_message.WriteByteCount, dataValue);
             return formattingBytes;
