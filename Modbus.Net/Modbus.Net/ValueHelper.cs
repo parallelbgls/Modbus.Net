@@ -399,7 +399,7 @@ namespace Modbus.Net
             var temp = data[pos];
             for (var i = 0; i < 8; i++)
             {
-                t[i] = temp%2 > 0;
+                t[7 - i] = temp % 2 > 0;
                 temp /= 2;
             }
             pos += 1;
@@ -442,7 +442,17 @@ namespace Modbus.Net
         /// <returns></returns>
         public virtual bool GetBit(byte[] number, ref int pos, ref int subPos)
         {
-            return GetBit(number[pos], ref pos, ref subPos);
+            if (subPos < 0 && subPos > 7) throw new IndexOutOfRangeException();
+            var tspos = subPos;
+            var tpos = pos;
+            var bit = GetBit(number[pos], ref tpos, ref tspos);
+            subPos += 1;
+            if (subPos > 7)
+            {
+                pos++;
+                subPos = 0;
+            }
+            return bit;
         }
 
         /// <summary>
@@ -827,14 +837,14 @@ namespace Modbus.Net
             var creation = 0;
             if (setBit)
             {
-                for (var i = 7; i >= 0; i--)
+                for (var i = 0; i <= 7; i++)
                 {
                     creation *= 2;
                     if (i == subPos) creation++;
                 }
                 return (byte) (number | creation);
             }
-            for (var i = 7; i >= 0; i--)
+            for (var i = 0; i <= 7; i++)
             {
                 creation *= 2;
                 if (i != subPos) creation++;
@@ -1006,29 +1016,13 @@ namespace Modbus.Net
 
         public override bool GetBit(byte[] number, ref int pos, ref int subPos)
         {
-            if (subPos < 0 && subPos > 7) throw new IndexOutOfRangeException();
-            var tspos = 7 - subPos;
-            var tpos = pos;
-            var bit = GetBit(number[pos], ref tpos, ref tspos);
-            subPos += 1;
-            if (subPos > 7)
-            {
-                pos++;
-                subPos = 0;
-            }
-            return bit;
+            return GetBit(number[pos], ref pos, ref subPos);
         }
 
         public override bool[] GetBits(byte[] data, ref int pos)
         {
-            var t = new bool[8];
-            var temp = data[pos];
-            for (var i = 0; i < 8; i++)
-            {
-                t[7 - i] = temp%2 > 0;
-                temp /= 2;
-            }
-            pos += 1;
+            var t = base.GetBits(data, ref pos);
+            Array.Reverse(t);
             return t;
         }
 

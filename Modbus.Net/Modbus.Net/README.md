@@ -98,7 +98,7 @@ List<AddressUnit> addressUnits = new List<AddressUnit>
     new AddressUnit() {Id = "1", Area = "V", Address = 3, CommunicationTag = "D2", DataType = typeof (float), Zoom = 1}
 };
 TaskManager task = new TaskManager(10, 300, true);
-task.AddMachine(new SiemensMachine(SiemensType.Tcp, "192.168.3.11",SiemensMachineModel.S7_300, addressUnits,
+task.AddMachine(new SiemensMachine(SiemensType.Tcp, "192.168.3.11", SiemensMachineModel.S7_300, addressUnits,
     true, 2, 0));
 task.ReturnValues += (returnValues) =>
 {
@@ -373,17 +373,17 @@ public class ModbusTcpProtocal : ModbusProtocal
 ```
 "abstract" keyword is optional because if user can use this protocal don't write abstract.
 
-Second: Extend ProtocalUnit, InputStruct and OutputStruct.
+Second: Extend ProtocalUnit, IInputStruct and IOutputStruct.
 ```C#
 public class ReadDataModbusProtocal : ProtocalUnit
 {
-    public override byte[] Format(InputStruct message)
+    public override byte[] Format(IInputStruct message)
     {
         var r_message = (ReadDataModbusInputStruct)message;
         return Format(r_message.SlaveAddress, r_message.FunctionCode, r_message.StartAddress, r_message.GetCount);
     }
 
-    public override OutputStruct Unformat(byte[] messageBytes, ref int pos)
+    public override IOutputStruct Unformat(byte[] messageBytes, ref int pos)
     {
         byte slaveAddress = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
         byte functionCode = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
@@ -394,8 +394,14 @@ public class ReadDataModbusProtocal : ProtocalUnit
     }
 }
 ```
-There are two types of ProtocalUnit: ProtocalUnit and SpecialProtocalUnit.
-If you see the implementation, you will find that there are no differences between ProtocalUnit and SpecialProtocalUnit. But actually there is a difference between them: SpecialProtocalUnit will not call ProtocalLinkerBytesExtend. If you don't want some protocals to call the ProtocalLinkerBytesExtend, extend those protocals from SpecialProtocalUnit.
+There is another interface called ISpecialProtocalUnit.
+If you add ISpecialProtocalUnit to ProtocalUnit, then the protocal will not run BytesExtend and BytesDecact.
+```C#
+internal class CreateReferenceSiemensProtocal : ProtocalUnit, ISpecialProtocalUnit
+{
+    ...
+}
+```
 
 2.Implement Protocal based ProtocalLinker. (ModbusTcpProtocalLinker)
 ProtocalLinker connect the Protocal to the BaseConnector, so that byte array can be sended using some specific way like Ethenet.

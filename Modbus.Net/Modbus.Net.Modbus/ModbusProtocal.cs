@@ -119,7 +119,7 @@ namespace Modbus.Net.Modbus
             {
                 for (var i = 0; i < dataValue.Length; i++)
                 {
-                    dataValue[i] = BigEndianValueHelper.Instance.ReverseByte(dataValue[i]);
+                    dataValue[i] = dataValue[i];
                 }
             }
             return new ReadDataModbusOutputStruct(slaveAddress, functionCode, dataCount, dataValue);
@@ -193,7 +193,7 @@ namespace Modbus.Net.Modbus
             {
                 for (var i = 0; i < dataValue.Length; i++)
                 {
-                    dataValue[i] = BigEndianValueHelper.Instance.ReverseByte(dataValue[i]);
+                    dataValue[i] = dataValue[i];
                 }
             }
             var formattingBytes = Format(r_message.SlaveAddress, r_message.FunctionCode,

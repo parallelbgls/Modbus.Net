@@ -16,7 +16,7 @@ Modbus is a serial communications protocol originally published by Modicon (now 
 
 ##<a name="address"></a> Address Mapping
 
-Modbus has four types of address: Coil, Discrete Input, Holding Register and Input Register.
+Modbus has four types of address: Coil, Discrete Input, Input Register and Holding Register.
 
 Modbus has two address description method: standard and extend.
 
@@ -26,8 +26,8 @@ Type             | Standard    | Extend        |
 ---------------- | ----------- | ------------- |
 Coil             | 00001-09999 | 000001-065536 |
 Discrete Input   | 10001-19999 | 100001-165536 |
-Holding Register | 30001-39999 | 300001-365536 |
-Input Register   | 40001-49999 | 400001-465536 |
+Input Register   | 30001-39999 | 300001-365536 |
+Holding Register | 40001-49999 | 400001-465536 |
 
 Standard and Extend address description are all supported in Modbus.Net.Modbus. The only difference is don't write too large number in address. 
 
@@ -67,7 +67,7 @@ The number of SubAddress is from 0 to 15.
 
 Caution: Modbus.Net.Modbus SubAddress has a giant difference towards standard Modbus.
 
-Bit position from standard modbus is from last to first. But Modbus.Net is from first to last.
+Bit position from Modbus.Net is one less than standard modbus. 
 
 Standard Modbus
 
@@ -77,4 +77,4 @@ Standard Modbus
 Modbus.Net.Modbus
 
 1  0  1  1  1  0  0  0  1  0  0  0  0  1  1  0
-0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15
+15 14 13 12 11 10 9  8  7  6  5  4  3  2  1  0

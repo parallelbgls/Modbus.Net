@@ -52,10 +52,10 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="AddressMaker.cs" />
-    <Compile Include="BaseTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="CommunicationTest.cs" />
+    <Compile Include="ModbusTest.cs" />
+    <Compile Include="SiemensTest.cs" />
+    <Compile Include="BaseTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Modbus.Net\Modbus.Net.Modbus\Modbus.Net.Modbus.csproj">
