@@ -2,6 +2,9 @@
 
 namespace Modbus.Net.Modbus
 {
+    /// <summary>
+    ///     Modbus设备
+    /// </summary>
     public class ModbusMachine : BaseMachine
     {
         public ModbusMachine(ModbusType connectionType, string connectionString,

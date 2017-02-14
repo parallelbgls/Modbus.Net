@@ -233,7 +233,7 @@ namespace Modbus.Net
                 var preAddress = continusAddresses[index];
                 continusAddresses.RemoveAt(index);
                 continusAddresses.RemoveAt(index);
-                //变为新的地址段
+                //合并两个已有的地址段，变为一个新的地址段
                 var newAddress = new CommunicationUnit
                 {
                     Area = nowAddress.Area,

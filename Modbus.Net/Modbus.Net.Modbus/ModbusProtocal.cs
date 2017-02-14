@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 
 namespace Modbus.Net.Modbus
 {
+    /// <summary>
+    ///     变量功能码
+    /// </summary>
     internal enum ModbusProtocalVariableFunctionCode : byte
     {
         ReadVariable = 20,
@@ -39,6 +42,9 @@ namespace Modbus.Net.Modbus
         WriteMultiRegister = 16
     }
 
+    /// <summary>
+    ///     Modbus协议
+    /// </summary>
     public abstract class ModbusProtocal : BaseProtocal
     {
         protected ModbusProtocal(byte slaveAddress, byte masterAddress) : base(slaveAddress, masterAddress)
@@ -58,7 +64,7 @@ namespace Modbus.Net.Modbus
 
     #region 读PLC数据
 
-    public class ReadDataModbusInputStruct : InputStruct
+    public class ReadDataModbusInputStruct : IInputStruct
     {
         public ReadDataModbusInputStruct(byte slaveAddress, string startAddress, ushort getCount,
             AddressTranslator addressTranslator)
@@ -79,7 +85,7 @@ namespace Modbus.Net.Modbus
         public ushort GetCount { get; }
     }
 
-    public class ReadDataModbusOutputStruct : OutputStruct
+    public class ReadDataModbusOutputStruct : IOutputStruct
     {
         public ReadDataModbusOutputStruct(byte slaveAddress, byte functionCode,
             int dataCount, byte[] dataValue)
@@ -101,14 +107,14 @@ namespace Modbus.Net.Modbus
 
     public class ReadDataModbusProtocal : ProtocalUnit
     {
-        public override byte[] Format(InputStruct message)
+        public override byte[] Format(IInputStruct message)
         {
             var r_message = (ReadDataModbusInputStruct) message;
             return Format(r_message.SlaveAddress, r_message.FunctionCode,
                 r_message.StartAddress, r_message.GetCount);
         }
 
-        public override OutputStruct Unformat(byte[] messageBytes, ref int pos)
+        public override IOutputStruct Unformat(byte[] messageBytes, ref int pos)
         {
             var slaveAddress = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
             var functionCode = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
@@ -130,7 +136,7 @@ namespace Modbus.Net.Modbus
 
     #region 写PLC数据
 
-    public class WriteDataModbusInputStruct : InputStruct
+    public class WriteDataModbusInputStruct : IInputStruct
     {
         public WriteDataModbusInputStruct(byte slaveAddress, string startAddress, object[] writeValue,
             AddressTranslator addressTranslator)
@@ -159,7 +165,7 @@ namespace Modbus.Net.Modbus
         public byte[] WriteValue { get; }
     }
 
-    public class WriteDataModbusOutputStruct : OutputStruct
+    public class WriteDataModbusOutputStruct : IOutputStruct
     {
         public WriteDataModbusOutputStruct(byte slaveAddress, byte functionCode,
             ushort startAddress, ushort writeCount)
@@ -184,7 +190,7 @@ namespace Modbus.Net.Modbus
     /// </summary>
     public class WriteDataModbusProtocal : ProtocalUnit
     {
-        public override byte[] Format(InputStruct message)
+        public override byte[] Format(IInputStruct message)
         {
             var r_message = (WriteDataModbusInputStruct) message;
             var functionCode = r_message.FunctionCode;
@@ -201,7 +207,7 @@ namespace Modbus.Net.Modbus
             return formattingBytes;
         }
 
-        public override OutputStruct Unformat(byte[] messageBytes, ref int flag)
+        public override IOutputStruct Unformat(byte[] messageBytes, ref int flag)
         {
             var slaveAddress = BigEndianValueHelper.Instance.GetByte(messageBytes, ref flag);
             var functionCode = BigEndianValueHelper.Instance.GetByte(messageBytes, ref flag);
@@ -216,7 +222,7 @@ namespace Modbus.Net.Modbus
 
     #region 读PLC时间
 
-    public class GetSystemTimeModbusInputStruct : InputStruct
+    public class GetSystemTimeModbusInputStruct : IInputStruct
     {
         public GetSystemTimeModbusInputStruct(byte slaveAddress)
         {
@@ -235,7 +241,7 @@ namespace Modbus.Net.Modbus
         public ushort GetCount { get; }
     }
 
-    public class GetSystemTimeModbusOutputStruct : OutputStruct
+    public class GetSystemTimeModbusOutputStruct : IOutputStruct
     {
         public GetSystemTimeModbusOutputStruct(byte slaveAddress, byte functionCode,
             byte writeByteCount, ushort year, byte day, byte month, ushort hour, byte second, byte minute,
@@ -261,14 +267,14 @@ namespace Modbus.Net.Modbus
     /// </summary>
     public class GetSystemTimeModbusProtocal : ProtocalUnit
     {
-        public override byte[] Format(InputStruct message)
+        public override byte[] Format(IInputStruct message)
         {
             var r_message = (GetSystemTimeModbusInputStruct) message;
             return Format(r_message.SlaveAddress, r_message.FunctionCode,
                 r_message.StartAddress, r_message.GetCount);
         }
 
-        public override OutputStruct Unformat(byte[] messageBytes, ref int flag)
+        public override IOutputStruct Unformat(byte[] messageBytes, ref int flag)
         {
             var slaveAddress = BigEndianValueHelper.Instance.GetByte(messageBytes, ref flag);
             var functionCode = BigEndianValueHelper.Instance.GetByte(messageBytes, ref flag);
@@ -289,7 +295,7 @@ namespace Modbus.Net.Modbus
 
     #region 写PLC时间
 
-    public class SetSystemTimeModbusInputStruct : InputStruct
+    public class SetSystemTimeModbusInputStruct : IInputStruct
     {
         public SetSystemTimeModbusInputStruct(byte slaveAddress, DateTime time)
         {
@@ -332,7 +338,7 @@ namespace Modbus.Net.Modbus
         public ushort Millisecond { get; }
     }
 
-    public class SetSystemTimeModbusOutputStruct : OutputStruct
+    public class SetSystemTimeModbusOutputStruct : IOutputStruct
     {
         public SetSystemTimeModbusOutputStruct(byte slaveAddress, byte functionCode,
             ushort startAddress, ushort writeCount)
@@ -357,7 +363,7 @@ namespace Modbus.Net.Modbus
     /// </summary>
     public class SetSystemTimeModbusProtocal : ProtocalUnit
     {
-        public override byte[] Format(InputStruct message)
+        public override byte[] Format(IInputStruct message)
         {
             var r_message = (SetSystemTimeModbusInputStruct) message;
             return Format(r_message.SlaveAddress, r_message.FunctionCode,
@@ -366,7 +372,7 @@ namespace Modbus.Net.Modbus
                 r_message.Month, r_message.Hour, r_message.Second, r_message.Minute, r_message.Millisecond);
         }
 
-        public override OutputStruct Unformat(byte[] messageBytes, ref int flag)
+        public override IOutputStruct Unformat(byte[] messageBytes, ref int flag)
         {
             var slaveAddress = BigEndianValueHelper.Instance.GetByte(messageBytes, ref flag);
             var functionCode = BigEndianValueHelper.Instance.GetByte(messageBytes, ref flag);

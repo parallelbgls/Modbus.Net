@@ -2,6 +2,9 @@
 
 namespace Modbus.Net.OPC
 {
+    /// <summary>
+    /// Opc Da协议连接器
+    /// </summary>
     public class OpcDaProtocalLinker : ProtocalLinker
     {
         public OpcDaProtocalLinker() : this(ConfigurationManager.OpcDaHost)

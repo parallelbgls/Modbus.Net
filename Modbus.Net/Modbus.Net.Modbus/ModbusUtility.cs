@@ -23,8 +23,14 @@ namespace Modbus.Net.Modbus
         Ascii = 2
     }
 
+    /// <summary>
+    ///     Modbus基础Api入口
+    /// </summary>
     public class ModbusUtility : BaseUtility
     {
+        /// <summary>
+        ///     Modbus协议类型
+        /// </summary>
         private ModbusType _modbusType;
 
         public ModbusUtility(int connectionType, byte slaveAddress, byte masterAddress)
@@ -81,6 +87,7 @@ namespace Modbus.Net.Modbus
                 _modbusType = value;
                 switch (_modbusType)
                 {
+                    //Rtu协议
                     case ModbusType.Rtu:
                     {
                         Wrapper = ConnectionString == null
@@ -88,6 +95,7 @@ namespace Modbus.Net.Modbus
                             : new ModbusRtuProtocal(ConnectionString, SlaveAddress, MasterAddress);
                         break;
                     }
+                    //Tcp协议
                     case ModbusType.Tcp:
                     {
                         Wrapper = ConnectionString == null
@@ -98,6 +106,7 @@ namespace Modbus.Net.Modbus
                                     MasterAddress));
                         break;
                     }
+                    //Ascii协议
                     case ModbusType.Ascii:
                     {
                         Wrapper = ConnectionString == null
@@ -114,6 +123,12 @@ namespace Modbus.Net.Modbus
             ModbusType = (ModbusType) connectionType;
         }
 
+        /// <summary>
+        ///     读数据
+        /// </summary>
+        /// <param name="startAddress">起始地址</param>
+        /// <param name="getByteCount">获取字节个数</param>
+        /// <returns>获取的结果</returns>
         public override async Task<byte[]> GetDatasAsync(string startAddress, int getByteCount)
         {
             try
@@ -131,6 +146,12 @@ namespace Modbus.Net.Modbus
             }
         }
 
+        /// <summary>
+        ///     写数据
+        /// </summary>
+        /// <param name="startAddress">起始地址</param>
+        /// <param name="setContents">需要设置的数据</param>
+        /// <returns>设置是否成功</returns>
         public override async Task<bool> SetDatasAsync(string startAddress, object[] setContents)
         {
             try
@@ -149,6 +170,10 @@ namespace Modbus.Net.Modbus
         }
 
         /*
+        /// <summary>
+        ///     读时间
+        /// </summary>
+        /// <returns>设备的时间</returns>
         public override DateTime GetTime()
         {
             try
@@ -165,6 +190,11 @@ namespace Modbus.Net.Modbus
             }
         }
 
+        /// <summary>
+        ///     写时间
+        /// </summary>
+        /// <param name="setTime">需要写入的时间</param>
+        /// <returns>写入是否成功</returns>
         public override bool SetTime(DateTime setTime)
         {
             try

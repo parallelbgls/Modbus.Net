@@ -102,7 +102,7 @@ namespace Modbus.Net
         /// <param name="unit">协议的实例</param>
         /// <param name="content">输入信息的结构化描述</param>
         /// <returns>输出信息的结构化描述</returns>
-        public virtual OutputStruct SendReceive(ProtocalUnit unit, InputStruct content)
+        public virtual IOutputStruct SendReceive(ProtocalUnit unit, IInputStruct content)
         {
             return AsyncHelper.RunSync(() => SendReceiveAsync(unit, content));
         }
@@ -113,7 +113,7 @@ namespace Modbus.Net
         /// <param name="unit">协议的实例</param>
         /// <param name="content">输入信息的结构化描述</param>
         /// <returns>输出信息的结构化描述</returns>
-        public virtual async Task<OutputStruct> SendReceiveAsync(ProtocalUnit unit, InputStruct content)
+        public virtual async Task<IOutputStruct> SendReceiveAsync(ProtocalUnit unit, IInputStruct content)
         {
             var t = 0;
             var formatContent = unit.Format(content);
@@ -121,7 +121,7 @@ namespace Modbus.Net
             {
                 byte[] receiveContent;
                 //如果为特别处理协议的话，跳过协议扩展收缩
-                if (unit is SpecialProtocalUnit)
+                if (unit is ISpecialProtocalUnit)
                 {
                     receiveContent = await ProtocalLinker.SendReceiveWithoutExtAndDecAsync(formatContent);
                 }

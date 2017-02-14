@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 
 namespace Modbus.Net.Siemens
 {
+    /// <summary>
+    ///     西门子Ppi协议连接器
+    /// </summary>
     public class SiemensPpiProtocalLinker : ComProtocalLinker
     {
         public SiemensPpiProtocalLinker(string com)

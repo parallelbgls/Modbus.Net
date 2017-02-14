@@ -4,12 +4,21 @@ using System.Linq;
 namespace Modbus.Net.Modbus
 {
     /// <summary>
-    ///     NA200H数据单元翻译器
+    ///     南大奥拓NA200H数据单元翻译器
     /// </summary>
     public class AddressTranslatorNA200H : AddressTranslator
     {
+        /// <summary>
+        ///     读功能码
+        /// </summary>
         protected Dictionary<string, AreaOutputDef> ReadFunctionCodeDictionary;
+        /// <summary>
+        ///     功能码翻译至标准Modbus地址位置
+        /// </summary>
         protected Dictionary<string, int> TransDictionary;
+        /// <summary>
+        ///     写功能码
+        /// </summary>
         protected Dictionary<string, AreaOutputDef> WriteFunctionCodeDictionary;
 
         public AddressTranslatorNA200H()
@@ -188,7 +197,13 @@ namespace Modbus.Net.Modbus
     /// </summary>
     public class AddressTranslatorModbus : AddressTranslator
     {
+        /// <summary>
+        ///     读功能码
+        /// </summary>
         protected Dictionary<string, AreaOutputDef> ReadFunctionCodeDictionary;
+        /// <summary>
+        ///     写功能码
+        /// </summary>
         protected Dictionary<string, AreaOutputDef> WriteFunctionCodeDictionary;
 
         public AddressTranslatorModbus()

@@ -90,6 +90,7 @@
   <ItemGroup>
     <None Include="Modbus.Net.OPC.nuspec" />
     <None Include="packages.config" />
+    <None Include="README.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

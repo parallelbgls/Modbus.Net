@@ -557,9 +557,9 @@ Remember subpos system cannot cross a byte in current version. If you want to cr
 * New Samples (Complete)
 
 ###Version 1.2.2
-* Address Utility (In Road)
-* More functions in TaskManager (In Road)
-* More interfaces (In Road)
+* Address Utility (Not Test)
+* More functions in TaskManager (Not Test)
+* More interfaces (Not Test)
 
 ###Version 1.2.3
 * OPC UA Support (In Road)

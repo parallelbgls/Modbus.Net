@@ -2,17 +2,19 @@
 
 namespace Modbus.Net.Siemens
 {
+    /// <summary>
+    ///     西门子Tcp协议
+    /// </summary>
     public class SiemensTcpProtocal : SiemensProtocal
     {
-        private readonly ushort _taspSrc;
-        private readonly ushort _tsapDst;
-        private readonly ushort _maxCalling;
-        private readonly ushort _maxCalled;
-        private readonly ushort _maxPdu;
-        private readonly byte _tdpuSize;
-
         private readonly string _ip;
+        private readonly ushort _maxCalled;
+        private readonly ushort _maxCalling;
+        private readonly ushort _maxPdu;
         private readonly int _port;
+        private readonly ushort _taspSrc;
+        private readonly byte _tdpuSize;
+        private readonly ushort _tsapDst;
         private int _connectTryCount;
 
         public SiemensTcpProtocal(byte tdpuSize, ushort tsapSrc, ushort tsapDst, ushort maxCalling, ushort maxCalled,
@@ -53,12 +55,12 @@ namespace Modbus.Net.Siemens
             return await base.SendReceiveAsync(isLittleEndian, content);
         }
 
-        public override OutputStruct SendReceive(ProtocalUnit unit, InputStruct content)
+        public override IOutputStruct SendReceive(ProtocalUnit unit, IInputStruct content)
         {
             return AsyncHelper.RunSync(() => SendReceiveAsync(unit, content));
         }
 
-        public override async Task<OutputStruct> SendReceiveAsync(ProtocalUnit unit, InputStruct content)
+        public override async Task<IOutputStruct> SendReceiveAsync(ProtocalUnit unit, IInputStruct content)
         {
             if (ProtocalLinker != null && ProtocalLinker.IsConnected) return await base.SendReceiveAsync(unit, content);
             if (_connectTryCount > 10) return null;
@@ -69,7 +71,7 @@ namespace Modbus.Net.Siemens
                             .ContinueWith(answer => answer.Result ? base.SendReceiveAsync(unit, content) : null);
         }
 
-        private async Task<OutputStruct> ForceSendReceiveAsync(ProtocalUnit unit, InputStruct content)
+        private async Task<IOutputStruct> ForceSendReceiveAsync(ProtocalUnit unit, IInputStruct content)
         {
             return await base.SendReceiveAsync(unit, content);
         }
@@ -87,6 +89,7 @@ namespace Modbus.Net.Siemens
             _connectTryCount = 0;
             var inputStruct = new CreateReferenceSiemensInputStruct(_tdpuSize, _taspSrc, _tsapDst);
             return
+                //先建立连接，然后建立设备的引用
                 await await
                     ForceSendReceiveAsync(this[typeof (CreateReferenceSiemensProtocal)], inputStruct)
                         .ContinueWith(async answer =>

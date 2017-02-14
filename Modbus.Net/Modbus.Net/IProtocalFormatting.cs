@@ -10,7 +10,7 @@
         /// </summary>
         /// <param name="message">结构化的输入数据</param>
         /// <returns>格式化后的字节流</returns>
-        byte[] Format(InputStruct message);
+        byte[] Format(IInputStruct message);
 
         /// <summary>
         ///     从对象的参数数组格式化
@@ -25,6 +25,6 @@
         /// <param name="messageBytes">返回数据的字节流</param>
         /// <param name="pos">转换标记位</param>
         /// <returns>结构化的输出数据</returns>
-        OutputStruct Unformat(byte[] messageBytes, ref int pos);
+        IOutputStruct Unformat(byte[] messageBytes, ref int pos);
     }
 }

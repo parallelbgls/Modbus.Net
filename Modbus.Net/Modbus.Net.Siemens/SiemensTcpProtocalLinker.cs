@@ -2,6 +2,9 @@
 
 namespace Modbus.Net.Siemens
 {
+    /// <summary>
+    ///     西门子Tcp协议连接器
+    /// </summary>
     public class SiemensTcpProtocalLinker : TcpProtocalLinker
     {
         public SiemensTcpProtocalLinker(string ip)
