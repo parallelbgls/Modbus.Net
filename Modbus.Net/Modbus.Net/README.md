@@ -552,14 +552,14 @@ Remember subpos system cannot cross a byte in current version. If you want to cr
 * Siemens PPI Support (Complete)
 * OPC Write Data (Complete)
 * Get and set bit value (Complete)
-* Unit test (Not Complete)
-* New Document (Not Complete)       
+* Unit test (Complete)
+* New Document (Complete)       
 * New Samples (Complete)
 
 ###Version 1.2.2
-* Address Utility (Not Test)
-* More functions in TaskManager (Not Test)
-* More interfaces (Not Test)
+* Address Utility (Complete)
+* More functions in TaskManager (Complete)
+* More interfaces (Complete)
 
 ###Version 1.2.3
 * OPC UA Support (In Road)
@@ -569,6 +569,7 @@ Remember subpos system cannot cross a byte in current version. If you want to cr
 * New ComConnector (In Road)
 * Multi station Modbus RTU, ASCII and Siemens PPI (In Road)
 * Siemens MPI Support (In Road)
+* Github wiki Document (In Road)
 
 ###Version 1.4.0
 * .NET Core Support (In Road)
