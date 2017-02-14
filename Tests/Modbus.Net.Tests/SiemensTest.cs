@@ -95,6 +95,34 @@ namespace Modbus.Net.Tests
         }
 
         [TestMethod]
+        public async Task SiemensMSingleBool()
+        {
+            var addresses = new List<AddressUnit>
+            {
+                new AddressUnit
+                {
+                    Id = "0",
+                    Area = "M",
+                    Address = 0,
+                    SubAddress = 0,
+                    CommunicationTag = "A1",
+                    DataType = typeof(bool)
+                }
+            };
+
+            _siemensTcpMachine.GetAddresses = addresses;
+
+            await _siemensTcpMachine.SetDatasAsync(MachineSetDataType.Address, new Dictionary<string, double>()
+            {
+                {
+                    "M 0.0", 1
+                }
+            });
+            var ans = await _siemensTcpMachine.GetDatasAsync(MachineGetDataType.Address);
+            Assert.AreEqual(ans["M 0.0"].PlcValue, 1);
+        }
+
+        [TestMethod]
         public async Task SiemensDbSingle()
         {
             var addresses = new List<AddressUnit>
