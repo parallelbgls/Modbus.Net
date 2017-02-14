@@ -24,7 +24,7 @@
             //Modbus协议错误
             if (content[7] > 127)
             {
-                throw new ModbusProtocalErrorException(content[8]);
+                throw new ModbusProtocalErrorException(content[2] > 0 ? content[2] : content[8]);
             }
             return true;
         }
