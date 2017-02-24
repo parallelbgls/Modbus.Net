@@ -399,7 +399,7 @@ namespace Modbus.Net
             var temp = data[pos];
             for (var i = 0; i < 8; i++)
             {
-                t[7 - i] = temp % 2 > 0;
+                t[i] = temp%2 > 0;
                 temp /= 2;
             }
             pos += 1;
@@ -442,17 +442,7 @@ namespace Modbus.Net
         /// <returns></returns>
         public virtual bool GetBit(byte[] number, ref int pos, ref int subPos)
         {
-            if (subPos < 0 && subPos > 7) throw new IndexOutOfRangeException();
-            var tspos = subPos;
-            var tpos = pos;
-            var bit = GetBit(number[pos], ref tpos, ref tspos);
-            subPos += 1;
-            if (subPos > 7)
-            {
-                pos++;
-                subPos = 0;
-            }
-            return bit;
+            return GetBit(number[pos], ref pos, ref subPos);
         }
 
         /// <summary>
@@ -837,14 +827,14 @@ namespace Modbus.Net
             var creation = 0;
             if (setBit)
             {
-                for (var i = 0; i <= 7; i++)
+                for (var i = 7; i >= 0; i--)
                 {
                     creation *= 2;
                     if (i == subPos) creation++;
                 }
                 return (byte) (number | creation);
             }
-            for (var i = 0; i <= 7; i++)
+            for (var i = 7; i >= 0; i--)
             {
                 creation *= 2;
                 if (i != subPos) creation++;
@@ -1012,23 +1002,6 @@ namespace Modbus.Net
             Array.Reverse(data, pos, 8);
             pos += 8;
             return t;
-        }
-
-        public override bool GetBit(byte[] number, ref int pos, ref int subPos)
-        {
-            return GetBit(number[pos], ref pos, ref subPos);
-        }
-
-        public override bool[] GetBits(byte[] data, ref int pos)
-        {
-            var t = base.GetBits(data, ref pos);
-            Array.Reverse(t);
-            return t;
-        }
-
-        public override bool SetBit(byte[] number, int pos, int subPos, bool setBit)
-        {
-            return base.SetBit(number, pos, 7 - subPos, setBit);
         }
 
         private byte[] Reverse(byte[] data)
