@@ -1010,4 +1010,34 @@ namespace Modbus.Net
             return data;
         }
     }
+
+    public class BigEndianMsbValueHelper : BigEndianValueHelper
+    {
+        public override bool GetBit(byte[] number, ref int pos, ref int subPos)
+        {
+            if (subPos < 0 && subPos > 7) throw new IndexOutOfRangeException();
+            var tspos = 7 - subPos;
+            var tpos = pos;
+            var bit = GetBit(number[pos], ref tpos, ref tspos);
+            subPos += 1;
+            if (subPos > 7)
+            {
+                pos++;
+                subPos = 0;
+            }
+            return bit;
+        }
+
+        public override bool[] GetBits(byte[] data, ref int pos)
+        {
+            var t = base.GetBits(data, ref pos);
+            Array.Reverse(t);
+            return t;
+        }
+
+        public override bool SetBit(byte[] number, int pos, int subPos, bool setBit)
+        {
+            return base.SetBit(number, pos, 7 - subPos, setBit);
+        }
+    }
 }
