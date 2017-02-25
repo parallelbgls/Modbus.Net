@@ -72,7 +72,7 @@ namespace Modbus.Net
         /// <param name="isLittleEndian">是否是小端格式</param>
         /// <param name="content">写入的内容，使用对象数组描述</param>
         /// <returns>从设备获取的字节流</returns>
-        public virtual byte[] SendReceive(bool isLittleEndian, params object[] content)
+        public virtual byte[] SendReceive(Endian isLittleEndian, params object[] content)
         {
             return AsyncHelper.RunSync(() => SendReceiveAsync(isLittleEndian, content));
         }
@@ -83,7 +83,7 @@ namespace Modbus.Net
         /// <param name="isLittleEndian">是否是小端格式</param>
         /// <param name="content">写入的内容，使用对象数组描述</param>
         /// <returns>从设备获取的字节流</returns>
-        public virtual async Task<byte[]> SendReceiveAsync(bool isLittleEndian, params object[] content)
+        public virtual async Task<byte[]> SendReceiveAsync(Endian isLittleEndian, params object[] content)
         {
             if (ProtocalLinker == null || !ProtocalLinker.IsConnected)
             {

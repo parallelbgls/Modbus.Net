@@ -49,8 +49,8 @@ namespace Modbus.Net.Modbus
             AddressTranslator = new AddressTranslatorModbus();
         }
 
-        public override bool GetLittleEndian => Wrapper[typeof (ReadDataModbusProtocal)].IsLittleEndian;
-        public override bool SetLittleEndian => Wrapper[typeof (WriteDataModbusProtocal)].IsLittleEndian;
+        public override Endian GetLittleEndian => Wrapper[typeof (ReadDataModbusProtocal)].IsLittleEndian;
+        public override Endian SetLittleEndian => Wrapper[typeof (WriteDataModbusProtocal)].IsLittleEndian;
 
         protected string ConnectionStringIp
         {

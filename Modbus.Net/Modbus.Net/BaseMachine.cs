@@ -257,13 +257,17 @@ namespace Modbus.Net
                                 {
                                     PlcValue =
                                         Convert.ToDouble(
-                                            BaseUtility.GetLittleEndian
+                                            BaseUtility.GetLittleEndian == Endian.LittleEndianLsb
                                                 ? ValueHelper.Instance.GetValue(datas, ref localMainPos, ref localSubPos,
                                                     address.DataType)
                                                     .ToString()
-                                                : BigEndianValueHelper.Instance.GetValue(datas, ref localMainPos,
-                                                    ref localSubPos,
-                                                    address.DataType))*address.Zoom,
+                                                : BaseUtility.GetLittleEndian == Endian.BigEndianLsb
+                                                    ? BigEndianValueHelper.Instance.GetValue(datas, ref localMainPos,
+                                                        ref localSubPos,
+                                                        address.DataType)
+                                                    : BigEndianMsbValueHelper.Instance.GetValue(datas, ref localMainPos,
+                                                        ref localSubPos,
+                                                        address.DataType))*address.Zoom,
                                     UnitExtend = address.UnitExtend
                                 });
                         }
@@ -374,9 +378,11 @@ namespace Modbus.Net
                                          BigEndianValueHelper.Instance.ByteLength[
                                              communicateAddress.DataType.FullName]));
 
-                    var valueHelper = BaseUtility.SetLittleEndian
+                    var valueHelper = BaseUtility.SetLittleEndian == Endian.LittleEndianLsb
                         ? ValueHelper.Instance
-                        : BigEndianValueHelper.Instance;
+                        : BaseUtility.SetLittleEndian == Endian.BigEndianLsb
+                            ? BigEndianValueHelper.Instance
+                            : BigEndianMsbValueHelper.Instance;
                     //如果设备本身能获取到数据但是没有数据
                     var datas = datasReturn;
 

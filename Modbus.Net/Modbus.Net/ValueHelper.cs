@@ -822,7 +822,7 @@ namespace Modbus.Net
         /// <param name="subPos">设置位置</param>
         /// <param name="setBit">设置bit大小，true为1，false为0</param>
         /// <returns></returns>
-        public byte SetBit(byte number, int subPos, bool setBit)
+        protected byte SetBit(byte number, int subPos, bool setBit)
         {
             var creation = 0;
             if (setBit)
@@ -1013,6 +1013,19 @@ namespace Modbus.Net
 
     public class BigEndianMsbValueHelper : BigEndianValueHelper
     {
+        private static BigEndianValueHelper _bigEndianInstance;
+
+        protected BigEndianMsbValueHelper()
+        {
+        }
+
+        protected override ValueHelper _Instance => _bigEndianInstance;
+
+        protected new bool LittleEndian => false;
+
+        public new static BigEndianValueHelper Instance
+            => _bigEndianInstance ?? (_bigEndianInstance = new BigEndianMsbValueHelper());
+
         public override bool GetBit(byte[] number, ref int pos, ref int subPos)
         {
             if (subPos < 0 && subPos > 7) throw new IndexOutOfRangeException();

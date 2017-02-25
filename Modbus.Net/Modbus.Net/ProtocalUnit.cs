@@ -10,11 +10,11 @@ namespace Modbus.Net
         /// <summary>
         ///     是否为小端格式
         /// </summary>
-        public bool IsLittleEndian { get; protected set; } = false;
+        public Endian IsLittleEndian { get; protected set; } = Endian.BigEndianLsb;
 
         /// <summary>
         ///     从输入结构格式化
-        /// </summary>
+        /// </summary>s
         /// <param name="message">结构化的输入数据</param>
         /// <returns>格式化后的字节流</returns>
         public abstract byte[] Format(IInputStruct message);
@@ -43,11 +43,24 @@ namespace Modbus.Net
         /// <param name="isLittleEndian">是否是小端格式</param>
         /// <param name="contents">对象数组</param>
         /// <returns>字节数组</returns>
-        public static byte[] TranslateContent(bool isLittleEndian, params object[] contents)
+        public static byte[] TranslateContent(Endian isLittleEndian, params object[] contents)
         {
-            return isLittleEndian
-                ? ValueHelper.Instance.ObjectArrayToByteArray(contents)
-                : BigEndianValueHelper.Instance.ObjectArrayToByteArray(contents);
+            switch (isLittleEndian)
+            {
+                case Endian.LittleEndianLsb:
+                {
+                    return ValueHelper.Instance.ObjectArrayToByteArray(contents);
+                }
+                case Endian.BigEndianLsb:
+                {
+                    return BigEndianValueHelper.Instance.ObjectArrayToByteArray(contents);
+                }
+                case Endian.BigEndianMsb:
+                {
+                    return BigEndianMsbValueHelper.Instance.ObjectArrayToByteArray(contents);
+                }
+            }
+            return null;
         }
     }
 

@@ -3,8 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+public enum Endian
+{
+    LittleEndianLsb,
+    BigEndianLsb,
+    BigEndianMsb
+}
+
 namespace Modbus.Net
 {
+    
+
     /// <summary>
     ///      基础Api入口
     /// </summary>
@@ -33,12 +42,12 @@ namespace Modbus.Net
         /// <summary>
         ///     获取协议是否遵循小端格式
         /// </summary>
-        public abstract bool GetLittleEndian { get; }
+        public abstract Endian GetLittleEndian { get; }
 
         /// <summary>
         ///     设置协议是否遵循小端格式
         /// </summary>
-        public abstract bool SetLittleEndian { get; }
+        public abstract Endian SetLittleEndian { get; }
 
         /// <summary>
         ///     设备是否已经连接
@@ -108,9 +117,22 @@ namespace Modbus.Net
                 var getReturnValue = await GetDatasAsync(startAddress,
                     (int) Math.Ceiling(bCount*getTypeAndCount.Value));
                 var getBytes = getReturnValue;
-                return GetLittleEndian
-                    ? ValueHelper.Instance.ByteArrayToObjectArray(getBytes, getTypeAndCount)
-                    : BigEndianValueHelper.Instance.ByteArrayToObjectArray(getBytes, getTypeAndCount);
+                switch (GetLittleEndian)
+                {
+                    case Endian.LittleEndianLsb:
+                    {
+                        return ValueHelper.Instance.ByteArrayToObjectArray(getBytes, getTypeAndCount);
+                    }
+                    case Endian.BigEndianLsb:
+                    {
+                        return BigEndianValueHelper.Instance.ByteArrayToObjectArray(getBytes, getTypeAndCount);
+                    }
+                    case Endian.BigEndianMsb:
+                    {
+                        return BigEndianMsbValueHelper.Instance.ByteArrayToObjectArray(getBytes, getTypeAndCount);
+                    }
+                }
+                return null;
             }
             catch (Exception)
             {
@@ -185,9 +207,22 @@ namespace Modbus.Net
                     select (int) Math.Ceiling(bCount*getTypeAndCount.Value)).Sum();
                 var getReturnValue = await GetDatasAsync(startAddress, bAllCount);
                 var getBytes = getReturnValue;
-                return GetLittleEndian
-                    ? ValueHelper.Instance.ByteArrayToObjectArray(getBytes, translateTypeAndCount)
-                    : BigEndianValueHelper.Instance.ByteArrayToObjectArray(getBytes, translateTypeAndCount);
+                switch (GetLittleEndian)
+                {
+                    case Endian.LittleEndianLsb:
+                    {
+                        return ValueHelper.Instance.ByteArrayToObjectArray(getBytes, translateTypeAndCount);
+                    }
+                    case Endian.BigEndianLsb:
+                    {
+                        return BigEndianValueHelper.Instance.ByteArrayToObjectArray(getBytes, translateTypeAndCount);
+                    }
+                    case Endian.BigEndianMsb:
+                    {
+                        return BigEndianMsbValueHelper.Instance.ByteArrayToObjectArray(getBytes, translateTypeAndCount);
+                    }
+                }
+                return null;
             }
             catch (Exception)
             {

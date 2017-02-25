@@ -15,8 +15,8 @@ namespace Modbus.Net.OPC
             Wrapper = new OpcDaProtocal(ConnectionString);
         }
 
-        public override bool GetLittleEndian => Wrapper[typeof (ReadRequestOpcProtocal)].IsLittleEndian;
-        public override bool SetLittleEndian => Wrapper[typeof (WriteRequestOpcProtocal)].IsLittleEndian;
+        public override Endian GetLittleEndian => Wrapper[typeof (ReadRequestOpcProtocal)].IsLittleEndian;
+        public override Endian SetLittleEndian => Wrapper[typeof (WriteRequestOpcProtocal)].IsLittleEndian;
 
         public override void SetConnectionType(int connectionType)
         {

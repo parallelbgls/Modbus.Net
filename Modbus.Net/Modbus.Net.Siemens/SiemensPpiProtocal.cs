@@ -20,12 +20,12 @@ namespace Modbus.Net.Siemens
             _com = com;
         }
 
-        public override byte[] SendReceive(bool isLittleEndian, params object[] content)
+        public override byte[] SendReceive(Endian isLittleEndian, params object[] content)
         {
             return AsyncHelper.RunSync(() => SendReceiveAsync(isLittleEndian, content));
         }
 
-        public override async Task<byte[]> SendReceiveAsync(bool isLittleEndian, params object[] content)
+        public override async Task<byte[]> SendReceiveAsync(Endian isLittleEndian, params object[] content)
         {
             if (ProtocalLinker == null || !ProtocalLinker.IsConnected)
             {
