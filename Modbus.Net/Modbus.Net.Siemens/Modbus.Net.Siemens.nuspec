@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>Modbus.Net.Siemens</id>
-        <version>1.2.2</version>
+        <version>1.2.3</version>
         <title>Modbus.Net.Siemens</title>
         <authors>Chris L.(Luo Sheng)</authors>
         <owners>Hangzhou Delian IoT Science Technology Co.,Ltd.</owners>
@@ -13,7 +13,7 @@
         <copyright>Copyright 2017 Hangzhou Delian IoT Science Technology Co.,Ltd.</copyright>
         <tags>hardware communicate protocal Siemens profinet Delian</tags>
         <dependencies>
-            <dependency id="Modbus.Net" version="1.2.2" />
+            <dependency id="Modbus.Net" version="1.2.3" />
         </dependencies>
     </metadata>
   <files>

@@ -34,6 +34,8 @@ namespace Modbus.Net
         /// </summary>
         public static bool LittleEndian => true;
 
+        public static bool LittleEndianBit => true;
+
         /// <summary>
         ///     将一个byte数字转换为一个byte元素的数组。
         /// </summary>
@@ -508,7 +510,7 @@ namespace Modbus.Net
                         boolToByteTemp = 0;
                     }
                     lastIsBool = true;
-                    if (LittleEndian)
+                    if (!LittleEndianBit)
                     {
                         boolToByteTemp = (byte) (boolToByteTemp*2 + ((bool) content ? 1 : 0));
                     }
@@ -874,6 +876,29 @@ namespace Modbus.Net
         /// </summary>
         public static ValueHelper Instance => _instance ?? (_instance = new ValueHelper());
 
+        public static ValueHelper GetInstance(Endian endian)
+        {
+            switch (endian)
+            {
+                case Endian.LittleEndianLsb:
+                    {
+                        return ValueHelper.Instance;
+                    }
+                case Endian.BigEndianLsb:
+                    {
+                        return BigEndianValueHelper.Instance;
+                    }
+                case Endian.BigEndianMsb:
+                    {
+                        return BigEndianMsbValueHelper.Instance;
+                    }
+                default:
+                    {
+                        return ValueHelper.Instance;
+                    }
+            }
+        }
+
         #endregion
     }
 
@@ -1022,6 +1047,8 @@ namespace Modbus.Net
         protected override ValueHelper _Instance => _bigEndianInstance;
 
         protected new bool LittleEndian => false;
+
+        protected new bool LittleEndianBit => false;
 
         public new static BigEndianValueHelper Instance
             => _bigEndianInstance ?? (_bigEndianInstance = new BigEndianMsbValueHelper());

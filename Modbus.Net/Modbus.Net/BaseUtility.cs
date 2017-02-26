@@ -40,14 +40,9 @@ namespace Modbus.Net
         public byte MasterAddress { get; set; }
 
         /// <summary>
-        ///     获取协议是否遵循小端格式
+        ///     协议是否遵循小端格式
         /// </summary>
-        public abstract Endian GetLittleEndian { get; }
-
-        /// <summary>
-        ///     设置协议是否遵循小端格式
-        /// </summary>
-        public abstract Endian SetLittleEndian { get; }
+        public abstract Endian Endian { get; }
 
         /// <summary>
         ///     设备是否已经连接
@@ -117,22 +112,8 @@ namespace Modbus.Net
                 var getReturnValue = await GetDatasAsync(startAddress,
                     (int) Math.Ceiling(bCount*getTypeAndCount.Value));
                 var getBytes = getReturnValue;
-                switch (GetLittleEndian)
-                {
-                    case Endian.LittleEndianLsb:
-                    {
-                        return ValueHelper.Instance.ByteArrayToObjectArray(getBytes, getTypeAndCount);
-                    }
-                    case Endian.BigEndianLsb:
-                    {
-                        return BigEndianValueHelper.Instance.ByteArrayToObjectArray(getBytes, getTypeAndCount);
-                    }
-                    case Endian.BigEndianMsb:
-                    {
-                        return BigEndianMsbValueHelper.Instance.ByteArrayToObjectArray(getBytes, getTypeAndCount);
-                    }
-                }
-                return null;
+                return ValueHelper.GetInstance(Endian).ByteArrayToObjectArray(getBytes, getTypeAndCount);
+
             }
             catch (Exception)
             {
@@ -167,7 +148,7 @@ namespace Modbus.Net
             {
                 var getBytes = await GetDatasAsync(startAddress,
                     new KeyValuePair<Type, int>(typeof (T), getByteCount));
-                return BigEndianValueHelper.Instance.ObjectArrayToDestinationArray<T>(getBytes);
+                return ValueHelper.GetInstance(Endian).ObjectArrayToDestinationArray<T>(getBytes);
             }
             catch (Exception)
             {
@@ -188,7 +169,7 @@ namespace Modbus.Net
                 AsyncHelper.RunSync(() => GetDatasAsync(startAddress, getTypeAndCountList));
         }
 
-        /// <summary>
+        /// <summary>GetEndian
         ///     获取数据
         /// </summary>
         /// <param name="startAddress">开始地址</param>
@@ -207,22 +188,7 @@ namespace Modbus.Net
                     select (int) Math.Ceiling(bCount*getTypeAndCount.Value)).Sum();
                 var getReturnValue = await GetDatasAsync(startAddress, bAllCount);
                 var getBytes = getReturnValue;
-                switch (GetLittleEndian)
-                {
-                    case Endian.LittleEndianLsb:
-                    {
-                        return ValueHelper.Instance.ByteArrayToObjectArray(getBytes, translateTypeAndCount);
-                    }
-                    case Endian.BigEndianLsb:
-                    {
-                        return BigEndianValueHelper.Instance.ByteArrayToObjectArray(getBytes, translateTypeAndCount);
-                    }
-                    case Endian.BigEndianMsb:
-                    {
-                        return BigEndianMsbValueHelper.Instance.ByteArrayToObjectArray(getBytes, translateTypeAndCount);
-                    }
-                }
-                return null;
+                return ValueHelper.GetInstance(Endian).ByteArrayToObjectArray(getBytes, translateTypeAndCount);
             }
             catch (Exception)
             {

@@ -7,7 +7,7 @@ namespace Modbus.Net.OPC
     /// </summary>
     public abstract class OpcProtocal : BaseProtocal
     {
-        protected OpcProtocal() : base(0, 0)
+        protected OpcProtocal() : base(0, 0, Endian.BigEndianLsb)
         {
         }
     }

@@ -104,7 +104,7 @@ namespace Modbus.Net.Siemens
 
     public abstract class SiemensProtocal : BaseProtocal
     {
-        protected SiemensProtocal(byte slaveAddress, byte masterAddress) : base(slaveAddress, masterAddress)
+        protected SiemensProtocal(byte slaveAddress, byte masterAddress) : base(slaveAddress, masterAddress, Endian.BigEndianLsb)
         {
         }
     }

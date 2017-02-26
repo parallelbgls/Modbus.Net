@@ -91,8 +91,7 @@ namespace Modbus.Net.Siemens
             AddressTranslator = new AddressTranslatorSiemens();
         }
 
-        public override Endian GetLittleEndian => Wrapper[typeof (ReadRequestSiemensProtocal)].IsLittleEndian;
-        public override Endian SetLittleEndian => Wrapper[typeof (WriteRequestSiemensProtocal)].IsLittleEndian;
+        public override Endian Endian => Endian.BigEndianLsb;
 
         protected string ConnectionStringIp
         {

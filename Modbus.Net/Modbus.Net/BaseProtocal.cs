@@ -13,12 +13,15 @@ namespace Modbus.Net
         /// <summary>
         ///     构造器
         /// </summary>
-        protected BaseProtocal(byte slaveAddress, byte masterAddress)
+        protected BaseProtocal(byte slaveAddress, byte masterAddress, Endian endian)
         {
+            Endian = endian;
             Protocals = new Dictionary<string, ProtocalUnit>();
             SlaveAddress = slaveAddress;
             MasterAddress = masterAddress;
         }
+
+        protected Endian Endian { get; set; }
 
         public byte SlaveAddress { get; set; }
         public byte MasterAddress { get; set; }
@@ -44,8 +47,9 @@ namespace Modbus.Net
                 }
                 //自动寻找存在的协议并将其加载
                 var protocalUnit =
-                    Assembly.Load(type.Assembly.FullName).CreateInstance(protocalName) as ProtocalUnit;
+                    Assembly.Load(type.Assembly.FullName).CreateInstance(protocalName) as ProtocalUnit;                
                 if (protocalUnit == null) throw new InvalidCastException("没有相应的协议内容");
+                protocalUnit.Endian = Endian;
                 Register(protocalUnit);
                 return Protocals[protocalName];
             }

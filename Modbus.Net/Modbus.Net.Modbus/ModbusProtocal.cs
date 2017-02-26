@@ -47,7 +47,7 @@ namespace Modbus.Net.Modbus
     /// </summary>
     public abstract class ModbusProtocal : BaseProtocal
     {
-        protected ModbusProtocal(byte slaveAddress, byte masterAddress) : base(slaveAddress, masterAddress)
+        protected ModbusProtocal(byte slaveAddress, byte masterAddress, Endian endian) : base(slaveAddress, masterAddress, endian)
         {
         }
 
@@ -116,9 +116,9 @@ namespace Modbus.Net.Modbus
 
         public override IOutputStruct Unformat(byte[] messageBytes, ref int pos)
         {
-            var slaveAddress = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
-            var functionCode = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
-            var dataCount = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
+            var slaveAddress = ValueHelper.GetInstance(Endian).GetByte(messageBytes, ref pos);
+            var functionCode = ValueHelper.GetInstance(Endian).GetByte(messageBytes, ref pos);
+            var dataCount = ValueHelper.GetInstance(Endian).GetByte(messageBytes, ref pos);
             var dataValue = new byte[dataCount];
             Array.Copy(messageBytes, 3, dataValue, 0, dataCount);
             return new ReadDataModbusOutputStruct(slaveAddress, functionCode, dataCount, dataValue);
@@ -132,13 +132,13 @@ namespace Modbus.Net.Modbus
     public class WriteDataModbusInputStruct : IInputStruct
     {
         public WriteDataModbusInputStruct(byte slaveAddress, string startAddress, object[] writeValue,
-            AddressTranslator addressTranslator)
+            AddressTranslator addressTranslator, Endian endian)
         {
             SlaveAddress = slaveAddress;
             var translateAddress = addressTranslator.AddressTranslate(startAddress, false);
             FunctionCode = (byte) translateAddress.Area;
             StartAddress = (ushort) translateAddress.Address;
-            var writeByteValue = BigEndianValueHelper.Instance.ObjectArrayToByteArray(writeValue);
+            var writeByteValue = ValueHelper.GetInstance(endian).ObjectArrayToByteArray(writeValue);
             WriteCount =
                 (ushort) (writeByteValue.Length/addressTranslator.GetAreaByteLength(translateAddress.AreaString));
             WriteByteCount = (byte) writeByteValue.Length;
@@ -194,10 +194,10 @@ namespace Modbus.Net.Modbus
 
         public override IOutputStruct Unformat(byte[] messageBytes, ref int flag)
         {
-            var slaveAddress = BigEndianValueHelper.Instance.GetByte(messageBytes, ref flag);
-            var functionCode = BigEndianValueHelper.Instance.GetByte(messageBytes, ref flag);
-            var startAddress = BigEndianValueHelper.Instance.GetUShort(messageBytes, ref flag);
-            var writeCount = BigEndianValueHelper.Instance.GetUShort(messageBytes, ref flag);
+            var slaveAddress = ValueHelper.GetInstance(Endian).GetByte(messageBytes, ref flag);
+            var functionCode = ValueHelper.GetInstance(Endian).GetByte(messageBytes, ref flag);
+            var startAddress = ValueHelper.GetInstance(Endian).GetUShort(messageBytes, ref flag);
+            var writeCount = ValueHelper.GetInstance(Endian).GetUShort(messageBytes, ref flag);
             return new WriteDataModbusOutputStruct(slaveAddress, functionCode, startAddress,
                 writeCount);
         }
@@ -261,16 +261,16 @@ namespace Modbus.Net.Modbus
 
         public override IOutputStruct Unformat(byte[] messageBytes, ref int flag)
         {
-            var slaveAddress = BigEndianValueHelper.Instance.GetByte(messageBytes, ref flag);
-            var functionCode = BigEndianValueHelper.Instance.GetByte(messageBytes, ref flag);
-            var writeByteCount = BigEndianValueHelper.Instance.GetByte(messageBytes, ref flag);
-            var year = BigEndianValueHelper.Instance.GetUShort(messageBytes, ref flag);
-            var day = BigEndianValueHelper.Instance.GetByte(messageBytes, ref flag);
-            var month = BigEndianValueHelper.Instance.GetByte(messageBytes, ref flag);
-            var hour = BigEndianValueHelper.Instance.GetUShort(messageBytes, ref flag);
-            var second = BigEndianValueHelper.Instance.GetByte(messageBytes, ref flag);
-            var minute = BigEndianValueHelper.Instance.GetByte(messageBytes, ref flag);
-            var millisecond = BigEndianValueHelper.Instance.GetUShort(messageBytes, ref flag);
+            var slaveAddress = ValueHelper.GetInstance(Endian).GetByte(messageBytes, ref flag);
+            var functionCode = ValueHelper.GetInstance(Endian).GetByte(messageBytes, ref flag);
+            var writeByteCount = ValueHelper.GetInstance(Endian).GetByte(messageBytes, ref flag);
+            var year = ValueHelper.GetInstance(Endian).GetUShort(messageBytes, ref flag);
+            var day = ValueHelper.GetInstance(Endian).GetByte(messageBytes, ref flag);
+            var month = ValueHelper.GetInstance(Endian).GetByte(messageBytes, ref flag);
+            var hour = ValueHelper.GetInstance(Endian).GetUShort(messageBytes, ref flag);
+            var second = ValueHelper.GetInstance(Endian).GetByte(messageBytes, ref flag);
+            var minute = ValueHelper.GetInstance(Endian).GetByte(messageBytes, ref flag);
+            var millisecond = ValueHelper.GetInstance(Endian).GetUShort(messageBytes, ref flag);
             return new GetSystemTimeModbusOutputStruct(slaveAddress, functionCode, writeByteCount, year, day,
                 month, hour, second, minute, millisecond);
         }
@@ -359,10 +359,10 @@ namespace Modbus.Net.Modbus
 
         public override IOutputStruct Unformat(byte[] messageBytes, ref int flag)
         {
-            var slaveAddress = BigEndianValueHelper.Instance.GetByte(messageBytes, ref flag);
-            var functionCode = BigEndianValueHelper.Instance.GetByte(messageBytes, ref flag);
-            var startAddress = BigEndianValueHelper.Instance.GetUShort(messageBytes, ref flag);
-            var writeCount = BigEndianValueHelper.Instance.GetUShort(messageBytes, ref flag);
+            var slaveAddress = ValueHelper.GetInstance(Endian).GetByte(messageBytes, ref flag);
+            var functionCode = ValueHelper.GetInstance(Endian).GetByte(messageBytes, ref flag);
+            var startAddress = ValueHelper.GetInstance(Endian).GetUShort(messageBytes, ref flag);
+            var writeCount = ValueHelper.GetInstance(Endian).GetUShort(messageBytes, ref flag);
             return new SetSystemTimeModbusOutputStruct(slaveAddress, functionCode, startAddress, writeCount);
         }
     }

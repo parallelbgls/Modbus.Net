@@ -10,7 +10,7 @@ namespace Modbus.Net
         /// <summary>
         ///     是否为小端格式
         /// </summary>
-        public Endian IsLittleEndian { get; protected set; } = Endian.BigEndianLsb;
+        public Endian Endian { get; set; } = Endian.BigEndianLsb;
 
         /// <summary>
         ///     从输入结构格式化
@@ -26,7 +26,7 @@ namespace Modbus.Net
         /// <returns>格式化后的字节流</returns>
         public virtual byte[] Format(params object[] message)
         {
-            return TranslateContent(IsLittleEndian, message);
+            return TranslateContent(Endian, message);
         }
 
         /// <summary>

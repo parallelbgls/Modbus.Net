@@ -5,18 +5,18 @@
     /// </summary>
     public class ModbusTcpProtocal : ModbusProtocal
     {
-        public ModbusTcpProtocal(byte slaveAddress, byte masterAddress)
-            : this(ConfigurationManager.IP, slaveAddress, masterAddress)
+        public ModbusTcpProtocal(byte slaveAddress, byte masterAddress, Endian endian)
+            : this(ConfigurationManager.IP, slaveAddress, masterAddress, endian)
         {
         }
 
-        public ModbusTcpProtocal(string ip, byte slaveAddress, byte masterAddress) : base(slaveAddress, masterAddress)
+        public ModbusTcpProtocal(string ip, byte slaveAddress, byte masterAddress, Endian endian) : base(slaveAddress, masterAddress, endian)
         {
             ProtocalLinker = new ModbusTcpProtocalLinker(ip);
         }
 
-        public ModbusTcpProtocal(string ip, int port, byte slaveAddress, byte masterAddress)
-            : base(slaveAddress, masterAddress)
+        public ModbusTcpProtocal(string ip, int port, byte slaveAddress, byte masterAddress, Endian endian)
+            : base(slaveAddress, masterAddress, endian)
         {
             ProtocalLinker = new ModbusTcpProtocalLinker(ip, port);
         }
