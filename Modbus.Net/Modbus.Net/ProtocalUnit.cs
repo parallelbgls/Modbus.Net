@@ -40,27 +40,12 @@ namespace Modbus.Net
         /// <summary>
         ///     转换静态方法，把对象数组转换为字节数组。
         /// </summary>
-        /// <param name="isLittleEndian">是否是小端格式</param>
+        /// <param name="endian">是否是小端格式</param>
         /// <param name="contents">对象数组</param>
         /// <returns>字节数组</returns>
-        public static byte[] TranslateContent(Endian isLittleEndian, params object[] contents)
-        {
-            switch (isLittleEndian)
-            {
-                case Endian.LittleEndianLsb:
-                {
-                    return ValueHelper.Instance.ObjectArrayToByteArray(contents);
-                }
-                case Endian.BigEndianLsb:
-                {
-                    return BigEndianValueHelper.Instance.ObjectArrayToByteArray(contents);
-                }
-                case Endian.BigEndianMsb:
-                {
-                    return BigEndianMsbValueHelper.Instance.ObjectArrayToByteArray(contents);
-                }
-            }
-            return null;
+        public static byte[] TranslateContent(Endian endian, params object[] contents)
+        {        
+             return ValueHelper.GetInstance(endian).ObjectArrayToByteArray(contents);
         }
     }
 
