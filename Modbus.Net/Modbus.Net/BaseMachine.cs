@@ -456,6 +456,14 @@ namespace Modbus.Net
                                     return false;
                                 break;
                             }
+                            case MachineSetDataType.Name:
+                            {
+                                var value = values.SingleOrDefault(p => p.Key == addressUnit.Name);
+                                var data = Convert.ChangeType(value.Value/addressUnit.Zoom, dataType);
+                                if (!valueHelper.SetValue(datas, mainByteCount, localByteCount, data))
+                                    return false;
+                                break;
+                            }
                         }
                     }
                     //写入数据
