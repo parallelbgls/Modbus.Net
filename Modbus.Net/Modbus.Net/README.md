@@ -527,10 +527,10 @@ Version 1.0 and 1.1 used abstract coordinate so you need to convert the address.
 For example if you want the get a value from the 6th byte in Hold Register. In traditional modbus you can only get 400003 of 2 bytes and get the 2nd byte from it. But in Modbus.Net there is an easy way to get it.
 ```
 Modbus 400003 2nd byte 
-
+```
 Donnot wonder I use real number to implement subpos counter. There are no tolerances because only (1/2 pow n) could be used to count subpos.
 
-==
+```C#
 
 class AddressUnit
 {
@@ -544,32 +544,3 @@ type = typeof(byte)
 SubAddress 8 means it starts from the 8th bit in that short value.
 
 Remember subpos system cannot cross a byte in current version. If you want to cross a byte, you can change the function "GetValue" in ValueHelper.cs 
-
-##RoadMap
-
-###Version 1.2.0
-* Modbus ASCII Support (Complete)
-* Siemens PPI Support (Complete)
-* OPC Write Data (Complete)
-* Get and set bit value (Complete)
-* Unit test (Complete)
-* New Document (Complete)       
-* New Samples (Complete)
-
-###Version 1.2.2
-* Address Utility (Complete)
-* More functions in TaskManager (Complete)
-* More interfaces (Complete)
-
-###Version 1.2.3
-* OPC UA Support (In Road)
-
-###Version 1.3.0
-* New Protocal Pipeline System (In Road)
-* New ComConnector (In Road)
-* Multi station Modbus RTU, ASCII and Siemens PPI (In Road)
-* Siemens MPI Support (In Road)
-* Github wiki Document (In Road)
-
-###Version 1.4.0
-* .NET Core Support (In Road)

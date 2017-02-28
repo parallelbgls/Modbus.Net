@@ -21,3 +21,36 @@ Platform Supported
 -------------------
 * Visual Studio 2015
 * .Net Framework 4.5
+
+##RoadMap
+
+###Version 1.2.0
+* Modbus ASCII Support (Complete)
+* Siemens PPI Support (Complete)
+* OPC Write Data (Complete)
+* Get and set bit value (Complete)
+* Unit test (Complete)
+* New Document (Complete)       
+* New Samples (Complete)
+
+###Version 1.2.2
+* Address Utility (Complete)
+* More functions in TaskManager (Complete)
+* More interfaces (Complete)
+
+###Version 1.2.3
+* Endian Problem Fix (Complete)
+* Name mode in TaskManager (Complete)
+
+###Version 1.2.4
+* OPC UA Support (In Road)
+
+###Version 1.3.0
+* New Protocal Pipeline System (In Road)
+* New ComConnector (In Road)
+* Multi station Modbus RTU, ASCII and Siemens PPI (In Road)
+* Siemens MPI Support (In Road)
+* Github wiki Document (In Road)
+
+###Version 1.4.0
+* .NET Core Support (In Road)
