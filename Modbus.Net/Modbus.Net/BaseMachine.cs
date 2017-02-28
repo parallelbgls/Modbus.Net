@@ -274,8 +274,7 @@ namespace Modbus.Net
                                         Convert.ToDouble(
                                             ValueHelper.GetInstance(BaseUtility.Endian)
                                                 .GetValue(datas, ref localMainPos, ref localSubPos,
-                                                    address.DataType)
-                                                .ToString())*address.Zoom,
+                                                    address.DataType))*address.Zoom,
                                     UnitExtend = address.UnitExtend
                                 });
                         }
