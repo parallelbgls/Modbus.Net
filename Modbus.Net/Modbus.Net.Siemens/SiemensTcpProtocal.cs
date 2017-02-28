@@ -41,18 +41,18 @@ namespace Modbus.Net.Siemens
             _connectTryCount = 0;
         }
 
-        public override byte[] SendReceive(Endian isLittleEndian, params object[] content)
+        public override byte[] SendReceive(params object[] content)
         {
-            return AsyncHelper.RunSync(() => SendReceiveAsync(isLittleEndian, content));
+            return AsyncHelper.RunSync(() => SendReceiveAsync(Endian, content));
         }
 
-        public override async Task<byte[]> SendReceiveAsync(Endian isLittleEndian, params object[] content)
+        public override async Task<byte[]> SendReceiveAsync(params object[] content)
         {
             if (ProtocalLinker == null || !ProtocalLinker.IsConnected)
             {
                 await ConnectAsync();
             }
-            return await base.SendReceiveAsync(isLittleEndian, content);
+            return await base.SendReceiveAsync(Endian, content);
         }
 
         public override IOutputStruct SendReceive(ProtocalUnit unit, IInputStruct content)
