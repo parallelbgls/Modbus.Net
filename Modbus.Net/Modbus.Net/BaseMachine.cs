@@ -18,7 +18,12 @@ namespace Modbus.Net
         /// <summary>
         ///     通讯标识
         /// </summary>
-        CommunicationTag
+        CommunicationTag,
+
+        /// <summary>
+        ///     名称
+        /// </summary>
+        Name
     }
 
     /// <summary>
@@ -34,7 +39,12 @@ namespace Modbus.Net
         /// <summary>
         ///     通讯标识
         /// </summary>
-        CommunicationTag
+        CommunicationTag,
+
+        /// <summary>
+        ///     名称
+        /// </summary>
+        Name
     }
 
     public abstract class BaseMachine : IMachineProperty
@@ -233,6 +243,11 @@ namespace Modbus.Net
                                 key = AddressFormater.FormatAddress(address.Area, address.Address, address.SubAddress);
                                 break;
                             }
+                            case MachineGetDataType.Name:
+                            {
+                                key = address.Name;
+                                break;
+                            }
                             default:
                             {
                                 key = address.CommunicationTag;
@@ -338,6 +353,11 @@ namespace Modbus.Net
                         {
                             address =
                                 GetAddresses.SingleOrDefault(p => p.CommunicationTag == value.Key);
+                            break;
+                        }
+                        case MachineSetDataType.Name:
+                        {
+                            address = GetAddresses.SingleOrDefault(p => p.Name == value.Key);
                             break;
                         }
                     }

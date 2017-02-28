@@ -17,7 +17,8 @@ namespace Modbus.Net
     public enum MachineDataType
     {
         Address,
-        CommunicationTag
+        CommunicationTag,
+        Name
     }
 
     /// <summary>
@@ -346,6 +347,12 @@ namespace Modbus.Net
                     {
                         GetDataType = MachineGetDataType.CommunicationTag;
                         SetDataType = MachineSetDataType.CommunicationTag;
+                        break;
+                    }
+                    case MachineDataType.Name:
+                    {
+                        GetDataType = MachineGetDataType.Name;
+                        SetDataType = MachineSetDataType.Name;
                         break;
                     }
                 }
