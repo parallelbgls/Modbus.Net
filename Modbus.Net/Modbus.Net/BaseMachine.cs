@@ -23,7 +23,12 @@ namespace Modbus.Net
         /// <summary>
         ///     名称
         /// </summary>
-        Name
+        Name,
+
+        /// <summary>
+        ///     Id
+        /// </summary> 
+        Id
     }
 
     /// <summary>
@@ -44,10 +49,33 @@ namespace Modbus.Net
         /// <summary>
         ///     名称
         /// </summary>
-        Name
+        Name,
+
+        /// <summary>
+        ///     Id
+        /// </summary> 
+        Id
     }
 
-    public abstract class BaseMachine : IMachineProperty
+    public abstract class BaseMachine : BaseMachine<string, string>
+    {
+        protected BaseMachine(IEnumerable<AddressUnit<string>> getAddresses) : base(getAddresses)
+        {
+        }
+
+        protected BaseMachine(IEnumerable<AddressUnit<string>> getAddresses, bool keepConnect)
+            : base(getAddresses, keepConnect)
+        {
+        }
+
+        protected BaseMachine(IEnumerable<AddressUnit<string>> getAddresses, bool keepConnect, byte slaveAddress,
+            byte masterAddress) : base(getAddresses, keepConnect, slaveAddress, masterAddress)
+        {
+        }
+    }
+
+    public abstract class BaseMachine<TKey, TUnitKey> : IMachineProperty<TKey> where TKey : IEquatable<TKey>
+        where TUnitKey : IEquatable<TUnitKey>
     {
         private readonly int _maxErrorCount = 3;
 
@@ -55,7 +83,7 @@ namespace Modbus.Net
         ///     构造器
         /// </summary>
         /// <param name="getAddresses">需要与设备通讯的地址</param>
-        protected BaseMachine(IEnumerable<AddressUnit> getAddresses)
+        protected BaseMachine(IEnumerable<AddressUnit<TUnitKey>> getAddresses)
             : this(getAddresses, false)
         {
         }
@@ -65,7 +93,7 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="getAddresses">需要与设备通讯的地址</param>
         /// <param name="keepConnect">是否保持连接</param>
-        protected BaseMachine(IEnumerable<AddressUnit> getAddresses, bool keepConnect)
+        protected BaseMachine(IEnumerable<AddressUnit<TUnitKey>> getAddresses, bool keepConnect)
         {
             GetAddresses = getAddresses;
             KeepConnect = keepConnect;
@@ -78,7 +106,7 @@ namespace Modbus.Net
         /// <param name="keepConnect">是否保持连接</param>
         /// <param name="slaveAddress">从站地址</param>
         /// <param name="masterAddress">主站地址</param>
-        protected BaseMachine(IEnumerable<AddressUnit> getAddresses, bool keepConnect, byte slaveAddress,
+        protected BaseMachine(IEnumerable<AddressUnit<TUnitKey>> getAddresses, bool keepConnect, byte slaveAddress,
             byte masterAddress) : this(getAddresses, keepConnect)
         {
             SlaveAddress = slaveAddress;
@@ -100,12 +128,12 @@ namespace Modbus.Net
         /// <summary>
         ///     获取地址组合器
         /// </summary>
-        public AddressCombiner AddressCombiner { get; set; }
+        public AddressCombiner<TUnitKey> AddressCombiner { get; set; }
 
         /// <summary>
         ///     写入地址组合器
         /// </summary>
-        public AddressCombiner AddressCombinerSet { get; set; }
+        public AddressCombiner<TUnitKey> AddressCombinerSet { get; set; }
 
         /// <summary>
         ///     地址转换器
@@ -119,13 +147,13 @@ namespace Modbus.Net
         /// <summary>
         ///     与设备实际通讯的连续地址
         /// </summary>
-        protected IEnumerable<CommunicationUnit> CommunicateAddresses
+        protected IEnumerable<CommunicationUnit<TUnitKey>> CommunicateAddresses
             => GetAddresses != null ? AddressCombiner.Combine(GetAddresses) : null;
 
         /// <summary>
         ///     描述需要与设备通讯的地址
         /// </summary>
-        public IEnumerable<AddressUnit> GetAddresses { get; set; }
+        public IEnumerable<AddressUnit<TUnitKey>> GetAddresses { get; set; }
 
         /// <summary>
         ///     是否保持连接
@@ -150,7 +178,7 @@ namespace Modbus.Net
         /// <summary>
         ///     设备的Id
         /// </summary>
-        public string Id { get; set; }
+        public TKey Id { get; set; }
 
         /// <summary>
         ///     设备所在工程的名称
@@ -248,6 +276,11 @@ namespace Modbus.Net
                                 key = address.Name;
                                 break;
                             }
+                            case MachineGetDataType.Id:
+                            {
+                                key = address.Id.ToString();
+                                break;
+                            }
                             default:
                             {
                                 key = address.CommunicationTag;
@@ -330,12 +363,12 @@ namespace Modbus.Net
                 }
                 //如果设备无法连接，终止
                 if (!BaseUtility.IsConnected) return false;
-                var addresses = new List<AddressUnit>();
+                var addresses = new List<AddressUnit<TUnitKey>>();
                 //遍历每个要设置的值
                 foreach (var value in values)
                 {
                     //根据设置类型找到对应的地址描述
-                    AddressUnit address = null;
+                    AddressUnit<TUnitKey> address = null;
                     switch (setDataType)
                     {
                         case MachineSetDataType.Address:
@@ -357,6 +390,17 @@ namespace Modbus.Net
                         case MachineSetDataType.Name:
                         {
                             address = GetAddresses.SingleOrDefault(p => p.Name == value.Key);
+                            break;
+                        }
+                        case MachineSetDataType.Id:
+                        {
+                            address = GetAddresses.SingleOrDefault(p => p.Id.ToString() == value.Key);
+                            break;
+                        }
+                        default:
+                        {
+                            address =
+                                GetAddresses.SingleOrDefault(p => p.CommunicationTag == value.Key);
                             break;
                         }
                     }
@@ -433,38 +477,44 @@ namespace Modbus.Net
                                 communicateAddress.Address + (int) localPos);
                         //获取写入类型
                         var dataType = addressUnit.DataType;
+                        KeyValuePair<string, double> value;
                         switch (setDataType)
                         {
                             case MachineSetDataType.Address:
                             {
                                 //获取要写入的值
-                                var value =
+                                value =
                                     values.SingleOrDefault(
                                         p => p.Key == address || (address2 != null && p.Key == address2));
-                                //将要写入的值加入队列
-                                var data = Convert.ChangeType(value.Value/addressUnit.Zoom, dataType);
-
-                                if (!valueHelper.SetValue(datas, mainByteCount, localByteCount, data))
-                                    return false;
                                 break;
                             }
                             case MachineSetDataType.CommunicationTag:
                             {
-                                var value = values.SingleOrDefault(p => p.Key == addressUnit.CommunicationTag);
-                                var data = Convert.ChangeType(value.Value/addressUnit.Zoom, dataType);
-                                if (!valueHelper.SetValue(datas, mainByteCount, localByteCount, data))
-                                    return false;
+                                value = values.SingleOrDefault(p => p.Key == addressUnit.CommunicationTag);
                                 break;
                             }
                             case MachineSetDataType.Name:
                             {
-                                var value = values.SingleOrDefault(p => p.Key == addressUnit.Name);
-                                var data = Convert.ChangeType(value.Value/addressUnit.Zoom, dataType);
-                                if (!valueHelper.SetValue(datas, mainByteCount, localByteCount, data))
-                                    return false;
+                                value = values.SingleOrDefault(p => p.Key == addressUnit.Name);
+                                break;
+                            }
+                            case MachineSetDataType.Id:
+                            {
+                                value = values.SingleOrDefault(p => p.Key == addressUnit.Id.ToString());
+                                break;
+                            }
+                            default:
+                            {
+                                value = values.SingleOrDefault(p => p.Key == addressUnit.CommunicationTag);
                                 break;
                             }
                         }
+                        //将要写入的值加入队列
+                        var data = Convert.ChangeType(value.Value/addressUnit.Zoom, dataType);
+
+                        if (!valueHelper.SetValue(datas, mainByteCount, localByteCount, data))
+                            return false;
+                        break;
                     }
                     //写入数据
                     await
@@ -484,6 +534,19 @@ namespace Modbus.Net
                 return false;
             }
             return true;
+        }
+
+        public AddressUnit<TUnitKey> GetAddressUnitById(TUnitKey addressUnitId)
+        {
+            try
+            {
+                return GetAddresses.SingleOrDefault(p => p.Id.Equals(addressUnitId));
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Id重复，请检查");
+                return null;
+            }
         }
 
         /// <summary>
@@ -514,14 +577,15 @@ namespace Modbus.Net
         }
     }
 
-    public class BaseMachineEqualityComparer : IEqualityComparer<BaseMachine>
+    public class BaseMachineEqualityComparer<TKey, TUnitKey> : IEqualityComparer<BaseMachine<TKey, TUnitKey>>
+        where TKey : IEquatable<TKey> where TUnitKey : IEquatable<TUnitKey>
     {
-        public bool Equals(BaseMachine x, BaseMachine y)
+        public bool Equals(BaseMachine<TKey, TUnitKey> x, BaseMachine<TKey, TUnitKey> y)
         {
             return x.ConnectionToken == y.ConnectionToken;
         }
 
-        public int GetHashCode(BaseMachine obj)
+        public int GetHashCode(BaseMachine<TKey, TUnitKey> obj)
         {
             return obj.GetHashCode();
         }
@@ -530,7 +594,14 @@ namespace Modbus.Net
     /// <summary>
     ///     通讯单元
     /// </summary>
-    public class CommunicationUnit
+    public class CommunicationUnit : CommunicationUnit<string>
+    {
+    }
+
+    /// <summary>
+    ///     通讯单元
+    /// </summary>
+    public class CommunicationUnit<TKey> where TKey : IEquatable<TKey>
     {
         /// <summary>
         ///     区域
@@ -560,7 +631,7 @@ namespace Modbus.Net
         /// <summary>
         ///     原始的地址
         /// </summary>
-        public IEnumerable<AddressUnit> OriginalAddresses { get; set; }
+        public IEnumerable<AddressUnit<TKey>> OriginalAddresses { get; set; }
     }
 
     /// <summary>
@@ -586,12 +657,22 @@ namespace Modbus.Net
         public UnitExtend UnitExtend { get; set; }
     }
 
-    public class AddressUnit
+    /// <summary>
+    ///     地址单元
+    /// </summary>
+    public class AddressUnit : AddressUnit<string>
+    {
+    }
+
+    /// <summary>
+    ///     地址单元
+    /// </summary>
+    public class AddressUnit<TKey> where TKey : IEquatable<TKey>
     {
         /// <summary>
         ///     数据单元Id
         /// </summary>
-        public string Id { get; set; }
+        public TKey Id { get; set; }
 
         /// <summary>
         ///     数据所属的区域
@@ -652,14 +733,14 @@ namespace Modbus.Net
     /// <summary>
     ///     AddressUnit大小比较
     /// </summary>
-    public struct AddressUnitEqualityComparer : IEqualityComparer<AddressUnit>
+    public struct AddressUnitEqualityComparer<TKey> : IEqualityComparer<AddressUnit<TKey>> where TKey : IEquatable<TKey>
     {
-        public bool Equals(AddressUnit x, AddressUnit y)
+        public bool Equals(AddressUnit<TKey> x, AddressUnit<TKey> y)
         {
-            return x.Area.ToUpper() == y.Area.ToUpper() && x.Address == y.Address;
+            return (x.Area.ToUpper() == y.Area.ToUpper() && x.Address == y.Address) || x.Id.Equals(y.Id);
         }
 
-        public int GetHashCode(AddressUnit obj)
+        public int GetHashCode(AddressUnit<TKey> obj)
         {
             return obj.GetHashCode();
         }
@@ -668,12 +749,12 @@ namespace Modbus.Net
     /// <summary>
     ///     设备的抽象
     /// </summary>
-    public interface IMachineProperty
+    public interface IMachineProperty<TKey> where TKey : IEquatable<TKey>
     {
         /// <summary>
         ///     Id
         /// </summary>
-        string Id { get; set; }
+        TKey Id { get; set; }
 
         /// <summary>
         ///     工程名
