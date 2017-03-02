@@ -59,16 +59,16 @@ namespace Modbus.Net
 
     public abstract class BaseMachine : BaseMachine<string, string>
     {
-        protected BaseMachine(IEnumerable<AddressUnit<string>> getAddresses) : base(getAddresses)
+        protected BaseMachine(IEnumerable<AddressUnit> getAddresses) : base(getAddresses)
         {
         }
 
-        protected BaseMachine(IEnumerable<AddressUnit<string>> getAddresses, bool keepConnect)
+        protected BaseMachine(IEnumerable<AddressUnit> getAddresses, bool keepConnect)
             : base(getAddresses, keepConnect)
         {
         }
 
-        protected BaseMachine(IEnumerable<AddressUnit<string>> getAddresses, bool keepConnect, byte slaveAddress,
+        protected BaseMachine(IEnumerable<AddressUnit> getAddresses, bool keepConnect, byte slaveAddress,
             byte masterAddress) : base(getAddresses, keepConnect, slaveAddress, masterAddress)
         {
         }

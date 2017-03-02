@@ -29,17 +29,21 @@ namespace Modbus.Net.Siemens
     /// <summary>
     ///     西门子设备
     /// </summary>
-    public class SiemensMachine : SiemensMachine<string, string>
+    public class SiemensMachine : BaseMachine
     {
         public SiemensMachine(SiemensType connectionType, string connectionString, SiemensMachineModel model,
-            IEnumerable<AddressUnit<string>> getAddresses, bool keepConnect, byte slaveAddress, byte masterAddress)
-            : base(connectionType, connectionString, model, getAddresses, keepConnect, slaveAddress, masterAddress)
+            IEnumerable<AddressUnit> getAddresses, bool keepConnect, byte slaveAddress, byte masterAddress)
+            : base(getAddresses, keepConnect, slaveAddress, masterAddress)
         {
+            BaseUtility = new SiemensUtility(connectionType, connectionString, model, slaveAddress, masterAddress);
+            AddressFormater = new AddressFormaterSiemens();
+            AddressCombiner = new AddressCombinerContinus(AddressTranslator);
+            AddressCombinerSet = new AddressCombinerContinus(AddressTranslator);
         }
 
         public SiemensMachine(SiemensType connectionType, string connectionString, SiemensMachineModel model,
-            IEnumerable<AddressUnit<string>> getAddresses, byte slaveAddress, byte masterAddress)
-            : base(connectionType, connectionString, model, getAddresses, slaveAddress, masterAddress)
+            IEnumerable<AddressUnit> getAddresses, byte slaveAddress, byte masterAddress)
+            : this(connectionType, connectionString, model, getAddresses, false, slaveAddress, masterAddress)
         {
         }
     }
