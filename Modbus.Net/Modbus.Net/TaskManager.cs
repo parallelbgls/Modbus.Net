@@ -226,7 +226,7 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="machine">设备的实例</param>
         /// <returns></returns>
-        protected new async Task RunTask(IMachineProperty<string> machine)
+        protected override async Task RunTask(IMachineProperty<string> machine)
         {
             try
             {
@@ -786,7 +786,7 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="machine">设备的实例</param>
         /// <returns></returns>
-        protected async Task RunTask(IMachineProperty<TMachineKey> machine)
+        protected virtual async Task RunTask(IMachineProperty<TMachineKey> machine)
         {
             try
             {
