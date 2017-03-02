@@ -577,15 +577,16 @@ namespace Modbus.Net
         }
     }
 
-    public class BaseMachineEqualityComparer<TKey, TUnitKey> : IEqualityComparer<BaseMachine<TKey, TUnitKey>>
-        where TKey : IEquatable<TKey> where TUnitKey : IEquatable<TUnitKey>
+    public class BaseMachineEqualityComparer<TKey> : IEqualityComparer<IMachineProperty<TKey>>
+        where TKey : IEquatable<TKey>
     {
-        public bool Equals(BaseMachine<TKey, TUnitKey> x, BaseMachine<TKey, TUnitKey> y)
+        public bool Equals(IMachineProperty<TKey> x, IMachineProperty<TKey> y)
         {
-            return x.ConnectionToken == y.ConnectionToken;
+            //1.3版本中需要修改这句话
+            return x.Id.Equals(y.Id) || x.ConnectionToken == y.ConnectionToken;
         }
 
-        public int GetHashCode(BaseMachine<TKey, TUnitKey> obj)
+        public int GetHashCode(IMachineProperty<TKey> obj)
         {
             return obj.GetHashCode();
         }
@@ -770,5 +771,41 @@ namespace Modbus.Net
         ///     标识设备的连接关键字
         /// </summary>
         string ConnectionToken { get; }
+
+        /// <summary>
+        ///     是否处于连接状态
+        /// </summary>
+        bool IsConnected { get; }
+
+        /// <summary>
+        ///     是否保持连接
+        /// </summary>
+        bool KeepConnect { get; set; }
+
+        /// <summary>
+        ///     读取数据
+        /// </summary>
+        /// <returns>从设备读取的数据</returns>
+        Task<Dictionary<string, ReturnUnit>> GetDatasAsync(MachineGetDataType getDataType);
+
+        /// <summary>
+        ///     写入数据
+        /// </summary>
+        /// <param name="setDataType">写入类型</param>
+        /// <param name="values">需要写入的数据字典，当写入类型为Address时，键为需要写入的地址，当写入类型为CommunicationTag时，键为需要写入的单元的描述</param>
+        /// <returns>是否写入成功</returns>
+        Task<bool> SetDatasAsync(MachineSetDataType setDataType, Dictionary<string, double> values);
+
+        /// <summary>
+        ///     连接设备
+        /// </summary>
+        /// <returns>是否连接成功</returns>
+        Task<bool> ConnectAsync();
+
+        /// <summary>
+        ///     断开设备
+        /// </summary>
+        /// <returns>是否断开成功</returns>
+        bool Disconnect();
     }
 }

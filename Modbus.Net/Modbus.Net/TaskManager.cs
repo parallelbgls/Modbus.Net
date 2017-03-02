@@ -25,6 +25,14 @@ namespace Modbus.Net
     /// <summary>
     ///     返回结果的定义类
     /// </summary>
+    public class TaskReturnDef : TaskReturnDef<string>
+    {
+        
+    }
+
+    /// <summary>
+    ///     返回结果的定义类
+    /// </summary>
     public class TaskReturnDef<TMachineKey> where TMachineKey : IEquatable<TMachineKey>
     {
         public TMachineKey MachineId { get; set; }
@@ -201,12 +209,81 @@ namespace Modbus.Net
     /// <summary>
     ///     任务调度器
     /// </summary>
-    public class TaskManager : TaskManager<string, string>
+    public class TaskManager : TaskManager<string>
     {
         public TaskManager(int maxRunningTask, int getCycle, bool keepConnect,
             MachineDataType dataType = MachineDataType.CommunicationTag)
             : base(maxRunningTask, getCycle, keepConnect, dataType)
         {
+        }
+
+        public new delegate void ReturnValuesDelegate(TaskReturnDef returnValue);
+
+        public new event ReturnValuesDelegate ReturnValues;
+
+        /// <summary>
+        ///     执行对具体设备的数据更新
+        /// </summary>
+        /// <param name="machine">设备的实例</param>
+        /// <returns></returns>
+        protected new async Task RunTask(IMachineProperty<string> machine)
+        {
+            try
+            {
+                //调试代码，调试时取消下面一下代码的注释，会同步调用获取数据。
+                //var ans = machine.GetDatas();
+                //设置Cancellation Token
+                var cts = new CancellationTokenSource();
+                //超时后取消任务
+                cts.CancelAfter(TimeSpan.FromSeconds(GetCycle));
+                //读取数据
+                var ans = await machine.GetDatasAsync(GetDataType).WithCancellation(cts.Token);
+                if (!machine.IsConnected)
+                {
+                    MoveMachineToUnlinked(machine.Id);
+                }
+                else
+                {
+                    MoveMachineToLinked(machine.Id);
+                }
+                ReturnValues?.Invoke(new TaskReturnDef
+                {
+                    MachineId = machine.Id,
+                    ReturnValues = ans
+                });
+            }
+            catch (Exception e)
+            {
+                if (!machine.IsConnected)
+                {
+                    MoveMachineToUnlinked(machine.Id);
+                }
+                ReturnValues?.Invoke(new TaskReturnDef
+                {
+                    MachineId = machine.Id,
+                    ReturnValues = null
+                });
+            }
+        }
+
+        public void AddMachine(BaseMachine machine)
+        {
+            base.AddMachine(machine);
+        }
+
+        public void AddMachines(IEnumerable<BaseMachine> machines)
+        {
+            base.AddMachines(machines);
+        }
+
+        public BaseMachine GetMachineById(string id)
+        {
+            return base.GetMachineById<string>(id) as BaseMachine;
+        }
+
+        public BaseMachine GetMachineByConnectionToken(string connectionToken)
+        {
+            return base.GetMachineByConnectionToken<string>(connectionToken) as BaseMachine;
         }
     }
 
@@ -214,9 +291,7 @@ namespace Modbus.Net
     ///     任务调度器
     /// </summary>
     /// <typeparam name="TMachineKey"></typeparam>
-    /// <typeparam name="TUnitKey"></typeparam>
-    public class TaskManager<TMachineKey, TUnitKey> where TMachineKey : IEquatable<TMachineKey>
-        where TUnitKey : IEquatable<TUnitKey>
+    public class TaskManager<TMachineKey> where TMachineKey : IEquatable<TMachineKey>
     {
         /// <summary>
         ///     返回数据代理
@@ -227,12 +302,12 @@ namespace Modbus.Net
         /// <summary>
         ///     正在运行的设备
         /// </summary>
-        private readonly HashSet<BaseMachine<TMachineKey, TUnitKey>> _machines;
+        private readonly HashSet<IMachineProperty<TMachineKey>> _machines;
 
         /// <summary>
         ///     不在运行的设备
         /// </summary>
-        private readonly HashSet<BaseMachine<TMachineKey, TUnitKey>> _unlinkedMachines;
+        private readonly HashSet<IMachineProperty<TMachineKey>> _unlinkedMachines;
 
         private CancellationTokenSource _cts;
 
@@ -278,9 +353,9 @@ namespace Modbus.Net
         {
             _scheduler = new LimitedConcurrencyLevelTaskScheduler(maxRunningTask);
             _machines =
-                new HashSet<BaseMachine<TMachineKey, TUnitKey>>(new BaseMachineEqualityComparer<TMachineKey, TUnitKey>());
+                new HashSet<IMachineProperty<TMachineKey>>(new BaseMachineEqualityComparer<TMachineKey>());
             _unlinkedMachines =
-                new HashSet<BaseMachine<TMachineKey, TUnitKey>>(new BaseMachineEqualityComparer<TMachineKey, TUnitKey>());
+                new HashSet<IMachineProperty<TMachineKey>>(new BaseMachineEqualityComparer<TMachineKey>());
             _getCycle = getCycle;
             KeepConnect = keepConnect;
             MachineDataType = dataType;
@@ -411,7 +486,7 @@ namespace Modbus.Net
         ///     添加一台设备
         /// </summary>
         /// <param name="machine">设备</param>
-        public void AddMachine(BaseMachine<TMachineKey, TUnitKey> machine)
+        public void AddMachine<TUnitKey>(BaseMachine<TMachineKey, TUnitKey> machine) where TUnitKey : IEquatable<TUnitKey>
         {
             machine.KeepConnect = KeepConnect;
             lock (_machines)
@@ -424,7 +499,7 @@ namespace Modbus.Net
         ///     添加多台设备
         /// </summary>
         /// <param name="machines">设备的列表</param>
-        public void AddMachines(IEnumerable<BaseMachine<TMachineKey, TUnitKey>> machines)
+        public void AddMachines<TUnitKey>(IEnumerable<BaseMachine<TMachineKey, TUnitKey>> machines) where TUnitKey : IEquatable<TUnitKey>
         {
             lock (_machines)
             {
@@ -432,6 +507,58 @@ namespace Modbus.Net
                 {
                     AddMachine(machine);
                 }
+            }
+        }
+
+        public BaseMachine<TMachineKey, TUnitKey> GetMachineById<TUnitKey>(TMachineKey id)
+            where TUnitKey : IEquatable<TUnitKey>
+        {
+            try
+            {
+                IMachineProperty<TMachineKey> machine;
+                lock (_machines)
+                {
+                    machine = _machines.FirstOrDefault(p => p.Id.Equals(id));
+                    if (machine == null)
+                    {
+                        lock (_unlinkedMachines)
+                        {
+                            machine = _unlinkedMachines.FirstOrDefault(p => p.Id.Equals(id));
+                        }
+                    }
+                }
+                return machine as BaseMachine<TMachineKey, TUnitKey>;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"设备返回错误 {e.Message}");
+                return null;
+            }
+        }
+
+        public BaseMachine<TMachineKey, TUnitKey> GetMachineByConnectionToken<TUnitKey>(string connectionToken)
+            where TUnitKey : IEquatable<TUnitKey>
+        {
+            try
+            {
+                IMachineProperty<TMachineKey> machine;
+                lock (_machines)
+                {
+                    machine = _machines.FirstOrDefault(p => p.ConnectionToken == connectionToken);
+                    if (machine == null)
+                    {
+                        lock (_unlinkedMachines)
+                        {
+                            machine = _unlinkedMachines.FirstOrDefault(p => p.ConnectionToken == connectionToken);
+                        }
+                    }
+                }
+                return machine as BaseMachine<TMachineKey, TUnitKey>;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"设备返回错误 {e.Message}");
+                return null;
             }
         }
 
@@ -473,7 +600,7 @@ namespace Modbus.Net
         /// <param name="id">设备的id</param>
         public void MoveMachineToUnlinked(TMachineKey id)
         {
-            IEnumerable<BaseMachine<TMachineKey, TUnitKey>> machines;
+            IEnumerable<IMachineProperty<TMachineKey>> machines;
             lock (_machines)
             {
                 machines = _machines.Where(c => c.Id.Equals(id)).ToList();
@@ -495,7 +622,7 @@ namespace Modbus.Net
         /// <param name="id">设备的id</param>
         public void MoveMachineToLinked(TMachineKey id)
         {
-            IEnumerable<BaseMachine<TMachineKey, TUnitKey>> machines;
+            IEnumerable<IMachineProperty<TMachineKey>> machines;
             lock (_unlinkedMachines)
             {
                 machines = _unlinkedMachines.Where(c => c.Id.Equals(id)).ToList();
@@ -515,7 +642,7 @@ namespace Modbus.Net
         ///     移除设备
         /// </summary>
         /// <param name="machine">设备的实例</param>
-        public void RemoveMachine(BaseMachine<TMachineKey, TUnitKey> machine)
+        public void RemoveMachine(IMachineProperty<TMachineKey> machine)
         {
             lock (_machines)
             {
@@ -554,8 +681,8 @@ namespace Modbus.Net
             try
             {
                 var tasks = new List<Task>();
-                var saveMachines = new HashSet<BaseMachine<TMachineKey, TUnitKey>>();
-                IEnumerable<BaseMachine<TMachineKey, TUnitKey>> saveMachinesEnum;
+                var saveMachines = new HashSet<IMachineProperty<TMachineKey>>();
+                IEnumerable<IMachineProperty<TMachineKey>> saveMachinesEnum;
                 lock (_machines)
                 {
                     saveMachines.UnionWith(_machines);
@@ -585,7 +712,7 @@ namespace Modbus.Net
             try
             {
                 var tasks = new List<Task>();
-                var saveMachines = new HashSet<BaseMachine<TMachineKey, TUnitKey>>();
+                var saveMachines = new HashSet<IMachineProperty<TMachineKey>>();
                 lock (_unlinkedMachines)
                 {
                     saveMachines.UnionWith(_unlinkedMachines);
@@ -614,7 +741,7 @@ namespace Modbus.Net
         public async Task<bool> SetDatasAsync(string connectionToken,
             Dictionary<string, double> values)
         {
-            BaseMachine<TMachineKey, TUnitKey> machine = null;
+            IMachineProperty<TMachineKey> machine = null;
             lock (_machines)
             {
                 machine = _machines.FirstOrDefault(p => p.ConnectionToken == connectionToken);
@@ -659,7 +786,7 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="machine">设备的实例</param>
         /// <returns></returns>
-        private async Task RunTask(BaseMachine<TMachineKey, TUnitKey> machine)
+        protected async Task RunTask(IMachineProperty<TMachineKey> machine)
         {
             try
             {
