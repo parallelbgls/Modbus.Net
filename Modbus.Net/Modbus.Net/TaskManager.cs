@@ -25,6 +25,13 @@ namespace Modbus.Net
     /// <summary>
     ///     返回结果的定义类
     /// </summary>
+    public class TaskReturnDef : TaskReturnDef<string>
+    {        
+    }
+
+    /// <summary>
+    ///     返回结果的定义类
+    /// </summary>
     public class TaskReturnDef<TMachineKey> where TMachineKey : IEquatable<TMachineKey>
     {
         public TMachineKey MachineId { get; set; }
