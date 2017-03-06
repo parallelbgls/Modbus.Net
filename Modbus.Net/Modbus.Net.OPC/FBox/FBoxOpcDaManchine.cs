@@ -6,19 +6,19 @@ using System.Threading.Tasks;
 
 namespace Modbus.Net.OPC.FBox
 {
-    public class FBoxOpcDaMachine : OpcDaMachine
+    public class FBoxOpcDaMachine : OpcDaMachine<string,string>
     {
         public string LocalSequence { get; set; }
 
         public string LinkerName { get; set; }
 
         public FBoxOpcDaMachine(string localSequence, string linkerName,
-            IEnumerable<AddressUnit> getAddresses, bool keepConnect) : base(ConfigurationManager.FBoxOpcDaHost, getAddresses, keepConnect)
+            IEnumerable<AddressUnit<string>> getAddresses, bool keepConnect) : base(ConfigurationManager.FBoxOpcDaHost, getAddresses, keepConnect)
         {
             LocalSequence = localSequence;
             LinkerName = linkerName;
             AddressFormater =
-                new AddressFormaterOpc(
+                new AddressFormaterOpc<string,string>(
                     (machine, unit) =>
                         new string[]
                         {

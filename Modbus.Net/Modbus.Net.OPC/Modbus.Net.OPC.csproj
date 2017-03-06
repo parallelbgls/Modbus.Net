@@ -31,33 +31,26 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="h-opc, Version=0.6.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\H.Opc.0.7.0\lib\h-opc.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="h-opc, Version=0.8.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\H.Opc.0.8.1\lib\h-opc.dll</HintPath>
     </Reference>
     <Reference Include="Opc.Ua.Client, Version=1.2.334.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\H.Opc.0.7.0\lib\Opc.Ua.Client.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\H.Opc.0.8.1\lib\Opc.Ua.Client.dll</HintPath>
     </Reference>
     <Reference Include="Opc.Ua.Configuration, Version=1.2.334.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\H.Opc.0.7.0\lib\Opc.Ua.Configuration.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\H.Opc.0.8.1\lib\Opc.Ua.Configuration.dll</HintPath>
     </Reference>
     <Reference Include="Opc.Ua.Core, Version=1.2.334.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\H.Opc.0.7.0\lib\Opc.Ua.Core.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\H.Opc.0.8.1\lib\Opc.Ua.Core.dll</HintPath>
     </Reference>
     <Reference Include="OpcComRcw, Version=2.0.105.1, Culture=neutral, PublicKeyToken=9a40e993cbface53, processorArchitecture=MSIL">
-      <HintPath>..\packages\H.Opc.0.7.0\lib\OpcComRcw.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\H.Opc.0.8.1\lib\OpcComRcw.dll</HintPath>
     </Reference>
     <Reference Include="OpcNetApi, Version=2.1.105.1, Culture=neutral, PublicKeyToken=9a40e993cbface53, processorArchitecture=MSIL">
-      <HintPath>..\packages\H.Opc.0.7.0\lib\OpcNetApi.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\H.Opc.0.8.1\lib\OpcNetApi.dll</HintPath>
     </Reference>
     <Reference Include="OpcNetApi.Com, Version=2.1.105.1, Culture=neutral, PublicKeyToken=9a40e993cbface53, processorArchitecture=MSIL">
-      <HintPath>..\packages\H.Opc.0.7.0\lib\OpcNetApi.Com.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\H.Opc.0.8.1\lib\OpcNetApi.Com.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -71,14 +64,22 @@
   <ItemGroup>
     <Compile Include="AddressFormaterOpc.cs" />
     <Compile Include="AddressTranslatorOpc.cs" />
-    <Compile Include="DaClientExtend.cs" />
+    <Compile Include="ClientExtend.cs" />
     <Compile Include="FBox\FBoxOpcDaManchine.cs" />
+    <Compile Include="OpcConnector.cs" />
     <Compile Include="OpcDaConnector.cs" />
     <Compile Include="OpcDaMachine.cs" />
     <Compile Include="OpcDaProtocal.cs" />
     <Compile Include="OpcDaProtocalLinker.cs" />
     <Compile Include="OpcDaUtility.cs" />
+    <Compile Include="OpcMachine.cs" />
     <Compile Include="OpcProtocal.cs" />
+    <Compile Include="OpcUaConnector.cs" />
+    <Compile Include="OpcUaMachine.cs" />
+    <Compile Include="OpcUaProtocal.cs" />
+    <Compile Include="OpcUaProtocalLinker.cs" />
+    <Compile Include="OpcUaUtility.cs" />
+    <Compile Include="OpcUtility.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

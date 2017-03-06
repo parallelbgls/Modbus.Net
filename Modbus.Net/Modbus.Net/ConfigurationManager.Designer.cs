@@ -115,6 +115,15 @@ namespace Modbus.Net {
         }
         
         /// <summary>
+        ///   查找类似 opc.tcp://localhost/... 的本地化字符串。
+        /// </summary>
+        public static string OpcUaHost {
+            get {
+                return ResourceManager.GetString("OpcUaHost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 102 的本地化字符串。
         /// </summary>
         public static string SiemensPort {

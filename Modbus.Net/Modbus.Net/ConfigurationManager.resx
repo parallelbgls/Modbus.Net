@@ -135,6 +135,9 @@
   <data name="OpcDaHost" xml:space="preserve">
     <value>opcda://localhost/...</value>
   </data>
+  <data name="OpcUaHost" xml:space="preserve">
+    <value>opc.tcp://localhost/...</value>
+  </data>
   <data name="SiemensPort" xml:space="preserve">
     <value>102</value>
   </data>

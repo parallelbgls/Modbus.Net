@@ -1,6 +1,8 @@
 ﻿using Hylasoft.Opc.Common;
+using Hylasoft.Opc.Ua;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -10,20 +12,20 @@ namespace Modbus.Net.OPC
     /// <summary>
     ///     OpcDa协议连接实现
     /// </summary>
-    public class OpcDaConnector : OpcConnector
+    public class OpcUaConnector : OpcConnector
     {
-        protected static Dictionary<string, OpcDaConnector> _instances = new Dictionary<string, OpcDaConnector>();
+        protected static Dictionary<string, OpcUaConnector> _instances = new Dictionary<string, OpcUaConnector>();
 
-        protected OpcDaConnector(string host) : base(host)
+        protected OpcUaConnector(string host) : base(host)
         {
-            Client = new MyDaClient(new Uri(ConnectionToken));
+            Client = new MyUaClient(new Uri(ConnectionToken));
         }
 
-        public static OpcDaConnector Instance(string host)
+        public static OpcUaConnector Instance(string host)
         {
             if (!_instances.ContainsKey(host))
             {
-                var connector = new OpcDaConnector(host);
+                var connector = new OpcUaConnector(host);
                 _instances.Add(host, connector);
             }
             return _instances[host];

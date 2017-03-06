@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>Modbus.Net.OPC</id>
-        <version>1.2.3</version>
+        <version>1.2.4</version>
         <title>Modbus.Net.OPC</title>
         <authors>Chris L.(Luo Sheng)</authors>
         <owners>Hangzhou Delian IoT Science Technology Co.,Ltd.</owners>
@@ -14,7 +14,7 @@
         <tags>hardware communicate protocal OPC DA Delian</tags>
         <dependencies>
             <dependency id="Modbus.Net" version="1.2.3.2" />
-            <dependency id="H.Opc" version="0.7.0" />
+            <dependency id="H.Opc" version="0.8.1" />
         </dependencies>
     </metadata>
     <files>

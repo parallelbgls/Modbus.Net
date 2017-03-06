@@ -6,7 +6,7 @@ namespace Modbus.Net.OPC
     /// <summary>
     ///     Opc地址编码器
     /// </summary>
-    public class AddressFormaterOpc : AddressFormater
+    public class AddressFormaterOpc<TMachineKey,TUnitKey> : AddressFormater where TMachineKey : IEquatable<TMachineKey> where TUnitKey : IEquatable<TUnitKey>
     {
         /// <summary>
         ///     协议构造器
@@ -14,7 +14,7 @@ namespace Modbus.Net.OPC
         /// <param name="tagGeter">如何通过BaseMachine和AddressUnit构造Opc的标签</param>
         /// <param name="machine">调用这个编码器的设备</param>
         /// <param name="seperator">每两个标签之间用什么符号隔开，默认为/</param>
-        public AddressFormaterOpc(Func<BaseMachine, AddressUnit, string[]> tagGeter, BaseMachine machine,
+        public AddressFormaterOpc(Func<BaseMachine<TMachineKey, TUnitKey>, AddressUnit<TUnitKey>, string[]> tagGeter, BaseMachine<TMachineKey, TUnitKey> machine,
             char seperator = '/')
         {
             Machine = machine;
@@ -22,9 +22,9 @@ namespace Modbus.Net.OPC
             Seperator = seperator;
         }
 
-        public BaseMachine Machine { get; set; }
+        public BaseMachine<TMachineKey, TUnitKey> Machine { get; set; }
 
-        protected Func<BaseMachine, AddressUnit, string[]> TagGeter { get; set; }
+        protected Func<BaseMachine<TMachineKey, TUnitKey>, AddressUnit<TUnitKey>, string[]> TagGeter { get; set; }
 
         protected char Seperator { get; set; }
 

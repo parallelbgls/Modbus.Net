@@ -230,22 +230,7 @@ namespace Modbus.Net
         {
             try
             {
-                //调试代码，调试时取消下面一下代码的注释，会同步调用获取数据。
-                //var ans = machine.GetDatas();
-                //设置Cancellation Token
-                var cts = new CancellationTokenSource();
-                //超时后取消任务
-                cts.CancelAfter(TimeSpan.FromSeconds(GetCycle));
-                //读取数据
-                var ans = await machine.GetDatasAsync(GetDataType).WithCancellation(cts.Token);
-                if (!machine.IsConnected)
-                {
-                    MoveMachineToUnlinked(machine.Id);
-                }
-                else
-                {
-                    MoveMachineToLinked(machine.Id);
-                }
+                var ans = await GetValue(machine);
                 ReturnValues?.Invoke(new TaskReturnDef
                 {
                     MachineId = machine.Id,
@@ -790,22 +775,7 @@ namespace Modbus.Net
         {
             try
             {
-                //调试代码，调试时取消下面一下代码的注释，会同步调用获取数据。
-                //var ans = machine.GetDatas();
-                //设置Cancellation Token
-                var cts = new CancellationTokenSource();
-                //超时后取消任务
-                cts.CancelAfter(TimeSpan.FromSeconds(_getCycle));
-                //读取数据
-                var ans = await machine.GetDatasAsync(GetDataType).WithCancellation(cts.Token);
-                if (!machine.IsConnected)
-                {
-                    MoveMachineToUnlinked(machine.Id);
-                }
-                else
-                {
-                    MoveMachineToLinked(machine.Id);
-                }
+                var ans = await GetValue(machine);
                 ReturnValues?.Invoke(new TaskReturnDef<TMachineKey>
                 {
                     MachineId = machine.Id,
@@ -824,6 +794,27 @@ namespace Modbus.Net
                     ReturnValues = null
                 });
             }
+        }
+
+        protected async Task<Dictionary<string, ReturnUnit>> GetValue(IMachineProperty<TMachineKey> machine)
+        {
+            //调试代码，调试时取消下面一下代码的注释，会同步调用获取数据。
+            //var ans = machine.GetDatas();
+            //设置Cancellation Token
+            var cts = new CancellationTokenSource();
+            //超时后取消任务
+            cts.CancelAfter(TimeSpan.FromSeconds(_getCycle));
+            //读取数据
+            var ans = await machine.GetDatasAsync(GetDataType).WithCancellation(cts.Token);
+            if (!machine.IsConnected)
+            {
+                MoveMachineToUnlinked(machine.Id);
+            }
+            else
+            {
+                MoveMachineToLinked(machine.Id);
+            }
+            return ans;
         }
     }
 }

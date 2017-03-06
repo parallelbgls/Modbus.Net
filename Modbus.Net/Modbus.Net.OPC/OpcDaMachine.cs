@@ -3,18 +3,12 @@ using System.Collections.Generic;
 
 namespace Modbus.Net.OPC
 {
-    /// <summary>
-    ///     OpcDa设备
-    /// </summary>
-    public class OpcDaMachine<TKey, TUnitKey> : BaseMachine<TKey, TUnitKey> where TKey : IEquatable<TKey>
-        where TUnitKey : IEquatable<TUnitKey>
+    public class OpcDaMachine<TKey, TUnitKey> : OpcMachine<TKey, TUnitKey> where TKey : IEquatable<TKey> where TUnitKey : IEquatable<TUnitKey>
     {
         public OpcDaMachine(string connectionString, IEnumerable<AddressUnit<TUnitKey>> getAddresses, bool keepConnect)
-            : base(getAddresses, keepConnect)
+            : base(connectionString, getAddresses, keepConnect)
         {
             BaseUtility = new OpcDaUtility(connectionString);
-            AddressCombiner = new AddressCombinerSingle<TUnitKey>();
-            AddressCombinerSet = new AddressCombinerSingle<TUnitKey>();
         }
 
         public OpcDaMachine(string connectionString, IEnumerable<AddressUnit<TUnitKey>> getAddresses)
@@ -23,17 +17,12 @@ namespace Modbus.Net.OPC
         }
     }
 
-    /// <summary>
-    ///     OpcDa设备
-    /// </summary>
-    public class OpcDaMachine : BaseMachine
+    public class OpcDaMachine : OpcMachine
     {
-        public OpcDaMachine(string connectionString, IEnumerable<AddressUnit> getAddresses, bool keepConnect)
-            : base(getAddresses, keepConnect)
+        public OpcDaMachine(string connectionString, IEnumerable<AddressUnit> getAddresses, bool keepConnect) 
+            : base(connectionString, getAddresses, keepConnect)
         {
             BaseUtility = new OpcDaUtility(connectionString);
-            AddressCombiner = new AddressCombinerSingle();
-            AddressCombinerSet = new AddressCombinerSingle();
         }
 
         public OpcDaMachine(string connectionString, IEnumerable<AddressUnit> getAddresses)
