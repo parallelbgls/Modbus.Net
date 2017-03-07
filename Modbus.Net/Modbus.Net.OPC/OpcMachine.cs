@@ -12,7 +12,7 @@ namespace Modbus.Net.OPC
     public abstract class OpcMachine<TKey, TUnitKey> : BaseMachine<TKey, TUnitKey> where TKey : IEquatable<TKey>
         where TUnitKey : IEquatable<TUnitKey>
     {
-        public OpcMachine(string connectionString, IEnumerable<AddressUnit<TUnitKey>> getAddresses, bool keepConnect)
+        protected OpcMachine(IEnumerable<AddressUnit<TUnitKey>> getAddresses, bool keepConnect)
             : base(getAddresses, keepConnect)
         {
             AddressCombiner = new AddressCombinerSingle<TUnitKey>();
@@ -25,7 +25,7 @@ namespace Modbus.Net.OPC
     /// </summary>
     public abstract class OpcMachine : BaseMachine
     {
-        public OpcMachine(string connectionString, IEnumerable<AddressUnit> getAddresses, bool keepConnect)
+        protected OpcMachine(IEnumerable<AddressUnit> getAddresses, bool keepConnect)
             : base(getAddresses, keepConnect)
         {
             AddressCombiner = new AddressCombinerSingle();

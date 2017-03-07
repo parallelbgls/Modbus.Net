@@ -24,6 +24,8 @@ namespace Modbus.Net.OPC
         Task<Node> FindNodeAsync(string tag);
 
         Task<IEnumerable<Node>> ExploreFolderAsync(string tag);
+
+        Node RootNodeBase { get; }
     }
 
     public class MyDaClient : DaClient, IClientExtend
@@ -31,6 +33,8 @@ namespace Modbus.Net.OPC
         public MyDaClient(Uri serverUrl) : base(serverUrl)
         {
         }
+
+        public Node RootNodeBase => RootNode;
     }
 
     public class MyUaClient : UaClient, IClientExtend
@@ -38,5 +42,7 @@ namespace Modbus.Net.OPC
         public MyUaClient(Uri serverUrl) : base(serverUrl)
         {
         }
+
+        public Node RootNodeBase => RootNode;
     }
 }

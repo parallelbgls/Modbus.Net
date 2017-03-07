@@ -26,7 +26,7 @@ namespace Modbus.Net.OPC
 
         protected Func<BaseMachine<TMachineKey, TUnitKey>, AddressUnit<TUnitKey>, string[]> TagGeter { get; set; }
 
-        protected char Seperator { get; set; }
+        public char Seperator { get; protected set; }
 
         public override string FormatAddress(string area, int address)
         {

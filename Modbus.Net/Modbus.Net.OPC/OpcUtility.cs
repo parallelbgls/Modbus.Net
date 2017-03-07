@@ -7,12 +7,16 @@ using System.Threading.Tasks;
 namespace Modbus.Net.OPC
 {
     public abstract class OpcUtility : BaseUtility
-    {
+    { 
         protected OpcUtility(string connectionString) : base(0, 0)
         {
             ConnectionString = connectionString;
             AddressTranslator = new AddressTranslatorOpc();
         }
+
+        public delegate char GetSeperatorDelegate();
+
+        public event GetSeperatorDelegate GetSeperator;
 
         public override Endian Endian => Endian.BigEndianLsb;
 
@@ -25,7 +29,8 @@ namespace Modbus.Net.OPC
         {
             try
             {
-                var readRequestOpcInputStruct = new ReadRequestOpcInputStruct(startAddress);
+                var split = GetSeperator?.Invoke() ?? '/';
+                var readRequestOpcInputStruct = new ReadRequestOpcInputStruct(startAddress, split.ToString());
                 var readRequestOpcOutputStruct =
                     await
                         Wrapper.SendReceiveAsync(Wrapper[typeof(ReadRequestOpcProtocal)], readRequestOpcInputStruct) as
@@ -42,7 +47,8 @@ namespace Modbus.Net.OPC
         {
             try
             {
-                var writeRequestOpcInputStruct = new WriteRequestOpcInputStruct(startAddress, setContents[0]);
+                var split = GetSeperator?.Invoke() ?? '/';
+                var writeRequestOpcInputStruct = new WriteRequestOpcInputStruct(startAddress, split.ToString(), setContents[0]);
                 var writeRequestOpcOutputStruct =
                     await
                         Wrapper.SendReceiveAsync(Wrapper[typeof(WriteRequestOpcProtocal)], writeRequestOpcInputStruct)

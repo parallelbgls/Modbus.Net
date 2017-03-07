@@ -16,12 +16,14 @@ namespace Modbus.Net.OPC
 
     public class ReadRequestOpcInputStruct : IInputStruct
     {
-        public ReadRequestOpcInputStruct(string tag)
+        public ReadRequestOpcInputStruct(string tag, string split)
         {
             Tag = tag;
+            Split = split;
         }
 
         public string Tag { get; }
+        public string Split { get; }
     }
 
     public class ReadRequestOpcOutputStruct : IOutputStruct
@@ -39,7 +41,7 @@ namespace Modbus.Net.OPC
         public override byte[] Format(IInputStruct message)
         {
             var r_message = (ReadRequestOpcInputStruct) message;
-            return Format((byte) 0x00, Encoding.UTF8.GetBytes(r_message.Tag));
+            return Format((byte) 0x00, Encoding.UTF8.GetBytes(r_message.Tag), 0x00ffff00, Encoding.UTF8.GetBytes(r_message.Split));
         }
 
         public override IOutputStruct Unformat(byte[] messageBytes, ref int pos)
@@ -54,13 +56,15 @@ namespace Modbus.Net.OPC
 
     public class WriteRequestOpcInputStruct : IInputStruct
     {
-        public WriteRequestOpcInputStruct(string tag, object setValue)
+        public WriteRequestOpcInputStruct(string tag, string split, object setValue)
         {
             Tag = tag;
+            Split = split;
             SetValue = setValue;
         }
 
         public string Tag { get; }
+        public string Split { get; }
         public object SetValue { get; }
     }
 
@@ -81,7 +85,8 @@ namespace Modbus.Net.OPC
             var r_message = (WriteRequestOpcInputStruct) message;
             var tag = Encoding.UTF8.GetBytes(r_message.Tag);
             var fullName = Encoding.UTF8.GetBytes(r_message.SetValue.GetType().FullName);
-            return Format((byte) 0x01, tag, 0x00ffff00, fullName, 0x00ffff00, r_message.SetValue);
+            var split = Encoding.UTF8.GetBytes(r_message.Split);
+            return Format((byte) 0x01, tag, 0x00ffff00, split, 0x00ffff00, fullName, 0x00ffff00, r_message.SetValue);
         }
 
         public override IOutputStruct Unformat(byte[] messageBytes, ref int pos)
