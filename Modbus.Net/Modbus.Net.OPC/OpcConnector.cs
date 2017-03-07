@@ -54,26 +54,37 @@ namespace Modbus.Net.OPC
             return AsyncHelper.RunSync(() => SendMsgAsync(message));
         }
 
-        private string[] SplitTag(string tag, char split)
+        private void FoldWith(List<string> tagSplitList, char splitChar, char startChar, char endChar)
         {
-            var tagSplitList = tag.Split(split).ToList();
             for (int i = 0; i < tagSplitList.Count; i++)
             {
-                if (tagSplitList[i].Contains("("))
+                if (tagSplitList[i].Count(ch=>ch == startChar) > tagSplitList[i].Count(ch=>ch == endChar))
                 {
-                    for (int j = i; j < tagSplitList.Count; j++)
+                    for (int j = i + 1; j < tagSplitList.Count; j++)
                     {
-                        if (tagSplitList[j].Contains(")"))
+                        if (tagSplitList[j].Contains(endChar))
                         {
                             for (int k = i + 1; k <= j; k++)
                             {
-                                tagSplitList[i] += split + tagSplitList[i + 1];
+                                tagSplitList[i] += splitChar + tagSplitList[i + 1];
                                 tagSplitList.RemoveAt(i + 1);
                             }
+                            i--;
+                            break;
                         }
                     }
                 }
             }
+        }
+
+        private string[] SplitTag(string tag, char split)
+        {
+            var tagSplitList = tag.Split(split).ToList();
+
+            FoldWith(tagSplitList, split, '(', ')');
+            FoldWith(tagSplitList, split, '[', ']');
+            FoldWith(tagSplitList, split, '{', '}');
+
             return tagSplitList.ToArray();
         }
 
