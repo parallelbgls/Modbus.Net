@@ -1,120 +1,157 @@
-﻿using Modbus.Net;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Modbus.Net.Modbus;
+using Modbus.Net.Siemens;
 
 namespace Modbus.Net.Tests
 {
     [TestClass]
     public class BaseTest
     {
-        private List<AddressUnit> _addressUnits;
+        private List<AddressUnit<int>> _addressUnits;
+
+        private TaskManager<int> _taskManager;
+
+        private BaseMachine<int, int> _baseMachine;
+
+        private BaseMachine<int, int> _baseMachine2;
 
         [TestInitialize]
         public void Init()
         {
-            _addressUnits = new List<AddressUnit>
+            _addressUnits = new List<AddressUnit<int>>
             {
-                new AddressUnit
+                new AddressUnit<int>
                 {
+                    Id = 1,
                     Area = "3X",
                     Address = 1,
                     SubAddress = 0,
                     DataType = typeof(bool)
                 },
-                new AddressUnit
+                new AddressUnit<int>
                 {
+                    Id = 2,
                     Area = "3X",
                     Address = 1,
                     SubAddress = 1,
                     DataType = typeof(bool)
                 },
-                new AddressUnit
+                new AddressUnit<int>
                 {
+                    Id = 3,
                     Area = "3X",
                     Address = 1,
                     SubAddress = 2,
                     DataType = typeof(bool)
                 },
-                new AddressUnit
+                new AddressUnit<int>
                 {
+                    Id = 4,
                     Area = "3X",
                     Address = 2,
                     SubAddress = 0,
                     DataType = typeof(byte)
                 },
-                new AddressUnit
+                new AddressUnit<int>
                 {
+                    Id = 5,
                     Area = "3X",
                     Address = 2,
                     SubAddress = 8,
                     DataType = typeof(byte)
                 },
-                new AddressUnit
+                new AddressUnit<int>
                 {
+                    Id = 6,
                     Area = "3X",
                     Address = 3,
                     SubAddress = 0,
                     DataType = typeof(ushort)
                 },
-                new AddressUnit
+                new AddressUnit<int>
                 {
+                    Id = 7,
                     Area = "3X",
                     Address = 4,
                     SubAddress = 0,
                     DataType = typeof(ushort)
                 },
-                new AddressUnit
+                new AddressUnit<int>
                 {
+                    Id = 8,
                     Area = "3X",
                     Address = 6,
                     SubAddress = 0,
                     DataType = typeof(ushort)
                 },
-                new AddressUnit
+                new AddressUnit<int>
                 {
+                    Id = 9,
                     Area = "3X",
                     Address = 9,
                     SubAddress = 0,
                     DataType = typeof(ushort)
                 },
-                new AddressUnit
+                new AddressUnit<int>
                 {
+                    Id = 10,
                     Area = "3X",
                     Address = 10,
                     SubAddress = 0,
                     DataType = typeof(ushort)
                 },
-                new AddressUnit
+                new AddressUnit<int>
                 {
+                    Id = 11,
                     Area = "3X",
                     Address = 100,
                     SubAddress = 0,
                     DataType = typeof(ushort)
                 },
-                new AddressUnit
+                new AddressUnit<int>
                 {
+                    Id = 12,
                     Area = "4X",
                     Address = 1,
                     SubAddress = 0,
                     DataType = typeof(uint)
                 },
-                new AddressUnit
+                new AddressUnit<int>
                 {
+                    Id = 13,
                     Area = "4X",
                     Address = 4,
                     SubAddress = 0,
                     DataType = typeof(ushort)
                 },
             };
+
+            _baseMachine = new ModbusMachine<int, int>(ModbusType.Tcp, "192.168.1.1", _addressUnits, true, 2, 0)
+            {
+                Id = 1,
+                ProjectName = "Project 1",
+                MachineName = "Test 1"
+            };
+            _baseMachine2 = new SiemensMachine<int, int>(SiemensType.Tcp, "192.168.1.2", SiemensMachineModel.S7_300, _addressUnits, true, 2, 0)
+            {
+                Id = 2,
+                ProjectName = "Project 1",
+                MachineName = "Test 2"
+            };
+
+            _taskManager = new TaskManager<int>(10, 3000, true);
+
+            _taskManager.AddMachine(_baseMachine);
+            _taskManager.AddMachine(_baseMachine2);
         }
 
         [TestMethod]
         public void AddressCombinerContinusTest()
         {
-            var addressCombiner = new AddressCombinerContinus(new AddressTranslatorModbus());
+            var addressCombiner = new AddressCombinerContinus<int>(new AddressTranslatorModbus());
             var combinedAddresses = addressCombiner.Combine(_addressUnits).ToArray();
             Assert.AreEqual(combinedAddresses[0].Area, "3X");
             Assert.AreEqual(combinedAddresses[0].Address, 1);
@@ -142,7 +179,7 @@ namespace Modbus.Net.Tests
         [TestMethod]
         public void AddressCombinerSingleTest()
         {
-            var addressCombiner = new AddressCombinerSingle();
+            var addressCombiner = new AddressCombinerSingle<int>();
             var combinedAddresses = addressCombiner.Combine(_addressUnits).ToArray();
             Assert.AreEqual(combinedAddresses[0].Area, "3X");
             Assert.AreEqual(combinedAddresses[0].Address, 1);
@@ -166,7 +203,7 @@ namespace Modbus.Net.Tests
         [TestMethod]
         public void AddressCombinerNumericJumpTest()
         {
-            var addressCombiner = new AddressCombinerNumericJump(10, new AddressTranslatorModbus());
+            var addressCombiner = new AddressCombinerNumericJump<int>(10, new AddressTranslatorModbus());
             var combinedAddresses = addressCombiner.Combine(_addressUnits).ToArray();
             Assert.AreEqual(combinedAddresses[0].Area, "3X");
             Assert.AreEqual(combinedAddresses[0].Address, 1);
@@ -182,7 +219,7 @@ namespace Modbus.Net.Tests
         [TestMethod]
         public void AddressCombinerPercentageJumpTest()
         {
-            var addressCombiner = new AddressCombinerPercentageJump(30.0, new AddressTranslatorModbus());
+            var addressCombiner = new AddressCombinerPercentageJump<int>(30.0, new AddressTranslatorModbus());
             var combinedAddresses = addressCombiner.Combine(_addressUnits).ToArray();
             Assert.AreEqual(combinedAddresses[0].Area, "3X");
             Assert.AreEqual(combinedAddresses[0].Address, 1);
@@ -196,6 +233,24 @@ namespace Modbus.Net.Tests
             Assert.AreEqual(combinedAddresses[3].Area, "4X");
             Assert.AreEqual(combinedAddresses[3].Address, 1);
             Assert.AreEqual(combinedAddresses[3].GetCount, 8);
+        }
+
+        [TestMethod]
+        public void TaskManagerGetMachineTest()
+        {
+            var machine = _taskManager.GetMachineById<int>(1);
+            Assert.AreEqual(machine.MachineName, "Test 1");
+
+            var machine2 = _taskManager.GetMachineByConnectionToken<int>("192.168.1.2");
+            Assert.AreEqual(machine2.MachineName, "Test 2");
+        }
+
+        [TestMethod]
+        public void BaseMachineGetAddressTest()
+        {
+            var addressUnit = _baseMachine.GetAddressUnitById(1);
+            Assert.AreEqual(addressUnit.Area, "3X");
+            Assert.AreEqual(addressUnit.Address, 1);
         }
     }
 }

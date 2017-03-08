@@ -52,7 +52,7 @@ namespace Modbus.Net
         /// <summary>
         ///     标识设备的连接关键字
         /// </summary>
-        public string ConnectionToken => Wrapper.ProtocalLinker.ConnectionToken;
+        public string ConnectionToken => Wrapper?.ProtocalLinker == null ? ConnectionString : Wrapper.ProtocalLinker.ConnectionToken;
 
         /// <summary>
         ///     地址翻译器
