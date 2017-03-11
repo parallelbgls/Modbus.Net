@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFramework>netstandard1.5</TargetFramework>
     <AssemblyName>Modbus.Net</AssemblyName>
     <RootNamespace>Modbus.Net</RootNamespace>
     <PackageId>Modbus.Net</PackageId>
@@ -40,6 +40,11 @@
     <Compile Include="..\src\Base.Common\TcpConnector.cs" Link="TcpConnector.cs" />
     <Compile Include="..\src\Base.Common\TcpProtocalLinker.cs" Link="TcpProtocalLinker.cs" />
     <Compile Include="..\src\Base.Common\ValueHelper.cs" Link="ValueHelper.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Collections.NonGeneric" Version="4.3.0" />
+    <PackageReference Include="System.Threading.ThreadPool" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>

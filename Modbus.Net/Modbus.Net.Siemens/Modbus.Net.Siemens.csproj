@@ -1,77 +1,24 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6258F9D9-0DF4-497F-9F3B-6D2F6F752A21}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Modbus.Net.Siemens</RootNamespace>
+    <TargetFramework>net45</TargetFramework>
     <AssemblyName>Modbus.Net.Siemens</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <RootNamespace>Modbus.Net.Siemens</RootNamespace>
+    <PackageId>Modbus.Net.Siemens</PackageId>
+    <Version>1.3.0</Version>
+    <Authors>Chris L.(Luo Sheng)</Authors>
+    <Company>Hangzhou Delian IoT Science Technology Co.,Ltd.</Company>
+    <Description>Modbus.Net Siemens Profinet Implementation</Description>
+    <Copyright>Copyright 2017 Hangzhou Delian IoT Science Technology Co.,Ltd.</Copyright>
+    <PackageLicenseUrl>https://github.com/parallelbgls/Modbus.Net/blob/master/LICENSE.md</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/parallelbgls/Modbus.Net/tree/master/Modbus.Net/Modbus.Net.Siemens</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/parallelbgls/Modbus.Net</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>hardware communicate protocal Siemens profinet Delian</PackageTags>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
+    <ProjectReference Include="..\ModBus.Net\Modbus.Net.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="AddressFormaterSiemens.cs" />
-    <Compile Include="AddressTranslatorSiemens.cs" />
-    <Compile Include="SiemensMachine.cs" />
-    <Compile Include="SiemensPpiProtocal.cs" />
-    <Compile Include="SiemensPpiProtocalLinker.cs" />
-    <Compile Include="SiemensProtocal.cs" />
-    <Compile Include="SiemensProtocalLinkerBytesExtend.cs" />
-    <Compile Include="SiemensStructDefinition.cs" />
-    <Compile Include="SiemensTcpProtocal.cs" />
-    <Compile Include="SiemensTcpProtocalLinker.cs" />
-    <Compile Include="SiemensUtility.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ModBus.Net\Modbus.Net.csproj">
-      <Project>{124ebef2-8960-4447-84cf-1d683b1ef7cc}</Project>
-      <Name>Modbus.Net</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Modbus.Net.Siemens.nuspec">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="README.md" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  
 </Project>

@@ -8,6 +8,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using System.Reflection;
+
 namespace Modbus.Net {
     using System;
     
@@ -39,7 +41,7 @@ namespace Modbus.Net {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Modbus.Net.ConfigurationManager", typeof(ConfigurationManager).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Modbus.Net.ConfigurationManager", typeof(ConfigurationManager).GetTypeInfo().Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

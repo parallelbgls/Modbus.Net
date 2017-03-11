@@ -96,7 +96,7 @@ namespace Modbus.Net
         /// <returns></returns>
         public bool LrcEfficacy(string message)
         {
-            var index = message.IndexOf(Environment.NewLine, StringComparison.InvariantCulture);
+            var index = message.IndexOf(Environment.NewLine, StringComparison.Ordinal);
             var writeUncheck = message.Substring(1, index - 2);
             var checkString = message.Substring(index - 2, 2);
             var hexArray = new char[writeUncheck.Length];

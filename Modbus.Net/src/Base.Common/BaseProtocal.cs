@@ -47,7 +47,7 @@ namespace Modbus.Net
                 }
                 //自动寻找存在的协议并将其加载
                 var protocalUnit =
-                    Assembly.Load(type.Assembly.FullName).CreateInstance(protocalName) as ProtocalUnit;                
+                    Assembly.Load(type.GetTypeInfo().Assembly.GetName()).CreateInstance(protocalName) as ProtocalUnit;                
                 if (protocalUnit == null) throw new InvalidCastException("没有相应的协议内容");
                 protocalUnit.Endian = Endian;
                 Register(protocalUnit);

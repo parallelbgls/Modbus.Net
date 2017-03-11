@@ -159,7 +159,11 @@ namespace Modbus.Net
 
             try
             {
+#if NET40 || NET45 || NET451 || NET452
                 _socketClient.Close();
+#else
+                _socketClient.Dispose();
+#endif
                 AddInfo("client disconnected successfully.");
                 return true;
             }
@@ -313,9 +317,9 @@ namespace Modbus.Net
             try
             {
                 var stream = _socketClient.GetStream();
-                stream.Close();
+                stream.Dispose();
                 _socketClient.Client.Shutdown(SocketShutdown.Both);
-                _socketClient.Client.Close();
+                _socketClient.Client.Dispose();
             }
             catch (Exception ex)
             {

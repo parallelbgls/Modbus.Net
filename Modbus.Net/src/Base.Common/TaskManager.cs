@@ -116,7 +116,11 @@ namespace Modbus.Net
         /// </summary>
         private void NotifyThreadPoolOfPendingWork()
         {
+#if NET45
             ThreadPool.UnsafeQueueUserWorkItem(_ =>
+#else
+            ThreadPool.QueueUserWorkItem(_ =>
+#endif
             {
                 // Note that the current thread is now processing work items.
                 // This is necessary to enable inlining of tasks into this thread.
