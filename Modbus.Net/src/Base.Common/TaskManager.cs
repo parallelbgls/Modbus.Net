@@ -116,7 +116,7 @@ namespace Modbus.Net
         /// </summary>
         private void NotifyThreadPoolOfPendingWork()
         {
-#if NET45
+#if NET40 || NET45 || NET451 || NET452 || NET46 || NET461 || NET462
             ThreadPool.UnsafeQueueUserWorkItem(_ =>
 #else
             ThreadPool.QueueUserWorkItem(_ =>

@@ -20,8 +20,8 @@ There are also "Modbus.Net.Siemens" that can communicate to Siemens S7-200, S7-2
 Platform Supported
 -------------------
 * Visual Studio 2017
-* .Net Framework 4.5
-* .Net Standard 1.5
+* .NET Framework 4.5
+* .NET Standard 1.3
 
 ##RoadMap
 

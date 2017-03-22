@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Modbus.Net
@@ -112,7 +113,7 @@ namespace Modbus.Net
         {
             //自动查找相应的协议放缩类，命令规则为——当前的实际类名（注意是继承后的）+"BytesExtend"。
             var bytesExtend =
-                Assembly.Load(GetType().GetTypeInfo().Assembly.GetName()).CreateInstance(GetType().FullName + "BytesExtend") as
+                Activator.CreateInstance(GetType().GetTypeInfo().Assembly.GetType(GetType().FullName + "BytesExtend")) as
                     IProtocalLinkerBytesExtend;
             return bytesExtend?.BytesExtend(content);
         }
@@ -126,7 +127,7 @@ namespace Modbus.Net
         {
             //自动查找相应的协议放缩类，命令规则为——当前的实际类名（注意是继承后的）+"BytesExtend"。
             var bytesExtend =
-                Assembly.Load(GetType().GetTypeInfo().Assembly.GetName()).CreateInstance(GetType().FullName + "BytesExtend") as
+                Activator.CreateInstance(GetType().GetTypeInfo().Assembly.GetType(GetType().FullName + "BytesExtend")) as
                     IProtocalLinkerBytesExtend;
             return bytesExtend?.BytesDecact(content);
         }
