@@ -1,7 +1,7 @@
 Modbus.Net Oveview
 ===================
 
-Teambition Project: [https://www.teambition.com/project/573860b0f668c69e61d38a84/tasks]
+* [Teambition Project](https://www.teambition.com/project/573860b0f668c69e61d38a84/tasks)
 
 Overview
 -------------------
@@ -50,7 +50,7 @@ Platform Supported
 * OPC Regex comparer for tags (Complete)
 
 ### Version 1.3.0
-* .NET Core Support (Not complete)
+* .NET Core Support (Not Test)
 
 ### Version 1.4.0
 * New Protocal Pipeline System (In Road)
