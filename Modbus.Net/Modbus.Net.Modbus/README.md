@@ -10,11 +10,11 @@ Table of Content:
 * [Addres Coding](#coding)
 * [SubAddress Rules](#subpos)
 
-##<a name="basic"></a> Basic Concept
+## <a name="basic"></a> Basic Concept
 
 Modbus is a serial communications protocol originally published by Modicon (now Schneider Electric) in 1979 for use with its programmable logic controllers (PLCs). Simple and robust, it has since become a de facto standard communication protocol, and it is now a commonly available means of connecting industrial electronic devices.(From Wekipedia)
 
-##<a name="address"></a> Address Mapping
+## <a name="address"></a> Address Mapping
 
 Modbus has four types of address: Coil, Discrete Input, Input Register and Holding Register.
 
@@ -43,7 +43,7 @@ Standard Modbus Address | Modbus.Net.Modbus String Address |
 30001                   | 3X 1                             |
 40001                   | 4X 1                             |
 
-##<a name="coding"></a> Address Coding
+## <a name="coding"></a> Address Coding
 
 In Modbus.Net, you can write "0X"(Coil), "1X"(Discrete Input), "3X"(Input Register), "4X"(Holding Register) in Area.
 
@@ -53,7 +53,7 @@ If you want to use subpos, type string address like this:
 
 4X 1.12 (Area Address.Subpos)
 
-##<a name="subpos"></a> SubAddress Rules
+## <a name="subpos"></a> SubAddress Rules
 
 For 0X and 1X, the scalation is 1/8. This means each address is bool.
 
@@ -71,10 +71,10 @@ Bit position from Modbus.Net is one less than standard modbus.
 
 Standard Modbus
 
-1  0  1  1  1  0  0  0  1  0  0  0  0  1  1  0
+1  0  1  1  1  0  0  0  1  0  0  0  0  1  1  0 <br>
 16 15 14 13 12 11 10 9  8  7  6  5  4  3  2  1
 
 Modbus.Net.Modbus
 
-1  0  1  1  1  0  0  0  1  0  0  0  0  1  1  0
+1  0  1  1  1  0  0  0  1  0  0  0  0  1  1  0 <br>
 15 14 13 12 11 10 9  8  7  6  5  4  3  2  1  0
