@@ -13,7 +13,7 @@ Table of Content:
 * [Implement](#implement)
 * [Addition](#addition)
 
-##<a name="features"></a> Features
+## <a name="features"></a> Features
 * A open platform that you can easy to extend a industrial communication protocal.
 * Modbus Tcp protocal.
 * Siemens Tcp protocal (acturally it is the same as Profinet)
@@ -22,9 +22,9 @@ Table of Content:
 * A task manager that you can easily manage multiple connections.
 * .NET Framework 4.5 and Visual Studio 2015 support.
 
-##<a name="usage"></a> Usage
+## <a name="usage"></a> Usage
 
-###Samples:
+### Samples:
 
 There are four samples in the project. All sample project recommand running in Siemens 200 PLC.
 PLC Program could be opened by Siemens Portal V13 (Step 7 V13).
@@ -36,57 +36,57 @@ Modbus TCP connection and Siemens Ethenet Connection are supported at the same t
 * AnyType -- Get any type in registers.
 * CrossLamp -- A sample singal lamp controller.
 
-##<a name="architecture"></a> Architecture
+## <a name="architecture"></a> Architecture
 
-###Connector
+### Connector
 
 Connector implements the basic connecting methods, like Socket, Com and SignalR.
 
-###ProtocalLinker
+### ProtocalLinker
 
 ProtocalLinker implements the link, send, and send recevice actions.
 
-###ProtocalLinkerBytesExtend
+### ProtocalLinkerBytesExtend
 
 Some Protocal has the same head or tail in the same connection way, but different in different connection way, so bytes extend can extend sending message when they are sended in different type of connection.
 
-###ProtocalUnit
+### ProtocalUnit
 
 Format and deformat the protocal message between the structual class and bytes array.
 
-###ValueHelper
+### ValueHelper
 
 Help change the value between number and bytes, or number array to bytes array.
 
-###Protocal
+### Protocal
 
 Manage all protocals and implement a lazy loading method.
 
-###Utility
+### Utility
 
 Manage several types of Protocal to a same calling interface.
 
-###Machine
+### Machine
 
 Shows the Hardware PLC or other types of machine and implement a high level send and receive api.
 
-###AddressFormater
+### AddressFormater
 
 Format address from definite address to string.
 
-###AddressTranslator
+### AddressTranslator
 
 Translate address from string to definite address.
 
-###AddressCombiner
+### AddressCombiner
 
 Combine duplicated addresses to organized addresses, each organized addresses communicate once to a device.
 
-###TaskManager
+### TaskManager
 
 The highest api that you can manage many PLC links and all links are async so there are no block in all connections.
 
-##<a name="quick_start"></a> Quick Start.
+## <a name="quick_start"></a> Quick Start.
 
 The fastest way you can write is to use TaskManager. TaskManager Project is a good example.
 
@@ -283,7 +283,7 @@ machine.SetDatas has two types. It is referenced as the first parameter.
 1. MachineSetDataType.Address: the key of the dictionary of the second parameter is address.
 2. MachineSetDataType.CommunicationTag: the key of the dictionary of the second parameter is communication tag.
 
-###TaskManager
+### TaskManager
 TaskManager is a high level api that you can manage and control many machines together. Remenber if you want to use this class, all communications must be asyncronized.
 Sample of TaskManager calls like this.
 ```C#
@@ -506,9 +506,9 @@ public class AddressFormaterModbus : AddressFormater
 }
 ```
 
-##<a name="addition"></a> Addition
+## <a name="addition"></a> Addition
 
-###For Subpos System
+### For Subpos System
 Subpos system is implemented for reading and writing of bits.
 ```C#
 public class AddressUnit
