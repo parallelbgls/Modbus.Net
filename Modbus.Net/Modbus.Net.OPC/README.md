@@ -12,7 +12,7 @@ Table of Content:
 
 ## <a name="basic"></a> Basic Concept
 
-Siemens Protocal is derived by Profibus and Profinet.
+OPC Protocal implements OPC DA and OPC UA protocal.
 
 ## <a name="address"></a> Address Mapping
 
