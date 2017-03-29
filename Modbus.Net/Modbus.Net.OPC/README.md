@@ -7,13 +7,14 @@ Modbus Implementation of Modbus.Net
 Table of Content:
 * [Basic Concept](#basic)
 * [Address Mapping](#address)
+* [Regex System](#regex)
 * [Link](#link)
 
-##<a name="basic"></a> Basic Concept
+## <a name="basic"></a> Basic Concept
 
 Siemens Protocal is derived by Profibus and Profinet.
 
-##<a name="address"></a> Address Mapping
+## <a name="address"></a> Address Mapping
 
 Modbus.Net.OPC has a simple address formatting tool. You can find it from AddressFormaterOPC.
 
@@ -31,6 +32,18 @@ Your tagGeter code should be.
 
 If you want change your tag to "1.15.Value_Opening", just set the seperator to '.' .
 
-##<a name="link"></a> Link
+## <a name="regex"></a> Regex System
+
+Every tag could be a regex expression, Modbus.Net.OPC will always use regex comparison mode between each tags.
+
+Like if you want to use a wildcard for first tag(or first directory), input your tagGeter code like this:
+
+```C#
+(baseMachine, addressUnit) => return new string[]{"(.*)", baseMachine.Id, ((XXUnitExtend)addressUnit.unitExtend).stationId, addressUnit.Name};
+```
+
+## <a name="link"></a> Link
 
 The link of OPC DA should like "opcda://PC-Name/OPC-Software-Name".
+
+The link of OPC UA should like "opc.tcp://PC-Name/Opc-Software-Name".
