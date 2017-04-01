@@ -183,8 +183,8 @@ namespace Modbus.Net.Siemens
                     0xd3c7, SiemensTypeCode.Byte, startAddress, (ushort) getByteCount, AddressTranslator);
                 var readRequestSiemensOutputStruct =
                     await
-                        Wrapper.SendReceiveAsync(Wrapper[typeof (ReadRequestSiemensProtocal)],
-                            readRequestSiemensInputStruct) as ReadRequestSiemensOutputStruct;
+						Wrapper.SendReceiveAsync<ReadRequestSiemensOutputStruct>(Wrapper[typeof (ReadRequestSiemensProtocal)],
+                            readRequestSiemensInputStruct);
                 return readRequestSiemensOutputStruct?.GetValue;
             }
             catch (Exception)
@@ -207,8 +207,8 @@ namespace Modbus.Net.Siemens
                     0xd3c8, startAddress, setContents, AddressTranslator);
                 var writeRequestSiemensOutputStruct =
                     await
-                        Wrapper.SendReceiveAsync(Wrapper[typeof (WriteRequestSiemensProtocal)],
-                            writeRequestSiemensInputStruct) as WriteRequestSiemensOutputStruct;
+						Wrapper.SendReceiveAsync<WriteRequestSiemensOutputStruct>(Wrapper[typeof (WriteRequestSiemensProtocal)],
+                            writeRequestSiemensInputStruct);
                 return writeRequestSiemensOutputStruct?.AccessResult == SiemensAccessResult.NoError;
             }
             catch (Exception)

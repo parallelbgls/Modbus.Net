@@ -33,8 +33,7 @@ namespace Modbus.Net.OPC
                 var readRequestOpcInputStruct = new ReadRequestOpcInputStruct(startAddress, split.ToString());
                 var readRequestOpcOutputStruct =
                     await
-                        Wrapper.SendReceiveAsync(Wrapper[typeof(ReadRequestOpcProtocal)], readRequestOpcInputStruct) as
-                        ReadRequestOpcOutputStruct;
+						Wrapper.SendReceiveAsync<ReadRequestOpcOutputStruct>(Wrapper[typeof(ReadRequestOpcProtocal)], readRequestOpcInputStruct);
                 return readRequestOpcOutputStruct?.GetValue;
             }
             catch (Exception)
@@ -51,8 +50,7 @@ namespace Modbus.Net.OPC
                 var writeRequestOpcInputStruct = new WriteRequestOpcInputStruct(startAddress, split.ToString(), setContents[0]);
                 var writeRequestOpcOutputStruct =
                     await
-                        Wrapper.SendReceiveAsync(Wrapper[typeof(WriteRequestOpcProtocal)], writeRequestOpcInputStruct)
-                        as WriteRequestOpcOutputStruct;
+						Wrapper.SendReceiveAsync<WriteRequestOpcOutputStruct>(Wrapper[typeof(WriteRequestOpcProtocal)], writeRequestOpcInputStruct);
                 return writeRequestOpcOutputStruct?.WriteResult == true;
             }
             catch (Exception e)

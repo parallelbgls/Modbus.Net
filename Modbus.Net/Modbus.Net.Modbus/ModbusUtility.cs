@@ -137,8 +137,7 @@ namespace Modbus.Net.Modbus
                 var inputStruct = new ReadDataModbusInputStruct(SlaveAddress, startAddress,
                     (ushort) getByteCount, AddressTranslator);
                 var outputStruct = await
-                    Wrapper.SendReceiveAsync(Wrapper[typeof (ReadDataModbusProtocal)], inputStruct) as
-                    ReadDataModbusOutputStruct;
+					Wrapper.SendReceiveAsync<ReadDataModbusOutputStruct>(Wrapper[typeof (ReadDataModbusProtocal)], inputStruct);
                 return outputStruct?.DataValue;
             }
             catch
@@ -160,8 +159,7 @@ namespace Modbus.Net.Modbus
                 var inputStruct = new WriteDataModbusInputStruct(SlaveAddress, startAddress, setContents,
                     AddressTranslator, Endian);
                 var outputStruct = await
-                    Wrapper.SendReceiveAsync(Wrapper[typeof (WriteDataModbusProtocal)], inputStruct) as
-                    WriteDataModbusOutputStruct;
+					Wrapper.SendReceiveAsync<WriteDataModbusOutputStruct>(Wrapper[typeof (WriteDataModbusProtocal)], inputStruct);
                 return outputStruct?.WriteCount == setContents.Length;
             }
             catch
@@ -181,8 +179,7 @@ namespace Modbus.Net.Modbus
             {
                 var inputStruct = new GetSystemTimeModbusInputStruct(SlaveAddress);
                 var outputStruct =
-                    Wrapper.SendReceive(Wrapper[typeof(GetSystemTimeModbusProtocal)], inputStruct) as
-                        GetSystemTimeModbusOutputStruct;
+					Wrapper.SendReceive<GetSystemTimeModbusOutputStruct>(Wrapper[typeof(GetSystemTimeModbusProtocal)], inputStruct);
                 return outputStruct?.Time;
             }
             catch (Exception)
@@ -202,8 +199,7 @@ namespace Modbus.Net.Modbus
             {
                 var inputStruct = new SetSystemTimeModbusInputStruct(SlaveAddress, setTime);
                 var outputStruct =
-                    Wrapper.SendReceive(Wrapper[typeof(SetSystemTimeModbusProtocal)], inputStruct) as
-                        SetSystemTimeModbusOutputStruct;
+                    Wrapper.SendReceive<SetSystemTimeModbusOutputStruct>(Wrapper[typeof(SetSystemTimeModbusProtocal)], inputStruct);
                 return outputStruct?.WriteCount > 0;
             }
             catch (Exception)

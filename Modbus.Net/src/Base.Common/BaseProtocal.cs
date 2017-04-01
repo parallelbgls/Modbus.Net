@@ -109,6 +109,18 @@ namespace Modbus.Net
             return AsyncHelper.RunSync(() => SendReceiveAsync(unit, content));
         }
 
+		/// <summary>
+		///     发送协议，通过传入需要使用的协议内容和输入结构
+		/// </summary>
+		/// <param name="unit">协议的实例</param>
+		/// <param name="content">输入信息的结构化描述</param>
+		/// <returns>输出信息的结构化描述</returns>
+		/// <typeparam name="T">IOutputStruct的具体类型</typeparam>
+		public virtual T SendReceive<T>(ProtocalUnit unit, IInputStruct content) where T : class, IOutputStruct
+		{
+			return AsyncHelper.RunSync(() => SendReceiveAsync<T>(unit, content));
+		}
+
         /// <summary>
         ///     发送协议，通过传入需要使用的协议内容和输入结构
         /// </summary>
@@ -117,27 +129,39 @@ namespace Modbus.Net
         /// <returns>输出信息的结构化描述</returns>
         public virtual async Task<IOutputStruct> SendReceiveAsync(ProtocalUnit unit, IInputStruct content)
         {
-            var t = 0;
-            var formatContent = unit.Format(content);
-            if (formatContent != null)
-            {
-                byte[] receiveContent;
-                //如果为特别处理协议的话，跳过协议扩展收缩
-                if (unit is ISpecialProtocalUnit)
-                {
-                    receiveContent = await ProtocalLinker.SendReceiveWithoutExtAndDecAsync(formatContent);
-                }
-                else
-                {
-                    receiveContent = await ProtocalLinker.SendReceiveAsync(formatContent);
-                }
-                if (receiveContent != null)
-                {
-                    return unit.Unformat(receiveContent, ref t);
-                }
-            }
-            return null;
+			return await SendReceiveAsync<IOutputStruct>(unit, content);
         }
+
+		/// <summary>
+		///     发送协议，通过传入需要使用的协议内容和输入结构
+		/// </summary>
+		/// <param name="unit">协议的实例</param>
+		/// <param name="content">输入信息的结构化描述</param>
+		/// <returns>输出信息的结构化描述</returns>
+		/// <typeparam name="T">IOutputStruct的具体类型</typeparam>
+		public virtual async Task<T> SendReceiveAsync<T>(ProtocalUnit unit, IInputStruct content) where T : class, IOutputStruct
+		{
+			var t = 0;
+			var formatContent = unit.Format(content);
+			if (formatContent != null)
+			{
+				byte[] receiveContent;
+				//如果为特别处理协议的话，跳过协议扩展收缩
+				if (unit is ISpecialProtocalUnit)
+				{
+					receiveContent = await ProtocalLinker.SendReceiveWithoutExtAndDecAsync(formatContent);
+				}
+				else
+				{
+					receiveContent = await ProtocalLinker.SendReceiveAsync(formatContent);
+				}
+				if (receiveContent != null)
+				{
+					return unit.Unformat<T>(receiveContent, ref t);
+				}
+			}
+			return null;
+		}
 
         /// <summary>
         ///     协议连接开始
