@@ -25,7 +25,7 @@ namespace Modbus.Net
 		/// <param name="message">结构化的输入数据</param>
 		/// <typeparam name="T">IInputStruct的具体类型</typeparam>
 		/// <returns>格式化后的字节流</returns>
-		public byte[] Format<T>(T message) where T : IInputStruct
+		public byte[] Format<T>(T message) where T : class, IInputStruct
 		{
 			return Format(message);
 		}
