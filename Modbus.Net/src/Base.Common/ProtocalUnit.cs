@@ -19,17 +19,6 @@ namespace Modbus.Net
 		/// <returns>格式化后的字节流</returns>
 		public abstract byte[] Format(IInputStruct message);
 
-		/// <summary>
-		///     从输入结构格式化
-		/// </summary>
-		/// <param name="message">结构化的输入数据</param>
-		/// <typeparam name="T">IInputStruct的具体类型</typeparam>
-		/// <returns>格式化后的字节流</returns>
-		public byte[] Format<T>(T message) where T : class, IInputStruct
-		{
-			return Format(message);
-		}
-
         /// <summary>
         ///     从对象的参数数组格式化
         /// </summary>
