@@ -334,7 +334,7 @@ namespace Modbus.Net
         ///     构造一个TaskManager
         /// </summary>
         /// <param name="maxRunningTask">同时可以运行的任务数</param>
-        /// <param name="getCycle">读取数据的时间间隔（秒）</param>
+        /// <param name="getCycle">读取数据的时间间隔（毫秒）</param>
         /// <param name="keepConnect">读取数据后是否保持连接</param>
         /// <param name="dataType">获取与设置数据的方式</param>
         public TaskManager(int maxRunningTask, int getCycle, bool keepConnect,
