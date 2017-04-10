@@ -514,7 +514,6 @@ namespace Modbus.Net
 
                         if (!valueHelper.SetValue(datas, mainByteCount, localByteCount, data))
                             return false;
-                        break;
                     }
                     //写入数据
                     await
