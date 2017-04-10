@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.4
+VisualStudioVersion = 15.0.26403.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modbus.Net", "ModBus.Net\Modbus.Net.csproj", "{124EBEF2-8960-4447-84CF-1D683B1EF7CC}"
 EndProject
@@ -31,7 +31,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossLamp", "..\Samples\Cro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnyType", "..\Samples\AnyType\AnyType.csproj", "{25FABD48-D82E-4E08-91A4-46F7057EC954}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modbus.Net.Standard", "Modbus.Net.Standard\Modbus.Net.Standard.csproj", "{BBC091FC-A995-4C06-96F1-F91ECD70FA7E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modbus.Net.Core", "Modbus.Net.Standard\Modbus.Net.Core.csproj", "{BBC091FC-A995-4C06-96F1-F91ECD70FA7E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
