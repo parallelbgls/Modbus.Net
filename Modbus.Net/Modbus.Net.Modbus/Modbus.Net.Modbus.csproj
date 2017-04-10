@@ -16,6 +16,7 @@
     <RepositoryUrl>https://github.com/parallelbgls/Modbus.Net</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>hardware communicate protocal modbus Delian</PackageTags>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
