@@ -5,7 +5,7 @@
     <AssemblyName>Modbus.Net.OPC</AssemblyName>
     <RootNamespace>Modbus.Net.OPC</RootNamespace>
     <PackageId>Modbus.Net.OPC</PackageId>
-    <Version>1.3.1</Version>
+    <Version>1.3.2</Version>
     <Authors>Chris L.(Luo Sheng)</Authors>
     <Company>Hangzhou Delian IoT Science Technology Co.,Ltd.</Company>
     <Description>Modbus.Net OPC Implementation</Description>
@@ -17,6 +17,10 @@
     <PackageTags>hardware communicate protocal OPC DA Delian</PackageTags>
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\net45\Modbus.Net.OPC.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

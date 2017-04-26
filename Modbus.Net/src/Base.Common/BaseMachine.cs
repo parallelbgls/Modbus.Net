@@ -1,10 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Modbus.Net
 {
+    /// <summary>
+    ///     读写设备值的方式
+    /// </summary>
+    public enum MachineDataType
+    {
+        /// <summary>
+        ///     地址
+        /// </summary>
+        Address,
+
+        /// <summary>
+        ///     通讯标识
+        /// </summary>
+        CommunicationTag,
+
+        /// <summary>
+        ///     名称
+        /// </summary>
+        Name,
+
+        /// <summary>
+        ///     Id
+        /// </summary> 
+        Id
+    }
+
     /// <summary>
     ///     获取设备值的方式
     /// </summary>
@@ -74,7 +101,7 @@ namespace Modbus.Net
         }
     }
 
-    public abstract class BaseMachine<TKey, TUnitKey> : IMachineProperty<TKey> where TKey : IEquatable<TKey>
+    public abstract class BaseMachine<TKey, TUnitKey> : IMachineData, IMachineProperty<TKey> where TKey : IEquatable<TKey>
         where TUnitKey : IEquatable<TUnitKey>
     {
         private readonly int _maxErrorCount = 3;
@@ -535,6 +562,11 @@ namespace Modbus.Net
             return true;
         }
 
+        /// <summary>
+        ///     通过Id获取数据字段定义
+        /// </summary>
+        /// <param name="addressUnitId">数据字段Id</param>
+        /// <returns>数据字段</returns>
         public AddressUnit<TUnitKey> GetAddressUnitById(TUnitKey addressUnitId)
         {
             try
@@ -546,6 +578,60 @@ namespace Modbus.Net
                 Console.WriteLine("Id重复，请检查");
                 return null;
             }
+        }
+
+        /// <summary>
+        ///     调用Utility中的方法
+        /// </summary>
+        /// <typeparam name="TUtilityMethod">Utility实现的接口名称</typeparam>
+        /// <typeparam name="TReturnType">返回值的类型</typeparam>
+        /// <param name="methodName">方法的名称</param>
+        /// <param name="parameters">方法的参数</param>
+        /// <returns></returns>
+        public TReturnType InvokeUtilityMethod<TUtilityMethod, TReturnType>(string methodName,
+            params object[] parameters) where TUtilityMethod : IUtilityMethod
+        {
+            if (BaseUtility is TUtilityMethod)
+            {
+                Type t = typeof(TUtilityMethod);
+                object returnValue = t.GetMethod(methodName,
+                        BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public)
+                    .Invoke(BaseUtility, parameters);
+                return (TReturnType) returnValue;
+            }
+            throw new InvalidCastException($"Utility未实现{typeof(TUtilityMethod).Name}的接口");
+        }
+
+        /// <summary>
+        ///     调用Machine中的方法
+        /// </summary>
+        /// <typeparam name="TMachineMethod">Machine实现的接口名称</typeparam>
+        /// <typeparam name="TReturnType">返回值的类型</typeparam>
+        /// <param name="methodName">方法的名称</param>
+        /// <param name="parameters">方法的参数</param>
+        /// <returns></returns>
+        public TReturnType InvokeMachineMethod<TMachineMethod, TReturnType>(string methodName,
+            params object[] parameters) where TMachineMethod : IMachineMethod
+        {
+            if (this is TMachineMethod)
+            {
+                Type t = typeof(TMachineMethod);
+                object returnValue = t.GetMethod(methodName,
+                        BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public)
+                    .Invoke(this, parameters);
+                return (TReturnType) returnValue;
+            }
+            throw new InvalidCastException($"Machine未实现{typeof(TMachineMethod).Name}的接口");
+        }
+
+        /// <summary>
+        ///     获取Utility
+        /// </summary>
+        /// <typeparam name="TUtilityMethod">Utility实现的接口名称</typeparam>
+        /// <returns></returns>
+        public TUtilityMethod GetUtility<TUtilityMethod>() where TUtilityMethod : class, IUtilityMethod
+        {
+            return BaseUtility as TUtilityMethod;
         }
 
         /// <summary>

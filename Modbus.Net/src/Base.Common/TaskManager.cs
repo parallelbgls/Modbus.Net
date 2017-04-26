@@ -12,17 +12,6 @@ using System.Threading.Tasks;
 namespace Modbus.Net
 {
     /// <summary>
-    ///     设备的读写方式
-    /// </summary>
-    public enum MachineDataType
-    {
-        Address,
-        CommunicationTag,
-        Name,
-        Id
-    }
-
-    /// <summary>
     ///     返回结果的定义类
     /// </summary>
     public class TaskReturnDef : TaskReturnDef<string>
