@@ -868,18 +868,26 @@ namespace Modbus.Net
         bool KeepConnect { get; set; }
 
         /// <summary>
-        ///     读取数据
+        ///     调用Machine中的方法
         /// </summary>
-        /// <returns>从设备读取的数据</returns>
-        Task<Dictionary<string, ReturnUnit>> GetDatasAsync(MachineGetDataType getDataType);
+        /// <typeparam name="TMachineMethod">Machine实现的接口名称</typeparam>
+        /// <typeparam name="TReturnType">返回值的类型</typeparam>
+        /// <param name="methodName">方法的名称</param>
+        /// <param name="parameters">方法的参数</param>
+        /// <returns></returns>
+        TReturnType InvokeMachineMethod<TMachineMethod, TReturnType>(string methodName,
+            params object[] parameters) where TMachineMethod : IMachineMethod;
 
         /// <summary>
-        ///     写入数据
+        ///     调用Utility中的方法
         /// </summary>
-        /// <param name="setDataType">写入类型</param>
-        /// <param name="values">需要写入的数据字典，当写入类型为Address时，键为需要写入的地址，当写入类型为CommunicationTag时，键为需要写入的单元的描述</param>
-        /// <returns>是否写入成功</returns>
-        Task<bool> SetDatasAsync(MachineSetDataType setDataType, Dictionary<string, double> values);
+        /// <typeparam name="TUtilityMethod">Utility实现的接口名称</typeparam>
+        /// <typeparam name="TReturnType">返回值的类型</typeparam>
+        /// <param name="methodName">方法的名称</param>
+        /// <param name="parameters">方法的参数</param>
+        /// <returns></returns>
+        TReturnType InvokeUtilityMethod<TUtilityMethod, TReturnType>(string methodName,
+            params object[] parameters) where TUtilityMethod : IUtilityMethod;
 
         /// <summary>
         ///     连接设备
