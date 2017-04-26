@@ -140,10 +140,10 @@ namespace Modbus.Net.Siemens
                         break;
                     }
                     //MPI
-                    //case SiemensType.Mpi:
-                    //    {
-                    //        throw new NotImplementedException();
-                    //    }
+                    case SiemensType.Mpi:
+                    {
+                        throw new NotImplementedException();
+                    }
                     //Ethenet
                     case SiemensType.Tcp:
                     {
@@ -216,17 +216,5 @@ namespace Modbus.Net.Siemens
                 return false;
             }
         }
-
-        /*
-        public override DateTime GetTime(byte slaveAddress)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool SetTime(byte slaveAddress, DateTime setTime)
-        {
-            throw new NotImplementedException();
-        }
-        */
     }
 }

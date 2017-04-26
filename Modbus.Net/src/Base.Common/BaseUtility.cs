@@ -17,7 +17,7 @@ namespace Modbus.Net
     /// <summary>
     ///      基础Api入口
     /// </summary>
-    public abstract class BaseUtility
+    public abstract class BaseUtility : IUtilityData
     {
         /// <summary>
         ///     协议收发主体
@@ -214,21 +214,6 @@ namespace Modbus.Net
         /// <param name="setContents">设置数据</param>
         /// <returns>是否设置成功</returns>
         public abstract Task<bool> SetDatasAsync(string startAddress, object[] setContents);
-
-        /*
-        /// <summary>
-        /// 获取PLC时间
-        /// </summary>
-        /// <returns>PLC时间</returns>
-        public abstract DateTime GetTime();
-
-        /// <summary>
-        /// 设置PLC时间
-        /// </summary>
-        /// <param name="setTime">设置PLC时间</param>
-        /// <returns>设置是否成功</returns>
-        public abstract bool SetTime(DateTime setTime);
-        */
 
         /// <summary>
         ///     连接设备

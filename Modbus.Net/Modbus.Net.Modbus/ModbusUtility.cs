@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace Modbus.Net.Modbus
 {
@@ -26,7 +27,7 @@ namespace Modbus.Net.Modbus
     /// <summary>
     ///     Modbus基础Api入口
     /// </summary>
-    public class ModbusUtility : BaseUtility
+    public class ModbusUtility : BaseUtility, IUtilityTime
     {
         /// <summary>
         ///     Modbus协议类型
@@ -168,19 +169,18 @@ namespace Modbus.Net.Modbus
             }
         }
 
-        /*
         /// <summary>
         ///     读时间
         /// </summary>
         /// <returns>设备的时间</returns>
-        public override DateTime GetTime()
+        public async Task<DateTime> GetTimeAsync()
         {
             try
             {
                 var inputStruct = new GetSystemTimeModbusInputStruct(SlaveAddress);
                 var outputStruct =
-					Wrapper.SendReceive<GetSystemTimeModbusOutputStruct>(Wrapper[typeof(GetSystemTimeModbusProtocal)], inputStruct);
-                return outputStruct?.Time;
+					await Wrapper.SendReceiveAsync<GetSystemTimeModbusOutputStruct>(Wrapper[typeof(GetSystemTimeModbusProtocal)], inputStruct);
+                return outputStruct?.Time ?? DateTime.MinValue;
             }
             catch (Exception)
             {
@@ -193,13 +193,13 @@ namespace Modbus.Net.Modbus
         /// </summary>
         /// <param name="setTime">需要写入的时间</param>
         /// <returns>写入是否成功</returns>
-        public override bool SetTime(DateTime setTime)
+        public async Task<bool> SetTimeAsync(DateTime setTime)
         {
             try
             {
                 var inputStruct = new SetSystemTimeModbusInputStruct(SlaveAddress, setTime);
                 var outputStruct =
-                    Wrapper.SendReceive<SetSystemTimeModbusOutputStruct>(Wrapper[typeof(SetSystemTimeModbusProtocal)], inputStruct);
+                    await Wrapper.SendReceiveAsync<SetSystemTimeModbusOutputStruct>(Wrapper[typeof(SetSystemTimeModbusProtocal)], inputStruct);
                 return outputStruct?.WriteCount > 0;
             }
             catch (Exception)
@@ -207,6 +207,5 @@ namespace Modbus.Net.Modbus
                 return false;
             }
         }
-        */
     }
 }
