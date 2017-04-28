@@ -151,7 +151,7 @@ namespace Modbus.Net.Tests
         [TestMethod]
         public void AddressCombinerContinusTest()
         {
-            var addressCombiner = new AddressCombinerContinus<int>(new AddressTranslatorModbus());
+            var addressCombiner = new AddressCombinerContinus<int>(new AddressTranslatorModbus(), 100000);
             var combinedAddresses = addressCombiner.Combine(_addressUnits).ToArray();
             Assert.AreEqual(combinedAddresses[0].Area, "3X");
             Assert.AreEqual(combinedAddresses[0].Address, 1);
@@ -174,6 +174,37 @@ namespace Modbus.Net.Tests
             Assert.AreEqual(combinedAddresses[6].Area, "4X");
             Assert.AreEqual(combinedAddresses[6].Address, 4);
             Assert.AreEqual(combinedAddresses[6].GetCount, 2);
+        }
+
+        [TestMethod]
+        public void AddressCombinerContinusLimitTest()
+        {
+            var addressCombiner = new AddressCombinerContinus<int>(new AddressTranslatorModbus(), 4);
+            var combinedAddresses = addressCombiner.Combine(_addressUnits).ToArray();
+            Assert.AreEqual(combinedAddresses[0].Area, "3X");
+            Assert.AreEqual(combinedAddresses[0].Address, 1);
+            Assert.AreEqual(combinedAddresses[0].GetCount, 1);
+            Assert.AreEqual(combinedAddresses[1].Area, "3X");
+            Assert.AreEqual(combinedAddresses[1].Address, 2);
+            Assert.AreEqual(combinedAddresses[1].GetCount, 4);
+            Assert.AreEqual(combinedAddresses[2].Area, "3X");
+            Assert.AreEqual(combinedAddresses[2].Address, 2);
+            Assert.AreEqual(combinedAddresses[2].GetCount, 2);
+            Assert.AreEqual(combinedAddresses[3].Area, "3X");
+            Assert.AreEqual(combinedAddresses[3].Address, 6);
+            Assert.AreEqual(combinedAddresses[3].GetCount, 2);
+            Assert.AreEqual(combinedAddresses[4].Area, "3X");
+            Assert.AreEqual(combinedAddresses[4].Address, 9);
+            Assert.AreEqual(combinedAddresses[4].GetCount, 4);
+            Assert.AreEqual(combinedAddresses[5].Area, "3X");
+            Assert.AreEqual(combinedAddresses[5].Address, 100);
+            Assert.AreEqual(combinedAddresses[5].GetCount, 2);
+            Assert.AreEqual(combinedAddresses[6].Area, "4X");
+            Assert.AreEqual(combinedAddresses[6].Address, 1);
+            Assert.AreEqual(combinedAddresses[6].GetCount, 4);
+            Assert.AreEqual(combinedAddresses[7].Area, "4X");
+            Assert.AreEqual(combinedAddresses[7].Address, 4);
+            Assert.AreEqual(combinedAddresses[7].GetCount, 2);
         }
 
         [TestMethod]
@@ -203,7 +234,7 @@ namespace Modbus.Net.Tests
         [TestMethod]
         public void AddressCombinerNumericJumpTest()
         {
-            var addressCombiner = new AddressCombinerNumericJump<int>(10, new AddressTranslatorModbus());
+            var addressCombiner = new AddressCombinerNumericJump<int>(10, 100000, new AddressTranslatorModbus());
             var combinedAddresses = addressCombiner.Combine(_addressUnits).ToArray();
             Assert.AreEqual(combinedAddresses[0].Area, "3X");
             Assert.AreEqual(combinedAddresses[0].Address, 1);
@@ -217,9 +248,28 @@ namespace Modbus.Net.Tests
         }
 
         [TestMethod]
+        public void AddressCombinerNumericJumpLimitTest()
+        {
+            var addressCombiner = new AddressCombinerNumericJump<int>(10, 10, new AddressTranslatorModbus());
+            var combinedAddresses = addressCombiner.Combine(_addressUnits).ToArray();
+            Assert.AreEqual(combinedAddresses[0].Area, "3X");
+            Assert.AreEqual(combinedAddresses[0].Address, 1);
+            Assert.AreEqual(combinedAddresses[0].GetCount, 8);
+            Assert.AreEqual(combinedAddresses[1].Area, "3X");
+            Assert.AreEqual(combinedAddresses[1].Address, 6);
+            Assert.AreEqual(combinedAddresses[1].GetCount, 10);
+            Assert.AreEqual(combinedAddresses[2].Area, "3X");
+            Assert.AreEqual(combinedAddresses[2].Address, 100);
+            Assert.AreEqual(combinedAddresses[2].GetCount, 2);
+            Assert.AreEqual(combinedAddresses[3].Area, "4X");
+            Assert.AreEqual(combinedAddresses[3].Address, 1);
+            Assert.AreEqual(combinedAddresses[3].GetCount, 8);
+        }
+
+        [TestMethod]
         public void AddressCombinerPercentageJumpTest()
         {
-            var addressCombiner = new AddressCombinerPercentageJump<int>(30.0, new AddressTranslatorModbus());
+            var addressCombiner = new AddressCombinerPercentageJump<int>(30.0, 100000, new AddressTranslatorModbus());
             var combinedAddresses = addressCombiner.Combine(_addressUnits).ToArray();
             Assert.AreEqual(combinedAddresses[0].Area, "3X");
             Assert.AreEqual(combinedAddresses[0].Address, 1);
@@ -233,6 +283,28 @@ namespace Modbus.Net.Tests
             Assert.AreEqual(combinedAddresses[3].Area, "4X");
             Assert.AreEqual(combinedAddresses[3].Address, 1);
             Assert.AreEqual(combinedAddresses[3].GetCount, 8);
+        }
+
+        [TestMethod]
+        public void AddressCombinerPercentageJumpLimitTest()
+        {
+            var addressCombiner = new AddressCombinerPercentageJump<int>(30.0, 10, new AddressTranslatorModbus());
+            var combinedAddresses = addressCombiner.Combine(_addressUnits).ToArray();
+            Assert.AreEqual(combinedAddresses[0].Area, "3X");
+            Assert.AreEqual(combinedAddresses[0].Address, 1);
+            Assert.AreEqual(combinedAddresses[0].GetCount, 8);
+            Assert.AreEqual(combinedAddresses[1].Area, "3X");
+            Assert.AreEqual(combinedAddresses[1].Address, 6);
+            Assert.AreEqual(combinedAddresses[1].GetCount, 2);
+            Assert.AreEqual(combinedAddresses[2].Area, "3X");
+            Assert.AreEqual(combinedAddresses[2].Address, 9);
+            Assert.AreEqual(combinedAddresses[2].GetCount, 4);
+            Assert.AreEqual(combinedAddresses[3].Area, "3X");
+            Assert.AreEqual(combinedAddresses[3].Address, 100);
+            Assert.AreEqual(combinedAddresses[3].GetCount, 2);
+            Assert.AreEqual(combinedAddresses[4].Area, "4X");
+            Assert.AreEqual(combinedAddresses[4].Address, 1);
+            Assert.AreEqual(combinedAddresses[4].GetCount, 8);
         }
 
         [TestMethod]

@@ -29,7 +29,7 @@ namespace Modbus.Net
     /// </summary>
     public class AddressCombinerContinus : AddressCombinerContinus<string>
     {
-        public AddressCombinerContinus(AddressTranslator addressTranslator) : base(addressTranslator)
+        public AddressCombinerContinus(AddressTranslator addressTranslator, int maxLength) : base(addressTranslator, maxLength)
         {
         }
     }
@@ -39,9 +39,12 @@ namespace Modbus.Net
     /// </summary>
     public class AddressCombinerContinus<TKey> : AddressCombiner<TKey> where TKey : IEquatable<TKey>
     {
-        public AddressCombinerContinus(AddressTranslator addressTranslator)
+        protected int MaxLength { get; set; }
+
+        public AddressCombinerContinus(AddressTranslator addressTranslator, int maxLength)
         {
             AddressTranslator = addressTranslator;
+            MaxLength = maxLength;
         }
 
         protected AddressTranslator AddressTranslator { get; set; }
@@ -158,7 +161,48 @@ namespace Modbus.Net
                     OriginalAddresses = originalAddresses.ToList()
                 });
             }
-            return ans;
+            List<CommunicationUnit<TKey>> newAns = new List<CommunicationUnit<TKey>>();
+            foreach (var communicationUnit in ans)
+            {
+                double oldByteCount = communicationUnit.GetCount * BigEndianValueHelper.Instance.ByteLength[communicationUnit.DataType.FullName];
+                while (oldByteCount * BigEndianValueHelper.Instance.ByteLength[communicationUnit.DataType.FullName] >
+                       MaxLength)
+                {
+                    var newOriginalAddresses = new List<AddressUnit<TKey>>();
+                    var oldOriginalAddresses = communicationUnit.OriginalAddresses.ToList();
+                    var newByteCount = 0.0;                   
+                    do
+                    {
+                        var currentAddressUnit = oldOriginalAddresses.First();
+                        newByteCount += BigEndianValueHelper.Instance.ByteLength[currentAddressUnit.DataType.FullName];
+                        if (newByteCount > MaxLength) break;
+                        oldByteCount -= BigEndianValueHelper.Instance.ByteLength[currentAddressUnit.DataType.FullName];
+                        newOriginalAddresses.Add(currentAddressUnit);
+                        oldOriginalAddresses.RemoveAt(0);
+                        
+                    } while (newByteCount < MaxLength);
+                    var newCommunicationUnit = new CommunicationUnit<TKey>
+                    {
+                        Area = communicationUnit.Area,
+                        Address = communicationUnit.Address,
+                        SubAddress = communicationUnit.SubAddress,
+                        DataType = communicationUnit.DataType,
+                        GetCount =
+                            (int)
+                            Math.Ceiling(newByteCount /
+                                         BigEndianValueHelper.Instance.ByteLength[communicationUnit.DataType.FullName]),
+                        OriginalAddresses = newOriginalAddresses,
+                    };
+                    
+                    newAns.Add(newCommunicationUnit);
+                }
+                communicationUnit.GetCount =
+                    (int)
+                    Math.Ceiling(oldByteCount /
+                                 BigEndianValueHelper.Instance.ByteLength[communicationUnit.DataType.FullName]);
+                newAns.Add(communicationUnit);
+            }
+            return newAns;
         }
     }
 
@@ -205,8 +249,8 @@ namespace Modbus.Net
     /// </summary>
     public class AddressCombinerNumericJump : AddressCombinerNumericJump<string>
     {
-        public AddressCombinerNumericJump(int jumpByteCount, AddressTranslator addressTranslator)
-            : base(jumpByteCount, addressTranslator)
+        public AddressCombinerNumericJump(int jumpByteCount, int maxLength, AddressTranslator addressTranslator)
+            : base(jumpByteCount, maxLength, addressTranslator)
         {
         }
     }
@@ -216,8 +260,8 @@ namespace Modbus.Net
     /// </summary>
     public class AddressCombinerNumericJump<TKey> : AddressCombinerContinus<TKey> where TKey : IEquatable<TKey>
     {
-        public AddressCombinerNumericJump(int jumpByteCount, AddressTranslator addressTranslator)
-            : base(addressTranslator)
+        public AddressCombinerNumericJump(int jumpByteCount, int maxLength, AddressTranslator addressTranslator)
+            : base(addressTranslator, maxLength)
         {
             JumpNumber = jumpByteCount;
         }
@@ -260,12 +304,14 @@ namespace Modbus.Net
             var jumpNumberInner = JumpNumber;
             foreach (var orderedGap in orderedGaps)
             {
-                jumpNumberInner -= orderedGap.GapNumber;
-                if (jumpNumberInner < 0) break;
+                if (orderedGap.GapNumber <= 0) continue;               
                 var nowAddress = orderedGap.EndUnit;
                 var index = continusAddresses.IndexOf(nowAddress);
                 index--;
                 var preAddress = continusAddresses[index];
+                if (nowAddress.GetCount*BigEndianValueHelper.Instance.ByteLength[nowAddress.DataType.FullName] + preAddress.GetCount*BigEndianValueHelper.Instance.ByteLength[preAddress.DataType.FullName] + orderedGap.GapNumber > MaxLength) continue;
+                jumpNumberInner -= orderedGap.GapNumber;
+                if (jumpNumberInner < 0) break;
                 continusAddresses.RemoveAt(index);
                 continusAddresses.RemoveAt(index);
                 //合并两个已有的地址段，变为一个新的地址段
@@ -293,8 +339,8 @@ namespace Modbus.Net
     /// </summary>
     public class AddressCombinerPercentageJump : AddressCombinerPercentageJump<string>
     {
-        public AddressCombinerPercentageJump(double percentage, AddressTranslator addressTranslator)
-            : base(percentage, addressTranslator)
+        public AddressCombinerPercentageJump(double percentage, int maxLength, AddressTranslator addressTranslator)
+            : base(percentage, maxLength, addressTranslator)
         {
         }
     }
@@ -304,8 +350,8 @@ namespace Modbus.Net
     /// </summary>
     public class AddressCombinerPercentageJump<TKey> : AddressCombinerContinus<TKey> where TKey : IEquatable<TKey>
     {
-        public AddressCombinerPercentageJump(double percentage, AddressTranslator addressTranslator)
-            : base(addressTranslator)
+        public AddressCombinerPercentageJump(double percentage, int maxLength, AddressTranslator addressTranslator)
+            : base(addressTranslator, maxLength)
         {
             if (percentage < 0) percentage = 0;
             Percentage = percentage;
@@ -318,7 +364,7 @@ namespace Modbus.Net
             var addressUnits = addresses as IList<AddressUnit<TKey>> ?? addresses.ToList();
             var count = addressUnits.Sum(address => BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName]);
             return
-                new AddressCombinerNumericJump<TKey>((int) (count*Percentage/100.0), AddressTranslator).Combine(
+                new AddressCombinerNumericJump<TKey>((int) (count*Percentage/100.0), MaxLength, AddressTranslator).Combine(
                     addressUnits);
         }
     }
