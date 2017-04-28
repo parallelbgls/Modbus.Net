@@ -15,8 +15,8 @@ namespace Modbus.Net.Siemens
         {
             BaseUtility = new SiemensUtility(connectionType, connectionString, model, slaveAddress, masterAddress);
             AddressFormater = new AddressFormaterSiemens();
-            AddressCombiner = new AddressCombinerContinus<TUnitKey>(AddressTranslator);
-            AddressCombinerSet = new AddressCombinerContinus<TUnitKey>(AddressTranslator);
+            AddressCombiner = new AddressCombinerContinus<TUnitKey>(AddressTranslator, 100);
+            AddressCombinerSet = new AddressCombinerContinus<TUnitKey>(AddressTranslator, 100);
         }
 
         public SiemensMachine(SiemensType connectionType, string connectionString, SiemensMachineModel model,
@@ -37,8 +37,8 @@ namespace Modbus.Net.Siemens
         {
             BaseUtility = new SiemensUtility(connectionType, connectionString, model, slaveAddress, masterAddress);
             AddressFormater = new AddressFormaterSiemens();
-            AddressCombiner = new AddressCombinerContinus(AddressTranslator);
-            AddressCombinerSet = new AddressCombinerContinus(AddressTranslator);
+            AddressCombiner = new AddressCombinerContinus(AddressTranslator, 100);
+            AddressCombinerSet = new AddressCombinerContinus(AddressTranslator, 100);
         }
 
         public SiemensMachine(SiemensType connectionType, string connectionString, SiemensMachineModel model,

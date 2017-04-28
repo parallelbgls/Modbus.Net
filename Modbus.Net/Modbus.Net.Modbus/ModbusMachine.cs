@@ -16,8 +16,8 @@ namespace Modbus.Net.Modbus
         {
             BaseUtility = new ModbusUtility(connectionType, connectionString, slaveAddress, masterAddress, endian);
             AddressFormater = new AddressFormaterModbus();
-            AddressCombiner = new AddressCombinerContinus<TUnitKey>(AddressTranslator);
-            AddressCombinerSet = new AddressCombinerContinus<TUnitKey>(AddressTranslator);
+            AddressCombiner = new AddressCombinerContinus<TUnitKey>(AddressTranslator, 100);
+            AddressCombinerSet = new AddressCombinerContinus<TUnitKey>(AddressTranslator, 100);
         }
 
         public ModbusMachine(ModbusType connectionType, string connectionString,
@@ -40,8 +40,8 @@ namespace Modbus.Net.Modbus
         {
             BaseUtility = new ModbusUtility(connectionType, connectionString, slaveAddress, masterAddress, endian);
             AddressFormater = new AddressFormaterModbus();
-            AddressCombiner = new AddressCombinerContinus(AddressTranslator);
-            AddressCombinerSet = new AddressCombinerContinus(AddressTranslator);
+            AddressCombiner = new AddressCombinerContinus(AddressTranslator, 100);
+            AddressCombinerSet = new AddressCombinerContinus(AddressTranslator, 100);
         }
 
         public ModbusMachine(ModbusType connectionType, string connectionString,
