@@ -9,7 +9,7 @@ using Modbus.Net.Modbus;
 namespace Modbus.Net.Tests
 {
     [TestClass]
-    public class MachineUtilityMethodTest
+    public class MachineMethodTest
     {
         [TestMethod]
         public void GetUtility()
@@ -25,16 +25,16 @@ namespace Modbus.Net.Tests
         public async Task InvokeUtility()
         {
             BaseMachine<int, int> baseMachine = new ModbusMachine<int, int>(ModbusType.Tcp, "192.168.3.12", null, true, 2, 0);
-            var success = baseMachine.InvokeUtilityMethod<IUtilityTime, Task<bool>>("SetTimeAsync", DateTime.Now);
-            Assert.AreEqual(await success, true);
-            var time = baseMachine.InvokeUtilityMethod<IUtilityTime, Task<DateTime>>("GetTimeAsync");
-            Assert.AreEqual(((await time).ToUniversalTime() - DateTime.Now.ToUniversalTime()).Seconds < 10, true);
+            var success = await baseMachine.InvokeUtilityMethod<IUtilityTime, Task<bool>>("SetTimeAsync", DateTime.Now);
+            Assert.AreEqual(success, true);
+            var time = await baseMachine.InvokeUtilityMethod<IUtilityTime, Task<DateTime>>("GetTimeAsync");
+            Assert.AreEqual((time.ToUniversalTime() - DateTime.Now.ToUniversalTime()).Seconds < 10, true);
         }
 
         [TestMethod]
         public async Task InvokeMachine()
         {
-            BaseMachine<int, int> baseMachine = new ModbusMachine<int, int>(ModbusType.Tcp, "192.168.3.12", new List<AddressUnit<int>>
+            BaseMachine<int, int> baseMachine = new ModbusMachine<int, int>(ModbusType.Tcp, "192.168.3.10", new List<AddressUnit<int>>
             {
                 new AddressUnit<int>
                 {
@@ -46,7 +46,7 @@ namespace Modbus.Net.Tests
                     DataType = typeof(bool)
                 }
             }, true, 2, 0);
-            var success = baseMachine.InvokeMachineMethod<IMachineData, Task<bool>>("SetDatasAsync",
+            var success = await baseMachine.InvokeMachineMethod<IMachineData, Task<bool>>("SetDatasAsync",
                 MachineSetDataType.Address,
                 new Dictionary<string, double>
                 {
@@ -54,9 +54,18 @@ namespace Modbus.Net.Tests
                         "0X 1.0", 1
                     }
                 });
-            Assert.AreEqual(await success, true);
-            var datas = baseMachine.InvokeMachineMethod<IMachineData, Task<Dictionary<string, ReturnUnit>>>("GetDatasAsync", MachineGetDataType.Address);
-            Assert.AreEqual((await datas)["0X 1.0"], 1);
+            Assert.AreEqual(success, true);
+            var datas = await baseMachine.InvokeMachineMethod<IMachineData, Task<Dictionary<string, ReturnUnit>>>("GetDatasAsync", MachineGetDataType.Address);
+            Assert.AreEqual(datas["0X 1.0"].PlcValue, 1);
+            success = await baseMachine.InvokeMachineMethod<IMachineData, Task<bool>>("SetDatasAsync",
+                MachineSetDataType.Address,
+                new Dictionary<string, double>
+                {
+                    {
+                        "0X 1.0", 0
+                    }
+                });
+            Assert.AreEqual(success, true);
         }
     }
 }
