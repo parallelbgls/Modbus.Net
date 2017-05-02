@@ -16,7 +16,7 @@ namespace Modbus.Net.Tests
         {
             BaseMachine<int, int> baseMachine = new ModbusMachine<int, int>(ModbusType.Tcp, "192.168.3.12", null, true, 2, 0);
             var utility = baseMachine.GetUtility<IUtilityTime>();
-            var methods = utility.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            var methods = utility.GetType().GetRuntimeMethods();
             Assert.AreEqual(methods.FirstOrDefault(method => method.Name == "GetTimeAsync") != null, true);
             Assert.AreEqual(methods.FirstOrDefault(method => method.Name == "SetTimeAsync") != null, true);
         }

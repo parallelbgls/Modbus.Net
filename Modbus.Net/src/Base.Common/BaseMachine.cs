@@ -594,8 +594,7 @@ namespace Modbus.Net
             if (BaseUtility is TUtilityMethod)
             {
                 Type t = typeof(TUtilityMethod);
-                object returnValue = t.GetMethod(methodName,
-                        BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public)
+                object returnValue = t.GetRuntimeMethod(methodName, parameters.Select(p => p.GetType()).ToArray())
                     .Invoke(BaseUtility, parameters);
                 return (TReturnType) returnValue;
             }
@@ -616,8 +615,7 @@ namespace Modbus.Net
             if (this is TMachineMethod)
             {
                 Type t = typeof(TMachineMethod);
-                object returnValue = t.GetMethod(methodName,
-                        BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public)
+                object returnValue = t.GetRuntimeMethod(methodName, parameters.Select(p => p.GetType()).ToArray())
                     .Invoke(this, parameters);
                 return (TReturnType) returnValue;
             }

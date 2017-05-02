@@ -5,7 +5,15 @@ namespace Modbus.Net
     /// <summary>
     ///     基础的协议连接类
     /// </summary>
-    public abstract class BaseConnector
+    public abstract class BaseConnector : BaseConnector<byte[], byte[]>
+    {
+        
+    }
+
+    /// <summary>
+    ///     基础的协议连接类
+    /// </summary>
+    public abstract class BaseConnector<TParamIn, TParamOut>
     {
         /// <summary>
         ///     标识Connector的连接关键字
@@ -40,27 +48,27 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="message">需要发送的数据</param>
         /// <returns>是否发送成功</returns>
-        public abstract bool SendMsgWithoutReturn(byte[] message);
+        public abstract bool SendMsgWithoutReturn(TParamIn message);
 
         /// <summary>
         ///     无返回发送数据
         /// </summary>
         /// <param name="message">需要发送的数据</param>
         /// <returns>是否发送成功</returns>
-        public abstract Task<bool> SendMsgWithoutReturnAsync(byte[] message);
+        public abstract Task<bool> SendMsgWithoutReturnAsync(TParamIn message);
 
         /// <summary>
         ///     带返回发送数据
         /// </summary>
         /// <param name="message">需要发送的数据</param>
         /// <returns>是否发送成功</returns>
-        public abstract byte[] SendMsg(byte[] message);
+        public abstract TParamOut SendMsg(TParamIn message);
 
         /// <summary>
         ///     带返回发送数据
         /// </summary>
         /// <param name="message">需要发送的数据</param>
         /// <returns>是否发送成功</returns>
-        public abstract Task<byte[]> SendMsgAsync(byte[] message);
+        public abstract Task<TParamOut> SendMsgAsync(TParamIn message);
     }
 }
