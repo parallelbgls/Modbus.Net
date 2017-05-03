@@ -7,9 +7,72 @@ namespace Modbus.Net
     /// <summary>
     ///     基本的协议连接器
     /// </summary>
-    public abstract class ProtocalLinker
+    public abstract class ProtocalLinker : ProtocalLinker<byte[], byte[]>
     {
-        protected BaseConnector BaseConnector;
+        protected new BaseConnector BaseConnector;
+
+        /// <summary>
+        ///     发送并接收数据
+        /// </summary>
+        /// <param name="content">发送协议的内容</param>
+        /// <returns>接收协议的内容</returns>
+        public override async Task<byte[]> SendReceiveAsync(byte[] content)
+        {
+            var extBytes = BytesExtend(content);
+            var receiveBytes = await SendReceiveWithoutExtAndDecAsync(extBytes);
+            return receiveBytes == null ? null : receiveBytes.Length == 0 ? receiveBytes : BytesDecact(receiveBytes);
+        }
+
+        /// <summary>
+        ///     发送并接收数据，不进行协议扩展和收缩，用于特殊协议
+        /// </summary>
+        /// <param name="content">发送协议的内容</param>
+        /// <returns>接收协议的内容</returns>
+        public override async Task<byte[]> SendReceiveWithoutExtAndDecAsync(byte[] content)
+        {
+            //发送数据
+            var receiveBytes = await BaseConnector.SendMsgAsync(content);
+            //容错处理
+            var checkRight = CheckRight(receiveBytes);
+            return checkRight == null ? new byte[0] : (!checkRight.Value ? null : receiveBytes);
+            //返回字符
+        }
+
+        /// <summary>
+        ///     协议内容扩展，发送时根据需要扩展
+        /// </summary>
+        /// <param name="content">扩展前的基本协议内容</param>
+        /// <returns>扩展后的协议内容</returns>
+        public override byte[] BytesExtend(byte[] content)
+        {
+            //自动查找相应的协议放缩类，命令规则为——当前的实际类名（注意是继承后的）+"BytesExtend"。
+            var bytesExtend =
+                Activator.CreateInstance(GetType().GetTypeInfo().Assembly.GetType(GetType().FullName + "BytesExtend")) as
+                    IProtocalLinkerBytesExtend;
+            return bytesExtend?.BytesExtend(content);
+        }
+
+        /// <summary>
+        ///     协议内容缩减，接收时根据需要缩减
+        /// </summary>
+        /// <param name="content">缩减前的完整协议内容</param>
+        /// <returns>缩减后的协议内容</returns>
+        public override byte[] BytesDecact(byte[] content)
+        {
+            //自动查找相应的协议放缩类，命令规则为——当前的实际类名（注意是继承后的）+"BytesExtend"。
+            var bytesExtend =
+                Activator.CreateInstance(GetType().GetTypeInfo().Assembly.GetType(GetType().FullName + "BytesExtend")) as
+                    IProtocalLinkerBytesExtend;
+            return bytesExtend?.BytesDecact(content);
+        }
+    }
+
+    /// <summary>
+    ///     基本的协议连接器
+    /// </summary>
+    public abstract class ProtocalLinker<TParamIn, TParamOut>
+    {
+        protected BaseConnector<TParamIn, TParamOut> BaseConnector;
 
         public string ConnectionToken => BaseConnector.ConnectionToken;
 
@@ -50,7 +113,7 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="content">发送协议的内容</param>
         /// <returns>接收协议的内容</returns>
-        public virtual byte[] SendReceive(byte[] content)
+        public virtual TParamOut SendReceive(TParamIn content)
         {
             return AsyncHelper.RunSync(() => SendReceiveAsync(content));
         }
@@ -60,11 +123,12 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="content">发送协议的内容</param>
         /// <returns>接收协议的内容</returns>
-        public virtual async Task<byte[]> SendReceiveAsync(byte[] content)
+        public virtual async Task<TParamOut> SendReceiveAsync(TParamIn content)
         {
             var extBytes = BytesExtend(content);
             var receiveBytes = await SendReceiveWithoutExtAndDecAsync(extBytes);
-            return receiveBytes == null ? null : receiveBytes.Length == 0 ? receiveBytes : BytesDecact(receiveBytes);
+            if (receiveBytes != null) return receiveBytes;
+            throw new NullReferenceException();
         }
 
         /// <summary>
@@ -72,7 +136,7 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="content">发送协议的内容</param>
         /// <returns>接收协议的内容</returns>
-        public virtual byte[] SendReceiveWithoutExtAndDec(byte[] content)
+        public virtual TParamOut SendReceiveWithoutExtAndDec(TParamIn content)
         {
             return AsyncHelper.RunSync(() => SendReceiveWithoutExtAndDecAsync(content));
         }
@@ -82,14 +146,15 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="content">发送协议的内容</param>
         /// <returns>接收协议的内容</returns>
-        public virtual async Task<byte[]> SendReceiveWithoutExtAndDecAsync(byte[] content)
+        public virtual async Task<TParamOut> SendReceiveWithoutExtAndDecAsync(TParamIn content)
         {
             //发送数据
             var receiveBytes = await BaseConnector.SendMsgAsync(content);
             //容错处理
             var checkRight = CheckRight(receiveBytes);
-            return checkRight == null ? new byte[0] : (!checkRight.Value ? null : receiveBytes);
             //返回字符
+            if (checkRight == true) return receiveBytes;
+            throw new NullReferenceException();
         }
 
         /// <summary>
@@ -97,7 +162,7 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="content">接收协议的内容</param>
         /// <returns>协议是否是正确的</returns>
-        public virtual bool? CheckRight(byte[] content)
+        public virtual bool? CheckRight(TParamOut content)
         {
             if (content != null) return true;
             Disconnect();
@@ -109,13 +174,9 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="content">扩展前的基本协议内容</param>
         /// <returns>扩展后的协议内容</returns>
-        public byte[] BytesExtend(byte[] content)
+        public virtual TParamIn BytesExtend(TParamIn content)
         {
-            //自动查找相应的协议放缩类，命令规则为——当前的实际类名（注意是继承后的）+"BytesExtend"。
-            var bytesExtend =
-                Activator.CreateInstance(GetType().GetTypeInfo().Assembly.GetType(GetType().FullName + "BytesExtend")) as
-                    IProtocalLinkerBytesExtend;
-            return bytesExtend?.BytesExtend(content);
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -123,13 +184,9 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="content">缩减前的完整协议内容</param>
         /// <returns>缩减后的协议内容</returns>
-        public byte[] BytesDecact(byte[] content)
+        public virtual TParamOut BytesDecact(TParamOut content)
         {
-            //自动查找相应的协议放缩类，命令规则为——当前的实际类名（注意是继承后的）+"BytesExtend"。
-            var bytesExtend =
-                Activator.CreateInstance(GetType().GetTypeInfo().Assembly.GetType(GetType().FullName + "BytesExtend")) as
-                    IProtocalLinkerBytesExtend;
-            return bytesExtend?.BytesDecact(content);
+            throw new NotImplementedException();
         }
     }
 }

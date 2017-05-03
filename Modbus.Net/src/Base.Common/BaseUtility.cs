@@ -1,28 +1,59 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
+/// <summary>
+///     端格式
+/// </summary>
 public enum Endian
 {
+    /// <summary>
+    ///     小端
+    /// </summary>
     LittleEndianLsb,
+    /// <summary>
+    ///     大端-小端位
+    /// </summary>
     BigEndianLsb,
+    /// <summary>
+    ///     大端-大端位
+    /// </summary>
     BigEndianMsb
 }
 
 namespace Modbus.Net
 {
-    
+    /// <summary>
+    ///      基础Api入口
+    /// </summary>
+    public abstract class BaseUtility : BaseUtility<byte[], byte[]>
+    {
+        /// <summary>
+        ///     构造器
+        /// </summary>
+        protected BaseUtility(byte slaveAddress, byte masterAddress) : base(slaveAddress, masterAddress)
+        {
+            
+        }
+
+        /// <summary>
+        ///     协议收发主体
+        /// </summary>
+        protected new BaseProtocal Wrapper;
+
+    }
 
     /// <summary>
     ///      基础Api入口
     /// </summary>
-    public abstract class BaseUtility : IUtilityData
+    public abstract class BaseUtility<TParamIn, TParamOut> : IUtilityProperty, IUtilityData
     {
         /// <summary>
         ///     协议收发主体
         /// </summary>
-        protected BaseProtocal Wrapper;
+        protected BaseProtocal<TParamIn, TParamOut, ProtocalUnit<TParamIn, TParamOut>> Wrapper;
 
         /// <summary>
         ///     构造器
@@ -34,9 +65,18 @@ namespace Modbus.Net
             AddressTranslator = new AddressTranslatorBase();
         }
 
+        /// <summary>
+        ///     连接字符串
+        /// </summary>
         protected string ConnectionString { get; set; }
 
+        /// <summary>
+        ///     从站号
+        /// </summary>
         public byte SlaveAddress { get; set; }
+        /// <summary>
+        ///     主站号
+        /// </summary>
         public byte MasterAddress { get; set; }
 
         /// <summary>
@@ -241,5 +281,80 @@ namespace Modbus.Net
         {
             return Wrapper.Disconnect();
         }
+
+        /// <summary>
+        ///     调用Utility中的方法
+        /// </summary>
+        /// <typeparam name="TUtilityMethod">Utility实现的接口名称</typeparam>
+        /// <typeparam name="TReturnType">返回值的类型</typeparam>
+        /// <param name="methodName">方法的名称</param>
+        /// <param name="parameters">方法的参数</param>
+        /// <returns></returns>
+        public TReturnType InvokeUtilityMethod<TUtilityMethod, TReturnType>(string methodName,
+            params object[] parameters) where TUtilityMethod : IUtilityMethod
+        {
+            if (this is TUtilityMethod)
+            {
+                Type t = typeof(TUtilityMethod);
+                object returnValue = t.GetRuntimeMethod(methodName, parameters.Select(p => p.GetType()).ToArray())
+                    .Invoke(this, parameters);
+                return (TReturnType)returnValue;
+            }
+            throw new InvalidCastException($"Utility未实现{typeof(TUtilityMethod).Name}的接口");
+        }
+    }
+
+    /// <summary>
+    ///     Api入口的抽象
+    /// </summary>
+    public interface IUtilityProperty
+    {
+        /// <summary>
+        ///     协议是否遵循小端格式
+        /// </summary>
+        Endian Endian { get; }
+
+        /// <summary>
+        ///     设备是否已经连接
+        /// </summary>
+        bool IsConnected { get; }
+        /// <summary>
+        ///     标识设备的连接关键字
+        /// </summary>
+        string ConnectionToken { get; }
+
+        /// <summary>
+        ///     地址翻译器
+        /// </summary>
+        AddressTranslator AddressTranslator { get; set; }
+
+        /// <summary>
+        ///     连接设备
+        /// </summary>
+        /// <returns>设备是否连接成功</returns>
+        bool Connect();
+
+        /// <summary>
+        ///     连接设备
+        /// </summary>
+        /// <returns>设备是否连接成功</returns>
+        Task<bool> ConnectAsync();
+
+        /// <summary>
+        ///     断开设备
+        /// </summary>
+        /// <returns>设备是否断开成功</returns>
+        bool Disconnect();
+
+        /// <summary>
+        ///     调用Utility中的方法
+        /// </summary>
+        /// <typeparam name="TUtilityMethod">Utility实现的接口名称</typeparam>
+        /// <typeparam name="TReturnType">返回值的类型</typeparam>
+        /// <param name="methodName">方法的名称</param>
+        /// <param name="parameters">方法的参数</param>
+        /// <returns></returns>
+        TReturnType InvokeUtilityMethod<TUtilityMethod, TReturnType>(string methodName,
+            params object[] parameters) where TUtilityMethod : IUtilityMethod;
     }
 }

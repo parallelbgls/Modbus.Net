@@ -45,4 +45,18 @@ namespace Modbus.Net.OPC
 
         public Node RootNodeBase => RootNode;
     }
+
+    public class OpcParamIn
+    {
+        public bool IsRead { get; set; }
+        public string Tag { get; set; }
+        public char Split { get; set; }
+        public object SetValue { get; set; }
+    }
+
+    public class OpcParamOut
+    {
+        public bool Success { get; set; }
+        public byte[] Value { get; set; }
+    }
 }

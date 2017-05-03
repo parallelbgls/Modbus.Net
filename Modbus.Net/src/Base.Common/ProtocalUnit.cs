@@ -5,7 +5,15 @@ namespace Modbus.Net
     /// <summary>
     ///     协议单元
     /// </summary>
-    public abstract class ProtocalUnit : IProtocalFormatting
+    public abstract class ProtocalUnit : ProtocalUnit<byte[], byte[]>
+    {
+        
+    }
+
+    /// <summary>
+    ///     协议单元
+    /// </summary>
+    public abstract class ProtocalUnit<TParamIn, TParamOut> : IProtocalFormatting<TParamIn, TParamOut>
     {
         /// <summary>
         ///     是否为小端格式
@@ -17,7 +25,7 @@ namespace Modbus.Net
 		/// </summary>s
 		/// <param name="message">结构化的输入数据</param>
 		/// <returns>格式化后的字节流</returns>
-		public abstract byte[] Format(IInputStruct message);
+		public abstract TParamIn Format(IInputStruct message);
 
         /// <summary>
         ///     从对象的参数数组格式化
@@ -35,7 +43,7 @@ namespace Modbus.Net
 		/// <param name="messageBytes">返回数据的字节流</param>
 		/// <param name="pos">转换标记位</param>
 		/// <returns>结构化的输出数据</returns>
-		public abstract IOutputStruct Unformat(byte[] messageBytes, ref int pos);
+		public abstract IOutputStruct Unformat(TParamOut messageBytes, ref int pos);
 
 		/// <summary>
 		/// 	把仪器返回的内容填充到输出结构中
@@ -44,7 +52,7 @@ namespace Modbus.Net
 		/// <param name="pos">转换标记位</param>
 		/// <typeparam name="T">IOutputStruct的具体类型</typeparam>
 		/// <returns>结构化的输出数据</returns>
-		public T Unformat<T>(byte[] messageBytes, ref int pos) where T : class, IOutputStruct
+		public T Unformat<T>(TParamOut messageBytes, ref int pos) where T : class, IOutputStruct
 		{
 			return Unformat(messageBytes, ref pos) as T;
 		}

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Modbus.Net.OPC
 {
-    public abstract class OpcConnector : BaseConnector
+    public abstract class OpcConnector : BaseConnector<OpcParamIn, OpcParamOut>
     {
         protected IClientExtend Client;
 
@@ -39,17 +39,17 @@ namespace Modbus.Net.OPC
             }
         }
 
-        public override bool SendMsgWithoutReturn(byte[] message)
+        public override bool SendMsgWithoutReturn(OpcParamIn message)
         {
             throw new NotImplementedException();
         }
 
-        public override Task<bool> SendMsgWithoutReturnAsync(byte[] message)
+        public override Task<bool> SendMsgWithoutReturnAsync(OpcParamIn message)
         {
             throw new NotImplementedException();
         }
 
-        public override byte[] SendMsg(byte[] message)
+        public override OpcParamOut SendMsg(OpcParamIn message)
         {
             return AsyncHelper.RunSync(() => SendMsgAsync(message));
         }
@@ -88,82 +88,41 @@ namespace Modbus.Net.OPC
             return tagSplitList.ToArray();
         }
 
-        public override async Task<byte[]> SendMsgAsync(byte[] message)
+        public override async Task<OpcParamOut> SendMsgAsync(OpcParamIn message)
         {
             try
             {
-                var pos = 0;
-                var protocal = BigEndianValueHelper.Instance.GetByte(message, ref pos);
-                if (protocal == 0)
+                if (message.IsRead)
                 {
-                    var tagBytes = new byte[message.Length - 6];
-                    Array.Copy(message, 1, tagBytes, 0, tagBytes.Length);
-                    pos += tagBytes.Length;
-                    pos += 4;
-                    var split = Encoding.UTF8.GetString(new[] { message[pos] });
-                    var tag = Encoding.UTF8.GetString(tagBytes);
-                    var tagSplit = SplitTag(tag, split[0]);
+                    var split = message.Split;
+                    var tag = message.Tag;
+                    var tagSplit = SplitTag(tag, split);
                     var rootDirectory = await Client.ExploreFolderAsync("");
-                    var answerTag = await SearchTag(tagSplit, split[0], 0, rootDirectory);
+                    var answerTag = await SearchTag(tagSplit, split, 0, rootDirectory);
                     if (answerTag != null)
                     {
                         var result = await Client.ReadAsync<object>(answerTag);
-                        return BigEndianValueHelper.Instance.GetBytes(result, result.GetType());
+                        return new OpcParamOut
+                        {
+                            Success = true,
+                            Value = BigEndianValueHelper.Instance.GetBytes(result, result.GetType())
+                        };
                     }
-                    return Encoding.ASCII.GetBytes("NoData");
+                    return new OpcParamOut()
+                    {
+                        Success = false,
+                        Value = Encoding.ASCII.GetBytes("NoData")
+                    };
                 }
                 else
                 {
-                    var index = 0;
-                    for (var i = 1; i < message.Length - 3; i++)
-                    {
-                        if (message[i] == 0x00 && message[i + 1] == 0xff && message[i + 2] == 0xff &&
-                            message[i + 3] == 0x00)
-                        {
-                            index = i;
-                            break;
-                        }
-                    }
-
-                    var index2 = 0;
-                    for (var i = index + 4; i < message.Length - 3; i++)
-                    {
-                        if (message[i] == 0x00 && message[i + 1] == 0xff && message[i + 2] == 0xff &&
-                            message[i + 3] == 0x00)
-                        {
-                            index2 = i;
-                            break;
-                        }
-                    }
-
-                    var index3 = 0;
-                    for (var i = index2 + 4; i < message.Length - 3; i++)
-                    {
-                        if (message[i] == 0x00 && message[i + 1] == 0xff && message[i + 2] == 0xff &&
-                            message[i + 3] == 0x00)
-                        {
-                            index3 = i;
-                            break;
-                        }
-                    }
-
-                    var tagBytes = new byte[index - 1];
-                    Array.Copy(message, 1, tagBytes, 0, tagBytes.Length);
-                    var tag = Encoding.UTF8.GetString(tagBytes);
-                    var splitBytes = new byte[index2 - index - 4];
-                    Array.Copy(message, index + 4, splitBytes, 0, splitBytes.Length);
-                    var split = Encoding.UTF8.GetString(splitBytes);
-                    var typeBytes = new byte[index3 - index2 - 4];
-                    Array.Copy(message, index2 + 4, typeBytes, 0, typeBytes.Length);
-                    var type = Type.GetType(Encoding.UTF8.GetString(typeBytes));
-                    var valueBytes = new byte[message.Length - index3 - 4];
-                    Array.Copy(message, index3 + 4, valueBytes, 0, valueBytes.Length);
-                    int mainpos = 0, subpos = 0;
-                    var value = BigEndianValueHelper.Instance.GetValue(valueBytes, ref mainpos, ref subpos, type);
+                    var tag = message.Tag;
+                    var split = message.Split;
+                    var value = message.SetValue;
 
                     var rootDirectory = await Client.ExploreFolderAsync("");
-                    var tagSplit = SplitTag(tag, split[0]);
-                    var answerTag = await SearchTag(tagSplit, split[0], 0, rootDirectory);
+                    var tagSplit = SplitTag(tag, split);
+                    var answerTag = await SearchTag(tagSplit, split, 0, rootDirectory);
                     if (answerTag != null)
                     {
                         try
@@ -173,17 +132,30 @@ namespace Modbus.Net.OPC
                         catch (Exception e)
                         {
                             AddInfo("opc write exception:" + e.Message);
-                            return new byte[] { 0 };
-                        }                      
-                        return new byte[] {1};
+                            return new OpcParamOut()
+                            {
+                                Success = false
+                            };
+                        }
+                        return new OpcParamOut()
+                        {
+                            Success = true
+                        };
                     }
-                    return new byte[] {0};
+                    return new OpcParamOut()
+                    {
+                        Success = false
+                    };
                 }
             }
             catch (Exception e)
             {
                 AddInfo("opc client exception:" + e.Message);
-                return Encoding.ASCII.GetBytes("NoData");
+                return new OpcParamOut()
+                {
+                    Success = false,
+                    Value = Encoding.ASCII.GetBytes("NoData")
+                };
             }
         }
 
