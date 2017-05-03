@@ -200,7 +200,7 @@ namespace Modbus.Net
         /// <summary>
         ///     设备的连接器
         /// </summary>
-        protected BaseUtility BaseUtility { get; set; }
+        public IUtilityProperty BaseUtility { get; protected set; }
 
         /// <summary>
         ///     设备的Id
@@ -254,7 +254,7 @@ namespace Modbus.Net
                     //获取数据
                     var datas =
                         await
-                            BaseUtility.GetDatasAsync(
+                            BaseUtility.InvokeUtilityMethod<IUtilityData, Task<byte[]>>("GetDatasAsync",
                                 AddressFormater.FormatAddress(communicateAddress.Area, communicateAddress.Address,
                                     communicateAddress.SubAddress),
                                 (int)
@@ -454,7 +454,7 @@ namespace Modbus.Net
                     var addressStart = AddressFormater.FormatAddress(communicateAddress.Area,
                         communicateAddress.Address);
 
-                    var datasReturn = await BaseUtility.GetDatasAsync(
+                    var datasReturn = await BaseUtility.InvokeUtilityMethod<IUtilityData, Task<byte[]>>("GetDatasAsync",
                         AddressFormater.FormatAddress(communicateAddress.Area, communicateAddress.Address, 0),
                         (int)
                             Math.Ceiling(communicateAddress.GetCount*
@@ -544,7 +544,7 @@ namespace Modbus.Net
                     }
                     //写入数据
                     await
-                        BaseUtility.SetDatasAsync(addressStart,
+                        BaseUtility.InvokeUtilityMethod<IUtilityData, Task<bool>>("SetDatasAsync",addressStart,
                             valueHelper.ByteArrayToObjectArray(datas,
                                 new KeyValuePair<Type, int>(communicateAddress.DataType, communicateAddress.GetCount)));
                 }
@@ -578,27 +578,6 @@ namespace Modbus.Net
                 Console.WriteLine("Id重复，请检查");
                 return null;
             }
-        }
-
-        /// <summary>
-        ///     调用Utility中的方法
-        /// </summary>
-        /// <typeparam name="TUtilityMethod">Utility实现的接口名称</typeparam>
-        /// <typeparam name="TReturnType">返回值的类型</typeparam>
-        /// <param name="methodName">方法的名称</param>
-        /// <param name="parameters">方法的参数</param>
-        /// <returns></returns>
-        public TReturnType InvokeUtilityMethod<TUtilityMethod, TReturnType>(string methodName,
-            params object[] parameters) where TUtilityMethod : IUtilityMethod
-        {
-            if (BaseUtility is TUtilityMethod)
-            {
-                Type t = typeof(TUtilityMethod);
-                object returnValue = t.GetRuntimeMethod(methodName, parameters.Select(p => p.GetType()).ToArray())
-                    .Invoke(BaseUtility, parameters);
-                return (TReturnType) returnValue;
-            }
-            throw new InvalidCastException($"Utility未实现{typeof(TUtilityMethod).Name}的接口");
         }
 
         /// <summary>
@@ -866,6 +845,11 @@ namespace Modbus.Net
         bool KeepConnect { get; set; }
 
         /// <summary>
+        ///     设备的连接器
+        /// </summary>
+        IUtilityProperty BaseUtility { get; }
+
+        /// <summary>
         ///     调用Machine中的方法
         /// </summary>
         /// <typeparam name="TMachineMethod">Machine实现的接口名称</typeparam>
@@ -877,15 +861,10 @@ namespace Modbus.Net
             params object[] parameters) where TMachineMethod : IMachineMethod;
 
         /// <summary>
-        ///     调用Utility中的方法
+        ///     连接设备
         /// </summary>
-        /// <typeparam name="TUtilityMethod">Utility实现的接口名称</typeparam>
-        /// <typeparam name="TReturnType">返回值的类型</typeparam>
-        /// <param name="methodName">方法的名称</param>
-        /// <param name="parameters">方法的参数</param>
-        /// <returns></returns>
-        TReturnType InvokeUtilityMethod<TUtilityMethod, TReturnType>(string methodName,
-            params object[] parameters) where TUtilityMethod : IUtilityMethod;
+        /// <returns>是否连接成功</returns>
+        bool Connect();
 
         /// <summary>
         ///     连接设备

@@ -5,7 +5,7 @@ namespace Modbus.Net.OPC
     /// <summary>
     ///     Opc协议
     /// </summary>
-    public abstract class OpcProtocal : BaseProtocal
+    public abstract class OpcProtocal : BaseProtocal<OpcParamIn, OpcParamOut, ProtocalUnit<OpcParamIn, OpcParamOut>>
     {
         protected OpcProtocal() : base(0, 0, Endian.BigEndianLsb)
         {
@@ -16,14 +16,14 @@ namespace Modbus.Net.OPC
 
     public class ReadRequestOpcInputStruct : IInputStruct
     {
-        public ReadRequestOpcInputStruct(string tag, string split)
+        public ReadRequestOpcInputStruct(string tag, char split)
         {
             Tag = tag;
             Split = split;
         }
 
         public string Tag { get; }
-        public string Split { get; }
+        public char Split { get; }
     }
 
     public class ReadRequestOpcOutputStruct : IOutputStruct
@@ -36,17 +36,22 @@ namespace Modbus.Net.OPC
         public byte[] GetValue { get; private set; }
     }
 
-    public class ReadRequestOpcProtocal : ProtocalUnit, ISpecialProtocalUnit
+    public class ReadRequestOpcProtocal : ProtocalUnit<OpcParamIn, OpcParamOut>, ISpecialProtocalUnit
     {
-        public override byte[] Format(IInputStruct message)
+        public override OpcParamIn Format(IInputStruct message)
         {
             var r_message = (ReadRequestOpcInputStruct) message;
-            return Format((byte) 0x00, Encoding.UTF8.GetBytes(r_message.Tag), 0x00ffff00, Encoding.UTF8.GetBytes(r_message.Split));
+            return new OpcParamIn()
+            {
+                IsRead = true,
+                Tag = r_message.Tag,
+                Split = r_message.Split
+            };
         }
 
-        public override IOutputStruct Unformat(byte[] messageBytes, ref int pos)
+        public override IOutputStruct Unformat(OpcParamOut messageBytes, ref int pos)
         {
-            return new ReadRequestOpcOutputStruct(messageBytes);
+            return new ReadRequestOpcOutputStruct(messageBytes.Value);
         }
     }
 
@@ -56,7 +61,7 @@ namespace Modbus.Net.OPC
 
     public class WriteRequestOpcInputStruct : IInputStruct
     {
-        public WriteRequestOpcInputStruct(string tag, string split, object setValue)
+        public WriteRequestOpcInputStruct(string tag, char split, object setValue)
         {
             Tag = tag;
             Split = split;
@@ -64,7 +69,7 @@ namespace Modbus.Net.OPC
         }
 
         public string Tag { get; }
-        public string Split { get; }
+        public char Split { get; }
         public object SetValue { get; }
     }
 
@@ -78,20 +83,23 @@ namespace Modbus.Net.OPC
         public bool WriteResult { get; private set; }
     }
 
-    public class WriteRequestOpcProtocal : ProtocalUnit, ISpecialProtocalUnit
+    public class WriteRequestOpcProtocal : ProtocalUnit<OpcParamIn, OpcParamOut>, ISpecialProtocalUnit
     {
-        public override byte[] Format(IInputStruct message)
+        public override OpcParamIn Format(IInputStruct message)
         {
             var r_message = (WriteRequestOpcInputStruct) message;
-            var tag = Encoding.UTF8.GetBytes(r_message.Tag);
-            var fullName = Encoding.UTF8.GetBytes(r_message.SetValue.GetType().FullName);
-            var split = Encoding.UTF8.GetBytes(r_message.Split);
-            return Format((byte) 0x01, tag, 0x00ffff00, split, 0x00ffff00, fullName, 0x00ffff00, r_message.SetValue);
+            return new OpcParamIn()
+            {
+                IsRead = false,
+                Tag = r_message.Tag,
+                Split = r_message.Split,
+                SetValue = r_message.SetValue
+            };
         }
 
-        public override IOutputStruct Unformat(byte[] messageBytes, ref int pos)
+        public override IOutputStruct Unformat(OpcParamOut messageBytes, ref int pos)
         {
-            var ansByte = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
+            var ansByte = BigEndianValueHelper.Instance.GetByte(messageBytes.Value, ref pos);
             var ans = ansByte != 0;
             return new WriteRequestOpcOutputStruct(ans);
         }

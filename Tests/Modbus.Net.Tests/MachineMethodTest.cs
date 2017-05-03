@@ -25,9 +25,9 @@ namespace Modbus.Net.Tests
         public async Task InvokeUtility()
         {
             BaseMachine<int, int> baseMachine = new ModbusMachine<int, int>(ModbusType.Tcp, "192.168.3.12", null, true, 2, 0);
-            var success = await baseMachine.InvokeUtilityMethod<IUtilityTime, Task<bool>>("SetTimeAsync", DateTime.Now);
+            var success = await baseMachine.BaseUtility.InvokeUtilityMethod<IUtilityTime, Task<bool>>("SetTimeAsync", DateTime.Now);
             Assert.AreEqual(success, true);
-            var time = await baseMachine.InvokeUtilityMethod<IUtilityTime, Task<DateTime>>("GetTimeAsync");
+            var time = await baseMachine.BaseUtility.InvokeUtilityMethod<IUtilityTime, Task<DateTime>>("GetTimeAsync");
             Assert.AreEqual((time.ToUniversalTime() - DateTime.Now.ToUniversalTime()).Seconds < 10, true);
         }
 

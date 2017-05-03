@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Modbus.Net.OPC
 {
-    public abstract class OpcUtility : BaseUtility
+    public abstract class OpcUtility : BaseUtility<OpcParamIn, OpcParamOut>
     { 
         protected OpcUtility(string connectionString) : base(0, 0)
         {
@@ -30,7 +30,7 @@ namespace Modbus.Net.OPC
             try
             {
                 var split = GetSeperator?.Invoke() ?? '/';
-                var readRequestOpcInputStruct = new ReadRequestOpcInputStruct(startAddress, split.ToString());
+                var readRequestOpcInputStruct = new ReadRequestOpcInputStruct(startAddress, split);
                 var readRequestOpcOutputStruct =
                     await
 						Wrapper.SendReceiveAsync<ReadRequestOpcOutputStruct>(Wrapper[typeof(ReadRequestOpcProtocal)], readRequestOpcInputStruct);
@@ -47,7 +47,7 @@ namespace Modbus.Net.OPC
             try
             {
                 var split = GetSeperator?.Invoke() ?? '/';
-                var writeRequestOpcInputStruct = new WriteRequestOpcInputStruct(startAddress, split.ToString(), setContents[0]);
+                var writeRequestOpcInputStruct = new WriteRequestOpcInputStruct(startAddress, split, setContents[0]);
                 var writeRequestOpcOutputStruct =
                     await
 						Wrapper.SendReceiveAsync<WriteRequestOpcOutputStruct>(Wrapper[typeof(WriteRequestOpcProtocal)], writeRequestOpcInputStruct);
