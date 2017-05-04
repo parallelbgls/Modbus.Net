@@ -725,7 +725,7 @@ namespace Modbus.Net
                 machine = _machines.FirstOrDefault(p => p.ConnectionToken == connectionToken);
             }
             if (machine == null) return false;
-            return await machine.InvokeMachineMethod<IMachineData, Task<bool>>("SetDatasAsync", SetDataType, values);
+            return await machine.InvokeMachineMethod<IMachineMethodData, Task<bool>>("SetDatasAsync", SetDataType, values);
         }
 
         /// <summary>
@@ -799,7 +799,7 @@ namespace Modbus.Net
             cts.CancelAfter(TimeSpan.FromSeconds(_getCycle));
             //读取数据
             var ans =
-                await machine.InvokeMachineMethod<IMachineData, Task<Dictionary<string, ReturnUnit>>>("GetDatasAsync",
+                await machine.InvokeMachineMethod<IMachineMethodData, Task<Dictionary<string, ReturnUnit>>>("GetDatasAsync",
                     GetDataType).WithCancellation(cts.Token);
             if (!machine.IsConnected)
             {

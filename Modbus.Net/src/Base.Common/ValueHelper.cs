@@ -7,10 +7,13 @@ using System.Text;
 namespace Modbus.Net
 {
     /// <summary>
-    ///     值与字节数组之间转换的辅助类，这是一个Singleton类
+    ///     值与字节数组之间转换的辅助类（小端格式），这是一个Singleton类
     /// </summary>
     public class ValueHelper
     {
+        /// <summary>
+        ///     兼容数据类型对应的字节长度
+        /// </summary>
         public Dictionary<string, double> ByteLength = new Dictionary<string, double>
         {
             {"System.Boolean", 0.125},
@@ -25,6 +28,9 @@ namespace Modbus.Net
             {"System.Double", 8}
         };
 
+        /// <summary>
+        ///     构造器
+        /// </summary>
         protected ValueHelper()
         {
         }
@@ -34,6 +40,9 @@ namespace Modbus.Net
         /// </summary>
         public static bool LittleEndian => true;
 
+        /// <summary>
+        ///     协议中的比特位内容构造是否小端的，默认是小端构造协议。
+        /// </summary>
         public static bool LittleEndianBit => true;
 
         /// <summary>
@@ -49,8 +58,8 @@ namespace Modbus.Net
         /// <summary>
         ///     将short数字转换为byte数组
         /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="value">待转换的值</param>
+        /// <returns>转换后的byte数组</returns>
         public virtual byte[] GetBytes(short value)
         {
             return BitConverter.GetBytes(value);
@@ -59,8 +68,8 @@ namespace Modbus.Net
         /// <summary>
         ///     将int数字转换为byte数组
         /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="value">待转换的值</param>
+        /// <returns>转换后的byte数组</returns>
         public virtual byte[] GetBytes(int value)
         {
             return BitConverter.GetBytes(value);
@@ -69,8 +78,8 @@ namespace Modbus.Net
         /// <summary>
         ///     将long数字转换为byte数组
         /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="value">待转换的值</param>
+        /// <returns>转换后的byte数组</returns>
         public virtual byte[] GetBytes(long value)
         {
             return BitConverter.GetBytes(value);
@@ -79,8 +88,8 @@ namespace Modbus.Net
         /// <summary>
         ///     将ushort数字转换为byte数组
         /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="value">待转换的值</param>
+        /// <returns>转换后的byte数组</returns>
         public virtual byte[] GetBytes(ushort value)
         {
             return BitConverter.GetBytes(value);
@@ -89,8 +98,8 @@ namespace Modbus.Net
         /// <summary>
         ///     将uint数字转换为byte数组
         /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="value">待转换的值</param>
+        /// <returns>转换后的byte数组</returns>
         public virtual byte[] GetBytes(uint value)
         {
             return BitConverter.GetBytes(value);
@@ -99,8 +108,8 @@ namespace Modbus.Net
         /// <summary>
         ///     将ulong数字转换为byte数组
         /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="value">待转换的值</param>
+        /// <returns>转换后的byte数组</returns>
         public virtual byte[] GetBytes(ulong value)
         {
             return BitConverter.GetBytes(value);
@@ -109,8 +118,8 @@ namespace Modbus.Net
         /// <summary>
         ///     将float数字转换为byte数组
         /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="value">待转换的值</param>
+        /// <returns>转换后的byte数组</returns>
         public virtual byte[] GetBytes(float value)
         {
             return BitConverter.GetBytes(value);
@@ -119,8 +128,8 @@ namespace Modbus.Net
         /// <summary>
         ///     将double数字转换为byte数组
         /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="value">待转换的值</param>
+        /// <returns>转换后的byte数组</returns>
         public virtual byte[] GetBytes(double value)
         {
             return BitConverter.GetBytes(value);
@@ -129,9 +138,9 @@ namespace Modbus.Net
         /// <summary>
         ///     将object数字转换为byte数组
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="type"></param>
-        /// <returns></returns>
+        /// <param name="value">待转换的值</param>
+        /// <param name="type">待转换的值的类型</param>
+        /// <returns>转换后的byte数组</returns>
         public virtual byte[] GetBytes(object value, Type type)
         {
             switch (type.FullName)
@@ -191,11 +200,11 @@ namespace Modbus.Net
         /// <summary>
         ///     将byte数组中相应的位置转换为对应类型的数字
         /// </summary>
-        /// <param name="data"></param>
-        /// <param name="pos"></param>
-        /// <param name="subPos"></param>
-        /// <param name="t"></param>
-        /// <returns></returns>
+        /// <param name="data">待转换的字节数组</param>
+        /// <param name="pos">转换数字的位置</param>
+        /// <param name="subPos">转换数字的比特位置（仅Type为bool的时候有效）</param>
+        /// <param name="t">转换的类型</param>
+        /// <returns>转换出的数字</returns>
         public virtual object GetValue(byte[] data, ref int pos, ref int subPos, Type t)
         {
             switch (t.FullName)
@@ -260,9 +269,9 @@ namespace Modbus.Net
         /// <summary>
         ///     将byte数组中相应的位置转换为byte数字
         /// </summary>
-        /// <param name="data"></param>
-        /// <param name="pos"></param>
-        /// <returns></returns>
+        /// <param name="data">待转换的数组</param>
+        /// <param name="pos">转换数字的位置</param>
+        /// <returns>转换出的数字</returns>
         public virtual byte GetByte(byte[] data, ref int pos)
         {
             var t = data[pos];
@@ -273,9 +282,9 @@ namespace Modbus.Net
         /// <summary>
         ///     将byte数组中相应的位置转换为short数字
         /// </summary>
-        /// <param name="data"></param>
-        /// <param name="pos"></param>
-        /// <returns></returns>
+        /// <param name="data">待转换的数组</param>
+        /// <param name="pos">转换数字的位置</param>
+        /// <returns>转换出的数字</returns>
         public virtual short GetShort(byte[] data, ref int pos)
         {
             var t = BitConverter.ToInt16(data, pos);
@@ -286,9 +295,9 @@ namespace Modbus.Net
         /// <summary>
         ///     将byte数组中相应的位置转换为int数字
         /// </summary>
-        /// <param name="data"></param>
-        /// <param name="pos"></param>
-        /// <returns></returns>
+        /// <param name="data">待转换的数组</param>
+        /// <param name="pos">转换数字的位置</param>
+        /// <returns>转换出的数字</returns>
         public virtual int GetInt(byte[] data, ref int pos)
         {
             var t = BitConverter.ToInt32(data, pos);
@@ -299,9 +308,9 @@ namespace Modbus.Net
         /// <summary>
         ///     将byte数组中相应的位置转换为long数字
         /// </summary>
-        /// <param name="data"></param>
-        /// <param name="pos"></param>
-        /// <returns></returns>
+        /// <param name="data">待转换的数组</param>
+        /// <param name="pos">转换数字的位置</param>
+        /// <returns>转换出的数字</returns>
         public virtual long GetLong(byte[] data, ref int pos)
         {
             var t = BitConverter.ToInt64(data, pos);
@@ -312,9 +321,9 @@ namespace Modbus.Net
         /// <summary>
         ///     将byte数组中相应的位置转换为ushort数字
         /// </summary>
-        /// <param name="data"></param>
-        /// <param name="pos"></param>
-        /// <returns></returns>
+        /// <param name="data">待转换的数组</param>
+        /// <param name="pos">转换数字的位置</param>
+        /// <returns>转换出的数字</returns>
         public virtual ushort GetUShort(byte[] data, ref int pos)
         {
             var t = BitConverter.ToUInt16(data, pos);
@@ -325,9 +334,9 @@ namespace Modbus.Net
         /// <summary>
         ///     将byte数组中相应的位置转换为uint数字
         /// </summary>
-        /// <param name="data"></param>
-        /// <param name="pos"></param>
-        /// <returns></returns>
+        /// <param name="data">待转换的数组</param>
+        /// <param name="pos">转换数字的位置</param>
+        /// <returns>转换出的数字</returns>
         public virtual uint GetUInt(byte[] data, ref int pos)
         {
             var t = BitConverter.ToUInt32(data, pos);
@@ -338,9 +347,9 @@ namespace Modbus.Net
         /// <summary>
         ///     将byte数组中相应的位置转换为ulong数字
         /// </summary>
-        /// <param name="data"></param>
-        /// <param name="pos"></param>
-        /// <returns></returns>
+        /// <param name="data">待转换的数组</param>
+        /// <param name="pos">转换数字的位置</param>
+        /// <returns>转换出的数字</returns>
         public virtual ulong GetULong(byte[] data, ref int pos)
         {
             var t = BitConverter.ToUInt64(data, pos);
@@ -351,9 +360,9 @@ namespace Modbus.Net
         /// <summary>
         ///     将byte数组中相应的位置转换为float数字
         /// </summary>
-        /// <param name="data"></param>
-        /// <param name="pos"></param>
-        /// <returns></returns>
+        /// <param name="data">待转换的数组</param>
+        /// <param name="pos">转换数字的位置</param>
+        /// <returns>转换出的数字</returns>
         public virtual float GetFloat(byte[] data, ref int pos)
         {
             var t = BitConverter.ToSingle(data, pos);
@@ -364,9 +373,9 @@ namespace Modbus.Net
         /// <summary>
         ///     将byte数组中相应的位置转换为double数字
         /// </summary>
-        /// <param name="data"></param>
-        /// <param name="pos"></param>
-        /// <returns></returns>
+        /// <param name="data">待转换的数组</param>
+        /// <param name="pos">转换数字的位置</param>
+        /// <returns>转换出的数字</returns>
         public virtual double GetDouble(byte[] data, ref int pos)
         {
             var t = BitConverter.ToDouble(data, pos);
@@ -377,11 +386,11 @@ namespace Modbus.Net
         /// <summary>
         ///     将byte数组中相应的位置转换为字符串
         /// </summary>
-        /// <param name="data"></param>
-        /// <param name="count"></param>
-        /// <param name="pos"></param>
-        /// <param name="encoding"></param>
-        /// <returns></returns>
+        /// <param name="data">待转换的数组</param>
+        /// <param name="count">转换的个数</param>
+        /// <param name="pos">转换数字的位置</param>
+        /// <param name="encoding">编码方法</param>
+        /// <returns>转换出的字符串</returns>
         public virtual string GetString(byte[] data, int count, ref int pos, Encoding encoding)
         {
             var t = encoding.GetString(data, pos, count);
@@ -392,9 +401,9 @@ namespace Modbus.Net
         /// <summary>
         ///     将byte数组中相应的位置转换为8个bit数字
         /// </summary>
-        /// <param name="data"></param>
-        /// <param name="pos"></param>
-        /// <returns></returns>
+        /// <param name="data">待转换的数组</param>
+        /// <param name="pos">转换数字的位置</param>
+        /// <returns>转换出的位数组</returns>
         public virtual bool[] GetBits(byte[] data, ref int pos)
         {
             var t = new bool[8];
@@ -438,10 +447,10 @@ namespace Modbus.Net
         /// <summary>
         ///     获取一个字节数组中某个Bit位的数据
         /// </summary>
-        /// <param name="number"></param>
-        /// <param name="pos"></param>
-        /// <param name="subPos"></param>
-        /// <returns></returns>
+        /// <param name="number">byte数字</param>
+        /// <param name="pos">bit数组中的对应位置</param>
+        /// <param name="subPos">小数位</param>
+        /// <returns>对应位置的bit元素</returns>
         public virtual bool GetBit(byte[] number, ref int pos, ref int subPos)
         {
             return GetBit(number[pos], ref pos, ref subPos);
@@ -450,8 +459,8 @@ namespace Modbus.Net
         /// <summary>
         ///     反转一个字节的8个Bit位
         /// </summary>
-        /// <param name="originalByte"></param>
-        /// <returns></returns>
+        /// <param name="originalByte">原始bit数组</param>
+        /// <returns>反转的bit数组</returns>
         public virtual byte ReverseByte(byte originalByte)
         {
             byte result = 0;
@@ -467,8 +476,8 @@ namespace Modbus.Net
         /// <summary>
         ///     将待转换的对象数组转换为需要发送的byte数组
         /// </summary>
-        /// <param name="contents"></param>
-        /// <returns></returns>
+        /// <param name="contents">object数组</param>
+        /// <returns>byte数组</returns>
         public virtual byte[] ObjectArrayToByteArray(object[] contents)
         {
             var b = false;
@@ -606,10 +615,10 @@ namespace Modbus.Net
         /// <summary>
         ///     将一个byte数组转换成用户指定类型的数组，使用模板参数确定需要转换的类型
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="contents"></param>
-        /// <param name="getCount"></param>
-        /// <returns></returns>
+        /// <typeparam name="T">目标数组类型</typeparam>
+        /// <param name="contents">待转换的数组</param>
+        /// <param name="getCount">转换的个数</param>
+        /// <returns>以T为类型的数组</returns>
         public virtual T[] ByteArrayToDestinationArray<T>(byte[] contents, int getCount)
         {
             var objectArray = _Instance.ByteArrayToObjectArray(contents,
@@ -733,6 +742,14 @@ namespace Modbus.Net
             return array;
         }
 
+        /// <summary>
+        ///     在一个数组中写一个值
+        /// </summary>
+        /// <param name="contents">待写入的字节数组</param>
+        /// <param name="setPos">设置的位置</param>
+        /// <param name="subPos">设置的比特位位置（仅setValue为bit的时候有效）</param>
+        /// <param name="setValue">写入的值</param>
+        /// <returns>写入是否成功</returns>
         public bool SetValue(byte[] contents, int setPos, int subPos, object setValue)
         {
             var type = setValue.GetType();
@@ -802,7 +819,7 @@ namespace Modbus.Net
         /// <param name="contents">待设置的byte数组</param>
         /// <param name="pos">设置的位置</param>
         /// <param name="setValue">要设置的值</param>
-        /// <returns></returns>
+        /// <returns>设置是否成功</returns>
         public virtual bool SetValue(byte[] contents, int pos, object setValue)
         {
             try
@@ -823,7 +840,7 @@ namespace Modbus.Net
         /// <param name="number">byte数子</param>
         /// <param name="subPos">设置位置</param>
         /// <param name="setBit">设置bit大小，true为1，false为0</param>
-        /// <returns></returns>
+        /// <returns>设置是否成功</returns>
         protected byte SetBit(byte number, int subPos, bool setBit)
         {
             var creation = 0;
@@ -851,7 +868,7 @@ namespace Modbus.Net
         /// <param name="pos">位置</param>
         /// <param name="subPos">bit位置</param>
         /// <param name="setValue">bit数</param>
-        /// <returns></returns>
+        /// <returns>设置是否成功</returns>
         public virtual bool SetBit(byte[] contents, int pos, int subPos, bool setValue)
         {
             try
@@ -869,6 +886,9 @@ namespace Modbus.Net
 
         private static ValueHelper _instance;
 
+        /// <summary>
+        ///     实例，继承时请把它覆写掉
+        /// </summary>
         protected virtual ValueHelper _Instance => _instance;
 
         /// <summary>
@@ -876,6 +896,11 @@ namespace Modbus.Net
         /// </summary>
         public static ValueHelper Instance => _instance ?? (_instance = new ValueHelper());
 
+        /// <summary>
+        ///     根据端格式获取ValueHelper实例
+        /// </summary>
+        /// <param name="endian">端格式</param>
+        /// <returns>对应的ValueHelper实例</returns>
         public static ValueHelper GetInstance(Endian endian)
         {
             switch (endian)
@@ -902,61 +927,123 @@ namespace Modbus.Net
         #endregion
     }
 
+    /// <summary>
+    ///     值与字节数组之间转换的辅助类（大端格式），这是一个Singleton类
+    /// </summary>
     public class BigEndianValueHelper : ValueHelper
     {
         private static BigEndianValueHelper _bigEndianInstance;
 
+        /// <summary>
+        ///     构造器
+        /// </summary>
         protected BigEndianValueHelper()
         {
         }
 
+        /// <summary>
+        ///     覆写的实例获取
+        /// </summary>
         protected override ValueHelper _Instance => _bigEndianInstance;
 
+        /// <summary>
+        ///     是否为大端
+        /// </summary>
         protected new bool LittleEndian => false;
 
+        /// <summary>
+        ///     覆盖的获取实例的方法
+        /// </summary>
         public new static BigEndianValueHelper Instance
             => _bigEndianInstance ?? (_bigEndianInstance = new BigEndianValueHelper());
 
+        /// <summary>
+        ///     将short数字转换为byte数组
+        /// </summary>
+        /// <param name="value">待转换的值</param>
+        /// <returns>转换后的byte数组</returns>
         public override byte[] GetBytes(short value)
         {
             return Reverse(BitConverter.GetBytes(value));
         }
 
+        /// <summary>
+        ///     将int数字转换为byte数组
+        /// </summary>
+        /// <param name="value">待转换的值</param>
+        /// <returns>转换后的byte数组</returns>
         public override byte[] GetBytes(int value)
         {
             return Reverse(BitConverter.GetBytes(value));
         }
 
+        /// <summary>
+        ///     将long数字转换为byte数组
+        /// </summary>
+        /// <param name="value">待转换的值</param>
+        /// <returns>转换后的byte数组</returns>
+        /// <returns>转换出的数字</returns>
         public override byte[] GetBytes(long value)
         {
             return Reverse(BitConverter.GetBytes(value));
         }
 
+        /// <summary>
+        ///     将ushort数字转换为byte数组
+        /// </summary>
+        /// <param name="value">待转换的值</param>
+        /// <returns>转换后的byte数组</returns>
         public override byte[] GetBytes(ushort value)
         {
             return Reverse(BitConverter.GetBytes(value));
         }
 
+        /// <summary>
+        ///     将uint数字转换为byte数组
+        /// </summary>
+        /// <param name="value">待转换的值</param>
+        /// <returns>转换后的byte数组</returns>
         public override byte[] GetBytes(uint value)
         {
             return Reverse(BitConverter.GetBytes(value));
         }
 
+        /// <summary>
+        ///     将ulong数字转换为byte数组
+        /// </summary>
+        /// <param name="value">待转换的值</param>
+        /// <returns>转换后的byte数组</returns>
         public override byte[] GetBytes(ulong value)
         {
             return Reverse(BitConverter.GetBytes(value));
         }
 
+        /// <summary>
+        ///     将float数字转换为byte数组
+        /// </summary>
+        /// <param name="value">待转换的值</param>
+        /// <returns>转换后的byte数组</returns>
         public override byte[] GetBytes(float value)
         {
             return Reverse(BitConverter.GetBytes(value));
         }
 
+        /// <summary>
+        ///     将double数字转换为byte数组
+        /// </summary>
+        /// <param name="value">待转换的值</param>
+        /// <returns>转换后的byte数组</returns>
         public override byte[] GetBytes(double value)
         {
             return Reverse(BitConverter.GetBytes(value));
         }
 
+        /// <summary>
+        ///     将byte数组中相应的位置转换为short数字
+        /// </summary>
+        /// <param name="data">待转换的数组</param>
+        /// <param name="pos">转换数字的位置</param>
+        /// <returns>转换出的数字</returns>
         public override short GetShort(byte[] data, ref int pos)
         {
             Array.Reverse(data, pos, 2);
@@ -966,6 +1053,12 @@ namespace Modbus.Net
             return t;
         }
 
+        /// <summary>
+        ///     将byte数组中相应的位置转换为int数字
+        /// </summary>
+        /// <param name="data">待转换的数组</param>
+        /// <param name="pos">转换数字的位置</param>
+        /// <returns>转换出的数字</returns>
         public override int GetInt(byte[] data, ref int pos)
         {
             Array.Reverse(data, pos, 4);
@@ -975,6 +1068,12 @@ namespace Modbus.Net
             return t;
         }
 
+        /// <summary>
+        ///     将byte数组中相应的位置转换为long数字
+        /// </summary>
+        /// <param name="data">待转换的数组</param>
+        /// <param name="pos">转换数字的位置</param>
+        /// <returns>转换出的数字</returns>
         public override long GetLong(byte[] data, ref int pos)
         {
             Array.Reverse(data, pos, 8);
@@ -984,6 +1083,12 @@ namespace Modbus.Net
             return t;
         }
 
+        /// <summary>
+        ///     将byte数组中相应的位置转换为ushort数字
+        /// </summary>
+        /// <param name="data">待转换的数组</param>
+        /// <param name="pos">转换数字的位置</param>
+        /// <returns>转换出的数字</returns>
         public override ushort GetUShort(byte[] data, ref int pos)
         {
             Array.Reverse(data, pos, 2);
@@ -993,6 +1098,12 @@ namespace Modbus.Net
             return t;
         }
 
+        /// <summary>
+        ///     将byte数组中相应的位置转换为uint数字
+        /// </summary>
+        /// <param name="data">待转换的数组</param>
+        /// <param name="pos">转换数字的位置</param>
+        /// <returns>转换出的数字</returns>
         public override uint GetUInt(byte[] data, ref int pos)
         {
             Array.Reverse(data, pos, 4);
@@ -1002,6 +1113,12 @@ namespace Modbus.Net
             return t;
         }
 
+        /// <summary>
+        ///     将byte数组中相应的位置转换为ulong数字
+        /// </summary>
+        /// <param name="data">待转换的数组</param>
+        /// <param name="pos">转换数字的位置</param>
+        /// <returns>转换出的数字</returns>
         public override ulong GetULong(byte[] data, ref int pos)
         {
             Array.Reverse(data, pos, 8);
@@ -1011,6 +1128,12 @@ namespace Modbus.Net
             return t;
         }
 
+        /// <summary>
+        ///     将byte数组中相应的位置转换为float数字
+        /// </summary>
+        /// <param name="data">待转换的数组</param>
+        /// <param name="pos">转换数字的位置</param>
+        /// <returns>转换出的数字</returns>
         public override float GetFloat(byte[] data, ref int pos)
         {
             Array.Reverse(data, pos, 4);
@@ -1020,6 +1143,12 @@ namespace Modbus.Net
             return t;
         }
 
+        /// <summary>
+        ///     将byte数组中相应的位置转换为double数字
+        /// </summary>
+        /// <param name="data">待转换的数组</param>
+        /// <param name="pos">转换数字的位置</param>
+        /// <returns>转换出的数字</returns>
         public override double GetDouble(byte[] data, ref int pos)
         {
             Array.Reverse(data, pos, 8);
@@ -1029,6 +1158,11 @@ namespace Modbus.Net
             return t;
         }
 
+        /// <summary>
+        ///     反转一个byte数组
+        /// </summary>
+        /// <param name="data">待反转的数组</param>
+        /// <returns>反转后的数组</returns>
         private byte[] Reverse(byte[] data)
         {
             Array.Reverse(data);
@@ -1036,23 +1170,48 @@ namespace Modbus.Net
         }
     }
 
+    /// <summary>
+    ///     值与字节数组之间转换的辅助类（大端-大端位格式），这是一个Singleton类
+    /// </summary>
     public class BigEndianMsbValueHelper : BigEndianValueHelper
     {
         private static BigEndianValueHelper _bigEndianInstance;
 
+        /// <summary>
+        ///     构造函数
+        /// </summary>
         protected BigEndianMsbValueHelper()
         {
         }
 
+        /// <summary>
+        ///     覆写的实例获取方法
+        /// </summary>
         protected override ValueHelper _Instance => _bigEndianInstance;
 
+        /// <summary>
+        ///     是否为小端
+        /// </summary>
         protected new bool LittleEndian => false;
 
+        /// <summary>
+        ///     是否为小端位
+        /// </summary>
         protected new bool LittleEndianBit => false;
 
+        /// <summary>
+        ///     覆盖的实例获取方法
+        /// </summary>
         public new static BigEndianValueHelper Instance
             => _bigEndianInstance ?? (_bigEndianInstance = new BigEndianMsbValueHelper());
 
+        /// <summary>
+        ///     获取一个byte中相对应的bit数组展开中第n个位置中的bit元素。
+        /// </summary>
+        /// <param name="number">byte数字</param>
+        /// <param name="pos">bit数组中的对应位置</param>
+        /// <param name="subPos">小数位</param>
+        /// <returns>对应位置的bit元素</returns>
         public override bool GetBit(byte[] number, ref int pos, ref int subPos)
         {
             if (subPos < 0 && subPos > 7) throw new IndexOutOfRangeException();
@@ -1068,6 +1227,12 @@ namespace Modbus.Net
             return bit;
         }
 
+        /// <summary>
+        ///     将byte数组中相应的位置转换为8个bit数字
+        /// </summary>
+        /// <param name="data">待转换的数组</param>
+        /// <param name="pos">转换数字的位置</param>
+        /// <returns>转换出的位数组</returns>
         public override bool[] GetBits(byte[] data, ref int pos)
         {
             var t = base.GetBits(data, ref pos);
@@ -1075,6 +1240,13 @@ namespace Modbus.Net
             return t;
         }
 
+        /// <summary>
+        ///     设置对应数字中相应位置的bit的值
+        /// </summary>
+        /// <param name="number">byte数子</param>
+        /// <param name="subPos">设置位置</param>
+        /// <param name="setBit">设置bit大小，true为1，false为0</param>
+        /// <returns>设置是否成功</returns>
         public override bool SetBit(byte[] number, int pos, int subPos, bool setBit)
         {
             return base.SetBit(number, pos, 7 - subPos, setBit);

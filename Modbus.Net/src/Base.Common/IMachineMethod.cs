@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Modbus.Net
 {
+    /// <summary>
+    ///     Machine读写方法接口
+    /// </summary>
     public interface IMachineMethod
     {
         
@@ -14,7 +17,7 @@ namespace Modbus.Net
     /// <summary>
     ///     Machine的数据读写接口
     /// </summary>
-    public interface IMachineData : IMachineMethod
+    public interface IMachineMethodData : IMachineMethod
     {
         /// <summary>
         ///     读取数据

@@ -7,15 +7,27 @@ using System;
 
 namespace Modbus.Net
 {
+    /// <summary>
+    ///     CRC-LRC校验工具
+    /// </summary>
     public class Crc16
     {
         private static Crc16 _crc16;
 
+        private Crc16()
+        {
+            
+        }
+
         /// <summary>
         ///     CRC验证表
         /// </summary>
-        public byte[] crc_table = new byte[512];
+        private byte[] crc_table = new byte[512];
 
+        /// <summary>
+        ///     获取校验工具实例
+        /// </summary>
+        /// <returns></returns>
         public static Crc16 GetInstance()
         {
             if (_crc16 == null)
@@ -88,12 +100,14 @@ namespace Modbus.Net
 
         #endregion
 
+        #region LRC验证
+
         /// <summary>
         ///     取模FF(255)
         ///     取反+1
         /// </summary>
-        /// <param name="writeUncheck"></param>
-        /// <returns></returns>
+        /// <param name="message">待验证的LRC消息</param>
+        /// <returns>LRC校验是否正确</returns>
         public bool LrcEfficacy(string message)
         {
             var index = message.IndexOf(Environment.NewLine, StringComparison.Ordinal);
@@ -176,6 +190,15 @@ namespace Modbus.Net
             return hexTotal == checkString;
         }
 
+        #endregion
+
+        #region 生成LRC码
+
+        /// <summary>
+        ///     生成LRC校验码
+        /// </summary>
+        /// <param name="code">需要生成的信息</param>
+        /// <returns>生成的校验码</returns>
         public string GetLRC(byte[] code)
         {
             byte sum = 0;
@@ -183,9 +206,12 @@ namespace Modbus.Net
             {
                 sum += b;
             }
-            sum = (byte) (~sum + 1); //取反+1
+            sum = (byte)(~sum + 1); //取反+1
             var lrc = sum.ToString("X2");
             return lrc;
         }
+
+        #endregion
+
     }
 }

@@ -84,24 +84,48 @@ namespace Modbus.Net
         Id
     }
 
+    /// <summary>
+    ///     设备
+    /// </summary>
     public abstract class BaseMachine : BaseMachine<string, string>
     {
+        /// <summary>
+        ///     构造器
+        /// </summary>
+        /// <param name="getAddresses">需要与设备通讯的地址</param>
         protected BaseMachine(IEnumerable<AddressUnit> getAddresses) : base(getAddresses)
         {
         }
 
+        /// <summary>
+        ///     构造器
+        /// </summary>
+        /// <param name="getAddresses">需要与设备通讯的地址</param>
+        /// <param name="keepConnect">是否保持连接</param>
         protected BaseMachine(IEnumerable<AddressUnit> getAddresses, bool keepConnect)
             : base(getAddresses, keepConnect)
         {
         }
 
+        /// <summary>
+        ///     构造器
+        /// </summary>
+        /// <param name="getAddresses">需要与设备通讯的地址</param>
+        /// <param name="keepConnect">是否保持连接</param>
+        /// <param name="slaveAddress">从站地址</param>
+        /// <param name="masterAddress">主站地址</param>
         protected BaseMachine(IEnumerable<AddressUnit> getAddresses, bool keepConnect, byte slaveAddress,
             byte masterAddress) : base(getAddresses, keepConnect, slaveAddress, masterAddress)
         {
         }
     }
 
-    public abstract class BaseMachine<TKey, TUnitKey> : IMachineData, IMachineProperty<TKey> where TKey : IEquatable<TKey>
+    /// <summary>
+    ///     设备
+    /// </summary>
+    /// <typeparam name="TKey">设备的Id类型</typeparam>
+    /// <typeparam name="TUnitKey">设备中使用的AddressUnit的Id类型</typeparam>
+    public abstract class BaseMachine<TKey, TUnitKey> : IMachineMethodData, IMachineProperty<TKey> where TKey : IEquatable<TKey>
         where TUnitKey : IEquatable<TUnitKey>
     {
         private readonly int _maxErrorCount = 3;
@@ -254,7 +278,7 @@ namespace Modbus.Net
                     //获取数据
                     var datas =
                         await
-                            BaseUtility.InvokeUtilityMethod<IUtilityData, Task<byte[]>>("GetDatasAsync",
+                            BaseUtility.InvokeUtilityMethod<IUtilityMethodData, Task<byte[]>>("GetDatasAsync",
                                 AddressFormater.FormatAddress(communicateAddress.Area, communicateAddress.Address,
                                     communicateAddress.SubAddress),
                                 (int)
@@ -454,7 +478,7 @@ namespace Modbus.Net
                     var addressStart = AddressFormater.FormatAddress(communicateAddress.Area,
                         communicateAddress.Address);
 
-                    var datasReturn = await BaseUtility.InvokeUtilityMethod<IUtilityData, Task<byte[]>>("GetDatasAsync",
+                    var datasReturn = await BaseUtility.InvokeUtilityMethod<IUtilityMethodData, Task<byte[]>>("GetDatasAsync",
                         AddressFormater.FormatAddress(communicateAddress.Area, communicateAddress.Address, 0),
                         (int)
                             Math.Ceiling(communicateAddress.GetCount*
@@ -544,7 +568,7 @@ namespace Modbus.Net
                     }
                     //写入数据
                     await
-                        BaseUtility.InvokeUtilityMethod<IUtilityData, Task<bool>>("SetDatasAsync",addressStart,
+                        BaseUtility.InvokeUtilityMethod<IUtilityMethodData, Task<bool>>("SetDatasAsync",addressStart,
                             valueHelper.ByteArrayToObjectArray(datas,
                                 new KeyValuePair<Type, int>(communicateAddress.DataType, communicateAddress.GetCount)));
                 }
@@ -639,7 +663,7 @@ namespace Modbus.Net
         }
     }
 
-    public class BaseMachineEqualityComparer<TKey> : IEqualityComparer<IMachineProperty<TKey>>
+    internal class BaseMachineEqualityComparer<TKey> : IEqualityComparer<IMachineProperty<TKey>>
         where TKey : IEquatable<TKey>
     {
         public bool Equals(IMachineProperty<TKey> x, IMachineProperty<TKey> y)
@@ -793,10 +817,7 @@ namespace Modbus.Net
         public UnitExtend UnitExtend { get; set; }
     }
 
-    /// <summary>
-    ///     AddressUnit大小比较
-    /// </summary>
-    public struct AddressUnitEqualityComparer<TKey> : IEqualityComparer<AddressUnit<TKey>> where TKey : IEquatable<TKey>
+    internal struct AddressUnitEqualityComparer<TKey> : IEqualityComparer<AddressUnit<TKey>> where TKey : IEquatable<TKey>
     {
         public bool Equals(AddressUnit<TKey> x, AddressUnit<TKey> y)
         {

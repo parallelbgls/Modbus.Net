@@ -6,15 +6,18 @@ using System.Threading.Tasks;
 
 namespace Modbus.Net
 {
+    /// <summary>
+    ///     Utility方法读写接口
+    /// </summary>
     public interface IUtilityMethod
     {
         
     }
 
     /// <summary>
-    /// Utility的数据读写接口
+    ///     Utility的数据读写接口
     /// </summary>
-    public interface IUtilityData : IUtilityMethod
+    public interface IUtilityMethodData : IUtilityMethod
     {
         /// <summary>
         ///     获取数据
@@ -91,19 +94,19 @@ namespace Modbus.Net
     }
 
     /// <summary>
-    /// Utility的时间读写接口
+    ///      Utility的时间读写接口
     /// </summary>
-    public interface IUtilityTime : IUtilityMethod
+    public interface IUtilityMethodTime : IUtilityMethod
     {
 
         /// <summary>
-        /// 获取PLC时间
+        ///     获取PLC时间
         /// </summary>
         /// <returns>PLC时间</returns>
         Task<DateTime> GetTimeAsync();
 
         /// <summary>
-        /// 设置PLC时间
+        ///     设置PLC时间
         /// </summary>
         /// <param name="setTime">设置PLC时间</param>
         /// <returns>设置是否成功</returns>

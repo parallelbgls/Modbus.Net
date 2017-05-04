@@ -10,12 +10,19 @@ namespace Modbus.Net
     /// </summary>
     public class SocketMessageEventArgs : EventArgs
     {
+        /// <summary>
+        ///     构造器
+        /// </summary>
+        /// <param name="message">需要返回的信息</param>
         public SocketMessageEventArgs(byte[] message)
         {
             Message = message;
         }
 
-        public byte[] Message { get; set; }
+        /// <summary>
+        ///     返回的信息
+        /// </summary>
+        public byte[] Message { get; }
     }
 
     /// <summary>
@@ -39,6 +46,12 @@ namespace Modbus.Net
 
         private bool m_disposed;
 
+        /// <summary>
+        ///     构造器
+        /// </summary>
+        /// <param name="ipaddress">Ip地址</param>
+        /// <param name="port">端口</param>
+        /// <param name="timeoutTime">超时时间</param>
         public TcpConnector(string ipaddress, int port, int timeoutTime)
         {
             _host = ipaddress;
@@ -46,8 +59,14 @@ namespace Modbus.Net
             TimeoutTime = timeoutTime;
         }
 
+        /// <summary>
+        ///     连接关键字
+        /// </summary>
         public override string ConnectionToken => _host;
 
+        /// <summary>
+        ///     超时时间
+        /// </summary>
         public int TimeoutTime
         {
             get { return _timeoutTime; }
@@ -61,6 +80,9 @@ namespace Modbus.Net
             }
         }
 
+        /// <summary>
+        ///     是否已经连接
+        /// </summary>
         public override bool IsConnected => _socketClient?.Client != null && _socketClient.Connected;
 
         /// <summary>
@@ -106,11 +128,19 @@ namespace Modbus.Net
             Dispose(false);
         }
 
+        /// <summary>
+        ///     连接
+        /// </summary>
+        /// <returns>是否连接成功</returns>
         public override bool Connect()
         {
             return AsyncHelper.RunSync(ConnectAsync);
         }
 
+        /// <summary>
+        ///     连接
+        /// </summary>
+        /// <returns>是否连接成功</returns>
         public override async Task<bool> ConnectAsync()
         {
             if (_socketClient != null)
@@ -150,6 +180,10 @@ namespace Modbus.Net
             }
         }
 
+        /// <summary>
+        ///     断开
+        /// </summary>
+        /// <returns>是否断开成功</returns>
         public override bool Disconnect()
         {
             if (_socketClient == null)
@@ -183,6 +217,11 @@ namespace Modbus.Net
             Console.WriteLine(message);
         }
 
+        /// <summary>
+        ///     发送数据，不需要返回任何值
+        /// </summary>
+        /// <param name="message">发送的信息</param>
+        /// <returns>是否发送成功</returns>
         public override bool SendMsgWithoutReturn(byte[] message)
         {
             return AsyncHelper.RunSync(() => SendMsgWithoutReturnAsync(message));
@@ -219,6 +258,11 @@ namespace Modbus.Net
             }
         }
 
+        /// <summary>
+        ///     发送数据，需要返回
+        /// </summary>
+        /// <param name="message">发送的数据</param>
+        /// <returns>是否发送成功</returns>
         public override byte[] SendMsg(byte[] message)
         {
             return AsyncHelper.RunSync(() => SendMsgAsync(message));
@@ -256,6 +300,11 @@ namespace Modbus.Net
             }
         }
 
+        /// <summary>
+        ///     接收返回消息
+        /// </summary>
+        /// <param name="stream">Network Stream</param>
+        /// <returns>返回的消息</returns>
         protected async Task<byte[]> ReceiveAsync(NetworkStream stream)
         {
             try
