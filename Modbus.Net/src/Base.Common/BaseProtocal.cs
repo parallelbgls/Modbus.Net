@@ -27,16 +27,6 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="content">写入的内容，使用对象数组描述</param>
         /// <returns>从设备获取的字节流</returns>
-        public virtual byte[] SendReceive(params object[] content)
-        {
-            return AsyncHelper.RunSync(() => SendReceiveAsync(Endian, content));
-        }
-
-        /// <summary>
-        ///     发送协议内容并接收，一般方法
-        /// </summary>
-        /// <param name="content">写入的内容，使用对象数组描述</param>
-        /// <returns>从设备获取的字节流</returns>
         public override async Task<byte[]> SendReceiveAsync(params object[] content)
         {
             if (ProtocalLinker == null || !ProtocalLinker.IsConnected)
@@ -54,7 +44,7 @@ namespace Modbus.Net
     /// <summary>
     ///     基本协议
     /// </summary>
-    public abstract class BaseProtocal<TParamIn, TParamOut, TProtocalUnit> where TProtocalUnit : ProtocalUnit<TParamIn, TParamOut>
+    public abstract class BaseProtocal<TParamIn, TParamOut, TProtocalUnit> : IProtocal<TParamIn, TParamOut, TProtocalUnit> where TProtocalUnit : ProtocalUnit<TParamIn, TParamOut>
     {
         /// <summary>
         ///     构造器
@@ -67,9 +57,18 @@ namespace Modbus.Net
             MasterAddress = masterAddress;
         }
 
+        /// <summary>
+        ///     协议的端格式
+        /// </summary>
         protected Endian Endian { get; set; }
-
+        
+        /// <summary>
+        ///     从站地址
+        /// </summary>
         public byte SlaveAddress { get; set; }
+        /// <summary>
+        ///     主站地址
+        /// </summary>
         public byte MasterAddress { get; set; }
 
         /// <summary>
@@ -181,7 +180,22 @@ namespace Modbus.Net
 			return null;
 		}
 
-        public virtual async Task<byte[]> SendReceiveAsync(params object[] content)
+        /// <summary>
+        ///     发送协议内容并接收，一般方法
+        /// </summary>
+        /// <param name="content">写入的内容，使用对象数组描述</param>
+        /// <returns>从设备获取的字节流</returns>
+        public virtual byte[] SendReceive(params object[] content)
+        {
+            return AsyncHelper.RunSync(() => SendReceiveAsync(content));
+        }
+
+        /// <summary>
+        ///     发送协议内容并接收，一般方法
+        /// </summary>
+        /// <param name="content">写入的内容，使用对象数组描述</param>
+        /// <returns>从设备获取的字节流</returns>
+        public virtual Task<byte[]> SendReceiveAsync(params object[] content)
         {
             throw new NotImplementedException();
         }

@@ -9,6 +9,9 @@ namespace Modbus.Net
     /// </summary>
     public abstract class ProtocalLinker : ProtocalLinker<byte[], byte[]>
     {
+        /// <summary>
+        ///     传输连接器
+        /// </summary>
         protected new BaseConnector BaseConnector;
 
         /// <summary>
@@ -70,10 +73,16 @@ namespace Modbus.Net
     /// <summary>
     ///     基本的协议连接器
     /// </summary>
-    public abstract class ProtocalLinker<TParamIn, TParamOut>
+    public abstract class ProtocalLinker<TParamIn, TParamOut> : IProtocalLinker<TParamIn, TParamOut>
     {
+        /// <summary>
+        ///     传输连接器
+        /// </summary>
         protected BaseConnector<TParamIn, TParamOut> BaseConnector;
 
+        /// <summary>
+        ///     通讯字符串
+        /// </summary>
         public string ConnectionToken => BaseConnector.ConnectionToken;
 
         /// <summary>

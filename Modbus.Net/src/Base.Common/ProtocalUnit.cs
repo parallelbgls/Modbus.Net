@@ -95,6 +95,10 @@ namespace Modbus.Net
     /// </summary>
     public class ProtocalErrorException : Exception
     {
+        /// <summary>
+        ///     构造函数
+        /// </summary>
+        /// <param name="message"></param>
         public ProtocalErrorException(string message)
             : base(message)
         {

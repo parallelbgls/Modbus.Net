@@ -29,6 +29,11 @@ namespace Modbus.Net
     /// </summary>
     public class AddressCombinerContinus : AddressCombinerContinus<string>
     {
+        /// <summary>
+        ///     构造函数
+        /// </summary>
+        /// <param name="addressTranslator">地址转换器</param>
+        /// <param name="maxLength">单个发送协议允许的数据最长长度（字节）</param>
         public AddressCombinerContinus(AddressTranslator addressTranslator, int maxLength) : base(addressTranslator, maxLength)
         {
         }
@@ -39,16 +44,32 @@ namespace Modbus.Net
     /// </summary>
     public class AddressCombinerContinus<TKey> : AddressCombiner<TKey> where TKey : IEquatable<TKey>
     {
+        /// <summary>
+        ///     协议的数据最长长度（字节）
+        /// </summary>
         protected int MaxLength { get; set; }
 
+        /// <summary>
+        ///     构造函数
+        /// </summary>
+        /// <param name="addressTranslator">地址转换器</param>
+        /// <param name="maxLength">单个发送协议允许的数据最长长度（字节）</param>
         public AddressCombinerContinus(AddressTranslator addressTranslator, int maxLength)
         {
             AddressTranslator = addressTranslator;
             MaxLength = maxLength;
         }
 
+        /// <summary>
+        ///     地址转换器
+        /// </summary>
         protected AddressTranslator AddressTranslator { get; set; }
 
+        /// <summary>
+        ///     组合地址
+        /// </summary>
+        /// <param name="addresses">需要组合的地址</param>
+        /// <returns>组合后的地址</returns>
         public override IEnumerable<CommunicationUnit<TKey>> Combine(IEnumerable<AddressUnit<TKey>> addresses)
         {
             //按从小到大的顺序对地址进行排序
@@ -218,6 +239,11 @@ namespace Modbus.Net
     /// </summary>
     public class AddressCombinerSingle<TKey> : AddressCombiner<TKey> where TKey : IEquatable<TKey>
     {
+        /// <summary>
+        ///     组合地址
+        /// </summary>
+        /// <param name="addresses">需要组合的地址</param>
+        /// <returns>组合后的地址</returns>
         public override IEnumerable<CommunicationUnit<TKey>> Combine(IEnumerable<AddressUnit<TKey>> addresses)
         {
             return
@@ -249,6 +275,12 @@ namespace Modbus.Net
     /// </summary>
     public class AddressCombinerNumericJump : AddressCombinerNumericJump<string>
     {
+        /// <summary>
+        ///     构造函数
+        /// </summary>
+        /// <param name="jumpByteCount">需要跳过的字节个数</param>
+        /// <param name="maxLength">单个协议允许的数据最长长度（字节）</param>
+        /// <param name="addressTranslator">地址转换器</param>
         public AddressCombinerNumericJump(int jumpByteCount, int maxLength, AddressTranslator addressTranslator)
             : base(jumpByteCount, maxLength, addressTranslator)
         {
@@ -260,14 +292,28 @@ namespace Modbus.Net
     /// </summary>
     public class AddressCombinerNumericJump<TKey> : AddressCombinerContinus<TKey> where TKey : IEquatable<TKey>
     {
+        /// <summary>
+        ///     构造函数
+        /// </summary>
+        /// <param name="jumpByteCount">需要跳过的字节个数</param>
+        /// <param name="maxLength">单个协议允许的数据最长长度（字节）</param>
+        /// <param name="addressTranslator">地址转换器</param>
         public AddressCombinerNumericJump(int jumpByteCount, int maxLength, AddressTranslator addressTranslator)
             : base(addressTranslator, maxLength)
         {
             JumpNumber = jumpByteCount;
         }
 
+        /// <summary>
+        ///     跳过的地址长度
+        /// </summary>
         private int JumpNumber { get; }
 
+        /// <summary>
+        ///     组合地址
+        /// </summary>
+        /// <param name="addresses">需要组合的地址</param>
+        /// <returns>组合后的地址</returns>
         public override IEnumerable<CommunicationUnit<TKey>> Combine(IEnumerable<AddressUnit<TKey>> addresses)
         {
             var continusAddresses = base.Combine(addresses).ToList();
@@ -339,6 +385,12 @@ namespace Modbus.Net
     /// </summary>
     public class AddressCombinerPercentageJump : AddressCombinerPercentageJump<string>
     {
+        /// <summary>
+        ///     构造函数
+        /// </summary>
+        /// <param name="percentage">允许跳过的字节数除以待组合的地址的字节数的百分比</param>
+        /// <param name="maxLength">单个协议允许的数据最大长度</param>
+        /// <param name="addressTranslator">地址转换器</param>
         public AddressCombinerPercentageJump(double percentage, int maxLength, AddressTranslator addressTranslator)
             : base(percentage, maxLength, addressTranslator)
         {
@@ -350,6 +402,12 @@ namespace Modbus.Net
     /// </summary>
     public class AddressCombinerPercentageJump<TKey> : AddressCombinerContinus<TKey> where TKey : IEquatable<TKey>
     {
+        /// <summary>
+        ///     构造函数
+        /// </summary>
+        /// <param name="percentage">允许跳过的字节数除以待组合的地址的字节数的百分比</param>
+        /// <param name="maxLength">单个协议允许的数据最大长度</param>
+        /// <param name="addressTranslator">地址转换器</param>
         public AddressCombinerPercentageJump(double percentage, int maxLength, AddressTranslator addressTranslator)
             : base(addressTranslator, maxLength)
         {
@@ -357,8 +415,16 @@ namespace Modbus.Net
             Percentage = percentage;
         }
 
+        /// <summary>
+        ///     跳过的百分比
+        /// </summary>
         private double Percentage { get; }
 
+        /// <summary>
+        ///     组合地址
+        /// </summary>
+        /// <param name="addresses">需要组合的地址</param>
+        /// <returns>组合后的地址</returns>
         public override IEnumerable<CommunicationUnit<TKey>> Combine(IEnumerable<AddressUnit<TKey>> addresses)
         {
             var addressUnits = addresses as IList<AddressUnit<TKey>> ?? addresses.ToList();

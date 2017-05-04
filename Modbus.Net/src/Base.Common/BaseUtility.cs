@@ -48,7 +48,7 @@ namespace Modbus.Net
     /// <summary>
     ///      基础Api入口
     /// </summary>
-    public abstract class BaseUtility<TParamIn, TParamOut> : IUtilityProperty, IUtilityData
+    public abstract class BaseUtility<TParamIn, TParamOut> : IUtilityProperty, IUtilityMethodData
     {
         /// <summary>
         ///     协议收发主体
