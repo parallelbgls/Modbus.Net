@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Configuration;
+using System.Text;
 
 namespace Modbus.Net.OPC
 {
@@ -7,7 +8,7 @@ namespace Modbus.Net.OPC
     /// </summary>
     public class OpcDaProtocalLinker : OpcProtocalLinker
     {
-        public OpcDaProtocalLinker() : this(ConfigurationManager.OpcDaHost)
+        public OpcDaProtocalLinker() : this(ConfigurationManager.AppSettings["OpcDaHost"])
         {
         }
 

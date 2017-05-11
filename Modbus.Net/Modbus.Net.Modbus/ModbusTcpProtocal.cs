@@ -1,4 +1,6 @@
-﻿namespace Modbus.Net.Modbus
+﻿using System.Configuration;
+
+namespace Modbus.Net.Modbus
 {
     /// <summary>
     ///     Modbus/Tcp协议
@@ -6,7 +8,7 @@
     public class ModbusTcpProtocal : ModbusProtocal
     {
         public ModbusTcpProtocal(byte slaveAddress, byte masterAddress, Endian endian)
-            : this(ConfigurationManager.IP, slaveAddress, masterAddress, endian)
+            : this(ConfigurationManager.AppSettings["IP"], slaveAddress, masterAddress, endian)
         {
         }
 

@@ -1,11 +1,13 @@
-﻿namespace Modbus.Net.Modbus
+﻿using System.Configuration;
+
+namespace Modbus.Net.Modbus
 {
     /// <summary>
     ///     Modbus/Tcp协议连接器
     /// </summary>
     public class ModbusTcpProtocalLinker : TcpProtocalLinker
     {
-        public ModbusTcpProtocalLinker(string ip) : base(ip, int.Parse(ConfigurationManager.ModbusPort))
+        public ModbusTcpProtocalLinker(string ip) : base(ip, int.Parse(ConfigurationManager.AppSettings["ModbusPort"]))
         {
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ namespace Modbus.Net.OPC.FBox
         public string LinkerName { get; set; }
 
         public FBoxOpcDaMachine(string localSequence, string linkerName,
-            IEnumerable<AddressUnit> getAddresses, bool keepConnect) : base(ConfigurationManager.FBoxOpcDaHost, getAddresses, keepConnect)
+            IEnumerable<AddressUnit> getAddresses, bool keepConnect) : base(ConfigurationManager.AppSettings["FBoxOpcDaHost"], getAddresses, keepConnect)
         {
             LocalSequence = localSequence;
             LinkerName = linkerName;

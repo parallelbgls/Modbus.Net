@@ -24,11 +24,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="H.Opc" Version="0.8.1" />
+    <PackageReference Include="H.Opc" Version="0.9.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ModBus.Net\Modbus.Net.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Configuration">
+      <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\System.Configuration.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

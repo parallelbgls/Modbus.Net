@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 
 namespace Modbus.Net.Siemens
 {
@@ -8,7 +9,7 @@ namespace Modbus.Net.Siemens
     public class SiemensTcpProtocalLinker : TcpProtocalLinker
     {
         public SiemensTcpProtocalLinker(string ip)
-            : base(ip, int.Parse(ConfigurationManager.SiemensPort))
+            : base(ip, int.Parse(ConfigurationManager.AppSettings["SiemensPort"]))
         {
         }
 

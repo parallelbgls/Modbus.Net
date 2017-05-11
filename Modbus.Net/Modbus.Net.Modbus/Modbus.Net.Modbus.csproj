@@ -27,4 +27,8 @@
     <ProjectReference Include="..\ModBus.Net\Modbus.Net.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="System.Configuration" />
+  </ItemGroup>
+
 </Project>
