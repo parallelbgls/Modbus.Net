@@ -25,5 +25,11 @@
   <ItemGroup>
     <ProjectReference Include="..\ModBus.Net\Modbus.Net.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Configuration">
+      <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\System.Configuration.dll</HintPath>
+    </Reference>
+  </ItemGroup>
   
 </Project>

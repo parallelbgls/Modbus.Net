@@ -1,4 +1,5 @@
-﻿using System.IO.Ports;
+﻿using System.Configuration;
+using System.IO.Ports;
 
 namespace Modbus.Net
 {
@@ -15,7 +16,7 @@ namespace Modbus.Net
         /// <param name="stopBits">停止位</param>
         /// <param name="dataBits">数据位</param>
         protected ComProtocalLinker(int baudRate, Parity parity, StopBits stopBits, int dataBits)
-            : this(ConfigurationManager.COM, baudRate, parity, stopBits, dataBits)
+            : this(ConfigurationManager.AppSettings["COM"], baudRate, parity, stopBits, dataBits)
         {
         }
 
@@ -30,7 +31,7 @@ namespace Modbus.Net
         protected ComProtocalLinker(string com, int baudRate, Parity parity, StopBits stopBits, int dataBits)
         {
             //初始化连对象
-            BaseConnector = new ComConnector(com, baudRate, parity, stopBits, dataBits, 30000);
+            BaseConnector = new ComConnector(com, baudRate, parity, stopBits, dataBits, int.Parse(ConfigurationManager.AppSettings["ComConnectionTimeout"]));
         }
     }
 }

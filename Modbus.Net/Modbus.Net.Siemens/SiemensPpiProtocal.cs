@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Configuration;
+using System.Threading.Tasks;
 
 namespace Modbus.Net.Siemens
 {
@@ -10,7 +11,7 @@ namespace Modbus.Net.Siemens
         private readonly string _com;
 
         public SiemensPpiProtocal(byte slaveAddress, byte masterAddress)
-            : this(ConfigurationManager.COM, slaveAddress, masterAddress)
+            : this(ConfigurationManager.AppSettings["COM"], slaveAddress, masterAddress)
         {
         }
 

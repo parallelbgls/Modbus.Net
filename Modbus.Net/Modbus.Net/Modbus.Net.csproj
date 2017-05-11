@@ -50,18 +50,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\src\Base.Common\ConfigurationManager.Designer.cs" Link="ConfigurationManager.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>ConfigurationManager.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="..\src\Base.Common\ConfigurationManager.resx" Link="ConfigurationManager.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>ConfigurationManager.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
+    <Reference Include="System.Configuration">
+      <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\System.Configuration.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
