@@ -48,12 +48,14 @@
     <Compile Include="..\src\Base.Common\ValueHelper.cs" Link="ValueHelper.cs" />
     <Compile Include="..\src\Base.Common\IUtilityMethod.cs" Link="IUtilityMethod.cs" />
     <Compile Include="..\src\Base.Common\IMachineMethod.cs" Link="IMachineMethod.cs" />
+    <Compile Include="..\src\Base.Common\TypeExtensions.cs" Link="TypeExtensions.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Xml" Version="1.1.2" />
+    <PackageReference Include="Nito.AsyncEx.Tasks" Version="1.1.0" />
     <PackageReference Include="System.Collections.NonGeneric" Version="4.3.0" />
     <PackageReference Include="System.Threading.ThreadPool" Version="4.3.0" />
   </ItemGroup>

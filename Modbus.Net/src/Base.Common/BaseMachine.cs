@@ -661,6 +661,11 @@ namespace Modbus.Net
         {
             return BaseUtility.Disconnect();
         }
+
+        public string GetMachineIdString()
+        {
+            return Id.ToString();
+        }
     }
 
     internal class BaseMachineEqualityComparer<TKey> : IEqualityComparer<IMachineProperty<TKey>>
@@ -754,7 +759,7 @@ namespace Modbus.Net
     /// <summary>
     ///     地址单元
     /// </summary>
-    public class AddressUnit<TKey> where TKey : IEquatable<TKey>
+    public class AddressUnit<TKey> : IEquatable<AddressUnit<TKey>> where TKey : IEquatable<TKey>
     {
         /// <summary>
         ///     数据单元Id
@@ -815,31 +820,15 @@ namespace Modbus.Net
         ///     扩展
         /// </summary>
         public UnitExtend UnitExtend { get; set; }
-    }
 
-    internal struct AddressUnitEqualityComparer<TKey> : IEqualityComparer<AddressUnit<TKey>> where TKey : IEquatable<TKey>
-    {
-        public bool Equals(AddressUnit<TKey> x, AddressUnit<TKey> y)
+        public bool Equals(AddressUnit<TKey> other)
         {
-            return (x.Area.ToUpper() == y.Area.ToUpper() && x.Address == y.Address) || x.Id.Equals(y.Id);
-        }
-
-        public int GetHashCode(AddressUnit<TKey> obj)
-        {
-            return obj.GetHashCode();
+            return (Area.ToUpper() == other.Area.ToUpper() && Address == other.Address) || Id.Equals(other.Id);
         }
     }
 
-    /// <summary>
-    ///     设备的抽象
-    /// </summary>
-    public interface IMachineProperty<TKey> where TKey : IEquatable<TKey>
+    public interface IMachinePropertyWithoutKey
     {
-        /// <summary>
-        ///     Id
-        /// </summary>
-        TKey Id { get; set; }
-
         /// <summary>
         ///     工程名
         /// </summary>
@@ -898,5 +887,18 @@ namespace Modbus.Net
         /// </summary>
         /// <returns>是否断开成功</returns>
         bool Disconnect();
+
+        string GetMachineIdString();
+    }
+
+    /// <summary>
+    ///     设备的抽象
+    /// </summary>
+    public interface IMachineProperty<TKey> : IMachinePropertyWithoutKey where TKey : IEquatable<TKey>
+    {
+        /// <summary>
+        ///     Id
+        /// </summary>
+        TKey Id { get; set; }   
     }
 }

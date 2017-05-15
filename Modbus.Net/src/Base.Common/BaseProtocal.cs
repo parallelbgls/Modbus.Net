@@ -11,11 +11,6 @@ namespace Modbus.Net
     public abstract class BaseProtocal : BaseProtocal<byte[], byte[], ProtocalUnit>
     {
         /// <summary>
-        ///     协议的连接器
-        /// </summary>
-        public new ProtocalLinker ProtocalLinker { get; set; }
-
-        /// <summary>
         ///     构造器
         /// </summary>
         protected BaseProtocal(byte slaveAddress, byte masterAddress, Endian endian) : base(slaveAddress, masterAddress, endian)

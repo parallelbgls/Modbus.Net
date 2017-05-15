@@ -47,6 +47,11 @@
     <Compile Include="..\src\Base.Common\ValueHelper.cs" Link="ValueHelper.cs" />
     <Compile Include="..\src\Base.Common\IUtilityMethod.cs" Link="IUtilityMethod.cs" />
     <Compile Include="..\src\Base.Common\IMachineMethod.cs" Link="IMachineMethod.cs" />
+    <Compile Include="..\src\Base.Common\TypeExtensions.cs" Link="TypeExtensions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Nito.AsyncEx" Version="4.0.1" />
   </ItemGroup>
 
   <ItemGroup>

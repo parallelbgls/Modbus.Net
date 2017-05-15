@@ -14,5 +14,7 @@ namespace Modbus.Net
         private static IConfigurationRoot Configuration => builder.Build();
 
         public static IConfigurationSection AppSettings => Configuration.GetSection("AppSettings");
+
+        public static IConfigurationSection ConnectionStrings => Configuration.GetSection("ConnectionStrings");
     }
 }
