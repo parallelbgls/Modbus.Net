@@ -55,6 +55,13 @@ namespace Modbus.Net
             return task.ContinueWith(t => t.GetAwaiter().GetResult(), token);
         }
 
+        /// <summary>
+        ///     Add a CancellationToken to async task
+        /// </summary>
+        /// <typeparam name="T">type of a task</typeparam>
+        /// <param name="task">Task</param>
+        /// <param name="token">Cancellation token</param>
+        /// <returns>Task with cancellation token</returns>
         public static Task<T> WithCancellation<T>(this Task<T> task,
             CancellationToken token)
         {

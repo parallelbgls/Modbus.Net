@@ -44,7 +44,6 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="message">发送或返回的命令，CRC码除外</param>
         /// <param name="Rcvbuf">存储CRC码的字节的数组</param>
-        /// <param name="CRC">生成的CRC码</param>
         public short GetCRC(byte[] message, ref byte[] Rcvbuf)
         {
             int IX, IY, CRC;
@@ -83,7 +82,7 @@ namespace Modbus.Net
         /// <summary>
         ///     CRC校验
         /// </summary>
-        /// <param name="src">ST开头，&&结尾</param>
+        /// <param name="byteframe">需要校验的字节数组</param>
         /// <returns>十六进制数</returns>
         public bool CrcEfficacy(byte[] byteframe)
         {
@@ -149,15 +148,13 @@ namespace Modbus.Net
             decByteTotal = 255 - decByteTotal + 1;
             decByteTotal = decByteTotal & 255;
 
-            int a, b = 0;
-
             string hexByte = "", hexTotal = "";
             double i;
 
             for (i = 0; decByteTotal > 0; i++)
             {
                 //b = Convert.ToInt32(System.Math.Pow(16.0, i));
-                a = decByteTotal%16;
+                var a = decByteTotal%16;
                 decByteTotal /= 16;
                 if (a <= 9)
                     hexByte = a.ToString();

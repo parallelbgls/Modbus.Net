@@ -1244,7 +1244,8 @@ namespace Modbus.Net
         ///     设置对应数字中相应位置的bit的值
         /// </summary>
         /// <param name="number">byte数子</param>
-        /// <param name="subPos">设置位置</param>
+        /// <param name="pos">设置的位置</param>
+        /// <param name="subPos">设置的子位置</param>
         /// <param name="setBit">设置bit大小，true为1，false为0</param>
         /// <returns>设置是否成功</returns>
         public override bool SetBit(byte[] number, int pos, int subPos, bool setBit)

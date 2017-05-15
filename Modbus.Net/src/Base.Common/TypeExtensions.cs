@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace Modbus.Net
 {
+    /// <summary>
+    ///     Extensions of Reflection
+    /// </summary>
     public static class TypeExtensions
     {
         #region Public Methods
@@ -21,6 +24,9 @@ namespace Modbus.Net
         /// </param>
         /// <param name="args">
         /// The types of the method's arguments to match.
+        /// </param>
+        /// <param name="isGenericMethod">
+        /// Is method Generic Method.
         /// </param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">

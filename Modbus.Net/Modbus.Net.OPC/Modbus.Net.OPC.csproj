@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <PackageReference Include="H.Opc" Version="0.9.0" />
+    <PackageReference Include="Microsoft.Bcl.Build" Version="1.0.21" />
   </ItemGroup>
 
   <ItemGroup>

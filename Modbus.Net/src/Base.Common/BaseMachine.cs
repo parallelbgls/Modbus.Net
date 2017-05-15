@@ -662,6 +662,10 @@ namespace Modbus.Net
             return BaseUtility.Disconnect();
         }
 
+        /// <summary>
+        ///     获取设备的Id，字符串格式
+        /// </summary>
+        /// <returns></returns>
         public string GetMachineIdString()
         {
             return Id.ToString();
@@ -821,12 +825,20 @@ namespace Modbus.Net
         /// </summary>
         public UnitExtend UnitExtend { get; set; }
 
+        /// <summary>
+        ///     两个地址是否一致
+        /// </summary>
+        /// <param name="other">另一个地址</param>
+        /// <returns>是否一致</returns>
         public bool Equals(AddressUnit<TKey> other)
         {
             return (Area.ToUpper() == other.Area.ToUpper() && Address == other.Address) || Id.Equals(other.Id);
         }
     }
 
+    /// <summary>
+    ///     没有Id的设备属性
+    /// </summary>
     public interface IMachinePropertyWithoutKey
     {
         /// <summary>
@@ -888,6 +900,10 @@ namespace Modbus.Net
         /// <returns>是否断开成功</returns>
         bool Disconnect();
 
+        /// <summary>
+        ///     获取设备的Id的字符串
+        /// </summary>
+        /// <returns></returns>
         string GetMachineIdString();
     }
 
