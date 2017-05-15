@@ -23,6 +23,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Bcl.Build" Version="1.0.21" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ModBus.Net\Modbus.Net.csproj" />
   </ItemGroup>
 

@@ -409,7 +409,7 @@ namespace Modbus.Net
                 Array.Copy(data, 0, returndata, 0, i);
                 return returndata;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Dispose();
                 return null;
