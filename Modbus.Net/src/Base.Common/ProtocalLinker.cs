@@ -10,11 +10,6 @@ namespace Modbus.Net
     public abstract class ProtocalLinker : ProtocalLinker<byte[], byte[]>
     {
         /// <summary>
-        ///     传输连接器
-        /// </summary>
-        protected new BaseConnector BaseConnector;
-
-        /// <summary>
         ///     发送并接收数据
         /// </summary>
         /// <param name="content">发送协议的内容</param>

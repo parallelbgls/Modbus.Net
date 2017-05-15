@@ -55,38 +55,39 @@ namespace AnyType.Controllers
                          };
 
             //初始化任务管理器
-            task = new TaskManager(10, 300, true);
+            task = new TaskManager(10, true);
             //向任务管理器中添加设备
             task.AddMachine(new ModbusMachine(ModbusType.Tcp, "192.168.3.10", addressUnits,
             true, 2, 0));
-            //增加值返回时的处理函数
-            task.ReturnValues += (returnValues) =>
+            //启动任务
+            task.InvokeTimerAll(new TaskItemGetData(returnValues =>
             {
                 //唯一的参数包含返回值，是一个唯一标识符（machine的第二个参数），返回值（类型ReturnUnit）的键值对。
                 if (returnValues.ReturnValues != null)
                 {
                     lock (values)
                     {
-                        var unitValues = from val in returnValues.ReturnValues select new Tuple<AddressUnit, double?>(addressUnits.FirstOrDefault(p => p.CommunicationTag == val.Key), val.Value.PlcValue);
+                        var unitValues = from val in returnValues.ReturnValues
+                            select
+                            new Tuple<AddressUnit, double?>(
+                                addressUnits.FirstOrDefault(p => p.CommunicationTag == val.Key), val.Value.PlcValue);
                         values = from unitValue in unitValues
-                                 select
-                                     new TaskViewModel()
-                                     {
-                                         Id = unitValue.Item1.Id,
-                                         Name = unitValue.Item1.Name,
-                                         Address = unitValue.Item1.Address + "." + unitValue.Item1.SubAddress,
-                                         Value = unitValue.Item2 ?? 0,
-                                         Type = unitValue.Item1.DataType.Name
-                                     };
+                            select
+                            new TaskViewModel()
+                            {
+                                Id = unitValue.Item1.Id,
+                                Name = unitValue.Item1.Name,
+                                Address = unitValue.Item1.Address + "." + unitValue.Item1.SubAddress,
+                                Value = unitValue.Item2 ?? 0,
+                                Type = unitValue.Item1.DataType.Name
+                            };
                     }
                 }
                 else
                 {
                     Console.WriteLine($"ip {returnValues.MachineId} not return value");
                 }
-            };
-            //启动任务
-            task.TaskStart();
+            }, 15000, 60000));
         }
 
         [HttpGet]

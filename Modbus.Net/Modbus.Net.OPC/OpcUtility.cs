@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Modbus.Net.OPC
 {
-    public abstract class OpcUtility : BaseUtility<OpcParamIn, OpcParamOut>
+    public abstract class OpcUtility : BaseUtility<OpcParamIn, OpcParamOut, ProtocalUnit<OpcParamIn, OpcParamOut>>
     { 
         protected OpcUtility(string connectionString) : base(0, 0)
         {

@@ -8,32 +8,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Nito.AsyncEx;
 
 namespace Modbus.Net
 {
     /// <summary>
     ///     返回结果的定义类
     /// </summary>
-    public class TaskReturnDef : TaskReturnDef<string>
+    public class DataReturnDef : DataReturnDef<string>
     {
-        
+
     }
 
     /// <summary>
     ///     返回结果的定义类
     /// </summary>
-    public class TaskReturnDef<TMachineKey> where TMachineKey : IEquatable<TMachineKey>
+    public class DataReturnDef<TMachineKey> where TMachineKey : IEquatable<TMachineKey>
     {
         public TMachineKey MachineId { get; set; }
         public Dictionary<string, ReturnUnit> ReturnValues { get; set; }
-    }
-
-    /// <summary>
-    ///     时间定义
-    /// </summary>
-    public static class TimeRestore
-    {
-        public static int Restore = 0;
     }
 
     public class LimitedConcurrencyLevelTaskScheduler : TaskScheduler
@@ -105,7 +98,7 @@ namespace Modbus.Net
         /// </summary>
         private void NotifyThreadPoolOfPendingWork()
         {
-#if NET40 || NET45 || NET451 || NET452 || NET46 || NET461 || NET462
+#if NET40 || NET45 || NET451 || NET452 || NET46 || NET461 || NET462 || NET47
             ThreadPool.UnsafeQueueUserWorkItem(_ =>
 #else
             ThreadPool.QueueUserWorkItem(_ =>
@@ -199,49 +192,268 @@ namespace Modbus.Net
         }
     }
 
+    public class TaskMachine<TMachineKey> where TMachineKey : IEquatable<TMachineKey>
+    {
+        private TaskFactory _tasks { get; }
+
+        public TaskMachine(IMachineProperty<TMachineKey> machine, TaskFactory taskFactory)
+        {
+            Machine = machine;
+            _tasks = taskFactory;
+        }
+
+        public IMachineProperty<TMachineKey> Machine { get; }
+
+        public List<ITaskItem> TasksWithTimer { get; set; }
+
+        public bool InvokeTimer<TInterType>(TaskItem<TInterType> task)
+        {
+            task.DetectConnected = () => Machine.IsConnected;
+            task.GetMachine = () => Machine;
+            task.GetTaskFactory = () => _tasks;
+
+            if (!TasksWithTimer.Exists(taskCon => taskCon.Name == task.Name))
+            {
+                TasksWithTimer.Add(task);
+                task.StartTimer();
+                return true;
+            }
+            return false;
+        }
+
+        public bool StopTimer(string taskItemName)
+        {
+            if (TasksWithTimer.Exists(taskCon => taskCon.Name == taskItemName))
+            {
+                var task = TasksWithTimer.FirstOrDefault(taskCon => taskCon.Name == taskItemName);
+                task?.StopTimer();
+                TasksWithTimer.Remove(task);
+                return true;
+            }
+            return false;
+        }
+
+        public bool StopAllTimers()
+        {
+            bool ans = true;
+            foreach (var task in TasksWithTimer)
+            {
+                ans = ans && StopTimer(task.Name);
+            }
+            return ans;
+        }
+
+        public bool PauseTimer(string taskItemName)
+        {
+            if (TasksWithTimer.Exists(taskCon => taskCon.Name == taskItemName))
+            {
+                var task = TasksWithTimer.FirstOrDefault(taskCon => taskCon.Name == taskItemName);
+                task?.StopTimer();
+                return true;
+            }
+            return false;
+        }
+
+        public bool PauseAllTimers()
+        {
+            bool ans = true;
+            foreach (var task in TasksWithTimer)
+            {
+                ans = ans && PauseTimer(task.Name);
+            }
+            return ans;
+        }
+
+        public bool ContinueTimer(string taskItemName)
+        {
+            if (TasksWithTimer.Exists(taskCon => taskCon.Name == taskItemName))
+            {
+                var task = TasksWithTimer.FirstOrDefault(taskCon => taskCon.Name == taskItemName);
+                task?.StartTimer();
+                return true;
+            }
+            return false;
+        }
+
+        public bool ContinueAllTimers()
+        {
+            bool ans = true;
+            foreach (var task in TasksWithTimer)
+            {
+                ans = ans && ContinueTimer(task.Name);
+            }
+            return ans;
+        }
+
+        public async Task<bool> InvokeOnce<TInterType>(TaskItem<TInterType> task)
+        {
+            if (Machine.IsConnected)
+            {
+                var ans = await task.Invoke(Machine, _tasks, task.Params);
+                task.Return(ans);
+                return true;
+            }
+            return false;
+        }
+    }
+
+    internal class TaskMachineEqualityComparer<TKey> : IEqualityComparer<TaskMachine<TKey>>
+        where TKey : IEquatable<TKey>
+    {
+        public bool Equals(TaskMachine<TKey> x, TaskMachine<TKey> y)
+        {
+            return x.Machine.Id.Equals(y.Machine.Id);
+        }
+
+        public int GetHashCode(TaskMachine<TKey> obj)
+        {
+            return obj.GetHashCode();
+        }
+    }
+
+    public interface ITaskItem
+    {
+        string Name { get; set; }
+
+        bool StartTimer();
+
+        bool StopTimer();
+    }
+
+    public class TaskItemGetData : TaskItem<DataReturnDef>
+    {
+        public TaskItemGetData(Action<DataReturnDef> returnFunc, int getCycle, int sleepCycle)
+        {
+            Name = "GetDatas";
+            Invoke = async (machine, tasks, parameters) =>
+            {
+                var cts = new CancellationTokenSource();
+                cts.CancelAfter(TimeSpan.FromSeconds(100000));
+                var ans =
+                    await tasks.Run(
+                        async () => await machine.InvokeMachineMethod<IMachineMethodData,
+                            Task<Dictionary<string, ReturnUnit>>>("GetDatasAsync",
+                            MachineGetDataType.CommunicationTag).WithCancellation(cts.Token));
+                return new DataReturnDef
+                {
+                    MachineId = machine.GetMachineIdString(),
+                    ReturnValues = ans,
+                };
+            };
+            Params = null;
+            Return = returnFunc;
+            TimerDisconnectedTime = sleepCycle;
+            TimerTime = getCycle;
+        }
+    }
+
+    public class TaskItemSetData : TaskItem<bool>
+    {
+        public TaskItemSetData(Dictionary<string, double> values)
+        {
+            Name = "SetDatas";
+            Invoke = Invoke = async (machine, tasks, parameters) =>
+            {
+                var cts = new CancellationTokenSource();
+                cts.CancelAfter(TimeSpan.FromSeconds(100000));
+                var ans =
+                    await tasks.Run(
+                        async () => await machine.InvokeMachineMethod<IMachineMethodData,
+                            Task<bool>>("SetDatasAsync", parameters[0],
+                            MachineSetDataType.CommunicationTag).WithCancellation(cts.Token));
+                return ans;
+            };
+            Params = new object[]{values};
+        }
+    }
+
+    public class TaskItem<TInterType> : ITaskItem, IEquatable<TaskItem<TInterType>>
+    {
+        public string Name { get; set; }
+        private Timer Timer { get; set; }
+        public int TimerTime { get; set; }
+        private Timer TimerDisconnected { get; set; }
+        public int TimerDisconnectedTime { get; set; }
+        public Func<IMachinePropertyWithoutKey, TaskFactory, object[], Task<TInterType>> Invoke { get; set; }
+        internal Func<bool> DetectConnected { get; set; } 
+        public object[] Params { get; set; }
+        public Action<TInterType> Return { get; set; }
+        internal Func<IMachinePropertyWithoutKey> GetMachine { get; set; }
+        internal Func<TaskFactory> GetTaskFactory { get; set; }
+
+        public bool Equals(TaskItem<TInterType> other)
+        {
+            return Name == other?.Name;
+        }
+
+        public bool StartTimer()
+        {
+            ActivateTimerDisconnected();
+            return true;
+        }
+
+        private void ActivateTimer()
+        {
+            Timer = new Timer(async state =>
+            {
+                if (!DetectConnected()) TimerChangeToDisconnect();
+                var ans = await Invoke(GetMachine(),GetTaskFactory(),Params);
+                Return(ans);
+            }, null, 0, TimerTime);
+        }
+
+        private void DeactivateTimer()
+        {
+            Timer.Dispose();
+            Timer = null;
+        }
+
+        private void ActivateTimerDisconnected()
+        {
+            TimerDisconnected = new Timer(async state =>
+            {
+                await GetMachine().ConnectAsync();
+                if (DetectConnected()) TimerChangeToConnect();
+            }, null, 0, TimerDisconnectedTime);
+        }
+
+        private void DeactivateTimerDisconnected()
+        {
+            TimerDisconnected.Dispose();
+            TimerDisconnected = null;
+        }
+
+        private bool TimerChangeToConnect()
+        {
+            DeactivateTimerDisconnected();
+            ActivateTimer();
+            return true;
+        }
+
+        private bool TimerChangeToDisconnect()
+        {
+            DeactivateTimer();
+            ActivateTimerDisconnected();
+            return true;
+        }
+
+        public bool StopTimer()
+        {
+            DeactivateTimer();
+            DeactivateTimerDisconnected();
+            return true;
+        }
+    }
+
     /// <summary>
     ///     任务调度器
     /// </summary>
     public class TaskManager : TaskManager<string>
     {
-        public TaskManager(int maxRunningTask, int getCycle, bool keepConnect,
+        public TaskManager(int maxRunningTask, bool keepConnect,
             MachineDataType dataType = MachineDataType.CommunicationTag)
-            : base(maxRunningTask, getCycle, keepConnect, dataType)
+            : base(maxRunningTask, keepConnect, dataType)
         {
-        }
-
-        public new delegate void ReturnValuesDelegate(TaskReturnDef returnValue);
-
-        public new event ReturnValuesDelegate ReturnValues;
-
-        /// <summary>
-        ///     执行对具体设备的数据更新
-        /// </summary>
-        /// <param name="machine">设备的实例</param>
-        /// <returns></returns>
-        protected override async Task RunTask(IMachineProperty<string> machine)
-        {
-            try
-            {
-                var ans = await GetValue(machine);
-                ReturnValues?.Invoke(new TaskReturnDef
-                {
-                    MachineId = machine.Id,
-                    ReturnValues = ans
-                });
-            }
-            catch (Exception e)
-            {
-                if (!machine.IsConnected)
-                {
-                    MoveMachineToUnlinked(machine.Id);
-                }
-                ReturnValues?.Invoke(new TaskReturnDef
-                {
-                    MachineId = machine.Id,
-                    ReturnValues = null
-                });
-            }
         }
 
         public void AddMachine(BaseMachine machine)
@@ -272,27 +484,11 @@ namespace Modbus.Net
     public class TaskManager<TMachineKey> where TMachineKey : IEquatable<TMachineKey>
     {
         /// <summary>
-        ///     返回数据代理
-        /// </summary>
-        /// <param name="returnValue"></param>
-        public delegate void ReturnValuesDelegate(TaskReturnDef<TMachineKey> returnValue);
-
-        /// <summary>
         ///     正在运行的设备
         /// </summary>
-        private readonly HashSet<IMachineProperty<TMachineKey>> _machines;
-
-        /// <summary>
-        ///     不在运行的设备
-        /// </summary>
-        private readonly HashSet<IMachineProperty<TMachineKey>> _unlinkedMachines;
+        private readonly HashSet<TaskMachine<TMachineKey>> _machines;
 
         private CancellationTokenSource _cts;
-
-        /// <summary>
-        ///     获取间隔
-        /// </summary>
-        private int _getCycle;
 
         /// <summary>
         ///     保持连接
@@ -310,33 +506,31 @@ namespace Modbus.Net
         private TaskFactory _tasks;
 
         /// <summary>
-        ///     正常读取的计时器
-        /// </summary>
-        private Timer _timer;
-
-        /// <summary>
-        ///     重连计时器
-        /// </summary>
-        private Timer _timer2;
-
-        /// <summary>
         ///     构造一个TaskManager
         /// </summary>
         /// <param name="maxRunningTask">同时可以运行的任务数</param>
-        /// <param name="getCycle">读取数据的时间间隔（毫秒）</param>
         /// <param name="keepConnect">读取数据后是否保持连接</param>
         /// <param name="dataType">获取与设置数据的方式</param>
-        public TaskManager(int maxRunningTask, int getCycle, bool keepConnect,
+        public TaskManager(int maxRunningTask, bool keepConnect,
             MachineDataType dataType = MachineDataType.CommunicationTag)
         {
             _scheduler = new LimitedConcurrencyLevelTaskScheduler(maxRunningTask);
             _machines =
-                new HashSet<IMachineProperty<TMachineKey>>(new BaseMachineEqualityComparer<TMachineKey>());
-            _unlinkedMachines =
-                new HashSet<IMachineProperty<TMachineKey>>(new BaseMachineEqualityComparer<TMachineKey>());
-            _getCycle = getCycle;
+                new HashSet<TaskMachine<TMachineKey>>(new TaskMachineEqualityComparer<TMachineKey>());
             KeepConnect = keepConnect;
             MachineDataType = dataType;
+            _cts = new CancellationTokenSource();
+            _tasks = new TaskFactory(_cts.Token, TaskCreationOptions.None, TaskContinuationOptions.None, _scheduler);
+        }
+
+        /// <summary>
+        ///     强制停止所有正在运行的任务
+        /// </summary>
+        public void TaskHalt()
+        {
+            _cts.Cancel();
+            _cts = new CancellationTokenSource();
+            _tasks = new TaskFactory(_cts.Token, TaskCreationOptions.None, TaskContinuationOptions.None, _scheduler);
         }
 
         /// <summary>
@@ -347,61 +541,16 @@ namespace Modbus.Net
             get { return _keepConnect; }
             set
             {
-                TaskStop();
+                PauseTimerAll();
                 _keepConnect = value;
                 lock (_machines)
                 {
                     foreach (var machine in _machines)
                     {
-                        machine.KeepConnect = _keepConnect;
+                        machine.Machine.KeepConnect = _keepConnect;
                     }
                 }
-            }
-        }
-
-        /// <summary>
-        ///     获取间隔，毫秒
-        /// </summary>
-        public int GetCycle
-        {
-            get { return _getCycle; }
-            set
-            {
-                if (value == _getCycle) return;
-
-                if (value == Timeout.Infinite)
-                {
-                    if (_timer != null)
-                    {
-                        _timer.Change(Timeout.Infinite, Timeout.Infinite);
-                        _timer2.Change(Timeout.Infinite, Timeout.Infinite);
-                        _timer.Dispose();
-                        _timer2.Dispose();
-                        _timer = null;
-                        _timer2 = null;
-                    }
-                }
-                else if (value < 0) return;
-                else
-                {
-                    if (_timer != null)
-                    {
-                        _timer.Change(Timeout.Infinite, Timeout.Infinite);
-                        _timer2.Change(Timeout.Infinite, Timeout.Infinite);
-                        _timer.Dispose();
-                        _timer2.Dispose();
-                        _timer = null;
-                        _timer2 = null;
-                    }
-                    if (value > 0)
-                    {
-                        _getCycle = value;
-                    }
-                    _timer = new Timer(MaintainTasks, null, 0, _getCycle);
-                    _timer2 = new Timer(MaintainTasks2, null, _getCycle*2, _getCycle*2);
-                    //调试行，调试时请注释上面两行并取消下面一行的注释，每台设备只会执行一次数据获取。                
-                    //MaintainTasks(null);
-                }
+                ContinueTimerAll();
             }
         }
 
@@ -450,26 +599,23 @@ namespace Modbus.Net
             get { return _scheduler.MaximumConcurrencyLevel; }
             set
             {
-                TaskStop();
+                PauseTimerAll();
                 _scheduler = new LimitedConcurrencyLevelTaskScheduler(value);
+                ContinueTimerAll();
             }
         }
-
-        /// <summary>
-        ///     返回数据事件
-        /// </summary>
-        public event ReturnValuesDelegate ReturnValues;
 
         /// <summary>
         ///     添加一台设备
         /// </summary>
         /// <param name="machine">设备</param>
-        public void AddMachine<TUnitKey>(BaseMachine<TMachineKey, TUnitKey> machine) where TUnitKey : IEquatable<TUnitKey>
+        public void AddMachine<TUnitKey>(BaseMachine<TMachineKey, TUnitKey> machine)
+            where TUnitKey : IEquatable<TUnitKey>
         {
             machine.KeepConnect = KeepConnect;
             lock (_machines)
             {
-                _machines.Add(machine);
+                _machines.Add(new TaskMachine<TMachineKey>(machine, _tasks) {TasksWithTimer = new List<ITaskItem>()});
             }
         }
 
@@ -477,7 +623,8 @@ namespace Modbus.Net
         ///     添加多台设备
         /// </summary>
         /// <param name="machines">设备的列表</param>
-        public void AddMachines<TUnitKey>(IEnumerable<BaseMachine<TMachineKey, TUnitKey>> machines) where TUnitKey : IEquatable<TUnitKey>
+        public void AddMachines<TUnitKey>(IEnumerable<BaseMachine<TMachineKey, TUnitKey>> machines)
+            where TUnitKey : IEquatable<TUnitKey>
         {
             lock (_machines)
             {
@@ -493,17 +640,10 @@ namespace Modbus.Net
         {
             try
             {
-                IMachineProperty<TMachineKey> machine;
+                TaskMachine<TMachineKey> machine;
                 lock (_machines)
                 {
-                    machine = _machines.FirstOrDefault(p => p.Id.Equals(id));
-                    if (machine == null)
-                    {
-                        lock (_unlinkedMachines)
-                        {
-                            machine = _unlinkedMachines.FirstOrDefault(p => p.Id.Equals(id));
-                        }
-                    }
+                    machine = _machines.FirstOrDefault(p => p.Machine.Id.Equals(id));
                 }
                 return machine as BaseMachine<TMachineKey, TUnitKey>;
             }
@@ -519,17 +659,10 @@ namespace Modbus.Net
         {
             try
             {
-                IMachineProperty<TMachineKey> machine;
+                TaskMachine<TMachineKey> machine;
                 lock (_machines)
                 {
-                    machine = _machines.FirstOrDefault(p => p.ConnectionToken == connectionToken);
-                    if (machine == null)
-                    {
-                        lock (_unlinkedMachines)
-                        {
-                            machine = _unlinkedMachines.FirstOrDefault(p => p.ConnectionToken == connectionToken);
-                        }
-                    }
+                    machine = _machines.FirstOrDefault(p => p.Machine.ConnectionToken == connectionToken);
                 }
                 return machine as BaseMachine<TMachineKey, TUnitKey>;
             }
@@ -548,11 +681,7 @@ namespace Modbus.Net
         {
             lock (_machines)
             {
-                _machines.RemoveWhere(p => p.ConnectionToken == machineToken);
-            }
-            lock (_unlinkedMachines)
-            {
-                _unlinkedMachines.RemoveWhere(p => p.ConnectionToken == machineToken);
+                _machines.RemoveWhere(p => p.Machine.ConnectionToken == machineToken);
             }
         }
 
@@ -564,55 +693,7 @@ namespace Modbus.Net
         {
             lock (_machines)
             {
-                _machines.RemoveWhere(p => p.Id.Equals(id));
-            }
-            lock (_unlinkedMachines)
-            {
-                _unlinkedMachines.RemoveWhere(p => p.Id.Equals(id));
-            }
-        }
-
-        /// <summary>
-        ///     将设备指定为未连接
-        /// </summary>
-        /// <param name="id">设备的id</param>
-        public void MoveMachineToUnlinked(TMachineKey id)
-        {
-            IEnumerable<IMachineProperty<TMachineKey>> machines;
-            lock (_machines)
-            {
-                machines = _machines.Where(c => c.Id.Equals(id)).ToList();
-                if (!machines.Any()) return;
-                _machines.RemoveWhere(p => p.Id.Equals(id));
-            }
-            lock (_unlinkedMachines)
-            {
-                foreach (var machine in machines)
-                {
-                    _unlinkedMachines.Add(machine);
-                }
-            }
-        }
-
-        /// <summary>
-        ///     将设备指定为已连接
-        /// </summary>
-        /// <param name="id">设备的id</param>
-        public void MoveMachineToLinked(TMachineKey id)
-        {
-            IEnumerable<IMachineProperty<TMachineKey>> machines;
-            lock (_unlinkedMachines)
-            {
-                machines = _unlinkedMachines.Where(c => c.Id.Equals(id)).ToList();
-                if (!machines.Any()) return;
-                _unlinkedMachines.RemoveWhere(p => p.Id.Equals(id));
-            }
-            lock (_machines)
-            {
-                foreach (var machine in machines)
-                {
-                    _machines.Add(machine);
-                }
+                _machines.RemoveWhere(p => p.Machine.Id.Equals(id));
             }
         }
 
@@ -624,192 +705,161 @@ namespace Modbus.Net
         {
             lock (_machines)
             {
-                _machines.Remove(machine);
-            }
-            lock (_unlinkedMachines)
-            {
-                _unlinkedMachines.Remove(machine);
+                _machines.RemoveWhere(p=>p.Machine.Equals(machine));
             }
         }
 
-        /// <summary>
-        ///     已连接设备更新
-        /// </summary>
-        /// <param name="sender"></param>
-        private void MaintainTasks(object sender)
-        {
-            AsyncHelper.RunSync(MaintainTasksAsync);
-        }
-
-        /// <summary>
-        ///     未连接设备更新
-        /// </summary>
-        /// <param name="sender"></param>
-        private void MaintainTasks2(object sender)
-        {
-            AsyncHelper.RunSync(MaintainTasks2Async);
-        }
-
-        /// <summary>
-        ///     已连接设备更新
-        /// </summary>
-        /// <returns></returns>
-        private async Task MaintainTasksAsync()
-        {
-            try
-            {
-                var tasks = new List<Task>();
-                var saveMachines = new HashSet<IMachineProperty<TMachineKey>>();
-                IEnumerable<IMachineProperty<TMachineKey>> saveMachinesEnum;
-                lock (_machines)
-                {
-                    saveMachines.UnionWith(_machines);
-                    saveMachinesEnum = saveMachines.ToList();
-                }
-                foreach (var machine in saveMachinesEnum)
-                {
-                    var cts = new CancellationTokenSource();
-                    cts.CancelAfter(TimeSpan.FromSeconds(_getCycle*10));
-                    var task = _tasks.StartNew(() => RunTask(machine).WithCancellation(cts.Token));
-                    tasks.Add(task);
-                }
-                await Task.WhenAll(tasks);
-            }
-            catch (Exception)
-            {
-                //ignore
-            }
-        }
-
-        /// <summary>
-        ///     未连接设备更新
-        /// </summary>
-        /// <returns></returns>
-        private async Task MaintainTasks2Async()
-        {
-            try
-            {
-                var tasks = new List<Task>();
-                var saveMachines = new HashSet<IMachineProperty<TMachineKey>>();
-                lock (_unlinkedMachines)
-                {
-                    saveMachines.UnionWith(_unlinkedMachines);
-                }
-                foreach (var machine in saveMachines)
-                {
-                    var cts = new CancellationTokenSource();
-                    cts.CancelAfter(TimeSpan.FromSeconds(_getCycle*10));
-                    var task = _tasks.StartNew(() => RunTask(machine).WithCancellation(cts.Token));
-                    tasks.Add(task);
-                }
-                await Task.WhenAll(tasks);
-            }
-            catch (Exception)
-            {
-                //ignore
-            }
-        }
-
-        /// <summary>
-        ///     设置数据
-        /// </summary>
-        /// <param name="connectionToken">设备的连接标识</param>
-        /// <param name="values">需要设置的数据</param>
-        /// <returns>是否设置成功</returns>
-        public async Task<bool> SetDatasAsync(string connectionToken,
-            Dictionary<string, double> values)
-        {
-            IMachineProperty<TMachineKey> machine = null;
-            lock (_machines)
-            {
-                machine = _machines.FirstOrDefault(p => p.ConnectionToken == connectionToken);
-            }
-            if (machine == null) return false;
-            return await machine.InvokeMachineMethod<IMachineMethodData, Task<bool>>("SetDatasAsync", SetDataType, values);
-        }
-
-        /// <summary>
-        ///     启动TaskManager
-        /// </summary>
-        public void TaskStart()
-        {
-            TaskStop();
-            _cts = new CancellationTokenSource();
-            _tasks = new TaskFactory(_cts.Token, TaskCreationOptions.None, TaskContinuationOptions.None, _scheduler);
-            GetCycle = TimeRestore.Restore;
-        }
-
-        /// <summary>
-        ///     停止TaskManager
-        /// </summary>
-        public void TaskStop()
+        public bool InvokeTimerAll<TInterType>(TaskItem<TInterType> item)
         {
             lock (_machines)
             {
-                GetCycle = Timeout.Infinite;
-                _cts?.Cancel();
-                if (_machines != null)
+                foreach (var machine in _machines)
                 {
-                    foreach (var machine in _machines)
-                    {
-                        machine.Disconnect();
-                    }
+                    machine.InvokeTimer(item);
                 }
-                _tasks = null;
             }
+            return true;
         }
 
-        /// <summary>
-        ///     执行对具体设备的数据更新
-        /// </summary>
-        /// <param name="machine">设备的实例</param>
-        /// <returns></returns>
-        protected virtual async Task RunTask(IMachineProperty<TMachineKey> machine)
+        public bool StopTimerAll()
         {
-            try
+            lock (_machines)
             {
-                var ans = await GetValue(machine);
-                ReturnValues?.Invoke(new TaskReturnDef<TMachineKey>
+                foreach (var machine in _machines)
                 {
-                    MachineId = machine.Id,
-                    ReturnValues = ans
-                });
-            }
-            catch (Exception e)
-            {
-                if (!machine.IsConnected)
-                {
-                    MoveMachineToUnlinked(machine.Id);
+                    machine.StopAllTimers();
                 }
-                ReturnValues?.Invoke(new TaskReturnDef<TMachineKey>
-                {
-                    MachineId = machine.Id,
-                    ReturnValues = null
-                });
             }
+            return true;
         }
 
-        protected async Task<Dictionary<string, ReturnUnit>> GetValue(IMachineProperty<TMachineKey> machine)
+        public bool StopTimerAll(string taskItemName)
         {
-            //调试代码，调试时取消下面一下代码的注释，会同步调用获取数据。
-            //var ans = machine.GetDatas();
-            //设置Cancellation Token
-            var cts = new CancellationTokenSource();
-            //超时后取消任务
-            cts.CancelAfter(TimeSpan.FromSeconds(_getCycle));
-            //读取数据
-            var ans =
-                await machine.InvokeMachineMethod<IMachineMethodData, Task<Dictionary<string, ReturnUnit>>>("GetDatasAsync",
-                    GetDataType).WithCancellation(cts.Token);
-            if (!machine.IsConnected)
+            lock (_machines)
             {
-                MoveMachineToUnlinked(machine.Id);
+                foreach (var machine in _machines)
+                {
+                    machine.StopTimer(taskItemName);
+                }
             }
-            else
+            return true;
+        }
+
+        public bool PauseTimerAll()
+        {
+            lock (_machines)
             {
-                MoveMachineToLinked(machine.Id);
+                foreach (var machine in _machines)
+                {
+                    machine.PauseAllTimers();
+                }
             }
-            return ans;
+            return true;
+        }
+
+        public bool PauseTimerAll(string taskItemName)
+        {
+            lock (_machines)
+            {
+                foreach (var machine in _machines)
+                {
+                    machine.PauseTimer(taskItemName);
+                }
+            }
+            return true;
+        }
+
+        public bool ContinueTimerAll()
+        {
+            lock (_machines)
+            {
+                foreach (var machine in _machines)
+                {
+                    machine.ContinueAllTimers();
+                }
+            }
+            return true;
+        }
+
+        public bool ConinueTimerAll(string taskItemName)
+        {
+            lock (_machines)
+            {
+                foreach (var machine in _machines)
+                {
+                    machine.ContinueTimer(taskItemName);
+                }
+            }
+            return true;
+        }
+
+        public async Task<bool> InvokeOnceAll<TInterType>(TaskItem<TInterType> item)
+        {
+            var tasks = new List<Task<bool>>();
+            lock (_machines)
+            {
+                foreach (var machine in _machines)
+                {
+                    tasks.Add(machine.InvokeOnce(item));
+                }
+            }
+            var ans = await Task.WhenAll(tasks);
+            return ans.All(p=>p);
+        }
+
+        public async Task<bool> InvokeOnceForMachine<TInterType>(TMachineKey machineId, TaskItem<TInterType> item)
+        {
+            var machine = _machines.FirstOrDefault(p => p.Machine.Id.Equals(machineId));
+            if (machine != null)
+            {
+                await machine.InvokeOnce(item);
+                return true;
+            }
+            return false;
+        }
+
+        public bool InvokeTimerForMachine<TInterType>(TMachineKey machineId, TaskItem<TInterType> item)
+        {
+            var machine = _machines.FirstOrDefault(p => p.Machine.Id.Equals(machineId));
+            if (machine != null)
+            {
+                machine.InvokeTimer(item);
+                return true;
+            }
+            return false;
+        }
+
+        public bool StopTimerForMachine(TMachineKey machineId, string taskItemName)
+        {
+            var machine = _machines.FirstOrDefault(p => p.Machine.Id.Equals(machineId));
+            if (machine != null)
+            {
+                machine.StopTimer(taskItemName);
+                return true;
+            }
+            return false;
+        }
+
+        public bool PauseTimerForMachine(TMachineKey machineId, string taskItemName)
+        {
+            var machine = _machines.FirstOrDefault(p => p.Machine.Id.Equals(machineId));
+            if (machine != null)
+            {
+                machine.PauseTimer(taskItemName);
+                return true;
+            }
+            return false;
+        }
+
+        public bool ContinueTimerForMachine(TMachineKey machineId, string taskItemName)
+        {
+            var machine = _machines.FirstOrDefault(p => p.Machine.Id.Equals(machineId));
+            if (machine != null)
+            {
+                machine.ContinueTimer(taskItemName);
+                return true;
+            }
+            return false;
         }
     }
 }

@@ -28,7 +28,7 @@ namespace Modbus.Net
     /// <summary>
     ///      基础Api入口
     /// </summary>
-    public abstract class BaseUtility : BaseUtility<byte[], byte[]>
+    public abstract class BaseUtility : BaseUtility<byte[], byte[], ProtocalUnit>
     {
         /// <summary>
         ///     构造器
@@ -37,23 +37,17 @@ namespace Modbus.Net
         {
             
         }
-
-        /// <summary>
-        ///     协议收发主体
-        /// </summary>
-        protected new BaseProtocal Wrapper;
-
     }
 
     /// <summary>
     ///      基础Api入口
     /// </summary>
-    public abstract class BaseUtility<TParamIn, TParamOut> : IUtilityProperty, IUtilityMethodData
+    public abstract class BaseUtility<TParamIn, TParamOut, TProtocalUnit> : IUtilityProperty, IUtilityMethodData where TProtocalUnit : ProtocalUnit<TParamIn, TParamOut>
     {
         /// <summary>
         ///     协议收发主体
         /// </summary>
-        protected BaseProtocal<TParamIn, TParamOut, ProtocalUnit<TParamIn, TParamOut>> Wrapper;
+        protected BaseProtocal<TParamIn, TParamOut, TProtocalUnit> Wrapper;
 
         /// <summary>
         ///     构造器
@@ -160,7 +154,7 @@ namespace Modbus.Net
                 return null;
             }
         }
-
+        
         /// <summary>
         ///     获取数据
         /// </summary>
@@ -296,7 +290,7 @@ namespace Modbus.Net
             if (this is TUtilityMethod)
             {
                 Type t = typeof(TUtilityMethod);
-                object returnValue = t.GetRuntimeMethod(methodName, parameters.Select(p => p.GetType()).ToArray())
+                object returnValue = t.GetRuntimeMethod(methodName, parameters.Select(p => p.GetType()).ToArray(), false)
                     .Invoke(this, parameters);
                 return (TReturnType)returnValue;
             }

@@ -142,7 +142,7 @@ namespace Modbus.Net.Tests
                 MachineName = "Test 2"
             };
 
-            _taskManager = new TaskManager<int>(10, 3000, true);
+            _taskManager = new TaskManager<int>(10, true);
 
             _taskManager.AddMachine(_baseMachine);
             _taskManager.AddMachine(_baseMachine2);
