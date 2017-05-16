@@ -9,8 +9,8 @@ namespace Modbus.Net.Siemens
     /// </summary>
     public class SiemensPpiProtocalLinker : ComProtocalLinker
     {
-        public SiemensPpiProtocalLinker(string com)
-            : base(com, 9600, Parity.Even, StopBits.One, 8)
+        public SiemensPpiProtocalLinker(string com, int slaveAddress)
+            : base(com, 9600, Parity.Even, StopBits.One, 8, slaveAddress)
         {
         }
 
