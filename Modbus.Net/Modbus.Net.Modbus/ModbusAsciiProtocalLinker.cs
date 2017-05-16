@@ -8,7 +8,7 @@ namespace Modbus.Net.Modbus
     /// </summary>
     public class ModbusAsciiProtocalLinker : ComProtocalLinker
     {
-        public ModbusAsciiProtocalLinker(string com) : base(com, 9600, Parity.None, StopBits.One, 8)
+        public ModbusAsciiProtocalLinker(string com, int slaveAddress) : base(com, 9600, Parity.None, StopBits.One, 8, slaveAddress)
         {
         }
 

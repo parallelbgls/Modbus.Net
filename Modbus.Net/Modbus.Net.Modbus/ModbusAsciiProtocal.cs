@@ -15,7 +15,7 @@ namespace Modbus.Net.Modbus
         public ModbusAsciiProtocal(string com, byte slaveAddress, byte masterAddress, Endian endian)
             : base(slaveAddress, masterAddress, endian)
         {
-            ProtocalLinker = new ModbusAsciiProtocalLinker(com);
+            ProtocalLinker = new ModbusAsciiProtocalLinker(com, slaveAddress);
         }
     }
 }

@@ -7,7 +7,7 @@ namespace Modbus.Net.Modbus
     /// </summary>
     public class ModbusRtuProtocalLinker : ComProtocalLinker
     {
-        public ModbusRtuProtocalLinker(string com) : base(com, 9600, Parity.None, StopBits.One, 8)
+        public ModbusRtuProtocalLinker(string com, int slaveAddress) : base(com, 9600, Parity.None, StopBits.One, 8, slaveAddress)
         {
         }
 

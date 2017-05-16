@@ -9,7 +9,7 @@ namespace Modbus.Net.Siemens
     public class SiemensTcpProtocalLinker : TcpProtocalLinker
     {
         public SiemensTcpProtocalLinker(string ip)
-            : base(ip, int.Parse(ConfigurationManager.AppSettings["SiemensPort"]))
+            : this(ip, int.Parse(ConfigurationManager.AppSettings["SiemensPort"] ?? "102"))
         {
         }
 

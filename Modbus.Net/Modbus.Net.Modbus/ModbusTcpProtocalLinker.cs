@@ -7,7 +7,7 @@ namespace Modbus.Net.Modbus
     /// </summary>
     public class ModbusTcpProtocalLinker : TcpProtocalLinker
     {
-        public ModbusTcpProtocalLinker(string ip) : base(ip, int.Parse(ConfigurationManager.AppSettings["ModbusPort"]))
+        public ModbusTcpProtocalLinker(string ip) : base(ip, int.Parse(ConfigurationManager.AppSettings["ModbusPort"] ?? "502"))
         {
         }
 

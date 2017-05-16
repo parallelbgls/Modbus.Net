@@ -24,7 +24,7 @@ namespace Modbus.Net.Siemens
         }
 
         public SiemensTcpProtocal(byte tdpuSize, ushort tsapSrc, ushort tsapDst, ushort maxCalling, ushort maxCalled,
-            ushort maxPdu, string ip) : this(tdpuSize, tsapSrc, tsapDst, maxCalling, maxCalled, maxPdu, ip, 0)
+            ushort maxPdu, string ip) : this(tdpuSize, tsapSrc, tsapDst, maxCalling, maxCalled, maxPdu, ip, int.Parse(ConfigurationManager.AppSettings["SiemensPort"]))
         {
         }
 
@@ -85,7 +85,7 @@ namespace Modbus.Net.Siemens
         public override async Task<bool> ConnectAsync()
         {
             _connectTryCount++;
-            ProtocalLinker = _port == 0 ? new SiemensTcpProtocalLinker(_ip) : new SiemensTcpProtocalLinker(_ip, _port);
+            ProtocalLinker = new SiemensTcpProtocalLinker(_ip, _port);
             if (!await ProtocalLinker.ConnectAsync()) return false;
             _connectTryCount = 0;
             var inputStruct = new CreateReferenceSiemensInputStruct(_tdpuSize, _taspSrc, _tsapDst);

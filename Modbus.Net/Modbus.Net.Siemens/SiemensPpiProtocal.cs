@@ -47,7 +47,7 @@ namespace Modbus.Net.Siemens
 
         public override async Task<bool> ConnectAsync()
         {
-            ProtocalLinker = new SiemensPpiProtocalLinker(_com);
+            ProtocalLinker = new SiemensPpiProtocalLinker(_com, SlaveAddress);
             var inputStruct = new ComCreateReferenceSiemensInputStruct(SlaveAddress, MasterAddress);
             var outputStruct =
                 await await

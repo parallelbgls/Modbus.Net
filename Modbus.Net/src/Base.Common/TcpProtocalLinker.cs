@@ -12,7 +12,8 @@ namespace Modbus.Net
         /// <summary>
         ///     构造器
         /// </summary>
-        protected TcpProtocalLinker() : this(ConfigurationManager.AppSettings["IP"], int.Parse(ConfigurationManager.AppSettings["ModbusPort"]))
+        protected TcpProtocalLinker(int port)
+            : this(ConfigurationManager.AppSettings["IP"], port)
         {
         }
 
@@ -22,9 +23,20 @@ namespace Modbus.Net
         /// <param name="ip">Ip地址</param>
         /// <param name="port">端口</param>
         protected TcpProtocalLinker(string ip, int port)
+            : this(ip, port, int.Parse(ConfigurationManager.AppSettings["IPConnectionTimeout"] ?? "5000"))
+        {
+        }
+
+        /// <summary>
+        ///     构造器
+        /// </summary>
+        /// <param name="ip">Ip地址</param>
+        /// <param name="port">端口</param>
+        /// <param name="connectionTimeout">超时时间</param>
+        protected TcpProtocalLinker(string ip, int port, int connectionTimeout)
         {
             //初始化连接对象
-            BaseConnector = new TcpConnector(ip, port, int.Parse(ConfigurationManager.AppSettings["IPConnectionTimeout"]));
+            BaseConnector = new TcpConnector(ip, port, connectionTimeout);
         }
     }
 }
