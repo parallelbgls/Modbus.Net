@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Modbus.Net
 {
@@ -16,21 +13,21 @@ namespace Modbus.Net
         #region Public Methods
 
         /// <summary>
-        /// Looks for the method in the type matching the name and arguments.
+        ///     Looks for the method in the type matching the name and arguments.
         /// </summary>
         /// <param name="type"></param>
         /// <param name="methodName">
-        /// The name of the method to find.
+        ///     The name of the method to find.
         /// </param>
         /// <param name="args">
-        /// The types of the method's arguments to match.
+        ///     The types of the method's arguments to match.
         /// </param>
         /// <param name="isGenericMethod">
-        /// Is method Generic Method.
+        ///     Is method Generic Method.
         /// </param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">
-        /// Thrown if:
+        ///     Thrown if:
         ///     - The name of the method is not specified.
         /// </exception>
         public static MethodInfo GetRuntimeMethod(this Type type, string methodName, Type[] args, bool isGenericMethod)
@@ -42,26 +39,23 @@ namespace Modbus.Net
                 throw new ArgumentNullException("methodName", "The name of the method has not been specified.");
 
 
-            var methods = type.GetRuntimeMethods().Where(methodInfo => string.Equals(methodInfo.Name, methodName, StringComparison.OrdinalIgnoreCase)).ToList();
+            var methods =
+                type.GetRuntimeMethods()
+                    .Where(methodInfo => string.Equals(methodInfo.Name, methodName, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
 
             if (!methods.Any())
-                return null;    //  No methods have the specified name.
+                return null; //  No methods have the specified name.
 
             if (isGenericMethod)
-            {
                 methods = methods.Where(method => method.IsGenericMethod).ToList();
-            }
             else
-            {
                 methods = methods.Where(method => !method.IsGenericMethod).ToList();
-            }
 
             var ans = methods.Where(method => IsSignatureMatch(method, args));
 
             if (ans.Count() <= 1)
-            {
-                return  ans.Count() == 1 ? ans.Single() : null;
-            }
+                return ans.Count() == 1 ? ans.Single() : null;
 
             //  Oh noes, don't make me go there.
             throw new NotImplementedException("Resolving overloaded methods is not implemented as of now.");
@@ -72,7 +66,7 @@ namespace Modbus.Net
         #region Private Methods
 
         /// <summary>
-        /// Finds out if the provided arguments matches the specified method's signature.
+        ///     Finds out if the provided arguments matches the specified method's signature.
         /// </summary>
         /// <param name="methodInfo"></param>
         /// <param name="args"></param>
@@ -83,11 +77,11 @@ namespace Modbus.Net
 
 
             //  Gets the parameters of the method to analyze.
-            ParameterInfo[] parameters = methodInfo.GetParameters();
+            var parameters = methodInfo.GetParameters();
 
-            int currentArgId = 0;
+            var currentArgId = 0;
 
-            foreach (ParameterInfo parameterInfo in parameters)
+            foreach (var parameterInfo in parameters)
             {
                 if (!ReferenceEquals(args, null) && currentArgId < args.Length)
                 {
@@ -102,7 +96,7 @@ namespace Modbus.Net
                     if (parameterInfo.ParameterType.IsGenericParameter)
                     {
                         //  Gets the base type of the generic parameter.
-                        Type baseType = parameterInfo.ParameterType.GetTypeInfo().BaseType;
+                        var baseType = parameterInfo.ParameterType.GetTypeInfo().BaseType;
 
 
                         //  TODO: This is not good v and works with the most simple situation.

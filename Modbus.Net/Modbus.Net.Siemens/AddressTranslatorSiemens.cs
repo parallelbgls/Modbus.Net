@@ -53,7 +53,7 @@ namespace Modbus.Net.Siemens
                 return new AddressDef
                 {
                     AreaString = "DB" + head,
-                    Area = int.Parse(head)*256 + AreaCodeDictionary["DB"],
+                    Area = int.Parse(head) * 256 + AreaCodeDictionary["DB"],
                     Address = int.Parse(tail),
                     SubAddress = int.Parse(sub)
                 };
@@ -96,7 +96,7 @@ namespace Modbus.Net.Siemens
                 {"Q", 0x82},
                 {"M", 0x83},
                 {"DB", 0x84},
-                {"V", 0x184},
+                {"V", 0x184}
             };
         }
 
@@ -118,15 +118,13 @@ namespace Modbus.Net.Siemens
                     SubAddress = addressSplit.Length == 2 ? 0 : int.Parse(addressSplit[2])
                 };
             }
-            int i = 0;
+            var i = 0;
             int t;
             while (!int.TryParse(address[i].ToString(), out t) && i < address.Length)
-            {
                 i++;
-            }
             if (i == 0 || i >= address.Length) throw new FormatException();
-            string head = address.Substring(0, i);
-            string[] tail = address.Substring(i).Split('.');
+            var head = address.Substring(0, i);
+            var tail = address.Substring(i).Split('.');
             return new AddressDef
             {
                 AreaString = head,

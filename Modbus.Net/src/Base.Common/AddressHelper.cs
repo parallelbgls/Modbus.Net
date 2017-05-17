@@ -17,7 +17,7 @@ namespace Modbus.Net
         public static double MapAbstractCoordinateToProtocalCoordinate(double abstractAddress, int startAddress,
             double byteLength)
         {
-            return abstractAddress/byteLength + startAddress;
+            return abstractAddress / byteLength + startAddress;
         }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace Modbus.Net
         public static double MapProtocalCoordinateToAbstractCoordinate(double protocalAddress, int startAddress,
             double byteLength)
         {
-            return (protocalAddress - startAddress)*byteLength;
+            return (protocalAddress - startAddress) * byteLength;
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace Modbus.Net
         public static double MapProtocalGetCountToAbstractByteCount(double protocalGetCount, double areaLength,
             double byteLength)
         {
-            return protocalGetCount*areaLength + byteLength;
+            return protocalGetCount * areaLength + byteLength;
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace Modbus.Net
         /// <returns></returns>
         public static double GetProtocalCoordinate(int address, int subAddress, double byteLength)
         {
-            return address + subAddress*(0.125/byteLength);
+            return address + subAddress * (0.125 / byteLength);
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace Modbus.Net
         /// <returns></returns>
         public static double GetAbstractCoordinate(int address, int subAddress)
         {
-            return address + subAddress*0.125;
+            return address + subAddress * 0.125;
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace Modbus.Net
             double byteLength)
         {
             return protocalAddress +
-                   BigEndianValueHelper.Instance.ByteLength[nextPositionBetweenType.FullName]/byteLength;
+                   BigEndianValueHelper.Instance.ByteLength[nextPositionBetweenType.FullName] / byteLength;
         }
 
         /// <summary>

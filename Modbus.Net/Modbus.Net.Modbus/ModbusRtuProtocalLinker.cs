@@ -7,7 +7,8 @@ namespace Modbus.Net.Modbus
     /// </summary>
     public class ModbusRtuProtocalLinker : ComProtocalLinker
     {
-        public ModbusRtuProtocalLinker(string com, int slaveAddress) : base(com, 9600, Parity.None, StopBits.One, 8, slaveAddress)
+        public ModbusRtuProtocalLinker(string com, int slaveAddress)
+            : base(com, 9600, Parity.None, StopBits.One, 8, slaveAddress)
         {
         }
 
@@ -16,14 +17,10 @@ namespace Modbus.Net.Modbus
             if (!base.CheckRight(content).Value) return false;
             //CRC校验失败
             if (!Crc16.GetInstance().CrcEfficacy(content))
-            {
                 throw new ModbusProtocalErrorException(501);
-            }
             //Modbus协议错误
             if (content[1] > 127)
-            {
                 throw new ModbusProtocalErrorException(content[2]);
-            }
             return true;
         }
     }

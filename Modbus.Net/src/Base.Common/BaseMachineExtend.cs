@@ -20,7 +20,7 @@ namespace Modbus.Net
             return (from getValue in getValues
                 where getValue.Value.PlcValue != null
                 select new KeyValuePair<string, double>(getValue.Key, getValue.Value.PlcValue.Value)).ToDictionary(
-                    p => p.Key, p => p.Value);
+                p => p.Key, p => p.Value);
         }
     }
 }

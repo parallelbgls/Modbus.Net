@@ -9,8 +9,14 @@ using System.Threading.Tasks;
 
 namespace Modbus.Net
 {
+    /// <summary>
+    ///     具有发送锁的串口
+    /// </summary>
     public class SerialPortLock : SerialPort
     {
+        /// <summary>
+        ///     发送锁
+        /// </summary>
         public object Lock { get; set; } = new object();
     }
 
@@ -19,42 +25,87 @@ namespace Modbus.Net
     /// </summary>
     public class ComConnector : BaseConnector, IDisposable
     {
-        public delegate byte[] GetDate(byte[] bts);
-
-        private static Dictionary<string, SerialPortLock> Connectors { get; } = new Dictionary<string, SerialPortLock>();
-        private static Dictionary<string, string> Linkers { get; } = new Dictionary<string, string>();
-
+        /// <summary>
+        ///     波特率
+        /// </summary>
         private readonly int _baudRate;
 
-        //private GetDate mygetDate;
+        /// <summary>
+        ///     串口地址
+        /// </summary>
         private readonly string _com;
+
+        /// <summary>
+        ///     数据位
+        /// </summary>
         private readonly int _dataBits;
+
+        /// <summary>
+        ///     奇偶校验
+        /// </summary>
         private readonly Parity _parity;
-        private readonly StopBits _stopBits;
-        private readonly int _timeoutTime;
+
+        /// <summary>
+        ///     从站号
+        /// </summary>
         private readonly string _slave;
 
-        private bool m_disposed = false;
+        /// <summary>
+        ///     停止位
+        /// </summary>
+        private readonly StopBits _stopBits;
 
+        /// <summary>
+        ///     超时时间
+        /// </summary>
+        private readonly int _timeoutTime;
+
+        /// <summary>
+        ///     Dispose是否执行
+        /// </summary>
+        private bool m_disposed;
+
+        /// <summary>
+        ///     构造器
+        /// </summary>
+        /// <param name="com">串口地址:从站号</param>
+        /// <param name="baudRate">波特率</param>
+        /// <param name="parity">校验位</param>
+        /// <param name="stopBits">停止位</param>
+        /// <param name="dataBits">数据位</param>
+        /// <param name="timeoutTime">超时时间</param>
         public ComConnector(string com, int baudRate, Parity parity, StopBits stopBits, int dataBits, int timeoutTime)
         {
-            _com = com.Split(':')[0];
-            _timeoutTime = timeoutTime;
-            _baudRate = baudRate;
-            _parity = parity;
-            _stopBits = stopBits;
-            _dataBits = dataBits;
-            _slave = com.Split(':')[1];
-
             //端口号 
+            _com = com.Split(':')[0];
             //读超时
-            //比特率 
-            //奇偶校验 
+            _timeoutTime = timeoutTime;
+            //波特率
+            _baudRate = baudRate;
+            //奇偶校验
+            _parity = parity;
             //停止位 
+            _stopBits = stopBits;
             //数据位
-            //从站号标识
+            _dataBits = dataBits;
+            //从站号
+            _slave = com.Split(':')[1];
         }
 
+        /// <summary>
+        ///     连接中的串口
+        /// </summary>
+        private static Dictionary<string, SerialPortLock> Connectors { get; } = new Dictionary<string, SerialPortLock>()
+            ;
+
+        /// <summary>
+        ///     连接中的连接器
+        /// </summary>
+        private static Dictionary<string, string> Linkers { get; } = new Dictionary<string, string>();
+
+        /// <summary>
+        ///     连接关键字(串口号:从站号)
+        /// </summary>
         public override string ConnectionToken => _slave + ":" + _com;
 
         private SerialPortLock SerialPort
@@ -72,7 +123,7 @@ namespace Modbus.Net
         /// </summary>
         public void Dispose()
         {
-            Dispose(true);           
+            Dispose(true);
             //.NET Framework 类库
             // GC..::.SuppressFinalize 方法
             //请求系统不要调用指定对象的终结器。
@@ -117,7 +168,9 @@ namespace Modbus.Net
                     }
 
                     else if (nReadLen == 0)
+                    {
                         nBytelen += 1;
+                    }
                 }
             }
             catch (Exception ex)
@@ -146,7 +199,6 @@ namespace Modbus.Net
             SerialPort.ReadTimeout = ByteTime;
 
             while (nBytelen < ReadRoom - 1 && SerialPort.BytesToRead > 0)
-            {
                 try
                 {
                     ReadBuf[nBytelen] = (byte) SerialPort.ReadByte();
@@ -156,7 +208,6 @@ namespace Modbus.Net
                 {
                     throw new Exception(ex.Message);
                 }
-            }
             ReadBuf[nBytelen] = 0x00;
             return nBytelen;
         }
@@ -171,9 +222,7 @@ namespace Modbus.Net
         {
             var StringOut = "";
             foreach (var InByte in InBytes)
-            {
                 StringOut = StringOut + string.Format("{0:X2}", InByte) + " ";
-            }
 
             return StringOut.Trim();
         }
@@ -190,9 +239,7 @@ namespace Modbus.Net
             byte[] ByteOut;
             ByteOut = new byte[ByteStrings.Length];
             for (var i = 0; i <= ByteStrings.Length - 1; i++)
-            {
                 ByteOut[i] = byte.Parse(ByteStrings[i], NumberStyles.HexNumber);
-            }
             return ByteOut;
         }
 
@@ -207,7 +254,7 @@ namespace Modbus.Net
             InString = InString.Replace(" ", "");
             try
             {
-                var ByteStrings = new string[InString.Length/2];
+                var ByteStrings = new string[InString.Length / 2];
                 var j = 0;
                 for (var i = 0; i < ByteStrings.Length; i++)
                 {
@@ -217,9 +264,7 @@ namespace Modbus.Net
 
                 ByteOut = new byte[ByteStrings.Length];
                 for (var i = 0; i <= ByteStrings.Length - 1; i++)
-                {
                     ByteOut[i] = byte.Parse(ByteStrings[i], NumberStyles.HexNumber);
-                }
             }
             catch (Exception ex)
             {
@@ -285,24 +330,28 @@ namespace Modbus.Net
 
         #region 发送接收数据
 
+        /// <summary>
+        ///     是否正在连接
+        /// </summary>
         public override bool IsConnected
         {
             get
             {
                 if (SerialPort != null && !SerialPort.IsOpen)
-                {
                     SerialPort.Dispose();
-                }
                 return SerialPort != null && SerialPort.IsOpen && Linkers.ContainsKey(_slave);
             }
         }
 
+        /// <summary>
+        ///     连接串口
+        /// </summary>
+        /// <returns>是否连接成功</returns>
         public override bool Connect()
         {
             try
             {
                 if (!Connectors.ContainsKey(_com))
-                {
                     Connectors.Add(_com, new SerialPortLock
                     {
                         PortName = _com,
@@ -312,29 +361,33 @@ namespace Modbus.Net
                         DataBits = _dataBits,
                         ReadTimeout = _timeoutTime
                     });
-                }
                 if (!Linkers.ContainsKey(_slave))
-                {
                     Linkers.Add(_slave, _com);
-                }
                 SerialPort.Open();
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }
         }
 
+        /// <summary>
+        ///     连接串口
+        /// </summary>
+        /// <returns>是否连接成功</returns>
         public override Task<bool> ConnectAsync()
         {
             return Task.FromResult(Connect());
         }
 
+        /// <summary>
+        ///     断开串口
+        /// </summary>
+        /// <returns>是否断开成功</returns>
         public override bool Disconnect()
         {
             if (Linkers.ContainsKey(_slave) && Connectors.ContainsKey(_com))
-            {
                 try
                 {
                     Dispose();
@@ -344,28 +397,43 @@ namespace Modbus.Net
                 {
                     return false;
                 }
-            }
             return false;
         }
 
-        public void SendMsg(string senStr)
+        /// <summary>
+        ///     带返回发送数据
+        /// </summary>
+        /// <param name="sendStr">需要发送的数据</param>
+        /// <returns>是否发送成功</returns>
+        public string SendMsg(string sendStr)
         {
-            var myByte = StringToByte_2(senStr);
+            var myByte = StringToByte_2(sendStr);
 
-            SendMsg(myByte);
+            var returnBytes = SendMsg(myByte);
+
+            return ByteToString(returnBytes);
         }
 
+        /// <summary>
+        ///     无返回发送数据
+        /// </summary>
+        /// <param name="message">需要发送的数据</param>
+        /// <returns>是否发送成功</returns>
         public override Task<bool> SendMsgWithoutReturnAsync(byte[] message)
         {
             return Task.FromResult(SendMsgWithoutReturn(message));
         }
 
+        /// <summary>
+        ///     带返回发送数据
+        /// </summary>
+        /// <param name="sendbytes">需要发送的数据</param>
+        /// <returns>是否发送成功</returns>
         public override byte[] SendMsg(byte[] sendbytes)
         {
             try
             {
                 if (!SerialPort.IsOpen)
-                {
                     try
                     {
                         SerialPort.Open();
@@ -375,7 +443,6 @@ namespace Modbus.Net
                         Dispose();
                         SerialPort.Open();
                     }
-                }
                 lock (SerialPort.Lock)
                 {
                     SerialPort.Write(sendbytes, 0, sendbytes.Length);
@@ -389,17 +456,26 @@ namespace Modbus.Net
             }
         }
 
+        /// <summary>
+        ///     带返回发送数据
+        /// </summary>
+        /// <param name="message">需要发送的数据</param>
+        /// <returns>是否发送成功</returns>
         public override Task<byte[]> SendMsgAsync(byte[] message)
         {
             return Task.FromResult(SendMsg(message));
         }
 
+        /// <summary>
+        ///     无返回发送数据
+        /// </summary>
+        /// <param name="sendbytes">需要发送的数据</param>
+        /// <returns>是否发送成功</returns>
         public override bool SendMsgWithoutReturn(byte[] sendbytes)
         {
             try
             {
                 if (!SerialPort.IsOpen)
-                {
                     try
                     {
                         SerialPort.Open();
@@ -409,7 +485,6 @@ namespace Modbus.Net
                         Dispose();
                         SerialPort.Open();
                     }
-                }
                 lock (SerialPort.Lock)
                 {
                     SerialPort.Write(sendbytes, 0, sendbytes.Length);
@@ -422,24 +497,12 @@ namespace Modbus.Net
             }
         }
 
-        public string ReadMsgStr()
-        {
-            var rd = "";
-
-            var data = ReadMsg();
-
-            rd = ByteToString(data);
-            return rd;
-        }
-
-        public byte[] ReadMsg()
+        private byte[] ReadMsg()
         {
             try
             {
                 if (!SerialPort.IsOpen)
-                {
                     SerialPort.Open();
-                }
 
                 byte[] data;
                 Thread.Sleep(100);

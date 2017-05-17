@@ -27,14 +27,15 @@ namespace Modbus.Net.Modbus
     /// <summary>
     ///     Modbus基础Api入口
     /// </summary>
-    public class ModbusUtility : BaseUtility, IUtilityMethodTime
+    public class ModbusUtility : BaseUtility, IIUtilityMethodTime
     {
         /// <summary>
         ///     Modbus协议类型
         /// </summary>
         private ModbusType _modbusType;
 
-        public ModbusUtility(int connectionType, byte slaveAddress, byte masterAddress, Endian endian = Endian.BigEndianLsb)
+        public ModbusUtility(int connectionType, byte slaveAddress, byte masterAddress,
+            Endian endian = Endian.BigEndianLsb)
             : base(slaveAddress, masterAddress)
         {
             Endian = endian;
@@ -43,7 +44,8 @@ namespace Modbus.Net.Modbus
             AddressTranslator = new AddressTranslatorModbus();
         }
 
-        public ModbusUtility(ModbusType connectionType, string connectionString, byte slaveAddress, byte masterAddress, Endian endian = Endian.BigEndianLsb)
+        public ModbusUtility(ModbusType connectionType, string connectionString, byte slaveAddress, byte masterAddress,
+            Endian endian = Endian.BigEndianLsb)
             : base(slaveAddress, masterAddress)
         {
             Endian = endian;
@@ -120,6 +122,47 @@ namespace Modbus.Net.Modbus
             }
         }
 
+        /// <summary>
+        ///     读时间
+        /// </summary>
+        /// <returns>设备的时间</returns>
+        public async Task<DateTime> GetTimeAsync()
+        {
+            try
+            {
+                var inputStruct = new GetSystemTimeModbusInputStruct(SlaveAddress);
+                var outputStruct =
+                    await Wrapper.SendReceiveAsync<GetSystemTimeModbusOutputStruct>(
+                        Wrapper[typeof(GetSystemTimeModbusProtocal)], inputStruct);
+                return outputStruct?.Time ?? DateTime.MinValue;
+            }
+            catch (Exception)
+            {
+                return DateTime.MinValue;
+            }
+        }
+
+        /// <summary>
+        ///     写时间
+        /// </summary>
+        /// <param name="setTime">需要写入的时间</param>
+        /// <returns>写入是否成功</returns>
+        public async Task<bool> SetTimeAsync(DateTime setTime)
+        {
+            try
+            {
+                var inputStruct = new SetSystemTimeModbusInputStruct(SlaveAddress, setTime);
+                var outputStruct =
+                    await Wrapper.SendReceiveAsync<SetSystemTimeModbusOutputStruct>(
+                        Wrapper[typeof(SetSystemTimeModbusProtocal)], inputStruct);
+                return outputStruct?.WriteCount > 0;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
         public override void SetConnectionType(int connectionType)
         {
             ModbusType = (ModbusType) connectionType;
@@ -138,7 +181,8 @@ namespace Modbus.Net.Modbus
                 var inputStruct = new ReadDataModbusInputStruct(SlaveAddress, startAddress,
                     (ushort) getByteCount, AddressTranslator);
                 var outputStruct = await
-					Wrapper.SendReceiveAsync<ReadDataModbusOutputStruct>(Wrapper[typeof (ReadDataModbusProtocal)], inputStruct);
+                    Wrapper.SendReceiveAsync<ReadDataModbusOutputStruct>(Wrapper[typeof(ReadDataModbusProtocal)],
+                        inputStruct);
                 return outputStruct?.DataValue;
             }
             catch
@@ -160,49 +204,11 @@ namespace Modbus.Net.Modbus
                 var inputStruct = new WriteDataModbusInputStruct(SlaveAddress, startAddress, setContents,
                     AddressTranslator, Endian);
                 var outputStruct = await
-					Wrapper.SendReceiveAsync<WriteDataModbusOutputStruct>(Wrapper[typeof (WriteDataModbusProtocal)], inputStruct);
+                    Wrapper.SendReceiveAsync<WriteDataModbusOutputStruct>(Wrapper[typeof(WriteDataModbusProtocal)],
+                        inputStruct);
                 return outputStruct?.WriteCount == setContents.Length;
             }
             catch
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        ///     读时间
-        /// </summary>
-        /// <returns>设备的时间</returns>
-        public async Task<DateTime> GetTimeAsync()
-        {
-            try
-            {
-                var inputStruct = new GetSystemTimeModbusInputStruct(SlaveAddress);
-                var outputStruct =
-					await Wrapper.SendReceiveAsync<GetSystemTimeModbusOutputStruct>(Wrapper[typeof(GetSystemTimeModbusProtocal)], inputStruct);
-                return outputStruct?.Time ?? DateTime.MinValue;
-            }
-            catch (Exception)
-            {
-                return DateTime.MinValue;
-            }
-        }
-
-        /// <summary>
-        ///     写时间
-        /// </summary>
-        /// <param name="setTime">需要写入的时间</param>
-        /// <returns>写入是否成功</returns>
-        public async Task<bool> SetTimeAsync(DateTime setTime)
-        {
-            try
-            {
-                var inputStruct = new SetSystemTimeModbusInputStruct(SlaveAddress, setTime);
-                var outputStruct =
-                    await Wrapper.SendReceiveAsync<SetSystemTimeModbusOutputStruct>(Wrapper[typeof(SetSystemTimeModbusProtocal)], inputStruct);
-                return outputStruct?.WriteCount > 0;
-            }
-            catch (Exception)
             {
                 return false;
             }

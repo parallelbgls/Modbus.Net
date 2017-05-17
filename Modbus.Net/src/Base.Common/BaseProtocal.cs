@@ -13,7 +13,8 @@ namespace Modbus.Net
         /// <summary>
         ///     构造器
         /// </summary>
-        protected BaseProtocal(byte slaveAddress, byte masterAddress, Endian endian) : base(slaveAddress, masterAddress, endian)
+        protected BaseProtocal(byte slaveAddress, byte masterAddress, Endian endian)
+            : base(slaveAddress, masterAddress, endian)
         {
         }
 
@@ -25,13 +26,9 @@ namespace Modbus.Net
         public override async Task<byte[]> SendReceiveAsync(params object[] content)
         {
             if (ProtocalLinker == null || !ProtocalLinker.IsConnected)
-            {
                 await ConnectAsync();
-            }
             if (ProtocalLinker != null)
-            {
                 return await ProtocalLinker.SendReceiveAsync(ProtocalUnit.TranslateContent(Endian, content));
-            }
             return null;
         }
     }
@@ -39,7 +36,8 @@ namespace Modbus.Net
     /// <summary>
     ///     基本协议
     /// </summary>
-    public abstract class BaseProtocal<TParamIn, TParamOut, TProtocalUnit> : IProtocal<TParamIn, TParamOut, TProtocalUnit> where TProtocalUnit : ProtocalUnit<TParamIn, TParamOut>
+    public abstract class BaseProtocal<TParamIn, TParamOut, TProtocalUnit> :
+        IProtocal<TParamIn, TParamOut, TProtocalUnit> where TProtocalUnit : ProtocalUnit<TParamIn, TParamOut>
     {
         /// <summary>
         ///     构造器
@@ -56,11 +54,12 @@ namespace Modbus.Net
         ///     协议的端格式
         /// </summary>
         protected Endian Endian { get; set; }
-        
+
         /// <summary>
         ///     从站地址
         /// </summary>
         public byte SlaveAddress { get; set; }
+
         /// <summary>
         ///     主站地址
         /// </summary>
@@ -82,12 +81,10 @@ namespace Modbus.Net
             {
                 var protocalName = type.FullName;
                 if (Protocals.ContainsKey(protocalName))
-                {
                     return Protocals[protocalName];
-                }
                 //自动寻找存在的协议并将其加载
                 var protocalUnit =
-                    Activator.CreateInstance(type.GetTypeInfo().Assembly.GetType(protocalName)) as TProtocalUnit;              
+                    Activator.CreateInstance(type.GetTypeInfo().Assembly.GetType(protocalName)) as TProtocalUnit;
                 if (protocalUnit == null) throw new InvalidCastException("没有相应的协议内容");
                 protocalUnit.Endian = Endian;
                 Register(protocalUnit);
@@ -101,16 +98,6 @@ namespace Modbus.Net
         protected Dictionary<string, TProtocalUnit> Protocals { get; }
 
         /// <summary>
-        ///     注册一个协议
-        /// </summary>
-        /// <param name="linkProtocal">需要注册的协议</param>
-        protected void Register(TProtocalUnit linkProtocal)
-        {
-            if (linkProtocal == null) return;
-            Protocals.Add(linkProtocal.GetType().FullName, linkProtocal);
-        }   
-
-        /// <summary>
         ///     发送协议，通过传入需要使用的协议内容和输入结构
         /// </summary>
         /// <param name="unit">协议的实例</param>
@@ -121,18 +108,6 @@ namespace Modbus.Net
             return AsyncHelper.RunSync(() => SendReceiveAsync(unit, content));
         }
 
-		/// <summary>
-		///     发送协议，通过传入需要使用的协议内容和输入结构
-		/// </summary>
-		/// <param name="unit">协议的实例</param>
-		/// <param name="content">输入信息的结构化描述</param>
-		/// <returns>输出信息的结构化描述</returns>
-		/// <typeparam name="T">IOutputStruct的具体类型</typeparam>
-		public virtual T SendReceive<T>(TProtocalUnit unit, IInputStruct content) where T : class, IOutputStruct
-		{
-			return AsyncHelper.RunSync(() => SendReceiveAsync<T>(unit, content));
-		}
-
         /// <summary>
         ///     发送协议，通过传入需要使用的协议内容和输入结构
         /// </summary>
@@ -141,39 +116,8 @@ namespace Modbus.Net
         /// <returns>输出信息的结构化描述</returns>
         public virtual async Task<IOutputStruct> SendReceiveAsync(TProtocalUnit unit, IInputStruct content)
         {
-			return await SendReceiveAsync<IOutputStruct>(unit, content);
+            return await SendReceiveAsync<IOutputStruct>(unit, content);
         }
-
-		/// <summary>
-		///     发送协议，通过传入需要使用的协议内容和输入结构
-		/// </summary>
-		/// <param name="unit">协议的实例</param>
-		/// <param name="content">输入信息的结构化描述</param>
-		/// <returns>输出信息的结构化描述</returns>
-		/// <typeparam name="T">IOutputStruct的具体类型</typeparam>
-		public virtual async Task<T> SendReceiveAsync<T>(TProtocalUnit unit, IInputStruct content) where T : class, IOutputStruct
-		{
-			var t = 0;
-			var formatContent = unit.Format(content);
-			if (formatContent != null)
-			{
-				TParamOut receiveContent;
-				//如果为特别处理协议的话，跳过协议扩展收缩
-				if (unit is ISpecialProtocalUnit)
-				{
-					receiveContent = await ProtocalLinker.SendReceiveWithoutExtAndDecAsync(formatContent);
-				}
-				else
-				{
-					receiveContent = await ProtocalLinker.SendReceiveAsync(formatContent);
-				}
-				if (receiveContent != null)
-				{
-					return unit.Unformat<T>(receiveContent, ref t);
-				}
-			}
-			return null;
-		}
 
         /// <summary>
         ///     发送协议内容并接收，一般方法
@@ -196,6 +140,54 @@ namespace Modbus.Net
         }
 
         /// <summary>
+        ///     注册一个协议
+        /// </summary>
+        /// <param name="linkProtocal">需要注册的协议</param>
+        protected void Register(TProtocalUnit linkProtocal)
+        {
+            if (linkProtocal == null) return;
+            Protocals.Add(linkProtocal.GetType().FullName, linkProtocal);
+        }
+
+        /// <summary>
+        ///     发送协议，通过传入需要使用的协议内容和输入结构
+        /// </summary>
+        /// <param name="unit">协议的实例</param>
+        /// <param name="content">输入信息的结构化描述</param>
+        /// <returns>输出信息的结构化描述</returns>
+        /// <typeparam name="T">IOutputStruct的具体类型</typeparam>
+        public virtual T SendReceive<T>(TProtocalUnit unit, IInputStruct content) where T : class, IOutputStruct
+        {
+            return AsyncHelper.RunSync(() => SendReceiveAsync<T>(unit, content));
+        }
+
+        /// <summary>
+        ///     发送协议，通过传入需要使用的协议内容和输入结构
+        /// </summary>
+        /// <param name="unit">协议的实例</param>
+        /// <param name="content">输入信息的结构化描述</param>
+        /// <returns>输出信息的结构化描述</returns>
+        /// <typeparam name="T">IOutputStruct的具体类型</typeparam>
+        public virtual async Task<T> SendReceiveAsync<T>(TProtocalUnit unit, IInputStruct content)
+            where T : class, IOutputStruct
+        {
+            var t = 0;
+            var formatContent = unit.Format(content);
+            if (formatContent != null)
+            {
+                TParamOut receiveContent;
+                //如果为特别处理协议的话，跳过协议扩展收缩
+                if (unit is ISpecialProtocalUnit)
+                    receiveContent = await ProtocalLinker.SendReceiveWithoutExtAndDecAsync(formatContent);
+                else
+                    receiveContent = await ProtocalLinker.SendReceiveAsync(formatContent);
+                if (receiveContent != null)
+                    return unit.Unformat<T>(receiveContent, ref t);
+            }
+            return null;
+        }
+
+        /// <summary>
         ///     协议连接开始
         /// </summary>
         /// <returns></returns>
@@ -214,9 +206,7 @@ namespace Modbus.Net
         public virtual bool Disconnect()
         {
             if (ProtocalLinker != null)
-            {
                 return ProtocalLinker.Disconnect();
-            }
             return false;
         }
     }

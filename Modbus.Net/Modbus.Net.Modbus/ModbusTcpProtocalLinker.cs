@@ -7,7 +7,8 @@ namespace Modbus.Net.Modbus
     /// </summary>
     public class ModbusTcpProtocalLinker : TcpProtocalLinker
     {
-        public ModbusTcpProtocalLinker(string ip) : base(ip, int.Parse(ConfigurationManager.AppSettings["ModbusPort"] ?? "502"))
+        public ModbusTcpProtocalLinker(string ip)
+            : base(ip, int.Parse(ConfigurationManager.AppSettings["ModbusPort"] ?? "502"))
         {
         }
 
@@ -20,14 +21,10 @@ namespace Modbus.Net.Modbus
             if (!base.CheckRight(content).Value) return false;
             //长度校验失败
             if (content[5] != content.Length - 6)
-            {
                 throw new ModbusProtocalErrorException(500);
-            }
             //Modbus协议错误
             if (content[7] > 127)
-            {
                 throw new ModbusProtocalErrorException(content[2] > 0 ? content[2] : content[8]);
-            }
             return true;
         }
     }

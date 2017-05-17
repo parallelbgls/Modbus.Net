@@ -5,7 +5,6 @@
     /// </summary>
     public interface IProtocalLinkerBytesExtend : IProtocalLinkerBytesExtend<byte[], byte[]>
     {
-        
     }
 
     /// <summary>

@@ -410,7 +410,7 @@ namespace Modbus.Net
             var temp = data[pos];
             for (var i = 0; i < 8; i++)
             {
-                t[i] = temp%2 > 0;
+                t[i] = temp % 2 > 0;
                 temp /= 2;
             }
             pos += 1;
@@ -427,11 +427,11 @@ namespace Modbus.Net
         public bool GetBit(byte number, ref int pos, ref int subPos)
         {
             if (subPos < 0 && subPos >= 8) throw new IndexOutOfRangeException();
-            var ans = number%2;
+            var ans = number % 2;
             var i = 0;
             while (i <= subPos)
             {
-                ans = number%2;
+                ans = number % 2;
                 number /= 2;
                 i++;
             }
@@ -491,7 +491,7 @@ namespace Modbus.Net
                     b = true;
                     //自动将目标数组中内含的子数组展开，是所有包含在子数组拼接为一个数组
                     var contentArray =
-                        ArrayList.Adapter((Array) content).ToArray(typeof (object)).OfType<object>();
+                        ArrayList.Adapter((Array) content).ToArray(typeof(object)).OfType<object>();
                     newContentsList.AddRange(contentArray);
                 }
                 else
@@ -520,13 +520,9 @@ namespace Modbus.Net
                     }
                     lastIsBool = true;
                     if (!LittleEndianBit)
-                    {
-                        boolToByteTemp = (byte) (boolToByteTemp*2 + ((bool) content ? 1 : 0));
-                    }
+                        boolToByteTemp = (byte) (boolToByteTemp * 2 + ((bool) content ? 1 : 0));
                     else
-                    {
                         boolToByteTemp += (byte) ((bool) content ? Math.Pow(2, boolToByteCount) : 0);
-                    }
                     boolToByteCount++;
                 }
                 else
@@ -594,9 +590,7 @@ namespace Modbus.Net
             }
             //最后是bool拼装时，表示数字还没有添加，把数字添加进返回数组中。
             if (lastIsBool)
-            {
                 translateTarget.Add(boolToByteTemp);
-            }
             //最后把队列转换为数组
             return translateTarget.ToArray();
         }
@@ -622,7 +616,7 @@ namespace Modbus.Net
         public virtual T[] ByteArrayToDestinationArray<T>(byte[] contents, int getCount)
         {
             var objectArray = _Instance.ByteArrayToObjectArray(contents,
-                new KeyValuePair<Type, int>(typeof (T), getCount));
+                new KeyValuePair<Type, int>(typeof(T), getCount));
             return _Instance.ObjectArrayToDestinationArray<T>(objectArray);
         }
 
@@ -641,7 +635,6 @@ namespace Modbus.Net
             var translation = new List<object>();
             var count = 0;
             foreach (var translateUnit in translateTypeAndCount)
-            {
                 for (var i = 0; i < translateUnit.Value; i++)
                 {
                     if (count >= contents.Length) break;
@@ -708,9 +701,7 @@ namespace Modbus.Net
                                 var value = _Instance.GetBits(contents, ref count);
                                 var k = translateUnit.Value - i < 8 ? translateUnit.Value - i : 8;
                                 for (var j = 0; j < k; j++)
-                                {
                                     translation.Add(value[j]);
-                                }
                                 i += 7;
                                 break;
                             }
@@ -725,7 +716,6 @@ namespace Modbus.Net
                         count = contents.Length;
                     }
                 }
-            }
             return translation.ToArray();
         }
 
@@ -906,21 +896,21 @@ namespace Modbus.Net
             switch (endian)
             {
                 case Endian.LittleEndianLsb:
-                    {
-                        return ValueHelper.Instance;
-                    }
+                {
+                    return Instance;
+                }
                 case Endian.BigEndianLsb:
-                    {
-                        return BigEndianValueHelper.Instance;
-                    }
+                {
+                    return BigEndianValueHelper.Instance;
+                }
                 case Endian.BigEndianMsb:
-                    {
-                        return BigEndianMsbValueHelper.Instance;
-                    }
+                {
+                    return BigEndianMsbValueHelper.Instance;
+                }
                 default:
-                    {
-                        return ValueHelper.Instance;
-                    }
+                {
+                    return Instance;
+                }
             }
         }
 

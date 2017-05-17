@@ -47,7 +47,8 @@ namespace Modbus.Net.Modbus
     /// </summary>
     public abstract class ModbusProtocal : BaseProtocal
     {
-        protected ModbusProtocal(byte slaveAddress, byte masterAddress, Endian endian) : base(slaveAddress, masterAddress, endian)
+        protected ModbusProtocal(byte slaveAddress, byte masterAddress, Endian endian)
+            : base(slaveAddress, masterAddress, endian)
         {
         }
 
@@ -73,7 +74,8 @@ namespace Modbus.Net.Modbus
             var translateAddress = addressTranslator.AddressTranslate(startAddress, true);
             FunctionCode = (byte) translateAddress.Area;
             StartAddress = (ushort) translateAddress.Address;
-            GetCount = (ushort) Math.Ceiling(getCount/addressTranslator.GetAreaByteLength(translateAddress.AreaString));
+            GetCount =
+                (ushort) Math.Ceiling(getCount / addressTranslator.GetAreaByteLength(translateAddress.AreaString));
         }
 
         public byte SlaveAddress { get; }
@@ -140,7 +142,7 @@ namespace Modbus.Net.Modbus
             StartAddress = (ushort) translateAddress.Address;
             var writeByteValue = ValueHelper.GetInstance(endian).ObjectArrayToByteArray(writeValue);
             WriteCount =
-                (ushort) (writeByteValue.Length/addressTranslator.GetAreaByteLength(translateAddress.AreaString));
+                (ushort) (writeByteValue.Length / addressTranslator.GetAreaByteLength(translateAddress.AreaString));
             WriteByteCount = (byte) writeByteValue.Length;
             WriteValue = writeByteValue;
         }

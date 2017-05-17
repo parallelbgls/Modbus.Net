@@ -104,7 +104,8 @@ namespace Modbus.Net.Siemens
 
     public abstract class SiemensProtocal : BaseProtocal
     {
-        protected SiemensProtocal(byte slaveAddress, byte masterAddress) : base(slaveAddress, masterAddress, Endian.BigEndianLsb)
+        protected SiemensProtocal(byte slaveAddress, byte masterAddress)
+            : base(slaveAddress, masterAddress, Endian.BigEndianLsb)
         {
         }
     }
@@ -142,7 +143,7 @@ namespace Modbus.Net.Siemens
         public override byte[] Format(IInputStruct message)
         {
             var r_message = (ComCreateReferenceSiemensInputStruct) message;
-            var crc = (r_message.SlaveAddress + r_message.MasterAddress + 0x49)%256;
+            var crc = (r_message.SlaveAddress + r_message.MasterAddress + 0x49) % 256;
             return Format((byte) 0x10, r_message.SlaveAddress, r_message.MasterAddress, (byte) 0x49, (byte) crc,
                 (byte) 0x16);
         }
@@ -274,7 +275,7 @@ namespace Modbus.Net.Siemens
         public override byte[] Format(IInputStruct message)
         {
             var r_message = (ComConfirmMessageSiemensInputStruct) message;
-            var crc = r_message.SlaveAddress + r_message.MasterAddress + 0x5c%256;
+            var crc = r_message.SlaveAddress + r_message.MasterAddress + 0x5c % 256;
             return Format((byte) 0x10, r_message.SlaveAddress, r_message.MasterAddress, (byte) 0x5c, (byte) crc,
                 (byte) 0x16);
         }
@@ -370,8 +371,8 @@ namespace Modbus.Net.Siemens
             var address = addressTranslator.AddressTranslate(startAddress, true);
             Offset = address.Address;
             var area = address.Area;
-            Area = (byte) (area%256);
-            DbBlock = Area == 0x84 ? (ushort) (area/256) : (ushort) 0;
+            Area = (byte) (area % 256);
+            DbBlock = Area == 0x84 ? (ushort) (area / 256) : (ushort) 0;
             NumberOfElements = getCount;
         }
 
@@ -426,7 +427,7 @@ namespace Modbus.Net.Siemens
             var numberOfElements = r_message.NumberOfElements;
             var dbBlock = r_message.DbBlock;
             var area = r_message.Area;
-            var offsetBit = r_message.Offset*8;
+            var offsetBit = r_message.Offset * 8;
             var offsetBitBytes = BigEndianValueHelper.Instance.GetBytes(offsetBit);
             return Format(new byte[4], slaveAddress, masterAddress, (byte) 0x6c, protoId, rosctr, redId, pduRef, parLg,
                 datLg, serviceId, numberOfVariables
@@ -442,7 +443,7 @@ namespace Modbus.Net.Siemens
             var accessResult = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
             var dataType = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
             var length = BigEndianValueHelper.Instance.GetUShort(messageBytes, ref pos);
-            var byteLength = length/8;
+            var byteLength = length / 8;
             var values = new byte[byteLength];
             Array.Copy(messageBytes, pos, values, 0, byteLength);
             return new ReadRequestSiemensOutputStruct(pduRef, (SiemensAccessResult) accessResult,
@@ -465,8 +466,8 @@ namespace Modbus.Net.Siemens
             var address = addressTranslator.AddressTranslate(startAddress, true);
             Offset = address.Address;
             var area = address.Area;
-            Area = (byte) (area%256);
-            DbBlock = Area == 0x84 ? (ushort) (area/256) : (ushort) 0;
+            Area = (byte) (area % 256);
+            DbBlock = Area == 0x84 ? (ushort) (area / 256) : (ushort) 0;
             WriteValue = writeValue;
         }
 
@@ -514,11 +515,11 @@ namespace Modbus.Net.Siemens
             var numberOfElements = (ushort) valueBytes.Length;
             var dbBlock = r_message.DbBlock;
             var area = r_message.Area;
-            var offsetBit = r_message.Offset*8;
+            var offsetBit = r_message.Offset * 8;
             var offsetBitBytes = BigEndianValueHelper.Instance.GetBytes(offsetBit);
             const byte reserved = 0x00;
             const byte type = (byte) SiemensDataType.OtherAccess;
-            var numberOfWriteBits = (ushort) (valueBytes.Length*8);
+            var numberOfWriteBits = (ushort) (valueBytes.Length * 8);
             return Format(new byte[4], slaveAddress, masterAddress, (byte) 0x7c, protoId, rosctr, redId, pduRef, parLg,
                 datLg, serviceId, numberOfVariables
                 , variableSpec, vAddrLg, syntaxId, typeR, numberOfElements, dbBlock, area,

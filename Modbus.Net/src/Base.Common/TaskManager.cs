@@ -17,7 +17,6 @@ namespace Modbus.Net
     /// </summary>
     public class DataReturnDef : DataReturnDef<string>
     {
-
     }
 
     /// <summary>
@@ -29,6 +28,7 @@ namespace Modbus.Net
         ///     设备的Id
         /// </summary>
         public TMachineKey MachineId { get; set; }
+
         /// <summary>
         ///     返回的数据值
         /// </summary>
@@ -141,7 +141,7 @@ namespace Modbus.Net
                         TryExecuteTask(item);
                     }
                 }
-                    // We're done processing items on the current thread
+                // We're done processing items on the current thread
                 finally
                 {
                     _currentThreadIsProcessingItems = false;
@@ -176,7 +176,10 @@ namespace Modbus.Net
         /// </returns>
         protected sealed override bool TryDequeue(Task task)
         {
-            lock (_tasks) return _tasks.Remove(task);
+            lock (_tasks)
+            {
+                return _tasks.Remove(task);
+            }
         }
 
         /// <summary>
@@ -213,7 +216,7 @@ namespace Modbus.Net
         private readonly TaskFactory _tasks;
 
         /// <summary>
-        /// 构造函数
+        ///     构造函数
         /// </summary>
         /// <param name="machine">设备</param>
         /// <param name="taskFactory">任务工厂</param>
@@ -278,11 +281,9 @@ namespace Modbus.Net
         /// <returns>是否停止成功</returns>
         public bool StopAllTimers()
         {
-            bool ans = true;
+            var ans = true;
             foreach (var task in TasksWithTimer)
-            {
                 ans = ans && StopTimer(task.Name);
-            }
             return ans;
         }
 
@@ -308,11 +309,9 @@ namespace Modbus.Net
         /// <returns>是否暂停成功</returns>
         public bool PauseAllTimers()
         {
-            bool ans = true;
+            var ans = true;
             foreach (var task in TasksWithTimer)
-            {
                 ans = ans && PauseTimer(task.Name);
-            }
             return ans;
         }
 
@@ -338,11 +337,9 @@ namespace Modbus.Net
         /// <returns>是否恢复成功</returns>
         public bool ContinueAllTimers()
         {
-            bool ans = true;
+            var ans = true;
             foreach (var task in TasksWithTimer)
-            {
                 ans = ans && ContinueTimer(task.Name);
-            }
             return ans;
         }
 
@@ -427,7 +424,7 @@ namespace Modbus.Net
                 return new DataReturnDef
                 {
                     MachineId = machine.GetMachineIdString(),
-                    ReturnValues = ans,
+                    ReturnValues = ans
                 };
             };
             Params = null;
@@ -436,7 +433,7 @@ namespace Modbus.Net
             TimerTime = getCycle;
         }
     }
-    
+
     /// <summary>
     ///     写入数据的预定义任务
     /// </summary>
@@ -461,7 +458,7 @@ namespace Modbus.Net
                             MachineSetDataType.CommunicationTag).WithCancellation(cts.Token));
                 return ans;
             };
-            Params = new object[]{values};
+            Params = new object[] {values};
             Return = returnFunc;
         }
     }
@@ -473,45 +470,50 @@ namespace Modbus.Net
     public class TaskItem<TInterType> : ITaskItem, IEquatable<TaskItem<TInterType>>
     {
         /// <summary>
-        ///     名称
-        /// </summary>
-        public string Name { get; set; }
-        /// <summary>
         ///     定时器
         /// </summary>
         private Timer Timer { get; set; }
+
         /// <summary>
         ///     定时器的时间
         /// </summary>
         public int TimerTime { get; set; }
+
         /// <summary>
         ///     离线定时器
         /// </summary>
         private Timer TimerDisconnected { get; set; }
+
         /// <summary>
         ///     离线定时器的时间
         /// </summary>
         public int TimerDisconnectedTime { get; set; }
+
         /// <summary>
         ///     执行的任务
         /// </summary>
         public Func<IMachinePropertyWithoutKey, TaskFactory, object[], Task<TInterType>> Invoke { get; set; }
+
         /// <summary>
         ///     检测设备的在线状态
         /// </summary>
-        internal Func<bool> DetectConnected { get; set; } 
+        internal Func<bool> DetectConnected { get; set; }
+
         /// <summary>
         ///     任务执行的参数
         /// </summary>
         public object[] Params { get; set; }
+
         /// <summary>
         ///     返回值的处理函数
         /// </summary>
         public Action<TInterType> Return { get; set; }
+
         /// <summary>
         ///     获取设备
         /// </summary>
         internal Func<IMachinePropertyWithoutKey> GetMachine { get; set; }
+
         /// <summary>
         ///     获取任务工厂
         /// </summary>
@@ -528,12 +530,28 @@ namespace Modbus.Net
         }
 
         /// <summary>
+        ///     名称
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
         ///     启动定时器
         /// </summary>
         /// <returns>是否成功</returns>
         public bool StartTimer()
         {
             ActivateTimerDisconnected();
+            return true;
+        }
+
+        /// <summary>
+        ///     停止定时器
+        /// </summary>
+        /// <returns></returns>
+        public bool StopTimer()
+        {
+            DeactivateTimer();
+            DeactivateTimerDisconnected();
             return true;
         }
 
@@ -545,7 +563,7 @@ namespace Modbus.Net
             Timer = new Timer(async state =>
             {
                 if (!DetectConnected()) TimerChangeToDisconnect();
-                var ans = await Invoke(GetMachine(),GetTaskFactory(),Params);
+                var ans = await Invoke(GetMachine(), GetTaskFactory(), Params);
                 Return?.Invoke(ans);
             }, null, 0, TimerTime);
         }
@@ -599,17 +617,6 @@ namespace Modbus.Net
         {
             DeactivateTimer();
             ActivateTimerDisconnected();
-            return true;
-        }
-
-        /// <summary>
-        ///     停止定时器
-        /// </summary>
-        /// <returns></returns>
-        public bool StopTimer()
-        {
-            DeactivateTimer();
-            DeactivateTimerDisconnected();
             return true;
         }
     }
@@ -720,16 +727,6 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        ///     强制停止所有正在运行的任务
-        /// </summary>
-        public void TaskHalt()
-        {
-            _cts.Cancel();
-            _cts = new CancellationTokenSource();
-            _tasks = new TaskFactory(_cts.Token, TaskCreationOptions.None, TaskContinuationOptions.None, _scheduler);
-        }
-
-        /// <summary>
         ///     保持连接
         /// </summary>
         public bool KeepConnect
@@ -742,9 +739,7 @@ namespace Modbus.Net
                 lock (_machines)
                 {
                     foreach (var machine in _machines)
-                    {
                         machine.Machine.KeepConnect = _keepConnect;
-                    }
                 }
                 ContinueTimerAll();
             }
@@ -791,6 +786,7 @@ namespace Modbus.Net
         ///     设备读数据的关键字
         /// </summary>
         public MachineGetDataType GetDataType { get; set; }
+
         /// <summary>
         ///     设备写数据的关键字
         /// </summary>
@@ -808,6 +804,16 @@ namespace Modbus.Net
                 _scheduler = new LimitedConcurrencyLevelTaskScheduler(value);
                 ContinueTimerAll();
             }
+        }
+
+        /// <summary>
+        ///     强制停止所有正在运行的任务
+        /// </summary>
+        public void TaskHalt()
+        {
+            _cts.Cancel();
+            _cts = new CancellationTokenSource();
+            _tasks = new TaskFactory(_cts.Token, TaskCreationOptions.None, TaskContinuationOptions.None, _scheduler);
         }
 
         /// <summary>
@@ -834,9 +840,7 @@ namespace Modbus.Net
             lock (_machines)
             {
                 foreach (var machine in machines)
-                {
                     AddMachine(machine);
-                }
             }
         }
 
@@ -922,7 +926,7 @@ namespace Modbus.Net
         {
             lock (_machines)
             {
-                _machines.RemoveWhere(p=>p.Machine.Equals(machine));
+                _machines.RemoveWhere(p => p.Machine.Equals(machine));
             }
         }
 
@@ -938,9 +942,7 @@ namespace Modbus.Net
             lock (_machines)
             {
                 foreach (var machine in _machines)
-                {
                     ans &= machine.InvokeTimer(item);
-                }
             }
             return ans;
         }
@@ -955,9 +957,7 @@ namespace Modbus.Net
             lock (_machines)
             {
                 foreach (var machine in _machines)
-                {
                     ans &= machine.StopAllTimers();
-                }
             }
             return ans;
         }
@@ -973,9 +973,7 @@ namespace Modbus.Net
             lock (_machines)
             {
                 foreach (var machine in _machines)
-                {
                     ans &= machine.StopTimer(taskItemName);
-                }
             }
             return ans;
         }
@@ -990,9 +988,7 @@ namespace Modbus.Net
             lock (_machines)
             {
                 foreach (var machine in _machines)
-                {
                     ans &= machine.PauseAllTimers();
-                }
             }
             return ans;
         }
@@ -1008,9 +1004,7 @@ namespace Modbus.Net
             lock (_machines)
             {
                 foreach (var machine in _machines)
-                {
                     ans &= machine.PauseTimer(taskItemName);
-                }
             }
             return ans;
         }
@@ -1025,9 +1019,7 @@ namespace Modbus.Net
             lock (_machines)
             {
                 foreach (var machine in _machines)
-                {
                     ans &= machine.ContinueAllTimers();
-                }
             }
             return ans;
         }
@@ -1042,9 +1034,7 @@ namespace Modbus.Net
             lock (_machines)
             {
                 foreach (var machine in _machines)
-                {
                     machine.ContinueTimer(taskItemName);
-                }
             }
             return true;
         }
@@ -1061,12 +1051,10 @@ namespace Modbus.Net
             lock (_machines)
             {
                 foreach (var machine in _machines)
-                {
                     tasks.Add(machine.InvokeOnce(item));
-                }
             }
             var ans = await Task.WhenAll(tasks);
-            return ans.All(p=>p);
+            return ans.All(p => p);
         }
 
         /// <summary>
@@ -1080,9 +1068,7 @@ namespace Modbus.Net
         {
             var machine = _machines.FirstOrDefault(p => p.Machine.Id.Equals(machineId));
             if (machine != null)
-            {
                 return await machine.InvokeOnce(item);
-            }
             return false;
         }
 
@@ -1097,9 +1083,7 @@ namespace Modbus.Net
         {
             var machine = _machines.FirstOrDefault(p => p.Machine.Id.Equals(machineId));
             if (machine != null)
-            {
                 return machine.InvokeTimer(item);
-            }
             return false;
         }
 
@@ -1113,9 +1097,7 @@ namespace Modbus.Net
         {
             var machine = _machines.FirstOrDefault(p => p.Machine.Id.Equals(machineId));
             if (machine != null)
-            {
                 return machine.StopTimer(taskItemName);
-            }
             return false;
         }
 
@@ -1129,9 +1111,7 @@ namespace Modbus.Net
         {
             var machine = _machines.FirstOrDefault(p => p.Machine.Id.Equals(machineId));
             if (machine != null)
-            {
                 return machine.PauseTimer(taskItemName);
-            }
             return false;
         }
 
@@ -1145,9 +1125,7 @@ namespace Modbus.Net
         {
             var machine = _machines.FirstOrDefault(p => p.Machine.Id.Equals(machineId));
             if (machine != null)
-            {
                 return machine.ContinueTimer(taskItemName);
-            }
             return false;
         }
     }
