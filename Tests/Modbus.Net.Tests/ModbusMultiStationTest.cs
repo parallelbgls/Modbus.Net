@@ -22,7 +22,7 @@ namespace Modbus.Net.Tests
         }
 
         [TestMethod]
-        public async Task Get()
+        public async Task MultiStation()
         {
             var addresses = new List<AddressUnit>
             {
@@ -85,56 +85,72 @@ namespace Modbus.Net.Tests
             _modbusRtuMachine1.GetAddresses = addresses.ToList();
             _modbusRtuMachine2.GetAddresses = addresses.ToList();
 
-            await _modbusRtuMachine1.SetDatasAsync(MachineSetDataType.CommunicationTag, new Dictionary<string, double>()
+            Random r = new Random();
+            var dic1 = new Dictionary<string, double>()
             {
                 {
-                    "A1", 70
+                    "A1", r.Next(0, UInt16.MaxValue)
                 },
                 {
-                    "A2", 71
+                    "A2", r.Next(0, UInt16.MaxValue)
                 },
                 {
-                    "A3", 72
+                    "A3", r.Next(0, UInt16.MaxValue)
                 },
                 {
-                    "A4", 73
+                    "A4", r.Next(0, UInt16.MaxValue)
                 },
                 {
-                    "A5", 717870
+                    "A5", r.Next()
                 },
                 {
-                    "A6", 717871
+                    "A6", r.Next()
                 },
-            });
-            await _modbusRtuMachine2.SetDatasAsync(MachineSetDataType.CommunicationTag, new Dictionary<string, double>()
+            };
+
+            var dic2 = new Dictionary<string, double>()
             {
                 {
-                    "A1", 74
+                    "A1", r.Next(0, UInt16.MaxValue)
                 },
                 {
-                    "A2", 75
+                    "A2", r.Next(0, UInt16.MaxValue)
                 },
                 {
-                    "A3", 76
+                    "A3", r.Next(0, UInt16.MaxValue)
                 },
                 {
-                    "A4", 77
+                    "A4", r.Next(0, UInt16.MaxValue)
                 },
                 {
-                    "A5", 717873
+                    "A5", r.Next()
                 },
                 {
-                    "A6", 717874
+                    "A6", r.Next()
                 },
-            });
+            };
+
+            await _modbusRtuMachine1.SetDatasAsync(MachineSetDataType.CommunicationTag, dic1);
+            await _modbusRtuMachine2.SetDatasAsync(MachineSetDataType.CommunicationTag, dic2);
+
             var ans = await _modbusRtuMachine1.GetDatasAsync(MachineGetDataType.CommunicationTag);
             var ans2 = await _modbusRtuMachine2.GetDatasAsync(MachineGetDataType.CommunicationTag);
 
             _modbusRtuMachine1.Disconnect();
             _modbusRtuMachine2.Disconnect();
 
-            Assert.AreEqual(ans["A1"].PlcValue, 70);
-            Assert.AreEqual(ans2["A1"].PlcValue, 74);
+            Assert.AreEqual(ans["A1"].PlcValue, dic1["A1"]);
+            Assert.AreEqual(ans2["A1"].PlcValue, dic2["A1"]);
+            Assert.AreEqual(ans["A2"].PlcValue, dic1["A2"]);
+            Assert.AreEqual(ans2["A2"].PlcValue, dic2["A2"]);
+            Assert.AreEqual(ans["A3"].PlcValue, dic1["A3"]);
+            Assert.AreEqual(ans2["A3"].PlcValue, dic2["A3"]);
+            Assert.AreEqual(ans["A4"].PlcValue, dic1["A4"]);
+            Assert.AreEqual(ans2["A4"].PlcValue, dic2["A4"]);
+            Assert.AreEqual(ans["A5"].PlcValue, dic1["A5"]);
+            Assert.AreEqual(ans2["A5"].PlcValue, dic2["A5"]);
+            Assert.AreEqual(ans["A6"].PlcValue, dic1["A6"]);
+            Assert.AreEqual(ans2["A6"].PlcValue, dic2["A6"]);
         }
     }
 }

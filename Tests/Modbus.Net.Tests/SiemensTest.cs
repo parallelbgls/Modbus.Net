@@ -21,6 +21,8 @@ namespace Modbus.Net.Tests
         [TestMethod]
         public async Task SiemensCoilSingle()
         {
+            Random r = new Random();
+
             var addresses = new List<AddressUnit>
             {
                 new AddressUnit
@@ -34,15 +36,18 @@ namespace Modbus.Net.Tests
                 }
             };
 
-            _siemensTcpMachine.GetAddresses = addresses;
-            await _siemensTcpMachine.SetDatasAsync(MachineSetDataType.Address, new Dictionary<string, double>()
+            var dic1 = new Dictionary<string, double>()
             {
                 {
-                    "Q 0.0", 1
+                    "Q 0.0", r.Next(0, 2)
                 }
-            });
+            };
+
+            _siemensTcpMachine.GetAddresses = addresses;
+            await _siemensTcpMachine.SetDatasAsync(MachineSetDataType.Address, dic1);
+
             var ans = await _siemensTcpMachine.GetDatasAsync(MachineGetDataType.Address);
-            Assert.AreEqual(ans["Q 0.0"].PlcValue, 1);
+            Assert.AreEqual(ans["Q 0.0"].PlcValue, dic1["Q 0.0"]);
         }
 
         [TestMethod]
@@ -69,6 +74,8 @@ namespace Modbus.Net.Tests
         [TestMethod]
         public async Task SiemensMSingle()
         {
+            Random r = new Random();
+
             var addresses = new List<AddressUnit>
             {
                 new AddressUnit
@@ -84,19 +91,23 @@ namespace Modbus.Net.Tests
 
             _siemensTcpMachine.GetAddresses = addresses;
 
-            await _siemensTcpMachine.SetDatasAsync(MachineSetDataType.Address, new Dictionary<string, double>()
+            var dic1 = new Dictionary<string, double>()
             {
                 {
-                    "M 0", 31125
+                    "M 0", r.Next(0, UInt16.MaxValue)
                 }
-            });
+            };
+
+            await _siemensTcpMachine.SetDatasAsync(MachineSetDataType.Address, dic1);
             var ans = await _siemensTcpMachine.GetDatasAsync(MachineGetDataType.Address);
-            Assert.AreEqual(ans["M 0.0"].PlcValue, 31125);
+            Assert.AreEqual(ans["M 0.0"].PlcValue, dic1["M 0"]);
         }
 
         [TestMethod]
         public async Task SiemensMSingleBool()
         {
+            Random r = new Random();
+
             var addresses = new List<AddressUnit>
             {
                 new AddressUnit
@@ -112,19 +123,24 @@ namespace Modbus.Net.Tests
 
             _siemensTcpMachine.GetAddresses = addresses;
 
-            await _siemensTcpMachine.SetDatasAsync(MachineSetDataType.Address, new Dictionary<string, double>()
+            var dic1 = new Dictionary<string, double>()
             {
                 {
-                    "M 0.0", 1
+                    "M 0.0", r.Next(0, 2)
                 }
-            });
+            };
+
+            await _siemensTcpMachine.SetDatasAsync(MachineSetDataType.Address, dic1);
+
             var ans = await _siemensTcpMachine.GetDatasAsync(MachineGetDataType.Address);
-            Assert.AreEqual(ans["M 0.0"].PlcValue, 1);
+            Assert.AreEqual(ans["M 0.0"].PlcValue, dic1["M 0.0"]);
         }
 
         [TestMethod]
         public async Task SiemensDbSingle()
         {
+            Random r = new Random();
+
             var addresses = new List<AddressUnit>
             {
                 new AddressUnit
@@ -138,20 +154,25 @@ namespace Modbus.Net.Tests
                 }
             };
 
-            _siemensTcpMachine.GetAddresses = addresses;
-            await _siemensTcpMachine.SetDatasAsync(MachineSetDataType.Address, new Dictionary<string, double>()
+            var dic1 = new Dictionary<string, double>()
             {
                 {
-                    "DB2 0.0", 31125
+                    "DB2 0.0", r.Next(0, UInt16.MaxValue)
                 }
-            });
+            };
+
+            _siemensTcpMachine.GetAddresses = addresses;
+            await _siemensTcpMachine.SetDatasAsync(MachineSetDataType.Address, dic1);
+
             var ans = await _siemensTcpMachine.GetDatasAsync(MachineGetDataType.Address);
-            Assert.AreEqual(ans["DB2 0.0"].PlcValue, 31125);
+            Assert.AreEqual(ans["DB2 0.0"].PlcValue, dic1["DB2 0.0"]);
         }
 
         [TestMethod]
         public async Task SiemensDbMultiple()
         {
+            Random r = new Random();
+
             var addresses = new List<AddressUnit>
             {
                 new AddressUnit
@@ -210,35 +231,37 @@ namespace Modbus.Net.Tests
                 }
             };
 
-            _siemensTcpMachine.GetAddresses = addresses;
-            await _siemensTcpMachine.SetDatasAsync(MachineSetDataType.CommunicationTag, new Dictionary<string, double>()
+            var dic1 = new Dictionary<string, double>()
             {
                 {
-                    "A1", 70
+                    "A1", r.Next(0, UInt16.MaxValue)
                 },
                 {
-                    "A2", 71
+                    "A2", r.Next(0, UInt16.MaxValue)
                 },
                 {
-                    "A3", 72
+                    "A3", r.Next(0, UInt16.MaxValue)
                 },
                 {
-                    "A4", 73
+                    "A4", r.Next(0, UInt16.MaxValue)
                 },
                 {
-                    "A5", 717870
+                    "A5", r.Next()
                 },
                 {
-                    "A6", 717871
+                    "A6", r.Next()
                 },
-            });
+            };
+
+            _siemensTcpMachine.GetAddresses = addresses;
+            await _siemensTcpMachine.SetDatasAsync(MachineSetDataType.CommunicationTag, dic1);
             var ans = await _siemensTcpMachine.GetDatasAsync(MachineGetDataType.CommunicationTag);
-            Assert.AreEqual(ans["A1"].PlcValue, 70);
-            Assert.AreEqual(ans["A2"].PlcValue, 71);
-            Assert.AreEqual(ans["A3"].PlcValue, 72);
-            Assert.AreEqual(ans["A4"].PlcValue, 73);
-            Assert.AreEqual(ans["A5"].PlcValue, 717870);
-            Assert.AreEqual(ans["A6"].PlcValue, 717871);
+            Assert.AreEqual(ans["A1"].PlcValue, dic1["A1"]);
+            Assert.AreEqual(ans["A2"].PlcValue, dic1["A2"]);
+            Assert.AreEqual(ans["A3"].PlcValue, dic1["A3"]);
+            Assert.AreEqual(ans["A4"].PlcValue, dic1["A4"]);
+            Assert.AreEqual(ans["A5"].PlcValue, dic1["A5"]);
+            Assert.AreEqual(ans["A6"].PlcValue, dic1["A6"]);
         }
     }
 }
