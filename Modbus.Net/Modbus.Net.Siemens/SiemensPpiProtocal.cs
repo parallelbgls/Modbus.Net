@@ -29,9 +29,7 @@ namespace Modbus.Net.Siemens
         public override async Task<byte[]> SendReceiveAsync(params object[] content)
         {
             if (ProtocalLinker == null || !ProtocalLinker.IsConnected)
-            {
                 await ConnectAsync();
-            }
             return await base.SendReceiveAsync(Endian, content);
         }
 
@@ -51,17 +49,17 @@ namespace Modbus.Net.Siemens
             var inputStruct = new ComCreateReferenceSiemensInputStruct(SlaveAddress, MasterAddress);
             var outputStruct =
                 await await
-                    ForceSendReceiveAsync(this[typeof (ComCreateReferenceSiemensProtocal)],
-                        inputStruct).
+                    ForceSendReceiveAsync(this[typeof(ComCreateReferenceSiemensProtocal)],
+                            inputStruct).
                         ContinueWith(async answer =>
                         {
                             if (!ProtocalLinker.IsConnected) return false;
                             var inputStruct2 = new ComConfirmMessageSiemensInputStruct(SlaveAddress, MasterAddress);
                             var outputStruct2 =
                                 (ComConfirmMessageSiemensOutputStruct)
-                                    await
-                                        ForceSendReceiveAsync(this[typeof (ComConfirmMessageSiemensProtocal)],
-                                            inputStruct2);
+                                await
+                                    ForceSendReceiveAsync(this[typeof(ComConfirmMessageSiemensProtocal)],
+                                        inputStruct2);
                             return outputStruct2 != null;
                         });
             return outputStruct;

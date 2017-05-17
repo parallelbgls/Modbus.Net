@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Modbus.Net
@@ -11,7 +9,6 @@ namespace Modbus.Net
     /// </summary>
     public interface IUtilityMethod
     {
-        
     }
 
     /// <summary>
@@ -19,6 +16,14 @@ namespace Modbus.Net
     /// </summary>
     public interface IUtilityMethodData : IUtilityMethod
     {
+        /// <summary>
+        ///     获取数据
+        /// </summary>
+        /// <param name="startAddress">开始地址</param>
+        /// <param name="getByteCount">获取字节数个数</param>
+        /// <returns>接收到的byte数据</returns>
+        byte[] GetDatas(string startAddress, int getByteCount);
+
         /// <summary>
         ///     获取数据
         /// </summary>
@@ -69,7 +74,7 @@ namespace Modbus.Net
         /// <returns>获取数据的对象数组，请强制转换成相应类型</returns>
         object[] GetDatas(string startAddress, IEnumerable<KeyValuePair<Type, int>> getTypeAndCountList);
 
-        /// <summary>GetEndian
+        /// <summary>
         ///     获取数据
         /// </summary>
         /// <param name="startAddress">开始地址</param>
@@ -94,11 +99,10 @@ namespace Modbus.Net
     }
 
     /// <summary>
-    ///      Utility的时间读写接口
+    ///     Utility的时间读写接口
     /// </summary>
     public interface IUtilityMethodTime : IUtilityMethod
     {
-
         /// <summary>
         ///     获取PLC时间
         /// </summary>
@@ -111,6 +115,5 @@ namespace Modbus.Net
         /// <param name="setTime">设置PLC时间</param>
         /// <returns>设置是否成功</returns>
         Task<bool> SetTimeAsync(DateTime setTime);
-
     }
 }

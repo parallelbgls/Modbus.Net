@@ -19,12 +19,16 @@ namespace Modbus.Net.Siemens
         private int _connectTryCount;
 
         public SiemensTcpProtocal(byte tdpuSize, ushort tsapSrc, ushort tsapDst, ushort maxCalling, ushort maxCalled,
-            ushort maxPdu) : this(tdpuSize, tsapSrc, tsapDst, maxCalling, maxCalled, maxPdu, ConfigurationManager.AppSettings["IP"])
+            ushort maxPdu)
+            : this(tdpuSize, tsapSrc, tsapDst, maxCalling, maxCalled, maxPdu, ConfigurationManager.AppSettings["IP"])
         {
         }
 
         public SiemensTcpProtocal(byte tdpuSize, ushort tsapSrc, ushort tsapDst, ushort maxCalling, ushort maxCalled,
-            ushort maxPdu, string ip) : this(tdpuSize, tsapSrc, tsapDst, maxCalling, maxCalled, maxPdu, ip, int.Parse(ConfigurationManager.AppSettings["SiemensPort"]))
+            ushort maxPdu, string ip)
+            : this(
+                tdpuSize, tsapSrc, tsapDst, maxCalling, maxCalled, maxPdu, ip,
+                int.Parse(ConfigurationManager.AppSettings["SiemensPort"] ?? "102"))
         {
         }
 
@@ -50,9 +54,7 @@ namespace Modbus.Net.Siemens
         public override async Task<byte[]> SendReceiveAsync(params object[] content)
         {
             if (ProtocalLinker == null || !ProtocalLinker.IsConnected)
-            {
                 await ConnectAsync();
-            }
             return await base.SendReceiveAsync(Endian, content);
         }
 
@@ -92,7 +94,7 @@ namespace Modbus.Net.Siemens
             return
                 //先建立连接，然后建立设备的引用
                 await await
-                    ForceSendReceiveAsync(this[typeof (CreateReferenceSiemensProtocal)], inputStruct)
+                    ForceSendReceiveAsync(this[typeof(CreateReferenceSiemensProtocal)], inputStruct)
                         .ContinueWith(async answer =>
                         {
                             if (!ProtocalLinker.IsConnected) return false;
@@ -101,9 +103,9 @@ namespace Modbus.Net.Siemens
                                 _maxPdu);
                             var outputStruct2 =
                                 (EstablishAssociationSiemensOutputStruct)
-                                    await
-                                        SendReceiveAsync(this[typeof (EstablishAssociationSiemensProtocal)],
-                                            inputStruct2);
+                                await
+                                    SendReceiveAsync(this[typeof(EstablishAssociationSiemensProtocal)],
+                                        inputStruct2);
                             return outputStruct2 != null;
                         });
         }

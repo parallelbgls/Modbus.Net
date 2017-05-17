@@ -11,14 +11,17 @@ namespace Modbus.Net
         ///     地址区域的字符串描述
         /// </summary>
         public string AreaString { get; set; }
+
         /// <summary>
         ///     地址区域的数字描述
         /// </summary>
         public int Area { get; set; }
+
         /// <summary>
         ///     地址
         /// </summary>
         public int Address { get; set; }
+
         /// <summary>
         ///     子地址
         /// </summary>
@@ -34,6 +37,7 @@ namespace Modbus.Net
         ///     地址区域的编码
         /// </summary>
         public int Code { get; set; }
+
         /// <summary>
         ///     地址区域的单个地址占用的字节数
         /// </summary>
@@ -79,26 +83,22 @@ namespace Modbus.Net
             if (split.Length == 2)
             {
                 if (int.TryParse(split[0], out num1) && int.TryParse(split[1], out num2))
-                {
                     return new AddressDef
                     {
                         Area = num1,
                         Address = num2
                     };
-                }
             }
             else if (split.Length == 3)
             {
                 if (int.TryParse(split[0], out num1) && int.TryParse(split[1], out num2) &&
                     int.TryParse(split[3], out num3))
-                {
                     return new AddressDef
                     {
                         Area = num1,
                         Address = num2,
                         SubAddress = num3
                     };
-                }
             }
             throw new FormatException();
         }

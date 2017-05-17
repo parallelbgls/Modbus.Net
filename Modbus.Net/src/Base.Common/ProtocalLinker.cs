@@ -45,7 +45,8 @@ namespace Modbus.Net
         {
             //自动查找相应的协议放缩类，命令规则为——当前的实际类名（注意是继承后的）+"BytesExtend"。
             var bytesExtend =
-                Activator.CreateInstance(GetType().GetTypeInfo().Assembly.GetType(GetType().FullName + "BytesExtend")) as
+                Activator.CreateInstance(GetType().GetTypeInfo().Assembly.GetType(GetType().FullName + "BytesExtend"))
+                    as
                     IProtocalLinkerBytesExtend;
             return bytesExtend?.BytesExtend(content);
         }
@@ -59,7 +60,8 @@ namespace Modbus.Net
         {
             //自动查找相应的协议放缩类，命令规则为——当前的实际类名（注意是继承后的）+"BytesExtend"。
             var bytesExtend =
-                Activator.CreateInstance(GetType().GetTypeInfo().Assembly.GetType(GetType().FullName + "BytesExtend")) as
+                Activator.CreateInstance(GetType().GetTypeInfo().Assembly.GetType(GetType().FullName + "BytesExtend"))
+                    as
                     IProtocalLinkerBytesExtend;
             return bytesExtend?.BytesDecact(content);
         }
@@ -84,33 +86,6 @@ namespace Modbus.Net
         ///     设备是否连接
         /// </summary>
         public bool IsConnected => BaseConnector != null && BaseConnector.IsConnected;
-
-        /// <summary>
-        ///     连接设备
-        /// </summary>
-        /// <returns>设备是否连接成功</returns>
-        public bool Connect()
-        {
-            return BaseConnector.Connect();
-        }
-
-        /// <summary>
-        ///     连接设备
-        /// </summary>
-        /// <returns>设备是否连接成功</returns>
-        public async Task<bool> ConnectAsync()
-        {
-            return await BaseConnector.ConnectAsync();
-        }
-
-        /// <summary>
-        ///     断开设备
-        /// </summary>
-        /// <returns>设备是否断开成功</returns>
-        public bool Disconnect()
-        {
-            return BaseConnector.Disconnect();
-        }
 
         /// <summary>
         ///     发送并接收数据
@@ -191,6 +166,33 @@ namespace Modbus.Net
         public virtual TParamOut BytesDecact(TParamOut content)
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        ///     连接设备
+        /// </summary>
+        /// <returns>设备是否连接成功</returns>
+        public bool Connect()
+        {
+            return BaseConnector.Connect();
+        }
+
+        /// <summary>
+        ///     连接设备
+        /// </summary>
+        /// <returns>设备是否连接成功</returns>
+        public async Task<bool> ConnectAsync()
+        {
+            return await BaseConnector.ConnectAsync();
+        }
+
+        /// <summary>
+        ///     断开设备
+        /// </summary>
+        /// <returns>设备是否断开成功</returns>
+        public bool Disconnect()
+        {
+            return BaseConnector.Disconnect();
         }
     }
 }

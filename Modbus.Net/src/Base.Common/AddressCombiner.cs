@@ -34,7 +34,8 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="addressTranslator">地址转换器</param>
         /// <param name="maxLength">单个发送协议允许的数据最长长度（字节）</param>
-        public AddressCombinerContinus(AddressTranslator addressTranslator, int maxLength) : base(addressTranslator, maxLength)
+        public AddressCombinerContinus(AddressTranslator addressTranslator, int maxLength)
+            : base(addressTranslator, maxLength)
         {
         }
     }
@@ -45,11 +46,6 @@ namespace Modbus.Net
     public class AddressCombinerContinus<TKey> : AddressCombiner<TKey> where TKey : IEquatable<TKey>
     {
         /// <summary>
-        ///     协议的数据最长长度（字节）
-        /// </summary>
-        protected int MaxLength { get; set; }
-
-        /// <summary>
         ///     构造函数
         /// </summary>
         /// <param name="addressTranslator">地址转换器</param>
@@ -59,6 +55,11 @@ namespace Modbus.Net
             AddressTranslator = addressTranslator;
             MaxLength = maxLength;
         }
+
+        /// <summary>
+        ///     协议的数据最长长度（字节）
+        /// </summary>
+        protected int MaxLength { get; set; }
 
         /// <summary>
         ///     地址转换器
@@ -75,8 +76,8 @@ namespace Modbus.Net
             //按从小到大的顺序对地址进行排序
             var groupedAddresses = from address in addresses
                 orderby
-                    AddressHelper.GetProtocalCoordinate(address.Address, address.SubAddress,
-                        AddressTranslator.GetAreaByteLength(address.Area))
+                AddressHelper.GetProtocalCoordinate(address.Address, address.SubAddress,
+                    AddressTranslator.GetAreaByteLength(address.Area))
                 group address by address.Area
                 into grouped
                 select grouped;
@@ -111,7 +112,7 @@ namespace Modbus.Net
                     {
                         //如果当前地址小于已经记录的地址域，表示这个地址的开始已经记录过了
                         if (AddressHelper.GetProtocalCoordinate(address.Address, address.SubAddress,
-                            AddressTranslator.GetAreaByteLength(address.Area)) <
+                                AddressTranslator.GetAreaByteLength(address.Area)) <
                             AddressHelper.GetProtocalCoordinateNextPosition(preNum,
                                 preType,
                                 AddressTranslator.GetAreaByteLength(address.Area)))
@@ -119,20 +120,18 @@ namespace Modbus.Net
                             originalAddresses.Add(address);
                             //如果当前地址的末尾被记录，表示地址被记录的地址域覆盖，这个地址没有记录的必要
                             if (AddressHelper.GetProtocalCoordinateNextPosition(
-                                AddressHelper.GetProtocalCoordinate(address.Address, address.SubAddress,
-                                    AddressTranslator.GetAreaByteLength(address.Area)),
-                                address.DataType,
-                                AddressTranslator.GetAreaByteLength(address.Area)) <=
+                                    AddressHelper.GetProtocalCoordinate(address.Address, address.SubAddress,
+                                        AddressTranslator.GetAreaByteLength(address.Area)),
+                                    address.DataType,
+                                    AddressTranslator.GetAreaByteLength(address.Area)) <=
                                 AddressHelper.GetProtocalCoordinateNextPosition(preNum,
                                     preType,
                                     AddressTranslator.GetAreaByteLength(address.Area)))
-                            {
                                 continue;
-                            }
                         }
                         //如果当前地址大于记录的地址域的开头，则表示地址已经不连续了
                         else if (AddressHelper.GetProtocalCoordinate(address.Address, address.SubAddress,
-                            AddressTranslator.GetAreaByteLength(address.Area)) >
+                                     AddressTranslator.GetAreaByteLength(address.Area)) >
                                  AddressHelper.GetProtocalCoordinateNextPosition(preNum,
                                      preType,
                                      AddressTranslator.GetAreaByteLength(address.Area)))
@@ -144,12 +143,12 @@ namespace Modbus.Net
                                 Address = (int) Math.Floor(initNum),
                                 GetCount =
                                     (int)
-                                        Math.Ceiling(
-                                            AddressHelper.MapProtocalGetCountToAbstractByteCount(
-                                                preNum - (int) Math.Floor(initNum),
-                                                AddressTranslator.GetAreaByteLength(address.Area),
-                                                BigEndianValueHelper.Instance.ByteLength[preType.FullName])),
-                                DataType = typeof (byte),
+                                    Math.Ceiling(
+                                        AddressHelper.MapProtocalGetCountToAbstractByteCount(
+                                            preNum - (int) Math.Floor(initNum),
+                                            AddressTranslator.GetAreaByteLength(address.Area),
+                                            BigEndianValueHelper.Instance.ByteLength[preType.FullName])),
+                                DataType = typeof(byte),
                                 OriginalAddresses = originalAddresses.ToList()
                             });
                             initNum = address.Address;
@@ -174,24 +173,25 @@ namespace Modbus.Net
                     Address = (int) Math.Floor(initNum),
                     GetCount =
                         (int)
-                            Math.Ceiling(
-                                AddressHelper.MapProtocalGetCountToAbstractByteCount(
-                                    preNum - (int) Math.Floor(initNum), AddressTranslator.GetAreaByteLength(area),
-                                    BigEndianValueHelper.Instance.ByteLength[preType.FullName])),
-                    DataType = typeof (byte),
+                        Math.Ceiling(
+                            AddressHelper.MapProtocalGetCountToAbstractByteCount(
+                                preNum - (int) Math.Floor(initNum), AddressTranslator.GetAreaByteLength(area),
+                                BigEndianValueHelper.Instance.ByteLength[preType.FullName])),
+                    DataType = typeof(byte),
                     OriginalAddresses = originalAddresses.ToList()
                 });
             }
-            List<CommunicationUnit<TKey>> newAns = new List<CommunicationUnit<TKey>>();
+            var newAns = new List<CommunicationUnit<TKey>>();
             foreach (var communicationUnit in ans)
             {
-                double oldByteCount = communicationUnit.GetCount * BigEndianValueHelper.Instance.ByteLength[communicationUnit.DataType.FullName];
+                var oldByteCount = communicationUnit.GetCount *
+                                   BigEndianValueHelper.Instance.ByteLength[communicationUnit.DataType.FullName];
                 while (oldByteCount * BigEndianValueHelper.Instance.ByteLength[communicationUnit.DataType.FullName] >
                        MaxLength)
                 {
                     var newOriginalAddresses = new List<AddressUnit<TKey>>();
                     var oldOriginalAddresses = communicationUnit.OriginalAddresses.ToList();
-                    var newByteCount = 0.0;                   
+                    var newByteCount = 0.0;
                     do
                     {
                         var currentAddressUnit = oldOriginalAddresses.First();
@@ -200,7 +200,6 @@ namespace Modbus.Net
                         oldByteCount -= BigEndianValueHelper.Instance.ByteLength[currentAddressUnit.DataType.FullName];
                         newOriginalAddresses.Add(currentAddressUnit);
                         oldOriginalAddresses.RemoveAt(0);
-                        
                     } while (newByteCount < MaxLength);
                     var newCommunicationUnit = new CommunicationUnit<TKey>
                     {
@@ -212,9 +211,9 @@ namespace Modbus.Net
                             (int)
                             Math.Ceiling(newByteCount /
                                          BigEndianValueHelper.Instance.ByteLength[communicationUnit.DataType.FullName]),
-                        OriginalAddresses = newOriginalAddresses,
+                        OriginalAddresses = newOriginalAddresses
                     };
-                    
+
                     newAns.Add(newCommunicationUnit);
                 }
                 communicationUnit.GetCount =
@@ -334,12 +333,12 @@ namespace Modbus.Net
                         EndUnit = continusAddress,
                         GapNumber =
                             (int)
-                                Math.Ceiling(AddressHelper.MapProtocalCoordinateToAbstractCoordinate(
-                                    continusAddress.Address, preCommunicationUnit.Address,
-                                    AddressTranslator.GetAreaByteLength(continusAddress.Area)) -
-                                             preCommunicationUnit.GetCount*
-                                             BigEndianValueHelper.Instance.ByteLength[
-                                                 preCommunicationUnit.DataType.FullName])
+                            Math.Ceiling(AddressHelper.MapProtocalCoordinateToAbstractCoordinate(
+                                             continusAddress.Address, preCommunicationUnit.Address,
+                                             AddressTranslator.GetAreaByteLength(continusAddress.Area)) -
+                                         preCommunicationUnit.GetCount *
+                                         BigEndianValueHelper.Instance.ByteLength[
+                                             preCommunicationUnit.DataType.FullName])
                     };
                     addressesGaps.Add(gap);
                 }
@@ -350,12 +349,14 @@ namespace Modbus.Net
             var jumpNumberInner = JumpNumber;
             foreach (var orderedGap in orderedGaps)
             {
-                if (orderedGap.GapNumber <= 0) continue;               
+                if (orderedGap.GapNumber <= 0) continue;
                 var nowAddress = orderedGap.EndUnit;
                 var index = continusAddresses.IndexOf(nowAddress);
                 index--;
                 var preAddress = continusAddresses[index];
-                if (nowAddress.GetCount*BigEndianValueHelper.Instance.ByteLength[nowAddress.DataType.FullName] + preAddress.GetCount*BigEndianValueHelper.Instance.ByteLength[preAddress.DataType.FullName] + orderedGap.GapNumber > MaxLength) continue;
+                if (nowAddress.GetCount * BigEndianValueHelper.Instance.ByteLength[nowAddress.DataType.FullName] +
+                    preAddress.GetCount * BigEndianValueHelper.Instance.ByteLength[preAddress.DataType.FullName] +
+                    orderedGap.GapNumber > MaxLength) continue;
                 jumpNumberInner -= orderedGap.GapNumber;
                 if (jumpNumberInner < 0) break;
                 continusAddresses.RemoveAt(index);
@@ -367,11 +368,11 @@ namespace Modbus.Net
                     Address = preAddress.Address,
                     GetCount =
                         (int)
-                            (preAddress.GetCount*BigEndianValueHelper.Instance.ByteLength[preAddress.DataType.FullName]) +
+                        (preAddress.GetCount * BigEndianValueHelper.Instance.ByteLength[preAddress.DataType.FullName]) +
                         orderedGap.GapNumber +
                         (int)
-                            (nowAddress.GetCount*BigEndianValueHelper.Instance.ByteLength[nowAddress.DataType.FullName]),
-                    DataType = typeof (byte),
+                        (nowAddress.GetCount * BigEndianValueHelper.Instance.ByteLength[nowAddress.DataType.FullName]),
+                    DataType = typeof(byte),
                     OriginalAddresses = preAddress.OriginalAddresses.ToList().Union(nowAddress.OriginalAddresses)
                 };
                 continusAddresses.Insert(index, newAddress);
@@ -430,8 +431,9 @@ namespace Modbus.Net
             var addressUnits = addresses as IList<AddressUnit<TKey>> ?? addresses.ToList();
             var count = addressUnits.Sum(address => BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName]);
             return
-                new AddressCombinerNumericJump<TKey>((int) (count*Percentage/100.0), MaxLength, AddressTranslator).Combine(
-                    addressUnits);
+                new AddressCombinerNumericJump<TKey>((int) (count * Percentage / 100.0), MaxLength, AddressTranslator)
+                    .Combine(
+                        addressUnits);
         }
     }
 }

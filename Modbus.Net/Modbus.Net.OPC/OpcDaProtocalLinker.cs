@@ -1,10 +1,9 @@
 ﻿using System.Configuration;
-using System.Text;
 
 namespace Modbus.Net.OPC
 {
     /// <summary>
-    /// Opc Da协议连接器
+    ///     Opc Da协议连接器
     /// </summary>
     public class OpcDaProtocalLinker : OpcProtocalLinker
     {

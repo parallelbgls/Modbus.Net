@@ -17,7 +17,7 @@
     }
 
     /// <summary>
-    ///      Siemens地址格式化（Siemens格式）
+    ///     Siemens地址格式化（Siemens格式）
     /// </summary>
     public class AddressFormaterSimenseStandard : AddressFormater
     {
@@ -25,26 +25,16 @@
         {
             if (area.Length > 1 &&
                 area.ToUpper().Substring(0, 2) == "DB")
-            {
                 return area.ToUpper() + "." + "DB" + address;
-            }
-            else
-            {
-                return area.ToUpper() + address;
-            }
+            return area.ToUpper() + address;
         }
 
         public override string FormatAddress(string area, int address, int subAddress)
         {
             if (area.Length > 1 &&
                 area.ToUpper().Substring(0, 2) == "DB")
-            {
                 return area.ToUpper() + "." + "DB" + address + "." + subAddress;
-            }
-            else
-            {
-                return area.ToUpper() + address + "." + subAddress;
-            }
+            return area.ToUpper() + address + "." + subAddress;
         }
     }
 }

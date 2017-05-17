@@ -12,7 +12,8 @@ namespace Modbus.Net.Modbus
         {
         }
 
-        public ModbusTcpProtocal(string ip, byte slaveAddress, byte masterAddress, Endian endian) : base(slaveAddress, masterAddress, endian)
+        public ModbusTcpProtocal(string ip, byte slaveAddress, byte masterAddress, Endian endian)
+            : base(slaveAddress, masterAddress, endian)
         {
             ProtocalLinker = new ModbusTcpProtocalLinker(ip);
         }

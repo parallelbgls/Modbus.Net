@@ -1,25 +1,25 @@
-﻿using Hylasoft.Opc.Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Hylasoft.Opc.Common;
 
 namespace Modbus.Net.OPC
 {
     public abstract class OpcConnector : BaseConnector<OpcParamIn, OpcParamOut>
     {
-        protected IClientExtend Client;
-
         protected bool _connect;
-        public override string ConnectionToken { get; }
-        public override bool IsConnected => _connect;
+        protected IClientExtend Client;
 
         protected OpcConnector(string host)
         {
             ConnectionToken = host;
-        }     
+        }
+
+        public override string ConnectionToken { get; }
+        public override bool IsConnected => _connect;
 
         public override bool Disconnect()
         {
@@ -56,15 +56,12 @@ namespace Modbus.Net.OPC
 
         private void FoldWith(List<string> tagSplitList, char splitChar, char startChar, char endChar)
         {
-            for (int i = 0; i < tagSplitList.Count; i++)
-            {
-                if (tagSplitList[i].Count(ch=>ch == startChar) > tagSplitList[i].Count(ch=>ch == endChar))
-                {
-                    for (int j = i + 1; j < tagSplitList.Count; j++)
-                    {
+            for (var i = 0; i < tagSplitList.Count; i++)
+                if (tagSplitList[i].Count(ch => ch == startChar) > tagSplitList[i].Count(ch => ch == endChar))
+                    for (var j = i + 1; j < tagSplitList.Count; j++)
                         if (tagSplitList[j].Contains(endChar))
                         {
-                            for (int k = i + 1; k <= j; k++)
+                            for (var k = i + 1; k <= j; k++)
                             {
                                 tagSplitList[i] += splitChar + tagSplitList[i + 1];
                                 tagSplitList.RemoveAt(i + 1);
@@ -72,9 +69,6 @@ namespace Modbus.Net.OPC
                             i--;
                             break;
                         }
-                    }
-                }
-            }
         }
 
         private string[] SplitTag(string tag, char split)
@@ -108,7 +102,7 @@ namespace Modbus.Net.OPC
                             Value = BigEndianValueHelper.Instance.GetBytes(result, result.GetType())
                         };
                     }
-                    return new OpcParamOut()
+                    return new OpcParamOut
                     {
                         Success = false,
                         Value = Encoding.ASCII.GetBytes("NoData")
@@ -132,17 +126,17 @@ namespace Modbus.Net.OPC
                         catch (Exception e)
                         {
                             AddInfo("opc write exception:" + e.Message);
-                            return new OpcParamOut()
+                            return new OpcParamOut
                             {
                                 Success = false
                             };
                         }
-                        return new OpcParamOut()
+                        return new OpcParamOut
                         {
                             Success = true
                         };
                     }
-                    return new OpcParamOut()
+                    return new OpcParamOut
                     {
                         Success = false
                     };
@@ -151,7 +145,7 @@ namespace Modbus.Net.OPC
             catch (Exception e)
             {
                 AddInfo("opc client exception:" + e.Message);
-                return new OpcParamOut()
+                return new OpcParamOut
                 {
                     Success = false,
                     Value = Encoding.ASCII.GetBytes("NoData")

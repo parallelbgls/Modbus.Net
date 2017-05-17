@@ -74,9 +74,7 @@ namespace Modbus.Net
             {
                 _timeoutTime = value;
                 if (_socketClient != null)
-                {
                     _socketClient.ReceiveTimeout = _timeoutTime;
-                }
             }
         }
 
@@ -144,9 +142,7 @@ namespace Modbus.Net
         public override async Task<bool> ConnectAsync()
         {
             if (_socketClient != null)
-            {
                 Disconnect();
-            }
             try
             {
                 _socketClient = new TcpClient
@@ -187,9 +183,7 @@ namespace Modbus.Net
         public override bool Disconnect()
         {
             if (_socketClient == null)
-            {
                 return true;
-            }
 
             try
             {
@@ -239,9 +233,7 @@ namespace Modbus.Net
             try
             {
                 if (!IsConnected)
-                {
                     await ConnectAsync();
-                }
 
                 var stream = _socketClient.GetStream();
                 await stream.WriteAsync(datagram, 0, datagram.Length);
@@ -280,9 +272,7 @@ namespace Modbus.Net
             try
             {
                 if (!IsConnected)
-                {
                     await ConnectAsync();
-                }
 
                 var stream = _socketClient.GetStream();
                 await stream.WriteAsync(datagram, 0, datagram.Length);
@@ -313,9 +303,7 @@ namespace Modbus.Net
                 stream.Flush();
                 // 异步接收回答
                 if (len > 0)
-                {
                     return CheckReplyDatagram(len);
-                }
                 return null;
             }
             catch (Exception err)
@@ -339,9 +327,7 @@ namespace Modbus.Net
             RefreshReceiveCount();
 
             if (len <= 0)
-            {
                 RefreshErrorCount();
-            }
 
             return replyMessage;
         }

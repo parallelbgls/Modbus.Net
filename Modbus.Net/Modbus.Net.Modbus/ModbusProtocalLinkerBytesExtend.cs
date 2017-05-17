@@ -61,9 +61,7 @@ namespace Modbus.Net.Modbus
             var newContent = new List<byte>();
             newContent.AddRange(Encoding.ASCII.GetBytes(":"));
             foreach (var number in content)
-            {
                 newContent.AddRange(Encoding.ASCII.GetBytes(number.ToString("X2")));
-            }
             newContent.AddRange(Encoding.ASCII.GetBytes(Crc16.GetInstance().GetLRC(content)));
             newContent.Add(0x0d);
             newContent.Add(0x0a);

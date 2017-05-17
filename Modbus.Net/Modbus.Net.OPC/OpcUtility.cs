@@ -1,24 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Modbus.Net.OPC
 {
     public abstract class OpcUtility : BaseUtility<OpcParamIn, OpcParamOut, ProtocalUnit<OpcParamIn, OpcParamOut>>
-    { 
+    {
+        public delegate char GetSeperatorDelegate();
+
         protected OpcUtility(string connectionString) : base(0, 0)
         {
             ConnectionString = connectionString;
             AddressTranslator = new AddressTranslatorOpc();
         }
 
-        public delegate char GetSeperatorDelegate();
+        public override Endian Endian => Endian.BigEndianLsb;
 
         public event GetSeperatorDelegate GetSeperator;
-
-        public override Endian Endian => Endian.BigEndianLsb;
 
         public override void SetConnectionType(int connectionType)
         {
@@ -33,7 +30,8 @@ namespace Modbus.Net.OPC
                 var readRequestOpcInputStruct = new ReadRequestOpcInputStruct(startAddress, split);
                 var readRequestOpcOutputStruct =
                     await
-						Wrapper.SendReceiveAsync<ReadRequestOpcOutputStruct>(Wrapper[typeof(ReadRequestOpcProtocal)], readRequestOpcInputStruct);
+                        Wrapper.SendReceiveAsync<ReadRequestOpcOutputStruct>(Wrapper[typeof(ReadRequestOpcProtocal)],
+                            readRequestOpcInputStruct);
                 return readRequestOpcOutputStruct?.GetValue;
             }
             catch (Exception)
@@ -50,7 +48,8 @@ namespace Modbus.Net.OPC
                 var writeRequestOpcInputStruct = new WriteRequestOpcInputStruct(startAddress, split, setContents[0]);
                 var writeRequestOpcOutputStruct =
                     await
-						Wrapper.SendReceiveAsync<WriteRequestOpcOutputStruct>(Wrapper[typeof(WriteRequestOpcProtocal)], writeRequestOpcInputStruct);
+                        Wrapper.SendReceiveAsync<WriteRequestOpcOutputStruct>(Wrapper[typeof(WriteRequestOpcProtocal)],
+                            writeRequestOpcInputStruct);
                 return writeRequestOpcOutputStruct?.WriteResult == true;
             }
             catch (Exception e)

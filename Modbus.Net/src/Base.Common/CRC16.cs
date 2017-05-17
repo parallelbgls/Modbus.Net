@@ -14,15 +14,14 @@ namespace Modbus.Net
     {
         private static Crc16 _crc16;
 
-        private Crc16()
-        {
-            
-        }
-
         /// <summary>
         ///     CRC验证表
         /// </summary>
         private byte[] crc_table = new byte[512];
+
+        private Crc16()
+        {
+        }
 
         /// <summary>
         ///     获取校验工具实例
@@ -31,9 +30,7 @@ namespace Modbus.Net
         public static Crc16 GetInstance()
         {
             if (_crc16 == null)
-            {
                 _crc16 = new Crc16();
-            }
             return _crc16;
         }
 
@@ -51,7 +48,9 @@ namespace Modbus.Net
             CRC = 0xFFFF;
             //set all 1     
             if (Len <= 0)
+            {
                 CRC = 0;
+            }
             else
             {
                 Len--;
@@ -59,13 +58,10 @@ namespace Modbus.Net
                 {
                     CRC = CRC ^ message[IX];
                     for (IY = 0; IY <= 7; IY++)
-                    {
                         if ((CRC & 1) != 0)
                             CRC = (CRC >> 1) ^ 0xA001;
                         else
                             CRC = CRC >> 1;
-                        //            
-                    }
                 }
             }
             Rcvbuf[1] = (byte) ((CRC & 0xff00) >> 8); //高位置  
@@ -91,9 +87,7 @@ namespace Modbus.Net
             Array.Copy(byteframe, 0, byteArr, 0, byteArr.Length);
             GetCRC(byteArr, ref recvbuff);
             if (recvbuff[0] == byteframe[byteframe.Length - 2] && recvbuff[1] == byteframe[byteframe.Length - 1])
-            {
                 return true;
-            }
             return false;
         }
 
@@ -121,7 +115,7 @@ namespace Modbus.Net
 
             for (var t = 0; t <= hexArray.GetUpperBound(0); t++)
             {
-                if ((hexArray[t] >= 48) && (hexArray[t] <= 57))
+                if (hexArray[t] >= 48 && hexArray[t] <= 57)
 
                     decNum = hexArray[t] - 48;
 
@@ -130,7 +124,7 @@ namespace Modbus.Net
 
                 if (msb)
                 {
-                    decNumMSB = decNum*16;
+                    decNumMSB = decNum * 16;
                     msb = false;
                 }
                 else
@@ -154,12 +148,11 @@ namespace Modbus.Net
             for (i = 0; decByteTotal > 0; i++)
             {
                 //b = Convert.ToInt32(System.Math.Pow(16.0, i));
-                var a = decByteTotal%16;
+                var a = decByteTotal % 16;
                 decByteTotal /= 16;
                 if (a <= 9)
                     hexByte = a.ToString();
                 else
-                {
                     switch (a)
                     {
                         case 10:
@@ -181,7 +174,6 @@ namespace Modbus.Net
                             hexByte = "F";
                             break;
                     }
-                }
                 hexTotal = string.Concat(hexByte, hexTotal);
             }
             return hexTotal == checkString;
@@ -200,15 +192,12 @@ namespace Modbus.Net
         {
             byte sum = 0;
             foreach (var b in code)
-            {
                 sum += b;
-            }
-            sum = (byte)(~sum + 1); //取反+1
+            sum = (byte) (~sum + 1); //取反+1
             var lrc = sum.ToString("X2");
             return lrc;
         }
 
         #endregion
-
     }
 }

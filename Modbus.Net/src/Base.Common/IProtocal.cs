@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Modbus.Net
 {
@@ -12,7 +8,8 @@ namespace Modbus.Net
     /// <typeparam name="TParamIn">向Connector传入的类型</typeparam>
     /// <typeparam name="TParamOut">从Connector返回的类型</typeparam>
     /// <typeparam name="TProtocalUnit">协议单元的类型</typeparam>
-    public interface IProtocal<TParamIn, TParamOut, in TProtocalUnit> where TProtocalUnit : IProtocalFormatting<TParamIn, TParamOut>
+    public interface IProtocal<TParamIn, TParamOut, in TProtocalUnit>
+        where TProtocalUnit : IProtocalFormatting<TParamIn, TParamOut>
     {
         /// <summary>
         ///     发送协议内容并接收，一般方法

@@ -65,15 +65,11 @@ namespace Modbus.Net.Siemens
             if (!base.CheckRight(content).Value) return false;
             var fcsCheck = 0;
             if (content.Length == 1 && content[0] == 0xe5)
-            {
                 return true;
-            }
             if (content.Length == 6 && content[3] == 0) return true;
             for (var i = 4; i < content.Length - 2; i++)
-            {
                 fcsCheck += content[i];
-            }
-            fcsCheck = fcsCheck%256;
+            fcsCheck = fcsCheck % 256;
             if (fcsCheck != content[content.Length - 2]) return false;
             if (content[content.Length - 1] != 0x16) return false;
             if (content[1] != content.Length - 6) return false;

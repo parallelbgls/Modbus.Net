@@ -12,10 +12,12 @@ namespace Modbus.Net.Modbus
         ///     读功能码
         /// </summary>
         protected Dictionary<string, AreaOutputDef> ReadFunctionCodeDictionary;
+
         /// <summary>
         ///     功能码翻译至标准Modbus地址位置
         /// </summary>
         protected Dictionary<string, int> TransDictionary;
+
         /// <summary>
         ///     写功能码
         /// </summary>
@@ -201,6 +203,7 @@ namespace Modbus.Net.Modbus
         ///     读功能码
         /// </summary>
         protected Dictionary<string, AreaOutputDef> ReadFunctionCodeDictionary;
+
         /// <summary>
         ///     写功能码
         /// </summary>

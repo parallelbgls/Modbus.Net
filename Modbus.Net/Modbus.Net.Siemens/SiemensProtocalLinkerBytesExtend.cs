@@ -35,10 +35,8 @@ namespace Modbus.Net.Siemens
                 0, 4);
             var check = 0;
             for (var i = 4; i < newContent.Length - 2; i++)
-            {
                 check += newContent[i];
-            }
-            check = check%256;
+            check = check % 256;
             newContent[newContent.Length - 2] = (byte) check;
             newContent[newContent.Length - 1] = 0x16;
             return newContent;

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace Modbus.Net.OPC
+﻿namespace Modbus.Net.OPC
 {
     /// <summary>
     ///     Opc Da协议Api入口

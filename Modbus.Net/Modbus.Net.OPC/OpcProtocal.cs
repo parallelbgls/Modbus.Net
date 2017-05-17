@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace Modbus.Net.OPC
+﻿namespace Modbus.Net.OPC
 {
     /// <summary>
     ///     Opc协议
@@ -41,7 +39,7 @@ namespace Modbus.Net.OPC
         public override OpcParamIn Format(IInputStruct message)
         {
             var r_message = (ReadRequestOpcInputStruct) message;
-            return new OpcParamIn()
+            return new OpcParamIn
             {
                 IsRead = true,
                 Tag = r_message.Tag,
@@ -88,7 +86,7 @@ namespace Modbus.Net.OPC
         public override OpcParamIn Format(IInputStruct message)
         {
             var r_message = (WriteRequestOpcInputStruct) message;
-            return new OpcParamIn()
+            return new OpcParamIn
             {
                 IsRead = false,
                 Tag = r_message.Tag,

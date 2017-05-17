@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace Modbus.Net
 {
     /// <summary>
-    /// AsyncHelper Class
+    ///     AsyncHelper Class
     /// </summary>
     public static class AsyncHelper
     {
