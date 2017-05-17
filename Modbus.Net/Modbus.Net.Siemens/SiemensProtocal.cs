@@ -102,8 +102,16 @@ namespace Modbus.Net.Siemens
         OtherAccess = 0x04
     }
 
+    /// <summary>
+    ///     西门子协议
+    /// </summary>
     public abstract class SiemensProtocal : BaseProtocal
     {
+        /// <summary>
+        ///     构造函数
+        /// </summary>
+        /// <param name="slaveAddress">从站号</param>
+        /// <param name="masterAddress">主站号</param>
         protected SiemensProtocal(byte slaveAddress, byte masterAddress)
             : base(slaveAddress, masterAddress, Endian.BigEndianLsb)
         {
@@ -187,9 +195,9 @@ namespace Modbus.Net.Siemens
             TsapDst = dstTsap;
         }
 
-        public byte TdpuSize { get; private set; }
-        public ushort TsapSrc { get; private set; }
-        public ushort TsapDst { get; private set; }
+        public byte TdpuSize { get; }
+        public ushort TsapSrc { get; }
+        public ushort TsapDst { get; }
     }
 
     internal class CreateReferenceSiemensProtocal : ProtocalUnit, ISpecialProtocalUnit
@@ -248,30 +256,63 @@ namespace Modbus.Net.Siemens
 
     #region 串口消息确认 
 
+    /// <summary>
+    ///     串口消息确认输入
+    /// </summary>
     public class ComConfirmMessageSiemensInputStruct : IInputStruct
     {
+        /// <summary>
+        ///     构造函数
+        /// </summary>
+        /// <param name="slaveAddress">从站号</param>
+        /// <param name="masterAddress">主站号</param>
         public ComConfirmMessageSiemensInputStruct(byte slaveAddress, byte masterAddress)
         {
             SlaveAddress = slaveAddress;
             MasterAddress = masterAddress;
         }
 
+        /// <summary>
+        ///     从站号
+        /// </summary>
         public byte SlaveAddress { get; set; }
+
+        /// <summary>
+        ///     主站号
+        /// </summary>
         public byte MasterAddress { get; set; }
     }
 
+    /// <summary>
+    ///     串口消息确认输出
+    /// </summary>
     public class ComConfirmMessageSiemensOutputStruct : IOutputStruct
     {
+        /// <summary>
+        ///     构造函数
+        /// </summary>
+        /// <param name="confirmByte">确认字节</param>
         public ComConfirmMessageSiemensOutputStruct(byte confirmByte)
         {
             ConfirmByte = confirmByte;
         }
 
+        /// <summary>
+        ///     确认字节
+        /// </summary>
         public byte ConfirmByte { get; set; }
     }
 
+    /// <summary>
+    ///     串口消息确认协议
+    /// </summary>
     public class ComConfirmMessageSiemensProtocal : ProtocalUnit, ISpecialProtocalUnit
     {
+        /// <summary>
+        ///     格式化
+        /// </summary>
+        /// <param name="message">输入参数</param>
+        /// <returns>格式化数据</returns>
         public override byte[] Format(IInputStruct message)
         {
             var r_message = (ComConfirmMessageSiemensInputStruct) message;
@@ -280,6 +321,12 @@ namespace Modbus.Net.Siemens
                 (byte) 0x16);
         }
 
+        /// <summary>
+        ///     反格式化
+        /// </summary>
+        /// <param name="messageBytes">设备返回的数据</param>
+        /// <param name="pos">当前反格式化的位置</param>
+        /// <returns>输出数据</returns>
         public override IOutputStruct Unformat(byte[] messageBytes, ref int pos)
         {
             var confirmByte = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
@@ -309,7 +356,8 @@ namespace Modbus.Net.Siemens
 
     internal class EstablishAssociationSiemensOutputStruct : IOutputStruct
     {
-        public EstablishAssociationSiemensOutputStruct(ushort pduRef, ushort maxCalling, ushort maxCalled, ushort maxPdu)
+        public EstablishAssociationSiemensOutputStruct(ushort pduRef, ushort maxCalling, ushort maxCalled,
+            ushort maxPdu)
         {
             PduRef = pduRef;
             MaxCalling = maxCalling;
@@ -317,10 +365,10 @@ namespace Modbus.Net.Siemens
             MaxPdu = maxPdu;
         }
 
-        public ushort PduRef { get; private set; }
-        public ushort MaxCalling { get; private set; }
-        public ushort MaxCalled { get; private set; }
-        public ushort MaxPdu { get; private set; }
+        public ushort PduRef { get; }
+        public ushort MaxCalling { get; }
+        public ushort MaxCalled { get; }
+        public ushort MaxPdu { get; }
     }
 
     internal class EstablishAssociationSiemensProtocal : ProtocalUnit
@@ -359,8 +407,21 @@ namespace Modbus.Net.Siemens
 
     #region 读数据请求
 
+    /// <summary>
+    ///     读数据输入
+    /// </summary>
     public class ReadRequestSiemensInputStruct : IInputStruct
     {
+        /// <summary>
+        ///     构造函数
+        /// </summary>
+        /// <param name="slaveAddress">从站号</param>
+        /// <param name="masterAddress">主站号</param>
+        /// <param name="pduRef">报文索引</param>
+        /// <param name="getType">获取数据类型</param>
+        /// <param name="startAddress">开始地址</param>
+        /// <param name="getCount">获取个数</param>
+        /// <param name="addressTranslator">地址转换器</param>
         public ReadRequestSiemensInputStruct(byte slaveAddress, byte masterAddress, ushort pduRef,
             SiemensTypeCode getType, string startAddress, ushort getCount, AddressTranslator addressTranslator)
         {
@@ -376,18 +437,60 @@ namespace Modbus.Net.Siemens
             NumberOfElements = getCount;
         }
 
+        /// <summary>
+        ///     从站号
+        /// </summary>
         public byte SlaveAddress { get; set; }
+
+        /// <summary>
+        ///     主站号
+        /// </summary>
         public byte MasterAddress { get; set; }
+
+        /// <summary>
+        ///     报文索引
+        /// </summary>
         public ushort PduRef { get; }
+
+        /// <summary>
+        ///     地址类型
+        /// </summary>
         public byte TypeCode { get; }
+
+        /// <summary>
+        ///     读取的个数
+        /// </summary>
         public ushort NumberOfElements { get; }
+
+        /// <summary>
+        ///     DB块
+        /// </summary>
         public ushort DbBlock { get; }
+
+        /// <summary>
+        ///     区域
+        /// </summary>
         public byte Area { get; }
+
+        /// <summary>
+        ///     起始偏移量
+        /// </summary>
         public int Offset { get; }
     }
 
+    /// <summary>
+    ///     读数据输出
+    /// </summary>
     public class ReadRequestSiemensOutputStruct : IOutputStruct
     {
+        /// <summary>
+        ///     构造函数
+        /// </summary>
+        /// <param name="pduRef">报文索引</param>
+        /// <param name="accessResult">访问结果</param>
+        /// <param name="dataType">数据类型</param>
+        /// <param name="getLength">获取个数</param>
+        /// <param name="value">读取值</param>
         public ReadRequestSiemensOutputStruct(ushort pduRef, SiemensAccessResult accessResult, SiemensDataType dataType,
             ushort getLength, byte[] value)
         {
@@ -398,15 +501,42 @@ namespace Modbus.Net.Siemens
             GetValue = value;
         }
 
-        public ushort PduRef { get; private set; }
-        public SiemensAccessResult AccessResult { get; private set; }
-        public SiemensDataType DataType { get; private set; }
-        public ushort GetLength { get; private set; }
-        public byte[] GetValue { get; private set; }
+        /// <summary>
+        ///     报文索引
+        /// </summary>
+        public ushort PduRef { get; }
+
+        /// <summary>
+        ///     访问结果
+        /// </summary>
+        public SiemensAccessResult AccessResult { get; }
+
+        /// <summary>
+        ///     数据类型
+        /// </summary>
+        public SiemensDataType DataType { get; }
+
+        /// <summary>
+        ///     获取个数
+        /// </summary>
+        public ushort GetLength { get; }
+
+        /// <summary>
+        ///     读取值
+        /// </summary>
+        public byte[] GetValue { get; }
     }
 
+    /// <summary>
+    ///     读数据协议
+    /// </summary>
     public class ReadRequestSiemensProtocal : ProtocalUnit
     {
+        /// <summary>
+        ///     格式化
+        /// </summary>
+        /// <param name="message">输入参数</param>
+        /// <returns>格式化数据</returns>
         public override byte[] Format(IInputStruct message)
         {
             var r_message = (ReadRequestSiemensInputStruct) message;
@@ -435,6 +565,12 @@ namespace Modbus.Net.Siemens
                 offsetBitBytes.Skip(1).ToArray());
         }
 
+        /// <summary>
+        ///     反格式化
+        /// </summary>
+        /// <param name="messageBytes">设备返回的数据</param>
+        /// <param name="pos">当前反格式化的位置</param>
+        /// <returns>输出数据</returns>
         public override IOutputStruct Unformat(byte[] messageBytes, ref int pos)
         {
             pos = 4;
@@ -455,8 +591,20 @@ namespace Modbus.Net.Siemens
 
     #region 写数据请求
 
+    /// <summary>
+    ///     写数据输入
+    /// </summary>
     public class WriteRequestSiemensInputStruct : IInputStruct
     {
+        /// <summary>
+        ///     构造函数
+        /// </summary>
+        /// <param name="slaveAddress">从站地址</param>
+        /// <param name="masterAddress">主站地址</param>
+        /// <param name="pduRef">报文索引</param>
+        /// <param name="startAddress">开始地址</param>
+        /// <param name="writeValue">写入值</param>
+        /// <param name="addressTranslator">地址转换器</param>
         public WriteRequestSiemensInputStruct(byte slaveAddress, byte masterAddress, ushort pduRef, string startAddress,
             object[] writeValue, AddressTranslator addressTranslator)
         {
@@ -471,29 +619,79 @@ namespace Modbus.Net.Siemens
             WriteValue = writeValue;
         }
 
+        /// <summary>
+        ///     从站地址
+        /// </summary>
         public byte SlaveAddress { get; set; }
+
+        /// <summary>
+        ///     主站地址
+        /// </summary>
         public byte MasterAddress { get; set; }
+
+        /// <summary>
+        ///     报文索引
+        /// </summary>
         public ushort PduRef { get; }
+
+        /// <summary>
+        ///     DB块
+        /// </summary>
         public ushort DbBlock { get; }
+
+        /// <summary>
+        ///     区域
+        /// </summary>
         public byte Area { get; }
+
+        /// <summary>
+        ///     写入偏移量
+        /// </summary>
         public int Offset { get; }
+
+        /// <summary>
+        ///     写入值
+        /// </summary>
         public object[] WriteValue { get; }
     }
 
+    /// <summary>
+    ///     写数据输出
+    /// </summary>
     public class WriteRequestSiemensOutputStruct : IOutputStruct
     {
+        /// <summary>
+        ///     构造函数
+        /// </summary>
+        /// <param name="pduRef">报文索引</param>
+        /// <param name="accessResult">访问结果</param>
         public WriteRequestSiemensOutputStruct(ushort pduRef, SiemensAccessResult accessResult)
         {
             PduRef = pduRef;
             AccessResult = accessResult;
         }
 
-        public ushort PduRef { get; private set; }
-        public SiemensAccessResult AccessResult { get; private set; }
+        /// <summary>
+        ///     报文索引
+        /// </summary>
+        public ushort PduRef { get; }
+
+        /// <summary>
+        ///     访问结果
+        /// </summary>
+        public SiemensAccessResult AccessResult { get; }
     }
 
+    /// <summary>
+    ///     写数据协议
+    /// </summary>
     public class WriteRequestSiemensProtocal : ProtocalUnit
     {
+        /// <summary>
+        ///     格式化
+        /// </summary>
+        /// <param name="message">输入参数</param>
+        /// <returns>格式化数据</returns>
         public override byte[] Format(IInputStruct message)
         {
             var r_message = (WriteRequestSiemensInputStruct) message;
@@ -526,6 +724,12 @@ namespace Modbus.Net.Siemens
                 offsetBitBytes.Skip(1).ToArray(), reserved, type, numberOfWriteBits, valueBytes);
         }
 
+        /// <summary>
+        ///     反格式化
+        /// </summary>
+        /// <param name="messageBytes">设备返回的数据</param>
+        /// <param name="pos">当前反格式化的位置</param>
+        /// <returns>输出数据</returns>
         public override IOutputStruct Unformat(byte[] messageBytes, ref int pos)
         {
             if (messageBytes.Length == 1)
@@ -653,6 +857,11 @@ namespace Modbus.Net.Siemens
             {0xEF, "Layer 2 specific error"}
         };
 
+        /// <summary>
+        ///     构造函数
+        /// </summary>
+        /// <param name="errCls">错误分类</param>
+        /// <param name="errCod">错误码</param>
         public SiemensProtocalErrorException(int errCls, int errCod)
             : base(ProtocalErrorDictionary[errCls] + " : " + errCod)
         {
@@ -660,7 +869,14 @@ namespace Modbus.Net.Siemens
             ErrorCode = errCod;
         }
 
-        public int ErrorClass { get; private set; }
-        public int ErrorCode { get; private set; }
+        /// <summary>
+        ///     错误分类
+        /// </summary>
+        public int ErrorClass { get; }
+
+        /// <summary>
+        ///     错误码
+        /// </summary>
+        public int ErrorCode { get; }
     }
 }
