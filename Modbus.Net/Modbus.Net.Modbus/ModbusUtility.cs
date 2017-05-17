@@ -27,7 +27,7 @@ namespace Modbus.Net.Modbus
     /// <summary>
     ///     Modbus基础Api入口
     /// </summary>
-    public class ModbusUtility : BaseUtility, IIUtilityMethodTime
+    public class ModbusUtility : BaseUtility, IUtilityMethodTime
     {
         /// <summary>
         ///     Modbus协议类型
