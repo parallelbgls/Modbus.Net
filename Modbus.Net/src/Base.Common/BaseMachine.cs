@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace Modbus.Net
 {
@@ -333,8 +334,9 @@ namespace Modbus.Net
             }
             catch (Exception e)
             {
-                Console.WriteLine(ConnectionToken + " " + e.Message);
                 ErrorCount++;
+                Log.Error(e, $"BaseMachine -> GetDatas, Id:{Id} Connection:{ConnectionToken} error. ErrorCount {ErrorCount}.");
+                
                 if (ErrorCount >= _maxErrorCount)
                     Disconnect();
                 return null;
@@ -532,7 +534,11 @@ namespace Modbus.Net
             }
             catch (Exception e)
             {
-                Console.WriteLine(ConnectionToken + " " + e.Message);
+                ErrorCount++;
+                Log.Error(e, $"BaseMachine -> SetDatas, Id:{Id} Connection:{ConnectionToken} error. ErrorCount {ErrorCount}.");
+
+                if (ErrorCount >= _maxErrorCount)
+                    Disconnect();
                 return false;
             }
             return true;
@@ -591,7 +597,7 @@ namespace Modbus.Net
                     .Invoke(this, parameters);
                 return (TReturnType) returnValue;
             }
-            throw new InvalidCastException($"Machine未实现{typeof(TMachineMethod).Name}的接口");
+            throw new InvalidCastException($"Machine interface {nameof(TMachineMethod)} not implemented");
         }
 
         /// <summary>
@@ -641,9 +647,9 @@ namespace Modbus.Net
             {
                 return GetAddresses.SingleOrDefault(p => p.Id.Equals(addressUnitId));
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                Console.WriteLine("Id重复，请检查");
+                Log.Error(e, $"BaseMachine -> GetAddressUnitById Id:{Id} ConnectionToken:{ConnectionToken} addressUnitId:{addressUnitId} Repeated");
                 return null;
             }
         }

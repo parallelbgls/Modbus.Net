@@ -8,16 +8,30 @@ namespace Modbus.Net.Siemens
     /// </summary>
     public class SiemensTcpProtocalLinker : TcpProtocalLinker
     {
+        /// <summary>
+        ///     构造函数
+        /// </summary>
+        /// <param name="ip">IP地址</param>
         public SiemensTcpProtocalLinker(string ip)
             : this(ip, int.Parse(ConfigurationManager.AppSettings["SiemensPort"] ?? "102"))
         {
         }
 
+        /// <summary>
+        ///     构造函数
+        /// </summary>
+        /// <param name="ip">IP地址</param>
+        /// <param name="port">端口</param>
         public SiemensTcpProtocalLinker(string ip, int port)
             : base(ip, port)
         {
         }
 
+        /// <summary>
+        ///     校验报文
+        /// </summary>
+        /// <param name="content">设备返回的信息</param>
+        /// <returns>报文是否正确</returns>
         public override bool? CheckRight(byte[] content)
         {
             if (!base.CheckRight(content).Value) return false;

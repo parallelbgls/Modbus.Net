@@ -7,7 +7,6 @@ namespace Modbus.Net
     /// </summary>
     public abstract class BaseConnector : BaseConnector<byte[], byte[]>
     {
-        
     }
 
     /// <summary>

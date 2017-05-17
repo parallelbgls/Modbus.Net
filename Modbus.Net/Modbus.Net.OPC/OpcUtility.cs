@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace Modbus.Net.OPC
 {
@@ -34,8 +35,9 @@ namespace Modbus.Net.OPC
                             readRequestOpcInputStruct);
                 return readRequestOpcOutputStruct?.GetValue;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Log.Error(e, $"OpcUtility -> GetDatas: {ConnectionString} error");
                 return null;
             }
         }
@@ -54,6 +56,7 @@ namespace Modbus.Net.OPC
             }
             catch (Exception e)
             {
+                Log.Error(e, $"OpcUtility -> SetDatas: {ConnectionString} error");
                 return false;
             }
         }

@@ -7,13 +7,24 @@ namespace Modbus.Net.Modbus
     /// </summary>
     public class ModbusRtuProtocalLinker : ComProtocalLinker
     {
+        /// <summary>
+        ///     构造函数
+        /// </summary>
+        /// <param name="com">串口地址</param>
+        /// <param name="slaveAddress">从站号</param>
         public ModbusRtuProtocalLinker(string com, int slaveAddress)
             : base(com, 9600, Parity.None, StopBits.One, 8, slaveAddress)
         {
         }
 
+        /// <summary>
+        ///     校验返回数据
+        /// </summary>
+        /// <param name="content">设备返回的数据</param>
+        /// <returns>数据是否正确</returns>
         public override bool? CheckRight(byte[] content)
         {
+            //ProtocalLinker的CheckRight不会返回null
             if (!base.CheckRight(content).Value) return false;
             //CRC校验失败
             if (!Crc16.GetInstance().CrcEfficacy(content))

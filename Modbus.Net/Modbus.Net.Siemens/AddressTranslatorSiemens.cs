@@ -9,8 +9,14 @@ namespace Modbus.Net.Siemens
     /// </summary>
     public class AddressTranslatorSiemens : AddressTranslator
     {
+        /// <summary>
+        ///     区域的翻译字典
+        /// </summary>
         protected Dictionary<string, int> AreaCodeDictionary;
 
+        /// <summary>
+        ///     构造函数
+        /// </summary>
         public AddressTranslatorSiemens()
         {
             AreaCodeDictionary = new Dictionary<string, int>
@@ -30,6 +36,12 @@ namespace Modbus.Net.Siemens
             };
         }
 
+        /// <summary>
+        ///     地址转换
+        /// </summary>
+        /// <param name="address">格式化的地址</param>
+        /// <param name="isRead">是否为读取，是为读取，否为写入</param>
+        /// <returns>翻译后的地址</returns>
         public override AddressDef AddressTranslate(string address, bool isRead)
         {
             address = address.ToUpper();
@@ -68,6 +80,11 @@ namespace Modbus.Net.Siemens
                 };
         }
 
+        /// <summary>
+        ///     获取区域中的单个地址占用的字节长度
+        /// </summary>
+        /// <param name="area">区域名称</param>
+        /// <returns>字节长度</returns>
         public override double GetAreaByteLength(string area)
         {
             return 1;
@@ -79,8 +96,14 @@ namespace Modbus.Net.Siemens
     /// </summary>
     public class AddressTranslatorSimenseStandard : AddressTranslator
     {
+        /// <summary>
+        ///     区域的翻译字典
+        /// </summary>
         protected Dictionary<string, int> AreaCodeDictionary;
 
+        /// <summary>
+        ///     构造函数
+        /// </summary>
         public AddressTranslatorSimenseStandard()
         {
             AreaCodeDictionary = new Dictionary<string, int>
@@ -100,6 +123,12 @@ namespace Modbus.Net.Siemens
             };
         }
 
+        /// <summary>
+        ///     地址转换
+        /// </summary>
+        /// <param name="address">格式化的地址</param>
+        /// <param name="isRead">是否为读取，是为读取，否为写入</param>
+        /// <returns>翻译后的地址</returns>
         public override AddressDef AddressTranslate(string address, bool isRead)
         {
             address = address.ToUpper();
@@ -134,6 +163,11 @@ namespace Modbus.Net.Siemens
             };
         }
 
+        /// <summary>
+        ///     获取区域中的单个地址占用的字节长度
+        /// </summary>
+        /// <param name="area">区域名称</param>
+        /// <returns>字节长度</returns>
         public override double GetAreaByteLength(string area)
         {
             return 1;

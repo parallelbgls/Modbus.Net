@@ -9,11 +9,21 @@ namespace Modbus.Net.Siemens
     /// </summary>
     public class SiemensPpiProtocalLinker : ComProtocalLinker
     {
+        /// <summary>
+        ///     构造函数
+        /// </summary>
+        /// <param name="com">串口地址</param>
+        /// <param name="slaveAddress">从站号</param>
         public SiemensPpiProtocalLinker(string com, int slaveAddress)
             : base(com, 9600, Parity.Even, StopBits.One, 8, slaveAddress)
         {
         }
 
+        /// <summary>
+        ///     发送协议内容并接收返回
+        /// </summary>
+        /// <param name="content">发送的报文</param>
+        /// <returns>接收的报文</returns>
         public override async Task<byte[]> SendReceiveAsync(byte[] content)
         {
             var extBytes = BytesExtend(content);
@@ -36,6 +46,11 @@ namespace Modbus.Net.Siemens
             return BytesDecact(receiveBytes);
         }
 
+        /// <summary>
+        ///     发送协议内容并接收返回，不进行协议扩展和收缩
+        /// </summary>
+        /// <param name="content">发送的报文</param>
+        /// <returns>接收的报文</returns>
         public override async Task<byte[]> SendReceiveWithoutExtAndDecAsync(byte[] content)
         {
             var ans = await base.SendReceiveWithoutExtAndDecAsync(content);
@@ -60,6 +75,11 @@ namespace Modbus.Net.Siemens
             return ans;
         }
 
+        /// <summary>
+        ///     校验报文
+        /// </summary>
+        /// <param name="content">设备返回的信息</param>
+        /// <returns>报文是否正确</returns>
         public override bool? CheckRight(byte[] content)
         {
             if (!base.CheckRight(content).Value) return false;

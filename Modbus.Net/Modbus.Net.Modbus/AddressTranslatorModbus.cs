@@ -23,6 +23,9 @@ namespace Modbus.Net.Modbus
         /// </summary>
         protected Dictionary<string, AreaOutputDef> WriteFunctionCodeDictionary;
 
+        /// <summary>
+        ///     构造器
+        /// </summary>
         public AddressTranslatorNA200H()
         {
             TransDictionary = new Dictionary<string, int>
@@ -154,6 +157,12 @@ namespace Modbus.Net.Modbus
             };
         }
 
+        /// <summary>
+        ///     地址转换
+        /// </summary>
+        /// <param name="address">格式化的地址</param>
+        /// <param name="isRead">是否为读取，是为读取，否为写入</param>
+        /// <returns>翻译后的地址</returns>
         public override AddressDef AddressTranslate(string address, bool isRead)
         {
             address = address.ToUpper();
@@ -188,6 +197,11 @@ namespace Modbus.Net.Modbus
                 };
         }
 
+        /// <summary>
+        ///     获取区域中的单个地址占用的字节长度
+        /// </summary>
+        /// <param name="area">区域名称</param>
+        /// <returns>字节长度</returns>
         public override double GetAreaByteLength(string area)
         {
             return ReadFunctionCodeDictionary[area].AreaWidth;
@@ -209,6 +223,9 @@ namespace Modbus.Net.Modbus
         /// </summary>
         protected Dictionary<string, AreaOutputDef> WriteFunctionCodeDictionary;
 
+        /// <summary>
+        ///     构造器
+        /// </summary>
         public AddressTranslatorModbus()
         {
             ReadFunctionCodeDictionary = new Dictionary<string, AreaOutputDef>
@@ -259,6 +276,12 @@ namespace Modbus.Net.Modbus
             };
         }
 
+        /// <summary>
+        ///     地址转换
+        /// </summary>
+        /// <param name="address">格式化的地址</param>
+        /// <param name="isRead">是否为读取，是为读取，否为写入</param>
+        /// <returns>翻译后的地址</returns>
         public override AddressDef AddressTranslate(string address, bool isRead)
         {
             address = address.ToUpper();
@@ -293,6 +316,11 @@ namespace Modbus.Net.Modbus
                 };
         }
 
+        /// <summary>
+        ///     获取区域中的单个地址占用的字节长度
+        /// </summary>
+        /// <param name="area">区域名称</param>
+        /// <returns>字节长度</returns>
         public override double GetAreaByteLength(string area)
         {
             return ReadFunctionCodeDictionary[area].AreaWidth;

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Nito.AsyncEx;
+using Serilog;
 
 namespace Modbus.Net
 {
@@ -864,7 +865,7 @@ namespace Modbus.Net
             }
             catch (Exception e)
             {
-                Console.WriteLine($"设备返回错误 {e.Message}");
+                Log.Error(e, $"Device {id} return error");
                 return null;
             }
         }
@@ -889,7 +890,7 @@ namespace Modbus.Net
             }
             catch (Exception e)
             {
-                Console.WriteLine($"设备返回错误 {e.Message}");
+                Log.Error(e, $"Device {connectionToken} return error");
                 return null;
             }
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Serilog;
 
 /// <summary>
 ///     端格式
@@ -124,8 +125,9 @@ namespace Modbus.Net
                 var getBytes = getReturnValue;
                 return ValueHelper.GetInstance(Endian).ByteArrayToObjectArray(getBytes, getTypeAndCount);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Log.Error(e, $"ModbusUtility -> GetDatas: {ConnectionString} error");
                 return null;
             }
         }
@@ -159,8 +161,9 @@ namespace Modbus.Net
                     new KeyValuePair<Type, int>(typeof(T), getByteCount));
                 return ValueHelper.GetInstance(Endian).ObjectArrayToDestinationArray<T>(getBytes);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Log.Error(e, $"ModbusUtility -> GetDatas Generic: {ConnectionString} error");
                 return null;
             }
         }
@@ -199,8 +202,9 @@ namespace Modbus.Net
                 var getBytes = getReturnValue;
                 return ValueHelper.GetInstance(Endian).ByteArrayToObjectArray(getBytes, translateTypeAndCount);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Log.Error(e, $"ModbusUtility -> GetDatas pair: {ConnectionString} error");
                 return null;
             }
         }
@@ -290,7 +294,7 @@ namespace Modbus.Net
                     .Invoke(this, parameters);
                 return (TReturnType) returnValue;
             }
-            throw new InvalidCastException($"Utility未实现{typeof(TUtilityMethod).Name}的接口");
+            throw new InvalidCastException($"Utility interface {nameof(TUtilityMethod)} not implemented");
         }
 
         /// <summary>
