@@ -1,22 +1,56 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace Modbus.Net.Siemens
 {
+    /// <summary>
+    ///     西门子协议类型
+    /// </summary>
     public enum SiemensType
     {
+        /// <summary>
+        /// PPI
+        /// </summary>
         Ppi = 0,
+        /// <summary>
+        /// MPI
+        /// </summary>
         Mpi = 1,
+        /// <summary>
+        /// 以太网
+        /// </summary>
         Tcp = 2
     }
 
+    /// <summary>
+    ///     西门子设备类型
+    /// </summary>
     public enum SiemensMachineModel
     {
+        /// <summary>
+        /// S7-200
+        /// </summary>
         S7_200 = 0,
+        /// <summary>
+        /// S7-200 Smart
+        /// </summary>
         S7_200_Smart = 1,
+        /// <summary>
+        /// S7-300
+        /// </summary>
         S7_300 = 2,
+        /// <summary>
+        /// S7-400
+        /// </summary>
         S7_400 = 3,
+        /// <summary>
+        /// S7-1200
+        /// </summary>
         S7_1200 = 4,
+        /// <summary>
+        /// S7-1500
+        /// </summary>
         S7_1500 = 5
     }
 
@@ -34,6 +68,14 @@ namespace Modbus.Net.Siemens
 
         private SiemensType _siemensType;
 
+        /// <summary>
+        ///     构造函数
+        /// </summary>
+        /// <param name="connectionType">连接类型</param>
+        /// <param name="connectionString">连接字符串</param>
+        /// <param name="model">设备类型</param>
+        /// <param name="slaveAddress">从站地址</param>
+        /// <param name="masterAddress">主站地址</param>
         public SiemensUtility(SiemensType connectionType, string connectionString, SiemensMachineModel model,
             byte slaveAddress, byte masterAddress) : base(slaveAddress, masterAddress)
         {
@@ -84,15 +126,21 @@ namespace Modbus.Net.Siemens
                 }
                 default:
                 {
-                    throw new NotImplementedException("没有相应的西门子类型");
+                    throw new NotImplementedException("Siemens PLC Model not Supported");
                 }
             }
             ConnectionType = connectionType;
             AddressTranslator = new AddressTranslatorSiemens();
         }
 
+        /// <summary>
+        ///     端格式
+        /// </summary>
         public override Endian Endian => Endian.BigEndianLsb;
 
+        /// <summary>
+        ///     IP地址
+        /// </summary>
         protected string ConnectionStringIp
         {
             get
@@ -102,6 +150,9 @@ namespace Modbus.Net.Siemens
             }
         }
 
+        /// <summary>
+        ///     端口
+        /// </summary>
         protected int? ConnectionStringPort
         {
             get
@@ -113,8 +164,9 @@ namespace Modbus.Net.Siemens
                 {
                     return connectionStringSplit.Length < 2 ? (int?) null : int.Parse(connectionStringSplit[1]);
                 }
-                catch
+                catch (Exception e)
                 {
+                    Log.Error(e, $"SiemensUtility: {ConnectionString} format error");
                     return null;
                 }
             }
@@ -188,8 +240,9 @@ namespace Modbus.Net.Siemens
                             readRequestSiemensInputStruct);
                 return readRequestSiemensOutputStruct?.GetValue;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Log.Error(e, $"SiemensUtility -> GetDatas: {ConnectionString} error");
                 return null;
             }
         }
@@ -213,8 +266,9 @@ namespace Modbus.Net.Siemens
                             writeRequestSiemensInputStruct);
                 return writeRequestSiemensOutputStruct?.AccessResult == SiemensAccessResult.NoError;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Log.Error(e, $"ModbusUtility -> SetDatas: {ConnectionString} error");
                 return false;
             }
         }

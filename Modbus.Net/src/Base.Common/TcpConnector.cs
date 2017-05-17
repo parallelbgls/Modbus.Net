@@ -40,9 +40,10 @@ namespace Modbus.Net
         /// </summary>
         private readonly byte[] _receiveBuffer = new byte[1024];
 
-        private int _sendCount;
-        private int _receiveCount;
         private int _errorCount;
+        private int _receiveCount;
+
+        private int _sendCount;
 
         private TcpClient _socketClient;
 
@@ -73,7 +74,8 @@ namespace Modbus.Net
         /// </summary>
         public int TimeoutTime
         {
-            get => _timeoutTime;
+            get  =>
+            _timeoutTime;
             set
             {
                 _timeoutTime = value;
@@ -122,7 +124,7 @@ namespace Modbus.Net
 #endif
                     Log.Debug("Tcp client {ConnectionToken} Disposed", ConnectionToken);
                 }
-                m_disposed = true;               
+                m_disposed = true;
             }
         }
 
@@ -242,7 +244,7 @@ namespace Modbus.Net
                 await stream.WriteAsync(datagram, 0, datagram.Length);
 
                 RefreshSendCount();
-                
+
                 return true;
             }
             catch (Exception err)
@@ -282,11 +284,12 @@ namespace Modbus.Net
                 Log.Verbose("Tcp client {ConnectionToken} send text len = {Length}", ConnectionToken, datagram.Length);
                 Log.Verbose("Tcp client {ConnectionToken} send: {Datagram}", ConnectionToken, datagram);
                 await stream.WriteAsync(datagram, 0, datagram.Length);
-                                       
+
                 RefreshSendCount();
 
                 var receiveBytes = await ReceiveAsync(stream);
-                Log.Verbose("Tcp client {ConnectionToken} receive text len = {Length}", ConnectionToken, receiveBytes.Length);
+                Log.Verbose("Tcp client {ConnectionToken} receive text len = {Length}", ConnectionToken,
+                    receiveBytes.Length);
                 Log.Verbose("Tcp client {ConnectionToken} receive: {Datagram}", ConnectionToken, receiveBytes);
 
                 return receiveBytes;
@@ -332,7 +335,7 @@ namespace Modbus.Net
             var replyMessage = new byte[len];
             Array.Copy(_receiveBuffer, replyMessage, len);
 
-            Log.Verbose("Tcp client {ConnectionToken} reply: {replyMessage}",ConnectionToken, replyMessage);
+            Log.Verbose("Tcp client {ConnectionToken} reply: {replyMessage}", ConnectionToken, replyMessage);
             RefreshReceiveCount();
 
             if (len <= 0)

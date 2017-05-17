@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Serilog;
 
 namespace Modbus.Net
 {
@@ -707,12 +708,13 @@ namespace Modbus.Net
                             }
                             default:
                             {
-                                throw new NotImplementedException("没有实现除整数以外的其它转换方式");
+                                throw new NotImplementedException("Number casting not implemented");
                             }
                         }
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
+                        Log.Error(e, "ValueHelper -> ByteArrayToObjectArray error");
                         count = contents.Length;
                     }
                 }
@@ -798,7 +800,7 @@ namespace Modbus.Net
                 }
                 default:
                 {
-                    throw new NotImplementedException("没有实现除整数以外的其它转换方式");
+                    throw new NotImplementedException("Number casting not implemented");
                 }
             }
         }
@@ -818,8 +820,9 @@ namespace Modbus.Net
                 Array.Copy(datas, 0, contents, pos, datas.Length);
                 return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Log.Error(e, "ValueHelper -> SetValue set value failed");
                 return false;
             }
         }
@@ -866,8 +869,9 @@ namespace Modbus.Net
                 contents[pos] = SetBit(contents[pos], subPos, setValue);
                 return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Log.Error(e, "ValueHelper -> SetBit set bit failed");
                 return false;
             }
         }

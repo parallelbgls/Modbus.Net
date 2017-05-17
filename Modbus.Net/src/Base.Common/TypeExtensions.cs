@@ -36,7 +36,7 @@ namespace Modbus.Net
                 throw new NullReferenceException("The type has not been specified.");
 
             if (string.IsNullOrEmpty(methodName))
-                throw new ArgumentNullException("methodName", "The name of the method has not been specified.");
+                throw new ArgumentNullException(nameof(methodName), "The name of the method has not been specified.");
 
 
             var methods =

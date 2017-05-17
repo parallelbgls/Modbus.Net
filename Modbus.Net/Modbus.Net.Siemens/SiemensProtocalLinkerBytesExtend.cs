@@ -7,6 +7,11 @@ namespace Modbus.Net.Siemens
     /// </summary>
     public class SiemensTcpProtocalLinkerBytesExtend : IProtocalLinkerBytesExtend
     {
+        /// <summary>
+        ///     协议扩展，协议内容发送前调用
+        /// </summary>
+        /// <param name="content">扩展前的原始协议内容</param>
+        /// <returns>扩展后的协议内容</returns>
         public byte[] BytesExtend(byte[] content)
         {
             Array.Copy(new byte[] {0x03, 0x00, 0x00, 0x00, 0x02, 0xf0, 0x80}, 0, content, 0, 7);
@@ -14,6 +19,11 @@ namespace Modbus.Net.Siemens
             return content;
         }
 
+        /// <summary>
+        ///     协议收缩，协议内容接收后调用
+        /// </summary>
+        /// <param name="content">收缩前的完整协议内容</param>
+        /// <returns>收缩后的协议内容</returns>
         public byte[] BytesDecact(byte[] content)
         {
             var newContent = new byte[content.Length - 7];
@@ -27,6 +37,11 @@ namespace Modbus.Net.Siemens
     /// </summary>
     public class SiemensPpiProtocalLinkerBytesExtend : IProtocalLinkerBytesExtend
     {
+        /// <summary>
+        ///     协议扩展，协议内容发送前调用
+        /// </summary>
+        /// <param name="content">扩展前的原始协议内容</param>
+        /// <returns>扩展后的协议内容</returns>
         public byte[] BytesExtend(byte[] content)
         {
             var newContent = new byte[content.Length + 2];
@@ -42,6 +57,11 @@ namespace Modbus.Net.Siemens
             return newContent;
         }
 
+        /// <summary>
+        ///     协议收缩，协议内容接收后调用
+        /// </summary>
+        /// <param name="content">收缩前的完整协议内容</param>
+        /// <returns>收缩后的协议内容</returns>
         public byte[] BytesDecact(byte[] content)
         {
             var newContent = new byte[content.Length - 9];

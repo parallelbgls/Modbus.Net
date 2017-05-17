@@ -10,6 +10,11 @@ namespace Modbus.Net.Modbus
     /// </summary>
     public class ModbusTcpProtocalLinkerBytesExtend : IProtocalLinkerBytesExtend
     {
+        /// <summary>
+        ///     协议扩展，协议内容发送前调用
+        /// </summary>
+        /// <param name="content">扩展前的原始协议内容</param>
+        /// <returns>扩展后的协议内容</returns>
         public byte[] BytesExtend(byte[] content)
         {
             //Modbus/Tcp协议扩张，前面加6个字节，前面4个为0，后面两个为协议整体内容的长度
@@ -22,6 +27,11 @@ namespace Modbus.Net.Modbus
             return newFormat;
         }
 
+        /// <summary>
+        ///     协议收缩，协议内容接收后调用
+        /// </summary>
+        /// <param name="content">收缩前的完整协议内容</param>
+        /// <returns>收缩后的协议内容</returns>
         public byte[] BytesDecact(byte[] content)
         {
             //Modbus/Tcp协议收缩，抛弃前面6个字节的内容
@@ -31,8 +41,16 @@ namespace Modbus.Net.Modbus
         }
     }
 
+    /// <summary>
+    ///     Rtu协议字节伸缩
+    /// </summary>
     public class ModbusRtuProtocalLinkerBytesExtend : IProtocalLinkerBytesExtend
     {
+        /// <summary>
+        ///     协议扩展，协议内容发送前调用
+        /// </summary>
+        /// <param name="content">扩展前的原始协议内容</param>
+        /// <returns>扩展后的协议内容</returns>
         public byte[] BytesExtend(byte[] content)
         {
             var crc = new byte[2];
@@ -44,6 +62,11 @@ namespace Modbus.Net.Modbus
             return newFormat;
         }
 
+        /// <summary>
+        ///     协议收缩，协议内容接收后调用
+        /// </summary>
+        /// <param name="content">收缩前的完整协议内容</param>
+        /// <returns>收缩后的协议内容</returns>
         public byte[] BytesDecact(byte[] content)
         {
             //Modbus/Rtu协议收缩，抛弃后面2个字节的内容
@@ -53,8 +76,16 @@ namespace Modbus.Net.Modbus
         }
     }
 
+    /// <summary>
+    ///     Ascii协议字节伸缩
+    /// </summary>
     public class ModbusAsciiProtocalLinkerBytesExtend : IProtocalLinkerBytesExtend
     {
+        /// <summary>
+        ///     协议扩展，协议内容发送前调用
+        /// </summary>
+        /// <param name="content">扩展前的原始协议内容</param>
+        /// <returns>扩展后的协议内容</returns>
         public byte[] BytesExtend(byte[] content)
         {
             //Modbus/Ascii协议扩张，前面增加:，后面增加LRC校验和尾字符
@@ -68,6 +99,11 @@ namespace Modbus.Net.Modbus
             return newContent.ToArray();
         }
 
+        /// <summary>
+        ///     协议收缩，协议内容接收后调用
+        /// </summary>
+        /// <param name="content">收缩前的完整协议内容</param>
+        /// <returns>收缩后的协议内容</returns>
         public byte[] BytesDecact(byte[] content)
         {
             //Modbus/Ascii协议收缩，抛弃头尾。

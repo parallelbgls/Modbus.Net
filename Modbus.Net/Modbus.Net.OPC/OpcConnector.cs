@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Hylasoft.Opc.Common;
+using Serilog;
 
 namespace Modbus.Net.OPC
 {
@@ -28,12 +29,12 @@ namespace Modbus.Net.OPC
                 Client?.Dispose();
                 Client = null;
                 _connect = false;
-                AddInfo("client disconnected successfully.");
+                Log.Information("opc client {ConnectionToken} disconnected success", ConnectionToken);
                 return true;
             }
             catch (Exception ex)
             {
-                AddInfo("client disconnected exception: " + ex.Message);
+                Log.Error(ex, "opc client {ConnectionToken} disconnected error", ConnectionToken);
                 _connect = false;
                 return false;
             }
@@ -125,7 +126,7 @@ namespace Modbus.Net.OPC
                         }
                         catch (Exception e)
                         {
-                            AddInfo("opc write exception:" + e.Message);
+                            Log.Error(e, "opc client {ConnectionToken} write exception", ConnectionToken);
                             return new OpcParamOut
                             {
                                 Success = false
@@ -144,7 +145,7 @@ namespace Modbus.Net.OPC
             }
             catch (Exception e)
             {
-                AddInfo("opc client exception:" + e.Message);
+                Log.Error(e, "opc client {ConnectionToken} read exception", ConnectionToken);
                 return new OpcParamOut
                 {
                     Success = false,
@@ -180,13 +181,12 @@ namespace Modbus.Net.OPC
             {
                 Client.Connect();
                 _connect = true;
-                AddInfo("client connected.");
+                Log.Information("opc client {ConnectionToken} connect success", ConnectionToken);
                 return true;
             }
             catch (Exception ex)
             {
-                AddInfo("client connected exception: " + ex.Message);
-                AddInfo("connect failed.");
+                Log.Error(ex, "opc client {ConnectionToken} connected failed", ConnectionToken);
                 _connect = false;
                 return false;
             }

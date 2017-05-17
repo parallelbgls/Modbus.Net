@@ -8,13 +8,24 @@ namespace Modbus.Net.Modbus
     /// </summary>
     public class ModbusAsciiProtocalLinker : ComProtocalLinker
     {
+        /// <summary>
+        ///     构造函数
+        /// </summary>
+        /// <param name="com">串口地址</param>
+        /// <param name="slaveAddress">从站号</param>
         public ModbusAsciiProtocalLinker(string com, int slaveAddress)
             : base(com, 9600, Parity.None, StopBits.One, 8, slaveAddress)
         {
         }
 
+        /// <summary>
+        ///     校验返回数据是否正确
+        /// </summary>
+        /// <param name="content">返回的数据</param>
+        /// <returns>校验是否正确</returns>
         public override bool? CheckRight(byte[] content)
         {
+            //ProtocalLinker不会返回null
             if (!base.CheckRight(content).Value) return false;
             //CRC校验失败
             var contentString = Encoding.ASCII.GetString(content);

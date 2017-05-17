@@ -61,14 +61,15 @@ namespace Modbus.Net
         /// </summary>
         private readonly int _timeoutTime;
 
+        private int _errorCount;
+        private int _receiveCount;
+
+        private int _sendCount;
+
         /// <summary>
         ///     Dispose是否执行
         /// </summary>
         private bool m_disposed;
-
-        private int _sendCount;
-        private int _receiveCount;
-        private int _errorCount;
 
         /// <summary>
         ///     构造器
@@ -144,7 +145,7 @@ namespace Modbus.Net
         /// <param name="byteTime">字节间隔最大时间 </param>
         /// <returns>串口实际读入数据个数 </returns>
         public int ReadComm(out byte[] readBuf, int bufRoom, int howTime, int byteTime)
-        { 
+        {
             readBuf = new byte[1023];
             Array.Clear(readBuf, 0, readBuf.Length);
 
@@ -283,7 +284,7 @@ namespace Modbus.Net
                         {
                             SerialPort.Close();
                         }
-                        catch (Exception)
+                        catch
                         {
                             //ignore
                         }
@@ -306,6 +307,24 @@ namespace Modbus.Net
         ~ComConnector()
         {
             Dispose(false);
+        }
+
+        private void RefreshSendCount()
+        {
+            _sendCount++;
+            Log.Verbose("Tcp client {ConnectionToken} send count: {SendCount}", ConnectionToken, _sendCount);
+        }
+
+        private void RefreshReceiveCount()
+        {
+            _receiveCount++;
+            Log.Verbose("Tcp client {ConnectionToken} receive count: {SendCount}", ConnectionToken, _receiveCount);
+        }
+
+        private void RefreshErrorCount()
+        {
+            _errorCount++;
+            Log.Verbose("Tcp client {ConnectionToken} error count: {ErrorCount}", ConnectionToken, _errorCount);
         }
 
         #region 发送接收数据
@@ -381,7 +400,8 @@ namespace Modbus.Net
                     Log.Error(e, "Com client {ConnectionToken} disconnect error", ConnectionToken);
                     return false;
                 }
-            Log.Error(new Exception("Linkers or Connectors Dictionary not found"), "Com client {ConnectionToken} disconnect error", ConnectionToken);
+            Log.Error(new Exception("Linkers or Connectors Dictionary not found"),
+                "Com client {ConnectionToken} disconnect error", ConnectionToken);
             return false;
         }
 
@@ -436,7 +456,8 @@ namespace Modbus.Net
                 {
                     try
                     {
-                        Log.Verbose("Com client {ConnectionToken} send msg length: {Length}", ConnectionToken, sendbytes.Length);
+                        Log.Verbose("Com client {ConnectionToken} send msg length: {Length}", ConnectionToken,
+                            sendbytes.Length);
                         Log.Verbose("Com client {ConnectionToken} send msg: {SendBytes}", ConnectionToken, sendbytes);
                         SerialPort.Write(sendbytes, 0, sendbytes.Length);
                     }
@@ -450,8 +471,10 @@ namespace Modbus.Net
                     try
                     {
                         returnBytes = ReadMsg();
-                        Log.Verbose("Com client {ConnectionToken} receive msg length: {Length}", ConnectionToken, returnBytes.Length);
-                        Log.Verbose("Com client {ConnectionToken} receive msg: {SendBytes}", ConnectionToken, returnBytes);
+                        Log.Verbose("Com client {ConnectionToken} receive msg length: {Length}", ConnectionToken,
+                            returnBytes.Length);
+                        Log.Verbose("Com client {ConnectionToken} receive msg: {SendBytes}", ConnectionToken,
+                            returnBytes);
                     }
                     catch (Exception e)
                     {
@@ -504,7 +527,8 @@ namespace Modbus.Net
                 {
                     try
                     {
-                        Log.Verbose("Com client {ConnectionToken} send msg length: {Length}", ConnectionToken, sendbytes.Length);
+                        Log.Verbose("Com client {ConnectionToken} send msg length: {Length}", ConnectionToken,
+                            sendbytes.Length);
                         Log.Verbose("Com client {ConnectionToken} send msg: {SendBytes}", ConnectionToken, sendbytes);
                         SerialPort.Write(sendbytes, 0, sendbytes.Length);
                     }
@@ -513,7 +537,7 @@ namespace Modbus.Net
                         Log.Error(err, "Com client {ConnectionToken} send msg error", ConnectionToken);
                         Dispose();
                         return false;
-                    } 
+                    }
                     RefreshSendCount();
                 }
                 return true;
@@ -549,23 +573,5 @@ namespace Modbus.Net
         }
 
         #endregion
-
-        private void RefreshSendCount()
-        {
-            _sendCount++;
-            Log.Verbose("Tcp client {ConnectionToken} send count: {SendCount}", ConnectionToken, _sendCount);
-        }
-
-        private void RefreshReceiveCount()
-        {
-            _receiveCount++;
-            Log.Verbose("Tcp client {ConnectionToken} receive count: {SendCount}", ConnectionToken, _receiveCount);
-        }
-
-        private void RefreshErrorCount()
-        {
-            _errorCount++;
-            Log.Verbose("Tcp client {ConnectionToken} error count: {ErrorCount}", ConnectionToken, _errorCount);
-        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace Modbus.Net.Modbus
 {
@@ -34,6 +35,13 @@ namespace Modbus.Net.Modbus
         /// </summary>
         private ModbusType _modbusType;
 
+        /// <summary>
+        ///     构造函数
+        /// </summary>
+        /// <param name="connectionType">协议类型</param>
+        /// <param name="slaveAddress">从站号</param>
+        /// <param name="masterAddress">主站号</param>
+        /// <param name="endian">端格式</param>
         public ModbusUtility(int connectionType, byte slaveAddress, byte masterAddress,
             Endian endian = Endian.BigEndianLsb)
             : base(slaveAddress, masterAddress)
@@ -44,6 +52,14 @@ namespace Modbus.Net.Modbus
             AddressTranslator = new AddressTranslatorModbus();
         }
 
+        /// <summary>
+        ///     构造函数
+        /// </summary>
+        /// <param name="connectionType">协议类型</param>
+        /// <param name="connectionString">连接地址</param>
+        /// <param name="slaveAddress">从站号</param>
+        /// <param name="masterAddress">主站号</param>
+        /// <param name="endian">端格式</param>
         public ModbusUtility(ModbusType connectionType, string connectionString, byte slaveAddress, byte masterAddress,
             Endian endian = Endian.BigEndianLsb)
             : base(slaveAddress, masterAddress)
@@ -54,8 +70,14 @@ namespace Modbus.Net.Modbus
             AddressTranslator = new AddressTranslatorModbus();
         }
 
+        /// <summary>
+        ///     端格式
+        /// </summary>
         public override Endian Endian { get; }
 
+        /// <summary>
+        ///     Ip地址
+        /// </summary>
         protected string ConnectionStringIp
         {
             get
@@ -65,6 +87,9 @@ namespace Modbus.Net.Modbus
             }
         }
 
+        /// <summary>
+        ///     端口
+        /// </summary>
         protected int? ConnectionStringPort
         {
             get
@@ -76,13 +101,17 @@ namespace Modbus.Net.Modbus
                 {
                     return connectionStringSplit.Length < 2 ? (int?) null : int.Parse(connectionStringSplit[1]);
                 }
-                catch
+                catch (Exception e)
                 {
+                    Log.Error(e, $"ModbusUtility: {ConnectionString} format error");
                     return null;
                 }
             }
         }
 
+        /// <summary>
+        ///     协议类型
+        /// </summary>
         public ModbusType ModbusType
         {
             get { return _modbusType; }
@@ -136,8 +165,9 @@ namespace Modbus.Net.Modbus
                         Wrapper[typeof(GetSystemTimeModbusProtocal)], inputStruct);
                 return outputStruct?.Time ?? DateTime.MinValue;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Log.Error(e, $"ModbusUtility -> GetTime: {ConnectionString} error");
                 return DateTime.MinValue;
             }
         }
@@ -157,12 +187,17 @@ namespace Modbus.Net.Modbus
                         Wrapper[typeof(SetSystemTimeModbusProtocal)], inputStruct);
                 return outputStruct?.WriteCount > 0;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Log.Error(e, $"ModbusUtility -> SetTime: {ConnectionString} error");
                 return false;
             }
         }
 
+        /// <summary>
+        ///     设置协议类型
+        /// </summary>
+        /// <param name="connectionType">协议类型</param>
         public override void SetConnectionType(int connectionType)
         {
             ModbusType = (ModbusType) connectionType;
@@ -185,8 +220,9 @@ namespace Modbus.Net.Modbus
                         inputStruct);
                 return outputStruct?.DataValue;
             }
-            catch
+            catch (Exception e)
             {
+                Log.Error(e, $"ModbusUtility -> GetDatas: {ConnectionString} error");
                 return null;
             }
         }
@@ -208,8 +244,9 @@ namespace Modbus.Net.Modbus
                         inputStruct);
                 return outputStruct?.WriteCount == setContents.Length;
             }
-            catch
+            catch (Exception e)
             {
+                Log.Error(e, $"ModbusUtility -> SetDatas: {ConnectionString} error");
                 return false;
             }
         }
