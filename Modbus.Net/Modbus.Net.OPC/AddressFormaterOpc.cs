@@ -24,12 +24,28 @@ namespace Modbus.Net.OPC
             Seperator = seperator;
         }
 
+        /// <summary>
+        ///     设备
+        /// </summary>
         public BaseMachine<TMachineKey, TUnitKey> Machine { get; set; }
 
+        /// <summary>
+        ///     标签构造器
+        ///     (设备,地址)->不具备分隔符的标签数组
+        /// </summary>
         protected Func<BaseMachine<TMachineKey, TUnitKey>, AddressUnit<TUnitKey>, string[]> TagGeter { get; set; }
 
+        /// <summary>
+        ///     分割符
+        /// </summary>
         public char Seperator { get; protected set; }
 
+        /// <summary>
+        ///     编码地址
+        /// </summary>
+        /// <param name="area">地址所在的数据区域</param>
+        /// <param name="address">地址</param>
+        /// <returns>编码后的地址</returns>
         public override string FormatAddress(string area, int address)
         {
             var findAddress = Machine?.GetAddresses.FirstOrDefault(p => p.Area == area && p.Address == address);
@@ -42,6 +58,13 @@ namespace Modbus.Net.OPC
             return ans;
         }
 
+        /// <summary>
+        ///     编码地址
+        /// </summary>
+        /// <param name="area">地址所在的数据区域</param>
+        /// <param name="address">地址</param>
+        /// <param name="subAddress">子地址（忽略）</param>
+        /// <returns>编码后的地址</returns>
         public override string FormatAddress(string area, int address, int subAddress)
         {
             return FormatAddress(area, address);

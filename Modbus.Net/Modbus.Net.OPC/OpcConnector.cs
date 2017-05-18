@@ -9,19 +9,44 @@ using Serilog;
 
 namespace Modbus.Net.OPC
 {
+    /// <summary>
+    ///     Opc连接器
+    /// </summary>
     public abstract class OpcConnector : BaseConnector<OpcParamIn, OpcParamOut>
     {
+        /// <summary>
+        ///     是否正在连接
+        /// </summary>
         protected bool _connect;
+
+        /// <summary>
+        ///     Opc客户端
+        /// </summary>
         protected IClientExtend Client;
 
+        /// <summary>
+        ///     构造函数
+        /// </summary>
+        /// <param name="host">服务端url</param>
         protected OpcConnector(string host)
         {
             ConnectionToken = host;
         }
 
+        /// <summary>
+        ///     连接标识
+        /// </summary>
         public override string ConnectionToken { get; }
+
+        /// <summary>
+        ///     是否正在连接
+        /// </summary>
         public override bool IsConnected => _connect;
 
+        /// <summary>
+        ///     断开连接
+        /// </summary>
+        /// <returns></returns>
         public override bool Disconnect()
         {
             try
@@ -40,21 +65,43 @@ namespace Modbus.Net.OPC
             }
         }
 
+        /// <summary>
+        ///     无返回发送数据
+        /// </summary>
+        /// <param name="message">需要发送的数据</param>
+        /// <returns>是否发送成功</returns>
         public override bool SendMsgWithoutReturn(OpcParamIn message)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        ///     无返回发送数据
+        /// </summary>
+        /// <param name="message">需要发送的数据</param>
+        /// <returns>是否发送成功</returns>
         public override Task<bool> SendMsgWithoutReturnAsync(OpcParamIn message)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        ///     带返回发送数据
+        /// </summary>
+        /// <param name="message">需要发送的数据</param>
+        /// <returns>是否发送成功</returns>
         public override OpcParamOut SendMsg(OpcParamIn message)
         {
             return AsyncHelper.RunSync(() => SendMsgAsync(message));
         }
 
+        /// <summary>
+        ///     根据括号折叠已经打开的标签
+        /// </summary>
+        /// <param name="tagSplitList">已经打开的标签</param>
+        /// <param name="splitChar">分割符</param>
+        /// <param name="startChar">开始字符</param>
+        /// <param name="endChar">结束字符</param>
         private void FoldWith(List<string> tagSplitList, char splitChar, char startChar, char endChar)
         {
             for (var i = 0; i < tagSplitList.Count; i++)
@@ -72,6 +119,12 @@ namespace Modbus.Net.OPC
                         }
         }
 
+        /// <summary>
+        ///     根据分隔符切分标签
+        /// </summary>
+        /// <param name="tag">标签</param>
+        /// <param name="split">分隔符</param>
+        /// <returns>分割后的标签</returns>
         private string[] SplitTag(string tag, char split)
         {
             var tagSplitList = tag.Split(split).ToList();
@@ -83,6 +136,11 @@ namespace Modbus.Net.OPC
             return tagSplitList.ToArray();
         }
 
+        /// <summary>
+        ///     带返回发送数据
+        /// </summary>
+        /// <param name="message">需要发送的数据</param>
+        /// <returns>是否发送成功</returns>
         public override async Task<OpcParamOut> SendMsgAsync(OpcParamIn message)
         {
             try
@@ -154,6 +212,14 @@ namespace Modbus.Net.OPC
             }
         }
 
+        /// <summary>
+        ///     搜索标签
+        /// </summary>
+        /// <param name="tags">标签</param>
+        /// <param name="split">分隔符</param>
+        /// <param name="deep">递归深度（第几级标签）</param>
+        /// <param name="nodes">当前搜索的节点</param>
+        /// <returns>搜索到的标签</returns>
         private async Task<string> SearchTag(string[] tags, char split, int deep, IEnumerable<Node> nodes)
         {
             foreach (var node in nodes)
@@ -170,11 +236,10 @@ namespace Modbus.Net.OPC
             return null;
         }
 
-        protected void AddInfo(string message)
-        {
-            Console.WriteLine(message);
-        }
-
+        /// <summary>
+        ///     连接PLC
+        /// </summary>
+        /// <returns>是否连接成功</returns>
         public override bool Connect()
         {
             try
@@ -192,6 +257,10 @@ namespace Modbus.Net.OPC
             }
         }
 
+        /// <summary>
+        ///     连接PLC，异步
+        /// </summary>
+        /// <returns>是否连接成功</returns>
         public override Task<bool> ConnectAsync()
         {
             return Task.FromResult(Connect());
