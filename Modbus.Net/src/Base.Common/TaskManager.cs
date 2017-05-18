@@ -418,10 +418,10 @@ namespace Modbus.Net
                 var cts = new CancellationTokenSource();
                 cts.CancelAfter(TimeSpan.FromSeconds(100000));
                 var ans =
-                    await tasks.Run(
+                    await tasks.StartNew(
                         async () => await machine.InvokeMachineMethod<IMachineMethodData,
                             Task<Dictionary<string, ReturnUnit>>>("GetDatasAsync",
-                            MachineGetDataType.CommunicationTag).WithCancellation(cts.Token));
+                            MachineGetDataType.CommunicationTag).WithCancellation(cts.Token)).Unwrap();
                 return new DataReturnDef
                 {
                     MachineId = machine.GetMachineIdString(),
@@ -453,10 +453,10 @@ namespace Modbus.Net
                 var cts = new CancellationTokenSource();
                 cts.CancelAfter(TimeSpan.FromSeconds(100000));
                 var ans =
-                    await tasks.Run(
+                    await tasks.StartNew(
                         async () => await machine.InvokeMachineMethod<IMachineMethodData,
                             Task<bool>>("SetDatasAsync", parameters[0],
-                            MachineSetDataType.CommunicationTag).WithCancellation(cts.Token));
+                            MachineSetDataType.CommunicationTag).WithCancellation(cts.Token)).Unwrap();
                 return ans;
             };
             Params = new object[] {values};
@@ -468,7 +468,7 @@ namespace Modbus.Net
     ///     任务
     /// </summary>
     /// <typeparam name="TInterType">任务返回值的类型</typeparam>
-    public class TaskItem<TInterType> : ITaskItem, IEquatable<TaskItem<TInterType>>
+    public class TaskItem<TInterType> : ITaskItem, IEquatable<TaskItem<TInterType>>, ICloneable
     {
         /// <summary>
         ///     定时器
@@ -574,7 +574,7 @@ namespace Modbus.Net
         /// </summary>
         private void DeactivateTimer()
         {
-            Timer.Dispose();
+            Timer?.Dispose();
             Timer = null;
         }
 
@@ -595,7 +595,7 @@ namespace Modbus.Net
         /// </summary>
         private void DeactivateTimerDisconnected()
         {
-            TimerDisconnected.Dispose();
+            TimerDisconnected?.Dispose();
             TimerDisconnected = null;
         }
 
@@ -619,6 +619,15 @@ namespace Modbus.Net
             DeactivateTimer();
             ActivateTimerDisconnected();
             return true;
+        }
+        
+        /// <summary>
+        ///     拷贝实例
+        /// </summary>
+        /// <returns>拷贝的实例</returns>
+        public object Clone()
+        {
+            return MemberwiseClone();
         }
     }
 
@@ -943,7 +952,10 @@ namespace Modbus.Net
             lock (_machines)
             {
                 foreach (var machine in _machines)
-                    ans &= machine.InvokeTimer(item);
+                {
+                    Thread.Sleep(10);
+                    ans &= machine.InvokeTimer(item.Clone() as TaskItem<TInterType>);
+                }
             }
             return ans;
         }
@@ -958,7 +970,10 @@ namespace Modbus.Net
             lock (_machines)
             {
                 foreach (var machine in _machines)
+                {
+                    Thread.Sleep(10);
                     ans &= machine.StopAllTimers();
+                }
             }
             return ans;
         }
@@ -1052,7 +1067,7 @@ namespace Modbus.Net
             lock (_machines)
             {
                 foreach (var machine in _machines)
-                    tasks.Add(machine.InvokeOnce(item));
+                    tasks.Add(_tasks.StartNew(async () => await machine.InvokeOnce(item.Clone() as TaskItem<TInterType>)).Unwrap());
             }
             var ans = await Task.WhenAll(tasks);
             return ans.All(p => p);
@@ -1069,7 +1084,7 @@ namespace Modbus.Net
         {
             var machine = _machines.FirstOrDefault(p => p.Machine.Id.Equals(machineId));
             if (machine != null)
-                return await machine.InvokeOnce(item);
+                return await machine.InvokeOnce(item.Clone() as TaskItem<TInterType>);
             return false;
         }
 
@@ -1084,7 +1099,7 @@ namespace Modbus.Net
         {
             var machine = _machines.FirstOrDefault(p => p.Machine.Id.Equals(machineId));
             if (machine != null)
-                return machine.InvokeTimer(item);
+                return machine.InvokeTimer(item.Clone() as TaskItem<TInterType>);
             return false;
         }
 

@@ -80,15 +80,18 @@ namespace Modbus.Net
             get
             {
                 var protocalName = type.FullName;
-                if (Protocals.ContainsKey(protocalName))
-                    return Protocals[protocalName];
-                //自动寻找存在的协议并将其加载
-                var protocalUnit =
-                    Activator.CreateInstance(type.GetTypeInfo().Assembly.GetType(protocalName)) as TProtocalUnit;
-                if (protocalUnit == null)
-                    throw new InvalidCastException($"No ProtocalUnit {nameof(TProtocalUnit)} implemented");
-                protocalUnit.Endian = Endian;
-                Register(protocalUnit);
+                lock (Protocals)
+                {
+                    if (Protocals.ContainsKey(protocalName))
+                        return Protocals[protocalName];
+                    //自动寻找存在的协议并将其加载
+                    var protocalUnit =
+                        Activator.CreateInstance(type.GetTypeInfo().Assembly.GetType(protocalName)) as TProtocalUnit;
+                    if (protocalUnit == null)
+                        throw new InvalidCastException($"No ProtocalUnit {nameof(TProtocalUnit)} implemented");
+                    protocalUnit.Endian = Endian;
+                    Register(protocalUnit);
+                }
                 return Protocals[protocalName];
             }
         }
