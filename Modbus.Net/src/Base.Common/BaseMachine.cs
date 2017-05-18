@@ -670,7 +670,7 @@ namespace Modbus.Net
     {
         public bool Equals(IMachineProperty<TKey> x, IMachineProperty<TKey> y)
         {
-            return x.Id.Equals(y.Id) || x.ConnectionToken == y.ConnectionToken;
+            return x.Id.Equals(y.Id);
         }
 
         public int GetHashCode(IMachineProperty<TKey> obj)

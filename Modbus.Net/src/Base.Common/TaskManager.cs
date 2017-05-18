@@ -847,11 +847,8 @@ namespace Modbus.Net
         public void AddMachines<TUnitKey>(IEnumerable<BaseMachine<TMachineKey, TUnitKey>> machines)
             where TUnitKey : IEquatable<TUnitKey>
         {
-            lock (_machines)
-            {
-                foreach (var machine in machines)
-                    AddMachine(machine);
-            }
+            foreach (var machine in machines)
+                AddMachine(machine);
         }
 
         /// <summary>
@@ -868,13 +865,13 @@ namespace Modbus.Net
                 TaskMachine<TMachineKey> machine;
                 lock (_machines)
                 {
-                    machine = _machines.FirstOrDefault(p => p.Machine.Id.Equals(id));
+                    machine = _machines.SingleOrDefault(p => p.Machine.Id.Equals(id));
                 }
-                return machine as BaseMachine<TMachineKey, TUnitKey>;
+                return machine?.Machine as BaseMachine<TMachineKey, TUnitKey>;
             }
             catch (Exception e)
             {
-                Log.Error(e, $"Device {id} return error");
+                Log.Error(e, $"Device {id} get error, maybe duplicated in taskmanager");
                 return null;
             }
         }
@@ -893,13 +890,13 @@ namespace Modbus.Net
                 TaskMachine<TMachineKey> machine;
                 lock (_machines)
                 {
-                    machine = _machines.FirstOrDefault(p => p.Machine.ConnectionToken == connectionToken);
+                    machine = _machines.SingleOrDefault(p => p.Machine.ConnectionToken == connectionToken && p.Machine.IsConnected);
                 }
-                return machine as BaseMachine<TMachineKey, TUnitKey>;
+                return machine?.Machine as BaseMachine<TMachineKey, TUnitKey>;
             }
             catch (Exception e)
             {
-                Log.Error(e, $"Device {connectionToken} return error");
+                Log.Error(e, $"Device {connectionToken} get error, maybe duplicated in taskmanager");
                 return null;
             }
         }
