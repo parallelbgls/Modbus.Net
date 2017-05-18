@@ -413,13 +413,13 @@ namespace Modbus.Net
                     //地址为空报错
                     if (address == null)
                     {
-                        Console.WriteLine($"Machine {ConnectionToken} Address {value.Key} doesn't exist.");
+                        Log.Error($"Machine {ConnectionToken} Address {value.Key} doesn't exist.");
                         continue;
                     }
                     //不能写报错
                     if (!address.CanWrite)
                     {
-                        Console.WriteLine($"Machine {ConnectionToken} Address {value.Key} cannot write.");
+                        Log.Error($"Machine {ConnectionToken} Address {value.Key} cannot write.");
                         continue;
                     }
                     addresses.Add(address);
