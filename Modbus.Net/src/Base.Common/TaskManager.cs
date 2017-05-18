@@ -468,7 +468,7 @@ namespace Modbus.Net
     ///     任务
     /// </summary>
     /// <typeparam name="TInterType">任务返回值的类型</typeparam>
-    public class TaskItem<TInterType> : ITaskItem, IEquatable<TaskItem<TInterType>>, ICloneable
+    public class TaskItem<TInterType> : ITaskItem, IEquatable<TaskItem<TInterType>>
     {
         /// <summary>
         ///     定时器
@@ -625,9 +625,9 @@ namespace Modbus.Net
         ///     拷贝实例
         /// </summary>
         /// <returns>拷贝的实例</returns>
-        public object Clone()
+        public TaskItem<TInterType> Clone()
         {
-            return MemberwiseClone();
+            return MemberwiseClone() as TaskItem<TInterType>;
         }
     }
 
@@ -951,7 +951,7 @@ namespace Modbus.Net
                 foreach (var machine in _machines)
                 {
                     Thread.Sleep(10);
-                    ans &= machine.InvokeTimer(item.Clone() as TaskItem<TInterType>);
+                    ans &= machine.InvokeTimer(item.Clone());
                 }
             }
             return ans;
@@ -1064,7 +1064,7 @@ namespace Modbus.Net
             lock (_machines)
             {
                 foreach (var machine in _machines)
-                    tasks.Add(_tasks.StartNew(async () => await machine.InvokeOnce(item.Clone() as TaskItem<TInterType>)).Unwrap());
+                    tasks.Add(_tasks.StartNew(async () => await machine.InvokeOnce(item.Clone())).Unwrap());
             }
             var ans = await Task.WhenAll(tasks);
             return ans.All(p => p);
@@ -1081,7 +1081,7 @@ namespace Modbus.Net
         {
             var machine = _machines.FirstOrDefault(p => p.Machine.Id.Equals(machineId));
             if (machine != null)
-                return await machine.InvokeOnce(item.Clone() as TaskItem<TInterType>);
+                return await machine.InvokeOnce(item.Clone());
             return false;
         }
 
@@ -1096,7 +1096,7 @@ namespace Modbus.Net
         {
             var machine = _machines.FirstOrDefault(p => p.Machine.Id.Equals(machineId));
             if (machine != null)
-                return machine.InvokeTimer(item.Clone() as TaskItem<TInterType>);
+                return machine.InvokeTimer(item.Clone());
             return false;
         }
 
