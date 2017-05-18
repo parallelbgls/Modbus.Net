@@ -670,7 +670,6 @@ namespace Modbus.Net
     {
         public bool Equals(IMachineProperty<TKey> x, IMachineProperty<TKey> y)
         {
-            //1.3版本中需要修改这句话
             return x.Id.Equals(y.Id) || x.ConnectionToken == y.ConnectionToken;
         }
 
