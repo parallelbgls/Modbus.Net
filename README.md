@@ -50,7 +50,36 @@ Platform Supported
 * OPC Regex comparer for tags (Complete)
 
 ### Version 1.3.0
-* .NET Core Support (Not Test)
+* .NET Core Support (Complete)
+* Fix a bug in BaseMachine (Complete)
+
+### Version 1.3.1
+* InputStruct -> IInputStruct, OutputStruct -> IOutputStruct (Complete)
+* Generic Method For ProtocalUnit (Complete)
+
+### Version 1.3.2
+* Add Interface IMachineMethod and IUtilityMethod. Utiltiy and Machine can extend function using interface (Not Tested)
+
+### Version 1.3.3
+* TaskManager Remake (Not Tested)
+
+### Version 1.3.4
+* A Serial Port now can connect to multiple machines using same protocol with different slave address (Not Tested)
+
+### Version 1.3.5
+* New log system using serilog (Not Tested)
+
+### Version 1.3.6
+* Add gereric Type for BaseConnector, now protocol developer can pass any type to BaseConnector not only byte[] (Not Tested)
+* Add more gereric types in Modbus.Net to support this function (Not Tested)
+* Add more interfaces to make them completed in Modbus.Net (Not Tested)
+* Support this function in Modbus.Net.OPC (Not Tested)
+
+### Version 1.3.7
+* AddressCombiner need to add maximum length now. Combiner will consider the maximum length when combining addresses (Not Tested)
+
+### Version 1.3.8
+* Change Resx to app.config or appsettings.json, now you can set default params there (Not Tested)
 
 ### Version 1.4.0
 * New Protocal Pipeline System (In Road)
