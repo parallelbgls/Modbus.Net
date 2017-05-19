@@ -80,10 +80,11 @@ namespace Modbus.Net
             get
             {
                 var protocalName = type.FullName;
+                TProtocalUnit protocalUnitReturn = null;
                 lock (Protocals)
                 {
                     if (Protocals.ContainsKey(protocalName))
-                        return Protocals[protocalName];
+                        protocalUnitReturn = Protocals[protocalName];
                     //自动寻找存在的协议并将其加载
                     var protocalUnit =
                         Activator.CreateInstance(type.GetTypeInfo().Assembly.GetType(protocalName)) as TProtocalUnit;
@@ -92,7 +93,7 @@ namespace Modbus.Net
                     protocalUnit.Endian = Endian;
                     Register(protocalUnit);
                 }
-                return Protocals[protocalName];
+                return protocalUnitReturn ?? Protocals[protocalName];
             }
         }
 
