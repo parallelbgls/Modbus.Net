@@ -351,7 +351,8 @@ namespace Modbus.Net
             {
                 if (orderedGap.GapNumber <= 0) continue;
                 var nowAddress = orderedGap.EndUnit;
-                var index = continusAddresses.IndexOf(nowAddress);
+                var index = continusAddresses.FindIndex(p=>p.Area == nowAddress.Area && p.Address == nowAddress.Address && p.SubAddress == nowAddress.SubAddress);
+                nowAddress = continusAddresses[index];
                 index--;
                 var preAddress = continusAddresses[index];
                 if (nowAddress.GetCount * BigEndianValueHelper.Instance.ByteLength[nowAddress.DataType.FullName] +
