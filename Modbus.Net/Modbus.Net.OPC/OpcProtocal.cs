@@ -65,7 +65,8 @@
     /// <summary>
     ///     读数据协议
     /// </summary>
-    public class ReadRequestOpcProtocal : ProtocalUnit<OpcParamIn, OpcParamOut>, ISpecialProtocalUnit
+    [SpecialProtocalUnit]
+    public class ReadRequestOpcProtocal : ProtocalUnit<OpcParamIn, OpcParamOut>
     {
         /// <summary>
         ///     从对象的参数数组格式化
@@ -156,7 +157,8 @@
     /// <summary>
     ///     写数据协议
     /// </summary>
-    public class WriteRequestOpcProtocal : ProtocalUnit<OpcParamIn, OpcParamOut>, ISpecialProtocalUnit
+    [SpecialProtocalUnit]
+    public class WriteRequestOpcProtocal : ProtocalUnit<OpcParamIn, OpcParamOut>
     {
         /// <summary>
         ///     从对象的参数数组格式化
