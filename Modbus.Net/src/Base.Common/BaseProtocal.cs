@@ -38,7 +38,7 @@ namespace Modbus.Net
     ///     基本协议
     /// </summary>
     public abstract class BaseProtocal<TParamIn, TParamOut, TProtocalUnit> :
-        IProtocal<TParamIn, TParamOut, TProtocalUnit> where TProtocalUnit : ProtocalUnit<TParamIn, TParamOut>
+        IProtocal<TParamIn, TParamOut, TProtocalUnit> where TProtocalUnit : ProtocalUnit<TParamIn, TParamOut> where TParamOut : class
     {
         /// <summary>
         ///     构造器

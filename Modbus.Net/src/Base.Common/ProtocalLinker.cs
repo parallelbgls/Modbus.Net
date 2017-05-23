@@ -70,7 +70,7 @@ namespace Modbus.Net
     /// <summary>
     ///     基本的协议连接器
     /// </summary>
-    public abstract class ProtocalLinker<TParamIn, TParamOut> : IProtocalLinker<TParamIn, TParamOut>
+    public abstract class ProtocalLinker<TParamIn, TParamOut> : IProtocalLinker<TParamIn, TParamOut> where TParamOut : class
     {
         /// <summary>
         ///     传输连接器
@@ -106,8 +106,7 @@ namespace Modbus.Net
         {
             var extBytes = BytesExtend(content);
             var receiveBytes = await SendReceiveWithoutExtAndDecAsync(extBytes);
-            if (receiveBytes != null) return receiveBytes;
-            throw new NullReferenceException();
+            return receiveBytes;
         }
 
         /// <summary>
@@ -132,8 +131,7 @@ namespace Modbus.Net
             //容错处理
             var checkRight = CheckRight(receiveBytes);
             //返回字符
-            if (checkRight == true) return receiveBytes;
-            throw new NullReferenceException();
+            return checkRight == true ? receiveBytes : null;
         }
 
         /// <summary>
