@@ -106,7 +106,7 @@ namespace Modbus.Net
         {
             var extBytes = BytesExtend(content);
             var receiveBytes = await SendReceiveWithoutExtAndDecAsync(extBytes);
-            return receiveBytes;
+            return BytesDecact(receiveBytes);
         }
 
         /// <summary>
@@ -151,20 +151,14 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="content">扩展前的基本协议内容</param>
         /// <returns>扩展后的协议内容</returns>
-        public virtual TParamIn BytesExtend(TParamIn content)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract TParamIn BytesExtend(TParamIn content);
 
         /// <summary>
         ///     协议内容缩减，接收时根据需要缩减
         /// </summary>
         /// <param name="content">缩减前的完整协议内容</param>
         /// <returns>缩减后的协议内容</returns>
-        public virtual TParamOut BytesDecact(TParamOut content)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract TParamOut BytesDecact(TParamOut content);
 
         /// <summary>
         ///     连接设备
