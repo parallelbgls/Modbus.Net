@@ -408,9 +408,10 @@ namespace Modbus.Net
         ///     构造函数
         /// </summary>
         /// <param name="returnFunc">返回值的处理函数</param>
+        /// <param name="getDataType">返回值的键类型</param>
         /// <param name="getCycle">循环间隔(毫秒)</param>
         /// <param name="sleepCycle">设备离线时的循环间隔(毫秒)</param>
-        public TaskItemGetData(Action<DataReturnDef> returnFunc, int getCycle, int sleepCycle)
+        public TaskItemGetData(Action<DataReturnDef> returnFunc, MachineGetDataType getDataType, int getCycle, int sleepCycle)
         {
             Name = "GetDatas";
             Invoke = async (machine, tasks, parameters) =>
@@ -421,7 +422,7 @@ namespace Modbus.Net
                     await tasks.StartNew(
                         async () => await machine.InvokeMachineMethod<IMachineMethodData,
                             Task<Dictionary<string, ReturnUnit>>>("GetDatasAsync",
-                            MachineGetDataType.CommunicationTag).WithCancellation(cts.Token)).Unwrap();
+                            getDataType).WithCancellation(cts.Token)).Unwrap();
                 return new DataReturnDef
                 {
                     MachineId = machine.GetMachineIdString(),
@@ -444,8 +445,9 @@ namespace Modbus.Net
         ///     构造函数
         /// </summary>
         /// <param name="values">写入的值</param>
+        /// <param name="setDataType">写入值的键类型</param>
         /// <param name="returnFunc">返回值的处理函数</param>
-        public TaskItemSetData(Dictionary<string, double> values, Action<bool> returnFunc = null)
+        public TaskItemSetData(Dictionary<string, double> values, MachineSetDataType setDataType, Action<bool> returnFunc = null)
         {
             Name = "SetDatas";
             Invoke = Invoke = async (machine, tasks, parameters) =>
@@ -456,7 +458,7 @@ namespace Modbus.Net
                     await tasks.StartNew(
                         async () => await machine.InvokeMachineMethod<IMachineMethodData,
                             Task<bool>>("SetDatasAsync", parameters[0],
-                            MachineSetDataType.CommunicationTag).WithCancellation(cts.Token)).Unwrap();
+                            setDataType).WithCancellation(cts.Token)).Unwrap();
                 return ans;
             };
             Params = new object[] {values};
@@ -641,10 +643,8 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="maxRunningTask">同时可以运行的任务数</param>
         /// <param name="keepConnect">读取数据后是否保持连接</param>
-        /// <param name="dataType">获取与设置数据的方式</param>
-        public TaskManager(int maxRunningTask, bool keepConnect,
-            MachineDataType dataType = MachineDataType.CommunicationTag)
-            : base(maxRunningTask, keepConnect, dataType)
+        public TaskManager(int maxRunningTask, bool keepConnect)
+            : base(maxRunningTask, keepConnect)
         {
         }
 
@@ -723,15 +723,12 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="maxRunningTask">同时可以运行的任务数</param>
         /// <param name="keepConnect">读取数据后是否保持连接</param>
-        /// <param name="dataType">获取与设置数据的方式</param>
-        public TaskManager(int maxRunningTask, bool keepConnect,
-            MachineDataType dataType = MachineDataType.CommunicationTag)
+        public TaskManager(int maxRunningTask, bool keepConnect)
         {
             _scheduler = new LimitedConcurrencyLevelTaskScheduler(maxRunningTask);
             _machines =
                 new HashSet<TaskMachine<TMachineKey>>(new TaskMachineEqualityComparer<TMachineKey>());
             KeepConnect = keepConnect;
-            MachineDataType = dataType;
             _cts = new CancellationTokenSource();
             _tasks = new TaskFactory(_cts.Token, TaskCreationOptions.None, TaskContinuationOptions.None, _scheduler);
         }
@@ -754,53 +751,6 @@ namespace Modbus.Net
                 ContinueTimerAll();
             }
         }
-
-        /// <summary>
-        ///     设备读写设备的关键字
-        /// </summary>
-        public MachineDataType MachineDataType
-        {
-            set
-            {
-                switch (value)
-                {
-                    case MachineDataType.Address:
-                    {
-                        GetDataType = MachineGetDataType.Address;
-                        SetDataType = MachineSetDataType.Address;
-                        break;
-                    }
-                    case MachineDataType.CommunicationTag:
-                    {
-                        GetDataType = MachineGetDataType.CommunicationTag;
-                        SetDataType = MachineSetDataType.CommunicationTag;
-                        break;
-                    }
-                    case MachineDataType.Name:
-                    {
-                        GetDataType = MachineGetDataType.Name;
-                        SetDataType = MachineSetDataType.Name;
-                        break;
-                    }
-                    case MachineDataType.Id:
-                    {
-                        GetDataType = MachineGetDataType.Id;
-                        SetDataType = MachineSetDataType.Id;
-                        break;
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        ///     设备读数据的关键字
-        /// </summary>
-        public MachineGetDataType GetDataType { get; set; }
-
-        /// <summary>
-        ///     设备写数据的关键字
-        /// </summary>
-        public MachineSetDataType SetDataType { get; set; }
 
         /// <summary>
         ///     最大可执行任务数
