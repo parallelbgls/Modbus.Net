@@ -15,6 +15,11 @@
     public interface IProtocalFormatting<out TParamIn, in TParamOut>
     {
         /// <summary>
+        ///     是否为小端格式
+        /// </summary>
+        Endian Endian { get; set; }
+
+        /// <summary>
         ///     从输入结构格式化
         /// </summary>
         /// <param name="message">结构化的输入数据</param>
