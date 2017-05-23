@@ -49,7 +49,7 @@ namespace Modbus.Net
         /// <summary>
         ///     协议收发主体
         /// </summary>
-        protected BaseProtocal<TParamIn, TParamOut, TProtocalUnit> Wrapper;
+        protected IProtocal<TParamIn, TParamOut, TProtocalUnit> Wrapper;
 
         /// <summary>
         ///     构造器
