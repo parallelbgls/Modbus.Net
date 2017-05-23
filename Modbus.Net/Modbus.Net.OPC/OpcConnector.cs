@@ -155,6 +155,7 @@ namespace Modbus.Net.OPC
                     if (answerTag != null)
                     {
                         var result = await Client.ReadAsync<object>(answerTag);
+                        Log.Verbose($"Opc Machine {ConnectionToken} Read opc tag {answerTag} for value {result}");
                         return new OpcParamOut
                         {
                             Success = true,
@@ -181,6 +182,7 @@ namespace Modbus.Net.OPC
                         try
                         {
                             await Client.WriteAsync(answerTag, value);
+                            Log.Verbose($"Opc Machine {ConnectionToken} Write opc tag {answerTag} for value {value}");
                         }
                         catch (Exception e)
                         {
