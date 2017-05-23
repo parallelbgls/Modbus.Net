@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -185,7 +186,7 @@ namespace Modbus.Net
             {
                 TParamOut receiveContent;
                 //如果为特别处理协议的话，跳过协议扩展收缩
-                if (unit is ISpecialProtocalUnit)
+                if (unit.GetType().GetTypeInfo().GetCustomAttributes(typeof(SpecialProtocalUnitAttribute)).Any())
                     receiveContent = await ProtocalLinker.SendReceiveWithoutExtAndDecAsync(formatContent);
                 else
                     receiveContent = await ProtocalLinker.SendReceiveAsync(formatContent);

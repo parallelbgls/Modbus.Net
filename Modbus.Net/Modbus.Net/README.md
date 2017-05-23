@@ -394,10 +394,11 @@ public class ReadDataModbusProtocal : ProtocalUnit
     }
 }
 ```
-There is another interface called ISpecialProtocalUnit.
-If you add ISpecialProtocalUnit to ProtocalUnit, then the protocal will not run BytesExtend and BytesDecact.
+There is another attribute called SpecialProtocalUnitAttribute.
+If you add SpecialProtocalUnitAttribute to ProtocalUnit, then the protocal will not run BytesExtend and BytesDecact.
 ```C#
-internal class CreateReferenceSiemensProtocal : ProtocalUnit, ISpecialProtocalUnit
+[SpecialProtocalUnit]
+internal class CreateReferenceSiemensProtocal : ProtocalUnit
 {
     ...
 }

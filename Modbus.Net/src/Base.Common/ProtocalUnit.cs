@@ -71,7 +71,8 @@ namespace Modbus.Net
     /// <summary>
     ///     特殊协议单元，写入这个协议不会执行BytesExtend和BytesDecact
     /// </summary>
-    public interface ISpecialProtocalUnit
+    [AttributeUsage(AttributeTargets.Class, Inherited = false)]
+    public class SpecialProtocalUnitAttribute : Attribute
     {
     }
 
