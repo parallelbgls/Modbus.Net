@@ -304,24 +304,36 @@ namespace Modbus.Net
                             }
                         }
 
-                        //如果没有数据返回空
-                        if (datas.Length == 0)
-                            ans.Add(key, new ReturnUnit
-                            {
-                                PlcValue = null,
-                                UnitExtend = address.UnitExtend
-                            });
-                        else
-                            ans.Add(key,
-                                new ReturnUnit
+                        try
+                        {
+                            //如果没有数据返回空
+                            if (datas.Length == 0)
+                                ans.Add(key, new ReturnUnit
                                 {
-                                    PlcValue =
-                                        Convert.ToDouble(
-                                            ValueHelper.GetInstance(BaseUtility.Endian)
-                                                .GetValue(datas, ref localMainPos, ref localSubPos,
-                                                    address.DataType)) * address.Zoom,
+                                    PlcValue = null,
                                     UnitExtend = address.UnitExtend
                                 });
+                            else
+                                ans.Add(key,
+                                    new ReturnUnit
+                                    {
+                                        PlcValue =
+                                            Convert.ToDouble(
+                                                ValueHelper.GetInstance(BaseUtility.Endian)
+                                                    .GetValue(datas, ref localMainPos, ref localSubPos,
+                                                        address.DataType)) * address.Zoom,
+                                        UnitExtend = address.UnitExtend
+                                    });
+                        }
+                        catch (Exception e)
+                        {
+                            ErrorCount++;
+                            Log.Error(e, $"BaseMachine -> GetDatas, Id:{Id} Connection:{ConnectionToken} key {key} existing. ErrorCount {ErrorCount}.");
+
+                            if (ErrorCount >= _maxErrorCount)
+                                Disconnect();
+                            return null;
+                        }
                     }
                 }
                 //如果不保持连接，断开连接
