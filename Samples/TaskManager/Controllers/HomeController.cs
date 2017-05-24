@@ -79,7 +79,7 @@ namespace TaskManager.Controllers
                 {
                     Console.WriteLine($"ip {returnValues.MachineId} not return value");
                 }
-            }, 15000, 60000));
+            }, MachineGetDataType.CommunicationTag, 15000, 60000));
         }
 
         [HttpGet]

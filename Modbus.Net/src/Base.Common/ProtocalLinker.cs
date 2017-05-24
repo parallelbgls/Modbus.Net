@@ -71,11 +71,39 @@ namespace Modbus.Net
     ///     基本的协议连接器
     /// </summary>
     public abstract class ProtocalLinker<TParamIn, TParamOut> : IProtocalLinker<TParamIn, TParamOut>
+        where TParamOut : class
     {
         /// <summary>
         ///     传输连接器
         /// </summary>
         protected BaseConnector<TParamIn, TParamOut> BaseConnector;
+
+        /// <summary>
+        ///     连接设备
+        /// </summary>
+        /// <returns>设备是否连接成功</returns>
+        public bool Connect()
+        {
+            return BaseConnector.Connect();
+        }
+
+        /// <summary>
+        ///     连接设备
+        /// </summary>
+        /// <returns>设备是否连接成功</returns>
+        public async Task<bool> ConnectAsync()
+        {
+            return await BaseConnector.ConnectAsync();
+        }
+
+        /// <summary>
+        ///     断开设备
+        /// </summary>
+        /// <returns>设备是否断开成功</returns>
+        public bool Disconnect()
+        {
+            return BaseConnector.Disconnect();
+        }
 
         /// <summary>
         ///     通讯字符串
@@ -106,8 +134,7 @@ namespace Modbus.Net
         {
             var extBytes = BytesExtend(content);
             var receiveBytes = await SendReceiveWithoutExtAndDecAsync(extBytes);
-            if (receiveBytes != null) return receiveBytes;
-            throw new NullReferenceException();
+            return BytesDecact(receiveBytes);
         }
 
         /// <summary>
@@ -132,8 +159,7 @@ namespace Modbus.Net
             //容错处理
             var checkRight = CheckRight(receiveBytes);
             //返回字符
-            if (checkRight == true) return receiveBytes;
-            throw new NullReferenceException();
+            return checkRight == true ? receiveBytes : null;
         }
 
         /// <summary>
@@ -166,33 +192,6 @@ namespace Modbus.Net
         public virtual TParamOut BytesDecact(TParamOut content)
         {
             throw new NotImplementedException();
-        }
-
-        /// <summary>
-        ///     连接设备
-        /// </summary>
-        /// <returns>设备是否连接成功</returns>
-        public bool Connect()
-        {
-            return BaseConnector.Connect();
-        }
-
-        /// <summary>
-        ///     连接设备
-        /// </summary>
-        /// <returns>设备是否连接成功</returns>
-        public async Task<bool> ConnectAsync()
-        {
-            return await BaseConnector.ConnectAsync();
-        }
-
-        /// <summary>
-        ///     断开设备
-        /// </summary>
-        /// <returns>设备是否断开成功</returns>
-        public bool Disconnect()
-        {
-            return BaseConnector.Disconnect();
         }
     }
 }

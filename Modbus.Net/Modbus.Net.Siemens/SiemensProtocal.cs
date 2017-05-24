@@ -146,7 +146,8 @@ namespace Modbus.Net.Siemens
         public byte ConfirmMessage { get; set; }
     }
 
-    internal class ComCreateReferenceSiemensProtocal : ProtocalUnit, ISpecialProtocalUnit
+    [SpecialProtocalUnit]
+    internal class ComCreateReferenceSiemensProtocal : ProtocalUnit
     {
         public override byte[] Format(IInputStruct message)
         {
@@ -200,7 +201,8 @@ namespace Modbus.Net.Siemens
         public ushort TsapDst { get; }
     }
 
-    internal class CreateReferenceSiemensProtocal : ProtocalUnit, ISpecialProtocalUnit
+    [SpecialProtocalUnit]
+    internal class CreateReferenceSiemensProtocal : ProtocalUnit
     {
         public override byte[] Format(IInputStruct message)
         {
@@ -306,7 +308,8 @@ namespace Modbus.Net.Siemens
     /// <summary>
     ///     串口消息确认协议
     /// </summary>
-    public class ComConfirmMessageSiemensProtocal : ProtocalUnit, ISpecialProtocalUnit
+    [SpecialProtocalUnit]
+    public class ComConfirmMessageSiemensProtocal : ProtocalUnit
     {
         /// <summary>
         ///     格式化

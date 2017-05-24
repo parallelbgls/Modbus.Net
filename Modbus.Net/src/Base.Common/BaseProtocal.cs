@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -37,7 +38,8 @@ namespace Modbus.Net
     ///     基本协议
     /// </summary>
     public abstract class BaseProtocal<TParamIn, TParamOut, TProtocalUnit> :
-        IProtocal<TParamIn, TParamOut, TProtocalUnit> where TProtocalUnit : ProtocalUnit<TParamIn, TParamOut>
+        IProtocal<TParamIn, TParamOut, TProtocalUnit> where TProtocalUnit : class, IProtocalFormatting<TParamIn, TParamOut>
+        where TParamOut : class
     {
         /// <summary>
         ///     构造器
@@ -66,9 +68,9 @@ namespace Modbus.Net
         public byte MasterAddress { get; set; }
 
         /// <summary>
-        ///     协议的连接器
+        ///     协议集合
         /// </summary>
-        public ProtocalLinker<TParamIn, TParamOut> ProtocalLinker { get; protected set; }
+        protected Dictionary<string, TProtocalUnit> Protocals { get; }
 
         /// <summary>
         ///     协议索引器，这是一个懒加载协议，当字典中不存在协议时自动加载协议，否则调用已经加载的协议
@@ -84,7 +86,9 @@ namespace Modbus.Net
                 lock (Protocals)
                 {
                     if (Protocals.ContainsKey(protocalName))
+                    {
                         protocalUnitReturn = Protocals[protocalName];
+                    }
                     else
                     {
                         //自动寻找存在的协议并将其加载
@@ -94,16 +98,39 @@ namespace Modbus.Net
                             throw new InvalidCastException($"No ProtocalUnit {nameof(TProtocalUnit)} implemented");
                         protocalUnit.Endian = Endian;
                         Register(protocalUnit);
-                    }                    
+                    }
                 }
                 return protocalUnitReturn ?? Protocals[protocalName];
             }
         }
 
         /// <summary>
-        ///     协议集合
+        ///     协议的连接器
         /// </summary>
-        protected Dictionary<string, TProtocalUnit> Protocals { get; }
+        public IProtocalLinker<TParamIn, TParamOut> ProtocalLinker { get; protected set; }
+
+        /// <summary>
+        ///     协议连接开始
+        /// </summary>
+        /// <returns></returns>
+        public abstract bool Connect();
+
+        /// <summary>
+        ///     协议连接开始（异步）
+        /// </summary>
+        /// <returns></returns>
+        public abstract Task<bool> ConnectAsync();
+
+        /// <summary>
+        ///     协议连接断开
+        /// </summary>
+        /// <returns></returns>
+        public virtual bool Disconnect()
+        {
+            if (ProtocalLinker != null)
+                return ProtocalLinker.Disconnect();
+            return false;
+        }
 
         /// <summary>
         ///     发送协议，通过传入需要使用的协议内容和输入结构
@@ -132,29 +159,19 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="content">写入的内容，使用对象数组描述</param>
         /// <returns>从设备获取的字节流</returns>
-        public virtual byte[] SendReceive(params object[] content)
+        public virtual TParamOut SendReceive(params object[] content)
         {
             return AsyncHelper.RunSync(() => SendReceiveAsync(content));
         }
 
         /// <summary>
-        ///     发送协议内容并接收，一般方法
+        ///     发送协议内容并接收，一般方法（不能使用，如需使用请继承）
         /// </summary>
         /// <param name="content">写入的内容，使用对象数组描述</param>
         /// <returns>从设备获取的字节流</returns>
-        public virtual Task<byte[]> SendReceiveAsync(params object[] content)
+        public virtual Task<TParamOut> SendReceiveAsync(params object[] content)
         {
             throw new NotImplementedException();
-        }
-
-        /// <summary>
-        ///     注册一个协议
-        /// </summary>
-        /// <param name="linkProtocal">需要注册的协议</param>
-        protected void Register(TProtocalUnit linkProtocal)
-        {
-            if (linkProtocal == null) return;
-            Protocals.Add(linkProtocal.GetType().FullName, linkProtocal);
         }
 
         /// <summary>
@@ -185,7 +202,7 @@ namespace Modbus.Net
             {
                 TParamOut receiveContent;
                 //如果为特别处理协议的话，跳过协议扩展收缩
-                if (unit is ISpecialProtocalUnit)
+                if (unit.GetType().GetTypeInfo().GetCustomAttributes(typeof(SpecialProtocalUnitAttribute)).Any())
                     receiveContent = await ProtocalLinker.SendReceiveWithoutExtAndDecAsync(formatContent);
                 else
                     receiveContent = await ProtocalLinker.SendReceiveAsync(formatContent);
@@ -196,26 +213,13 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        ///     协议连接开始
+        ///     注册一个协议
         /// </summary>
-        /// <returns></returns>
-        public abstract bool Connect();
-
-        /// <summary>
-        ///     协议连接开始（异步）
-        /// </summary>
-        /// <returns></returns>
-        public abstract Task<bool> ConnectAsync();
-
-        /// <summary>
-        ///     协议连接断开
-        /// </summary>
-        /// <returns></returns>
-        public virtual bool Disconnect()
+        /// <param name="linkProtocal">需要注册的协议</param>
+        protected void Register(TProtocalUnit linkProtocal)
         {
-            if (ProtocalLinker != null)
-                return ProtocalLinker.Disconnect();
-            return false;
+            if (linkProtocal == null) return;
+            Protocals.Add(linkProtocal.GetType().FullName, linkProtocal);
         }
     }
 }

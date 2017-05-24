@@ -80,6 +80,7 @@ Platform Supported
 
 ### Version 1.3.8
 * Change Resx to app.config or appsettings.json, now you can set default params there (Not Tested)
+* Change ISpecialProtocalUnit to SpecialProtocalUnitAttribute
 
 ### Version 1.4.0
 * New Protocal Pipeline System (In Road)

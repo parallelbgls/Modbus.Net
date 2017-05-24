@@ -10,6 +10,34 @@ namespace Modbus.Net
     public interface IProtocalLinker<TParamIn, TParamOut>
     {
         /// <summary>
+        ///     通讯字符串
+        /// </summary>
+        string ConnectionToken { get; }
+
+        /// <summary>
+        ///     设备是否连接
+        /// </summary>
+        bool IsConnected { get; }
+
+        /// <summary>
+        ///     连接设备
+        /// </summary>
+        /// <returns>设备是否连接成功</returns>
+        bool Connect();
+
+        /// <summary>
+        ///     连接设备
+        /// </summary>
+        /// <returns>设备是否连接成功</returns>
+        Task<bool> ConnectAsync();
+
+        /// <summary>
+        ///     断开设备
+        /// </summary>
+        /// <returns>设备是否断开成功</returns>
+        bool Disconnect();
+
+        /// <summary>
         ///     发送并接收数据
         /// </summary>
         /// <param name="content">发送协议的内容</param>
