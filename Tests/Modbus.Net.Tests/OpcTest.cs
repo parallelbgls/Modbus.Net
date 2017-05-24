@@ -96,5 +96,11 @@ namespace Modbus.Net.Tests
             var ans = await _opcMachine.GetDatasAsync(MachineGetDataType.Id);
             Assert.AreEqual(ans["1"].PlcValue, 525);
         }
+
+        [TestCleanup]
+        public void MachineClean()
+        {
+            _opcMachine.Disconnect();
+        }
     }
 }

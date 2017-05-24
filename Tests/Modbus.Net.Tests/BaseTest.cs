@@ -326,5 +326,11 @@ namespace Modbus.Net.Tests
             Assert.AreEqual(addressUnit.Area, "3X");
             Assert.AreEqual(addressUnit.Address, 1);
         }
+
+        [TestCleanup]
+        public void MachineClean()
+        {
+            _baseMachine2.Disconnect();
+        }
     }
 }
