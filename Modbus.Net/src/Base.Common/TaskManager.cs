@@ -352,13 +352,9 @@ namespace Modbus.Net
         /// <returns>任务是否执行成功</returns>
         public async Task<bool> InvokeOnce<TInterType>(TaskItem<TInterType> task)
         {
-            if (Machine.IsConnected)
-            {
-                var ans = await task.Invoke(Machine, _tasks, task.Params, task.TimeoutTime);
-                task.Return?.Invoke(ans);
-                return true;
-            }
-            return false;
+            var ans = await task.Invoke(Machine, _tasks, task.Params?.Invoke(), task.TimeoutTime);
+            task.Return?.Invoke(ans);
+            return true;
         }
     }
 
@@ -409,10 +405,8 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="returnFunc">返回值的处理函数</param>
         /// <param name="getDataType">返回值的键类型</param>
-        /// <param name="getCycle">循环间隔(毫秒)</param>
-        /// <param name="sleepCycle">设备离线时的循环间隔(毫秒)</param>
         /// <param name="timeout">任务的超时时间</param>
-        public TaskItemGetData(Action<DataReturnDef> returnFunc, MachineGetDataType getDataType, int getCycle, int sleepCycle, int timeout = 100000)
+        public TaskItemGetData(Action<DataReturnDef> returnFunc, MachineGetDataType getDataType, int timeout = 100000)
         {
             Name = "GetDatas";
             TimeoutTime = timeout;
@@ -433,6 +427,19 @@ namespace Modbus.Net
             };
             Params = null;
             Return = returnFunc;
+        }
+
+        /// <summary>
+        ///     构造函数
+        /// </summary>
+        /// <param name="returnFunc">返回值的处理函数</param>
+        /// <param name="getDataType">返回值的键类型</param>
+        /// <param name="getCycle">循环间隔(毫秒)</param>
+        /// <param name="sleepCycle">设备离线时的循环间隔(毫秒)</param>
+        /// <param name="timeout">任务的超时时间</param>
+        public TaskItemGetData(Action<DataReturnDef> returnFunc, MachineGetDataType getDataType, int getCycle,
+            int sleepCycle, int timeout = 100000) : this(returnFunc, getDataType, timeout)
+        {
             TimerDisconnectedTime = sleepCycle;
             TimerTime = getCycle;
         }
@@ -450,23 +457,40 @@ namespace Modbus.Net
         /// <param name="setDataType">写入值的键类型</param>
         /// <param name="returnFunc">返回值的处理函数</param>
         /// <param name="timeout">任务的超时时间</param>
-        public TaskItemSetData(Dictionary<string, double> values, MachineSetDataType setDataType, Action<bool> returnFunc = null, int timeout = 100000)
+        public TaskItemSetData(Func<Dictionary<string, double>> values, MachineSetDataType setDataType, int timeout = 100000, Action<bool> returnFunc = null)
         {
             Name = "SetDatas";
             TimeoutTime = timeout;
-            Invoke = Invoke = async (machine, tasks, parameters, timeoutTime) =>
+            Invoke = async (machine, tasks, parameters, timeoutTime) =>
             {
                 var cts = new CancellationTokenSource();
                 cts.CancelAfter(TimeSpan.FromMilliseconds(timeoutTime));
                 var ans =
                     await tasks.StartNew(
                         async () => await machine.InvokeMachineMethod<IMachineMethodData,
-                            Task<bool>>("SetDatasAsync", parameters[0],
-                            setDataType).WithCancellation(cts.Token)).Unwrap();
+                            Task<bool>>("SetDatasAsync", setDataType, parameters[0]
+                            ).WithCancellation(cts.Token)).Unwrap();
                 return ans;
             };
-            Params = new object[] {values};
+            Params = () => new object[] {values()};
             Return = returnFunc;
+        }
+
+        /// <summary>
+        ///     构造函数
+        /// </summary>
+        /// <param name="values">写入的值</param>
+        /// <param name="setDataType">写入值的键类型</param>
+        /// <param name="returnFunc">返回值的处理函数</param>
+        /// <param name="getCycle">循环间隔(毫秒)</param>
+        /// <param name="sleepCycle">设备离线时的循环间隔(毫秒)</param>
+        /// <param name="timeout">任务的超时时间</param>
+        public TaskItemSetData(Func<Dictionary<string, double>> values, MachineSetDataType setDataType, int getCycle,
+            int sleepCycle, int timeout = 100000, Action<bool> returnFunc = null)
+            : this(values, setDataType, timeout, returnFunc)
+        {
+            TimerDisconnectedTime = sleepCycle;
+            TimerTime = getCycle;
         }
     }
 
@@ -514,7 +538,7 @@ namespace Modbus.Net
         /// <summary>
         ///     任务执行的参数
         /// </summary>
-        public object[] Params { get; set; }
+        public Func<object[]> Params { get; set; }
 
         /// <summary>
         ///     返回值的处理函数
@@ -575,7 +599,7 @@ namespace Modbus.Net
             Timer = new Timer(async state =>
             {
                 if (!DetectConnected()) TimerChangeToDisconnect();
-                var ans = await Invoke(GetMachine(), GetTaskFactory(), Params, TimeoutTime);
+                var ans = await Invoke(GetMachine(), GetTaskFactory(), Params?.Invoke(), TimeoutTime);
                 Return?.Invoke(ans);
             }, null, 0, TimerTime);
         }
