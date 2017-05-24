@@ -59,6 +59,7 @@
     <Compile Include="OpcTest.cs" />
     <Compile Include="MachineMethodTest.cs" />
     <Compile Include="ModbusMultiStationTest.cs" />
+    <Compile Include="TaskManagerTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Modbus.Net\Modbus.Net.Modbus\Modbus.Net.Modbus.csproj">

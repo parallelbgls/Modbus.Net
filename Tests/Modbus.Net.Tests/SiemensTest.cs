@@ -263,5 +263,11 @@ namespace Modbus.Net.Tests
             Assert.AreEqual(ans["A5"].PlcValue, dic1["A5"]);
             Assert.AreEqual(ans["A6"].PlcValue, dic1["A6"]);
         }
+
+        [TestCleanup]
+        public void MachineClean()
+        {
+            _siemensTcpMachine.Disconnect();
+        }
     }
 }

@@ -19,6 +19,7 @@ namespace Modbus.Net.Tests
             var methods = utility.GetType().GetRuntimeMethods();
             Assert.AreEqual(methods.FirstOrDefault(method => method.Name == "GetTimeAsync") != null, true);
             Assert.AreEqual(methods.FirstOrDefault(method => method.Name == "SetTimeAsync") != null, true);
+            baseMachine.Disconnect();
         }
 
         [TestMethod]
@@ -29,6 +30,7 @@ namespace Modbus.Net.Tests
             Assert.AreEqual(success, true);
             var time = await baseMachine.BaseUtility.InvokeUtilityMethod<IUtilityMethodTime, Task<DateTime>>("GetTimeAsync");
             Assert.AreEqual((time.ToUniversalTime() - DateTime.Now.ToUniversalTime()).Seconds < 10, true);
+            baseMachine.Disconnect();
         }
 
         [TestMethod]
@@ -66,6 +68,7 @@ namespace Modbus.Net.Tests
                     }
                 });
             Assert.AreEqual(success, true);
+            baseMachine.Disconnect();
         }
     }
 }

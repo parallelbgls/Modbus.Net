@@ -272,5 +272,13 @@ namespace Modbus.Net.Tests
             Assert.AreEqual(ans3["A5"].PlcValue, dic1["A5"]);
             Assert.AreEqual(ans3["A6"].PlcValue, dic1["A6"]);
         }
+
+        [TestCleanup]
+        public void MachineClean()
+        {
+            _modbusAsciiMachine.Disconnect();
+            _modbusRtuMachine.Disconnect();
+            _modbusTcpMachine.Disconnect();
+        }
     }
 }
