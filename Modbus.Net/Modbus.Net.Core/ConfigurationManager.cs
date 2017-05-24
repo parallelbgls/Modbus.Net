@@ -13,7 +13,6 @@ namespace Modbus.Net
         /// </summary>
         private static readonly IConfigurationBuilder Builder = new ConfigurationBuilder()
             .SetBasePath(RootPath ?? Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
             .AddXmlFile("App.config");
 
         /// <summary>
