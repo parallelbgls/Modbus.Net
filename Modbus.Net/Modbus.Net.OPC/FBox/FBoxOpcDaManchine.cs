@@ -17,7 +17,9 @@ namespace Modbus.Net.OPC.FBox
         /// <param name="keepConnect">是否保持连接</param>
         public FBoxOpcDaMachine(string localSequence, string linkerName,
             IEnumerable<AddressUnit> getAddresses, bool keepConnect)
-            : base(ConfigurationManager.AppSettings["FBoxOpcDaHost"], getAddresses, keepConnect)
+            : base(
+                ConfigurationManager.AppSettings["FBoxOpcDaHost"] ?? "opcda://localhost/FBoxOpcServer", getAddresses,
+                keepConnect)
         {
             LocalSequence = localSequence;
             LinkerName = linkerName;
