@@ -11,10 +11,18 @@ namespace Modbus.Net.Tests
     {
         private BaseMachine _modbusTcpMachine;
 
+        private BaseMachine _modbusRtuMachine;
+
+        private BaseMachine _modbusAsciiMachine;
+
         [TestInitialize]
         public void Init()
         {
             _modbusTcpMachine = new ModbusMachine(ModbusType.Tcp, "192.168.3.10", null, true, 2, 0);
+
+            _modbusRtuMachine = new ModbusMachine(ModbusType.Rtu, "COM3", null, true, 2, 0);
+
+            _modbusAsciiMachine = new ModbusMachine(ModbusType.Ascii, "COM5", null, true, 2, 0);
         }
 
         [TestMethod]
@@ -43,9 +51,17 @@ namespace Modbus.Net.Tests
             };
 
             _modbusTcpMachine.GetAddresses = addresses;
+            _modbusAsciiMachine.GetAddresses = addresses;
+            _modbusRtuMachine.GetAddresses = addresses;
             await _modbusTcpMachine.SetDatasAsync(MachineSetDataType.Address, dic1);
+            await _modbusAsciiMachine.SetDatasAsync(MachineSetDataType.Address, dic1);
+            await _modbusRtuMachine.SetDatasAsync(MachineSetDataType.Address, dic1);
             var ans = await _modbusTcpMachine.GetDatasAsync(MachineGetDataType.Address);
+            var ans2 = await _modbusRtuMachine.GetDatasAsync(MachineGetDataType.Address);
+            var ans3 = await _modbusAsciiMachine.GetDatasAsync(MachineGetDataType.Address);
             Assert.AreEqual(ans["0X 1.0"].PlcValue, dic1["0X 1.0"]);
+            Assert.AreEqual(ans2["0X 1.0"].PlcValue, dic1["0X 1.0"]);
+            Assert.AreEqual(ans3["0X 1.0"].PlcValue, dic1["0X 1.0"]);
         }
 
         [TestMethod]
@@ -65,8 +81,14 @@ namespace Modbus.Net.Tests
             };
 
             _modbusTcpMachine.GetAddresses = addresses;
+            _modbusRtuMachine.GetAddresses = addresses;
+            _modbusAsciiMachine.GetAddresses = addresses;
             var ans = await _modbusTcpMachine.GetDatasAsync(MachineGetDataType.Address);
+            var ans2 = await _modbusRtuMachine.GetDatasAsync(MachineGetDataType.Address);
+            var ans3 = await _modbusAsciiMachine.GetDatasAsync(MachineGetDataType.Address);
             Assert.AreEqual(ans["1X 1.0"].PlcValue, 0);
+            Assert.AreEqual(ans2["1X 1.0"].PlcValue, 0);
+            Assert.AreEqual(ans3["1X 1.0"].PlcValue, 0);
         }
 
         [TestMethod]
@@ -86,8 +108,14 @@ namespace Modbus.Net.Tests
             };
 
             _modbusTcpMachine.GetAddresses = addresses;
+            _modbusRtuMachine.GetAddresses = addresses;
+            _modbusAsciiMachine.GetAddresses = addresses;
             var ans = await _modbusTcpMachine.GetDatasAsync(MachineGetDataType.Address);
+            var ans2 = await _modbusRtuMachine.GetDatasAsync(MachineGetDataType.Address);
+            var ans3 = await _modbusAsciiMachine.GetDatasAsync(MachineGetDataType.Address);
             Assert.AreEqual(ans["3X 1.0"].PlcValue, 0);
+            Assert.AreEqual(ans2["3X 1.0"].PlcValue, 0);
+            Assert.AreEqual(ans3["3X 1.0"].PlcValue, 0);
         }
 
         [TestMethod]
@@ -116,9 +144,17 @@ namespace Modbus.Net.Tests
             };
 
             _modbusTcpMachine.GetAddresses = addresses;
+            _modbusAsciiMachine.GetAddresses = addresses;
+            _modbusRtuMachine.GetAddresses = addresses;
             await _modbusTcpMachine.SetDatasAsync(MachineSetDataType.Address, dic1);
+            await _modbusAsciiMachine.SetDatasAsync(MachineSetDataType.Address, dic1);
+            await _modbusRtuMachine.SetDatasAsync(MachineSetDataType.Address, dic1);
             var ans = await _modbusTcpMachine.GetDatasAsync(MachineGetDataType.Address);
+            var ans2 = await _modbusRtuMachine.GetDatasAsync(MachineGetDataType.Address);
+            var ans3 = await _modbusAsciiMachine.GetDatasAsync(MachineGetDataType.Address);
             Assert.AreEqual(ans["4X 1.0"].PlcValue, dic1["4X 1"]);
+            Assert.AreEqual(ans2["4X 1.0"].PlcValue, dic1["4X 1"]);
+            Assert.AreEqual(ans3["4X 1.0"].PlcValue, dic1["4X 1"]);
         }
 
         [TestMethod]
@@ -207,15 +243,34 @@ namespace Modbus.Net.Tests
             };
 
             _modbusTcpMachine.GetAddresses = addresses;
+            _modbusRtuMachine.GetAddresses = addresses;
+            _modbusAsciiMachine.GetAddresses = addresses;
             await _modbusTcpMachine.SetDatasAsync(MachineSetDataType.CommunicationTag, dic1);
+            await _modbusRtuMachine.SetDatasAsync(MachineSetDataType.CommunicationTag, dic1);
+            await _modbusAsciiMachine.SetDatasAsync(MachineSetDataType.CommunicationTag, dic1);
 
             var ans = await _modbusTcpMachine.GetDatasAsync(MachineGetDataType.CommunicationTag);
+            var ans2 = await _modbusRtuMachine.GetDatasAsync(MachineGetDataType.CommunicationTag);
+            var ans3 = await _modbusAsciiMachine.GetDatasAsync(MachineGetDataType.CommunicationTag);
+
             Assert.AreEqual(ans["A1"].PlcValue, dic1["A1"]);
             Assert.AreEqual(ans["A2"].PlcValue, dic1["A2"]);
             Assert.AreEqual(ans["A3"].PlcValue, dic1["A3"]);
             Assert.AreEqual(ans["A4"].PlcValue, dic1["A4"]);
             Assert.AreEqual(ans["A5"].PlcValue, dic1["A5"]);
             Assert.AreEqual(ans["A6"].PlcValue, dic1["A6"]);
+            Assert.AreEqual(ans2["A1"].PlcValue, dic1["A1"]);
+            Assert.AreEqual(ans2["A2"].PlcValue, dic1["A2"]);
+            Assert.AreEqual(ans2["A3"].PlcValue, dic1["A3"]);
+            Assert.AreEqual(ans2["A4"].PlcValue, dic1["A4"]);
+            Assert.AreEqual(ans2["A5"].PlcValue, dic1["A5"]);
+            Assert.AreEqual(ans2["A6"].PlcValue, dic1["A6"]);
+            Assert.AreEqual(ans3["A1"].PlcValue, dic1["A1"]);
+            Assert.AreEqual(ans3["A2"].PlcValue, dic1["A2"]);
+            Assert.AreEqual(ans3["A3"].PlcValue, dic1["A3"]);
+            Assert.AreEqual(ans3["A4"].PlcValue, dic1["A4"]);
+            Assert.AreEqual(ans3["A5"].PlcValue, dic1["A5"]);
+            Assert.AreEqual(ans3["A6"].PlcValue, dic1["A6"]);
         }
     }
 }

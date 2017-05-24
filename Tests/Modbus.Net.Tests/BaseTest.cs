@@ -135,12 +135,14 @@ namespace Modbus.Net.Tests
                 ProjectName = "Project 1",
                 MachineName = "Test 1"
             };
-            _baseMachine2 = new SiemensMachine<int, int>(SiemensType.Tcp, "192.168.1.2", SiemensMachineModel.S7_300, _addressUnits, true, 2, 0)
+            _baseMachine2 = new SiemensMachine<int, int>(SiemensType.Tcp, "192.168.3.10", SiemensMachineModel.S7_1200, _addressUnits, true, 2, 0)
             {
                 Id = 2,
                 ProjectName = "Project 1",
                 MachineName = "Test 2"
             };
+
+            _baseMachine2.Connect();
 
             _taskManager = new TaskManager<int>(10, true);
 
@@ -313,7 +315,7 @@ namespace Modbus.Net.Tests
             var machine = _taskManager.GetMachineById<int>(1);
             Assert.AreEqual(machine.MachineName, "Test 1");
 
-            var machine2 = _taskManager.GetMachineByConnectionToken<int>("192.168.1.2");
+            var machine2 = _taskManager.GetMachineByConnectionToken<int>("192.168.3.10");
             Assert.AreEqual(machine2.MachineName, "Test 2");
         }
 
