@@ -176,6 +176,8 @@ namespace Modbus.Net
                     }
                 hexTotal = string.Concat(hexByte, hexTotal);
             }
+            if (hexTotal.Length == 0) hexTotal = "00" + hexTotal;
+            if (hexTotal.Length == 1) hexTotal = "0" + hexTotal;
             return hexTotal == checkString;
         }
 
