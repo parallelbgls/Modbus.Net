@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Modbus.Net.Modbus;
 
@@ -79,13 +80,16 @@ namespace Modbus.Net.Tests
                 }
             };
 
-            BaseMachine machine = new ModbusMachine(ModbusType.Tcp, "192.168.3.10", addresses, true, 2, 0);
+            BaseMachine machine = new ModbusMachine(ModbusType.Tcp, "192.168.3.10", addresses, true, 2, 0)
+            {
+                Id = "1"
+            };
 
             _taskManager.AddMachine(machine);
 
             var r = new Random();
 
-            _timer = new Timer(state =>
+            _timer = new Timer(async state =>
             {
                 lock (_valueDic)
                 {
@@ -111,43 +115,31 @@ namespace Modbus.Net.Tests
                         }
                     };
                 }
-            }, null, 0, 1000);
-
-            _taskManager.InvokeTimerAll(new TaskItemSetData(_valueDic, MachineSetDataType.CommunicationTag)
-            {
-                TimerTime = 2000,
-                TimeoutTime = 60000,
-                TimerDisconnectedTime = 10000
-            });
+                await _taskManager.InvokeOnceAll(new TaskItemSetData(() => _valueDic, MachineSetDataType.CommunicationTag));
+            }, null, 0, 5000);
         }
 
         [TestMethod]
-        public void TaskManagerValueReadWriteTest()
+        public async Task TaskManagerValueReadWriteTest()
         {
-            var dicans = new Dictionary<string, double?>();
-            _taskManager.InvokeTimerAll(new TaskItemGetData(
-                def =>
-                {
-                    dicans = def.ReturnValues.ToDictionary(p => p.Key, p => p.Value.PlcValue);
-                }, MachineGetDataType.CommunicationTag, 2000, 10000, 60000));
+            Thread.Sleep(2000);
 
             var i = 5;
             while (i > 0)
             {
-                Thread.Sleep(10000);
-                lock (dicans)
-                {
-                    lock (_valueDic)
+                Thread.Sleep(5000);
+                await _taskManager.InvokeOnceAll(new TaskItemGetData(
+                    def =>
                     {
+                        var dicans = def.ReturnValues.ToDictionary(p => p.Key, p => p.Value.PlcValue);
                         Assert.AreEqual(dicans["A1"], _valueDic["A1"]);
                         Assert.AreEqual(dicans["A2"], _valueDic["A2"]);
                         Assert.AreEqual(dicans["A3"], _valueDic["A3"]);
                         Assert.AreEqual(dicans["A4"], _valueDic["A4"]);
                         Assert.AreEqual(dicans["A5"], _valueDic["A5"]);
                         Assert.AreEqual(dicans["A6"], _valueDic["A6"]);
-                    }
-                }
-                i--;               
+                    }, MachineGetDataType.CommunicationTag));                
+                i--;
             }
         }
 
