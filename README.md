@@ -2,6 +2,7 @@ Modbus.Net Oveview
 ===================
 
 * [Teambition Project](https://www.teambition.com/project/573860b0f668c69e61d38a84/tasks)
+* QQ群 438411519 Modbus.Net交流群
 
 Overview
 -------------------
@@ -58,33 +59,46 @@ Platform Supported
 * Generic Method For ProtocalUnit (Complete)
 
 ### Version 1.3.2
-* Add Interface IMachineMethod and IUtilityMethod. Utiltiy and Machine can extend function using interface (Not Tested)
+* Add Interface IMachineMethod and IUtilityMethod. Utiltiy and Machine can extend function using interface (Complete)
 
 ### Version 1.3.3
-* TaskManager Remake (Not Tested)
+* TaskManager Remake (Complete)
 
 ### Version 1.3.4
-* A Serial Port now can connect to multiple machines using same protocol with different slave address (Not Tested)
+* A Serial Port now can connect to multiple machines using same protocol with different slave address (Complete)
 
 ### Version 1.3.5
-* New log system using serilog (Not Tested)
+* New log system using serilog (Complete)
 
 ### Version 1.3.6
-* Add gereric Type for BaseConnector, now protocol developer can pass any type to BaseConnector not only byte[] (Not Tested)
-* Add more gereric types in Modbus.Net to support this function (Not Tested)
-* Add more interfaces to make them completed in Modbus.Net (Not Tested)
-* Support this function in Modbus.Net.OPC (Not Tested)
+* Add gereric Type for BaseConnector, now protocol developer can pass any type to BaseConnector not only byte[] (Complete)
+* Add more gereric types in Modbus.Net to support this function (Complete)
+* Add more interfaces to make them completed in Modbus.Net (Complete)
+* Support this function in Modbus.Net.OPC (Complete)
 
 ### Version 1.3.7
-* AddressCombiner need to add maximum length now. Combiner will consider the maximum length when combining addresses (Not Tested)
+* AddressCombiner need to add maximum length now. Combiner will consider the maximum length when combining addresses (Complete)
 
 ### Version 1.3.8
-* Change Resx to app.config or appsettings.json, now you can set default params there (Not Tested)
-* Change ISpecialProtocalUnit to SpecialProtocalUnitAttribute
+* Change Resx to app.config or appsettings.json, now you can set default params there (Complete)
+* Change ISpecialProtocalUnit to SpecialProtocalUnitAttribute (Complete)
+
+### Version 1.3.9
+* Modbus Single Write for Coil and Reg (05 and 06) (In Road)
+
+* Github wiki Document Chinese (Not Complete)
+* Github wiki Document English (In Road)
 
 ### Version 1.4.0
-* New Protocal Pipeline System (In Road)
+* BaseController (In Road)
 * New ComConnector (In Road)
-* Multi station Modbus RTU, ASCII and Siemens PPI (In Road)
+* Serial Port Connection with Multiple Master Station (In Road)
+
+### Version 1.4.1
+* New Protocal Pipeline System (In Road)
+* PPI Remake (In Road)
+
+### Version 1.4.2
 * Siemens MPI Support (In Road)
-* Github wiki Document (In Road)
+* Siemens MultiStation PPI Support (In Road)
+
