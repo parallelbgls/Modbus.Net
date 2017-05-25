@@ -2,7 +2,7 @@ Modbus.Net Oveview
 ===================
 
 * [Teambition Project](https://www.teambition.com/project/573860b0f668c69e61d38a84/tasks)
-* QQÈº 438411519 Modbus.Net½»Á÷Èº
+* QQç¾¤ 438411519 Modbus.Netäº¤æµç¾¤
 
 Overview
 -------------------
