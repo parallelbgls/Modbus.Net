@@ -86,6 +86,7 @@ Platform Supported
 ### Version 1.3.9
 * Modbus Single Write for Coil and Reg (05 and 06) (In Road)
 
+###
 * Github wiki Document Chinese (Not Complete)
 * Github wiki Document English (In Road)
 
