@@ -76,7 +76,7 @@ namespace Modbus.Net
         /// <summary>
         ///     传输连接器
         /// </summary>
-        protected BaseConnector<TParamIn, TParamOut> BaseConnector;
+        protected IConnector<TParamIn, TParamOut> BaseConnector;
 
         /// <summary>
         ///     连接设备
