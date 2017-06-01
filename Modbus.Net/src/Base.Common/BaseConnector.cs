@@ -12,7 +12,7 @@ namespace Modbus.Net
     /// <summary>
     ///     基础的协议连接类
     /// </summary>
-    public abstract class BaseConnector<TParamIn, TParamOut>
+    public abstract class BaseConnector<TParamIn, TParamOut> : IConnector<TParamIn, TParamOut>
     {
         /// <summary>
         ///     标识Connector的连接关键字

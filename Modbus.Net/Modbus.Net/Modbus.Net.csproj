@@ -5,7 +5,7 @@
     <AssemblyName>Modbus.Net</AssemblyName>
     <RootNamespace>Modbus.Net</RootNamespace>
     <PackageId>Modbus.Net</PackageId>
-    <Version>1.3.8-beta1</Version>
+    <Version>1.3.8-beta2</Version>
     <Product>Modbus.Net</Product>
     <Authors>Chris L.(Luo Sheng)</Authors>
     <Company>Hangzhou Delian IoT Science Technology Co.,Ltd.</Company>
@@ -48,6 +48,7 @@
     <Compile Include="..\src\Base.Common\IUtilityMethod.cs" Link="IUtilityMethod.cs" />
     <Compile Include="..\src\Base.Common\IMachineMethod.cs" Link="IMachineMethod.cs" />
     <Compile Include="..\src\Base.Common\TypeExtensions.cs" Link="TypeExtensions.cs" />
+    <Compile Include="..\src\Base.Common\IConnector.cs" Link="IConnector.cs" />
   </ItemGroup>
 
   <ItemGroup>
