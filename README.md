@@ -26,7 +26,12 @@ Platform Supported
 * .NET Framework 4.5
 * .NET Standard 1.3
 
-## RoadMap
+Thanks
+-------------------
+Resharper -- Offers Modbus.Net team community lisence.
+
+RoadMap
+-------------------
 
 ### Version 1.2.0
 * Modbus ASCII Support (Complete)
@@ -80,11 +85,12 @@ Platform Supported
 * AddressCombiner need to add maximum length now. Combiner will consider the maximum length when combining addresses (Complete)
 
 ### Version 1.3.8
-* Change Resx to app.config or appsettings.json, now you can set default params there (Complete)
+* Change Resx to appsettings.json, now you can set default params there (Complete)
 * Change ISpecialProtocalUnit to SpecialProtocalUnitAttribute (Complete)
 
 ### Version 1.3.9
-* Modbus Single Write for Coil and Reg (05 and 06) (In Road)
+* Modbus Single Write for Coil and Reg (05 and 06) (Complete)
+* Fix OPC tag combine problem (Complete)
 
 ###
 * Github wiki Document Chinese (Not Complete)
