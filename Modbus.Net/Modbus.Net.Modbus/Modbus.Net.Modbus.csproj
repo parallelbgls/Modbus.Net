@@ -16,7 +16,10 @@
     <RepositoryUrl>https://github.com/parallelbgls/Modbus.Net</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>hardware communicate protocal modbus Delian</PackageTags>
+    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <IncludeSymbols>True</IncludeSymbols>
+    <IncludeSource>True</IncludeSource>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

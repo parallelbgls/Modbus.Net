@@ -277,24 +277,17 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        ///     调用Utility中的方法
+        ///     返回Utility的方法集合
         /// </summary>
-        /// <typeparam name="TUtilityMethod">Utility实现的接口名称</typeparam>
-        /// <typeparam name="TReturnType">返回值的类型</typeparam>
-        /// <param name="methodName">方法的名称</param>
-        /// <param name="parameters">方法的参数</param>
-        /// <returns></returns>
-        public TReturnType InvokeUtilityMethod<TUtilityMethod, TReturnType>(string methodName,
-            params object[] parameters) where TUtilityMethod : IUtilityMethod
+        /// <typeparam name="TUtilityMethod">Utility方法集合类型</typeparam>
+        /// <returns>Utility方法集合</returns>
+        public TUtilityMethod GetUtilityMethods<TUtilityMethod>() where TUtilityMethod : class, IUtilityMethod
         {
             if (this is TUtilityMethod)
             {
-                var t = typeof(TUtilityMethod);
-                var returnValue = t.GetRuntimeMethod(methodName, parameters.Select(p => p.GetType()).ToArray(), false)
-                    .Invoke(this, parameters);
-                return (TReturnType) returnValue;
+                return this as TUtilityMethod;
             }
-            throw new InvalidCastException($"Utility interface {nameof(TUtilityMethod)} not implemented");
+            return null;
         }
 
         /// <summary>
@@ -348,14 +341,10 @@ namespace Modbus.Net
         bool Disconnect();
 
         /// <summary>
-        ///     调用Utility中的方法
+        ///     返回Utility的方法集合
         /// </summary>
-        /// <typeparam name="TUtilityMethod">Utility实现的接口名称</typeparam>
-        /// <typeparam name="TReturnType">返回值的类型</typeparam>
-        /// <param name="methodName">方法的名称</param>
-        /// <param name="parameters">方法的参数</param>
-        /// <returns></returns>
-        TReturnType InvokeUtilityMethod<TUtilityMethod, TReturnType>(string methodName,
-            params object[] parameters) where TUtilityMethod : IUtilityMethod;
+        /// <typeparam name="TUtilityMethod">Utility方法集合类型</typeparam>
+        /// <returns>Utility方法集合</returns>
+        TUtilityMethod GetUtilityMethods<TUtilityMethod>() where TUtilityMethod : class, IUtilityMethod;
     }
 }

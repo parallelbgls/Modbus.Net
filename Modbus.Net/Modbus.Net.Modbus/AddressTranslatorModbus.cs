@@ -3,10 +3,33 @@ using System.Linq;
 
 namespace Modbus.Net.Modbus
 {
+    public abstract class ModbusTranslatorBase : AddressTranslator
+    {
+        /// <summary>
+        ///     地址转换
+        /// </summary>
+        /// <param name="address">格式化的地址</param>
+        /// <param name="isRead">是否为读取，是为读取，否为写入</param>
+        /// <param name="isSingle">是否只写入一个数据</param>
+        /// <returns>翻译后的地址</returns>
+        public abstract AddressDef AddressTranslate(string address, bool isRead, bool isSingle);
+
+        /// <summary>
+        ///     地址转换
+        /// </summary>
+        /// <param name="address">格式化的地址</param>
+        /// <param name="isRead">是否为读取，是为读取，否为写入</param>
+        /// <returns>翻译后的地址</returns>
+        public override AddressDef AddressTranslate(string address, bool isRead)
+        {
+            return AddressTranslate(address, isRead, false);
+        }
+    }
+
     /// <summary>
     ///     南大奥拓NA200H数据单元翻译器
     /// </summary>
-    public class AddressTranslatorNA200H : AddressTranslator
+    public class AddressTranslatorNA200H : ModbusTranslatorBase
     {
         /// <summary>
         ///     读功能码
@@ -21,7 +44,7 @@ namespace Modbus.Net.Modbus
         /// <summary>
         ///     写功能码
         /// </summary>
-        protected Dictionary<string, AreaOutputDef> WriteFunctionCodeDictionary;
+        protected Dictionary<(string, bool), AreaOutputDef> WriteFunctionCodeDictionary;
 
         /// <summary>
         ///     构造器
@@ -104,10 +127,10 @@ namespace Modbus.Net.Modbus
                     new AreaOutputDef {Code = (int) ModbusProtocalReadDataFunctionCode.ReadHoldRegister, AreaWidth = 2}
                 }
             };
-            WriteFunctionCodeDictionary = new Dictionary<string, AreaOutputDef>
+            WriteFunctionCodeDictionary = new Dictionary<(string, bool), AreaOutputDef>
             {
                 {
-                    "Q",
+                    ("Q", false),
                     new AreaOutputDef
                     {
                         Code = (int) ModbusProtocalWriteDataFunctionCode.WriteMultiCoil,
@@ -115,7 +138,7 @@ namespace Modbus.Net.Modbus
                     }
                 },
                 {
-                    "M",
+                    ("M", false),
                     new AreaOutputDef
                     {
                         Code = (int) ModbusProtocalWriteDataFunctionCode.WriteMultiCoil,
@@ -123,7 +146,7 @@ namespace Modbus.Net.Modbus
                     }
                 },
                 {
-                    "N",
+                    ("N", false),
                     new AreaOutputDef
                     {
                         Code = (int) ModbusProtocalWriteDataFunctionCode.WriteMultiCoil,
@@ -131,7 +154,7 @@ namespace Modbus.Net.Modbus
                     }
                 },
                 {
-                    "MW",
+                    ("MW", false),
                     new AreaOutputDef
                     {
                         Code = (int) ModbusProtocalWriteDataFunctionCode.WriteMultiRegister,
@@ -139,7 +162,7 @@ namespace Modbus.Net.Modbus
                     }
                 },
                 {
-                    "NW",
+                    ("NW", false),
                     new AreaOutputDef
                     {
                         Code = (int) ModbusProtocalWriteDataFunctionCode.WriteMultiRegister,
@@ -147,10 +170,58 @@ namespace Modbus.Net.Modbus
                     }
                 },
                 {
-                    "QW",
+                    ("QW", false),
                     new AreaOutputDef
                     {
                         Code = (int) ModbusProtocalWriteDataFunctionCode.WriteMultiRegister,
+                        AreaWidth = 2
+                    }
+                },
+                {
+                    ("Q", true),
+                    new AreaOutputDef
+                    {
+                        Code = (int) ModbusProtocalWriteDataFunctionCode.WriteSingleCoil,
+                        AreaWidth = 0.125
+                    }
+                },
+                {
+                    ("M", true),
+                    new AreaOutputDef
+                    {
+                        Code = (int) ModbusProtocalWriteDataFunctionCode.WriteSingleCoil,
+                        AreaWidth = 0.125
+                    }
+                },
+                {
+                    ("N", true),
+                    new AreaOutputDef
+                    {
+                        Code = (int) ModbusProtocalWriteDataFunctionCode.WriteSingleCoil,
+                        AreaWidth = 0.125
+                    }
+                },
+                {
+                    ("MW", true),
+                    new AreaOutputDef
+                    {
+                        Code = (int) ModbusProtocalWriteDataFunctionCode.WriteSingleRegister,
+                        AreaWidth = 2
+                    }
+                },
+                {
+                    ("NW", true),
+                    new AreaOutputDef
+                    {
+                        Code = (int) ModbusProtocalWriteDataFunctionCode.WriteSingleRegister,
+                        AreaWidth = 2
+                    }
+                },
+                {
+                    ("QW", true),
+                    new AreaOutputDef
+                    {
+                        Code = (int) ModbusProtocalWriteDataFunctionCode.WriteSingleRegister,
                         AreaWidth = 2
                     }
                 }
@@ -162,8 +233,9 @@ namespace Modbus.Net.Modbus
         /// </summary>
         /// <param name="address">格式化的地址</param>
         /// <param name="isRead">是否为读取，是为读取，否为写入</param>
+        /// <param name="isSingle">是否只写入一个数据</param>
         /// <returns>翻译后的地址</returns>
-        public override AddressDef AddressTranslate(string address, bool isRead)
+        public override AddressDef AddressTranslate(string address, bool isRead, bool isSingle)
         {
             address = address.ToUpper();
             var splitString = address.Split(' ');
@@ -191,7 +263,7 @@ namespace Modbus.Net.Modbus
                 : new AddressDef
                 {
                     AreaString = head,
-                    Area = WriteFunctionCodeDictionary[head].Code,
+                    Area = WriteFunctionCodeDictionary[(head, isSingle)].Code,
                     Address = TransDictionary[head] + int.Parse(tail) - 1,
                     SubAddress = int.Parse(sub)
                 };
@@ -211,7 +283,7 @@ namespace Modbus.Net.Modbus
     /// <summary>
     ///     Modbus数据单元翻译器
     /// </summary>
-    public class AddressTranslatorModbus : AddressTranslator
+    public class AddressTranslatorModbus : ModbusTranslatorBase
     {
         /// <summary>
         ///     读功能码
@@ -221,7 +293,7 @@ namespace Modbus.Net.Modbus
         /// <summary>
         ///     写功能码
         /// </summary>
-        protected Dictionary<string, AreaOutputDef> WriteFunctionCodeDictionary;
+        protected Dictionary<(string, bool), AreaOutputDef> WriteFunctionCodeDictionary;
 
         /// <summary>
         ///     构造器
@@ -255,10 +327,10 @@ namespace Modbus.Net.Modbus
                     new AreaOutputDef {Code = (int) ModbusProtocalReadDataFunctionCode.ReadHoldRegister, AreaWidth = 2}
                 }
             };
-            WriteFunctionCodeDictionary = new Dictionary<string, AreaOutputDef>
+            WriteFunctionCodeDictionary = new Dictionary<(string, bool), AreaOutputDef>
             {
                 {
-                    "0X",
+                    ("0X", false),
                     new AreaOutputDef
                     {
                         Code = (int) ModbusProtocalWriteDataFunctionCode.WriteMultiCoil,
@@ -266,10 +338,26 @@ namespace Modbus.Net.Modbus
                     }
                 },
                 {
-                    "4X",
+                    ("4X", false),
                     new AreaOutputDef
                     {
                         Code = (int) ModbusProtocalWriteDataFunctionCode.WriteMultiRegister,
+                        AreaWidth = 2
+                    }
+                },
+                {
+                    ("0X", true),
+                    new AreaOutputDef
+                    {
+                        Code = (int) ModbusProtocalWriteDataFunctionCode.WriteSingleCoil,
+                        AreaWidth = 0.125
+                    }
+                },
+                {
+                    ("4X", true),
+                    new AreaOutputDef
+                    {
+                        Code = (int) ModbusProtocalWriteDataFunctionCode.WriteSingleRegister,
                         AreaWidth = 2
                     }
                 }
@@ -281,8 +369,9 @@ namespace Modbus.Net.Modbus
         /// </summary>
         /// <param name="address">格式化的地址</param>
         /// <param name="isRead">是否为读取，是为读取，否为写入</param>
+        /// <param name="isSingle">是否只写入一个数据</param>
         /// <returns>翻译后的地址</returns>
-        public override AddressDef AddressTranslate(string address, bool isRead)
+        public override AddressDef AddressTranslate(string address, bool isRead, bool isSingle)
         {
             address = address.ToUpper();
             var splitString = address.Split(' ');
@@ -310,7 +399,7 @@ namespace Modbus.Net.Modbus
                 : new AddressDef
                 {
                     AreaString = head,
-                    Area = WriteFunctionCodeDictionary[head].Code,
+                    Area = WriteFunctionCodeDictionary[(head, isSingle)].Code,
                     Address = int.Parse(tail) - 1,
                     SubAddress = int.Parse(sub)
                 };

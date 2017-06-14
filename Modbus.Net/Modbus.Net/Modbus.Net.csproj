@@ -16,7 +16,10 @@
     <Copyright>Copyright 2017 Hangzhou Delian IoT Science Technology Co.,Ltd.</Copyright>
     <PackageTags>hardware communicate protocal Delian</PackageTags>
     <RepositoryType>git</RepositoryType>
+    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <IncludeSymbols>True</IncludeSymbols>
+    <IncludeSource>True</IncludeSource>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -54,6 +57,7 @@
   <ItemGroup>
     <PackageReference Include="Nito.AsyncEx" Version="4.0.1" />
     <PackageReference Include="Serilog" Version="2.4.0" />
+    <PackageReference Include="System.ValueTuple" Version="4.3.1" />
   </ItemGroup>
 
   <ItemGroup>

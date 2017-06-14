@@ -25,10 +25,21 @@ namespace Modbus.Net.Modbus
         Ascii = 2
     }
 
+    public interface IUtilityMethodWriteSingle : IUtilityMethod
+    {
+        /// <summary>
+        ///     写数据
+        /// </summary>
+        /// <param name="startAddress">起始地址</param>
+        /// <param name="setContent">需要设置的数据</param>
+        /// <returns>设置是否成功</returns>
+        Task<bool> SetSingleDataAsync(string startAddress, object setContent);
+    }
+
     /// <summary>
     ///     Modbus基础Api入口
     /// </summary>
-    public class ModbusUtility : BaseUtility, IUtilityMethodTime
+    public class ModbusUtility : BaseUtility, IUtilityMethodTime, IUtilityMethodWriteSingle
     {
         /// <summary>
         ///     Modbus协议类型
@@ -247,6 +258,30 @@ namespace Modbus.Net.Modbus
             catch (Exception e)
             {
                 Log.Error(e, $"ModbusUtility -> SetDatas: {ConnectionString} error");
+                return false;
+            }
+        }
+
+        /// <summary>
+        ///     写数据
+        /// </summary>
+        /// <param name="startAddress">起始地址</param>
+        /// <param name="setContent">需要设置的数据</param>
+        /// <returns>设置是否成功</returns>
+        public async Task<bool> SetSingleDataAsync(string startAddress, object setContent)
+        {
+            try
+            {
+                var inputStruct = new WriteSingleDataModbusInputStruct(SlaveAddress, startAddress, setContent,
+                    (ModbusTranslatorBase)AddressTranslator, Endian);
+                var outputStruct = await
+                    Wrapper.SendReceiveAsync<WriteSingleDataModbusOutputStruct>(Wrapper[typeof(WriteSingleDataModbusProtocal)],
+                        inputStruct);
+                return outputStruct?.WriteValue.ToString() == setContent.ToString();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, $"ModbusUtility -> SetSingleDatas: {ConnectionString} error");
                 return false;
             }
         }

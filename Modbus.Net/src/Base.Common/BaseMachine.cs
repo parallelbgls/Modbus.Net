@@ -243,7 +243,7 @@ namespace Modbus.Net
                     //获取数据
                     var datas =
                         await
-                            BaseUtility.InvokeUtilityMethod<IUtilityMethodData, Task<byte[]>>("GetDatasAsync",
+                            BaseUtility.GetUtilityMethods<IUtilityMethodData>().GetDatasAsync(
                                 AddressFormater.FormatAddress(communicateAddress.Area, communicateAddress.Address,
                                     communicateAddress.SubAddress),
                                 (int)
@@ -446,7 +446,7 @@ namespace Modbus.Net
                         communicateAddress.Address);
 
                     var datasReturn =
-                        await BaseUtility.InvokeUtilityMethod<IUtilityMethodData, Task<byte[]>>("GetDatasAsync",
+                        await BaseUtility.GetUtilityMethods<IUtilityMethodData>().GetDatasAsync(
                             AddressFormater.FormatAddress(communicateAddress.Area, communicateAddress.Address, 0),
                             (int)
                             Math.Ceiling(communicateAddress.GetCount *
@@ -536,7 +536,7 @@ namespace Modbus.Net
                     }
                     //写入数据
                     await
-                        BaseUtility.InvokeUtilityMethod<IUtilityMethodData, Task<bool>>("SetDatasAsync", addressStart,
+                        BaseUtility.GetUtilityMethods<IUtilityMethodData>().SetDatasAsync(addressStart,
                             valueHelper.ByteArrayToObjectArray(datas,
                                 new KeyValuePair<Type, int>(communicateAddress.DataType, communicateAddress.GetCount)));
                 }
@@ -591,25 +591,13 @@ namespace Modbus.Net
         /// </summary>
         public string ConnectionToken => BaseUtility.ConnectionToken;
 
-        /// <summary>
-        ///     调用Machine中的方法
-        /// </summary>
-        /// <typeparam name="TMachineMethod">Machine实现的接口名称</typeparam>
-        /// <typeparam name="TReturnType">返回值的类型</typeparam>
-        /// <param name="methodName">方法的名称</param>
-        /// <param name="parameters">方法的参数</param>
-        /// <returns></returns>
-        public TReturnType InvokeMachineMethod<TMachineMethod, TReturnType>(string methodName,
-            params object[] parameters) where TMachineMethod : IMachineMethod
+        public TMachineMethod GetMachineMethods<TMachineMethod>() where TMachineMethod : class, IMachineMethod
         {
             if (this is TMachineMethod)
             {
-                var t = typeof(TMachineMethod);
-                var returnValue = t.GetRuntimeMethod(methodName, parameters.Select(p => p.GetType()).ToArray())
-                    .Invoke(this, parameters);
-                return (TReturnType) returnValue;
+                return this as TMachineMethod;
             }
-            throw new InvalidCastException($"Machine interface {nameof(TMachineMethod)} not implemented");
+            return null;
         }
 
         /// <summary>
@@ -876,15 +864,11 @@ namespace Modbus.Net
         IUtilityProperty BaseUtility { get; }
 
         /// <summary>
-        ///     调用Machine中的方法
+        ///     获取设备的方法集合
         /// </summary>
-        /// <typeparam name="TMachineMethod">Machine实现的接口名称</typeparam>
-        /// <typeparam name="TReturnType">返回值的类型</typeparam>
-        /// <param name="methodName">方法的名称</param>
-        /// <param name="parameters">方法的参数</param>
-        /// <returns></returns>
-        TReturnType InvokeMachineMethod<TMachineMethod, TReturnType>(string methodName,
-            params object[] parameters) where TMachineMethod : IMachineMethod;
+        /// <typeparam name="TMachineMethod">方法集合的类型</typeparam>
+        /// <returns>设备的方法集合</returns>
+        TMachineMethod GetMachineMethods<TMachineMethod>() where TMachineMethod : class, IMachineMethod;
 
         /// <summary>
         ///     连接设备
