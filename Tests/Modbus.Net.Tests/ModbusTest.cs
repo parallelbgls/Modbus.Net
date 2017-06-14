@@ -273,6 +273,46 @@ namespace Modbus.Net.Tests
             Assert.AreEqual(ans3["A6"].PlcValue, dic1["A6"]);
         }
 
+        [TestMethod]
+        public async Task ModbusWriteSingleTest()
+        {
+            Random r = new Random();
+
+            var dic1 = new Dictionary<string, double>()
+            {
+                {
+                    "4X 1", r.Next(0, UInt16.MaxValue)
+                }
+            };
+
+            var dic2 = new Dictionary<string, double>()
+            {
+                {
+                    "0X 1", r.Next(0, 2)
+                }
+            };
+
+            await _modbusTcpMachine.BaseUtility.GetUtilityMethods<IUtilityMethodWriteSingle>().SetSingleDataAsync("4X 1", dic1["4X 1"]);
+            await _modbusAsciiMachine.BaseUtility.GetUtilityMethods<IUtilityMethodWriteSingle>().SetSingleDataAsync("4X 1", dic1["4X 1"]);
+            await _modbusRtuMachine.BaseUtility.GetUtilityMethods<IUtilityMethodWriteSingle>().SetSingleDataAsync("4X 1", dic1["4X 1"]);
+            var ans = await _modbusTcpMachine.BaseUtility.GetUtilityMethods<IUtilityMethodData>().GetDatasAsync<ushort>("4X 1", 1);
+            var ans2 = await _modbusRtuMachine.BaseUtility.GetUtilityMethods<IUtilityMethodData>().GetDatasAsync<ushort>("4X 1", 1);
+            var ans3 = await _modbusAsciiMachine.BaseUtility.GetUtilityMethods<IUtilityMethodData>().GetDatasAsync<ushort>("4X 1", 1);
+            Assert.AreEqual(ans[0], dic1["4X 1"]);
+            Assert.AreEqual(ans2[0], dic1["4X 1"]);
+            Assert.AreEqual(ans3[0], dic1["4X 1"]);
+            await _modbusTcpMachine.BaseUtility.GetUtilityMethods<IUtilityMethodWriteSingle>().SetSingleDataAsync("0X 1", dic2["0X 1"] >= 1);
+            await _modbusAsciiMachine.BaseUtility.GetUtilityMethods<IUtilityMethodWriteSingle>().SetSingleDataAsync("0X 1", dic2["0X 1"] >= 1);
+            await _modbusRtuMachine.BaseUtility.GetUtilityMethods<IUtilityMethodWriteSingle>().SetSingleDataAsync("0X 1", dic2["0X 1"] >= 1);
+            var ans21 = await _modbusTcpMachine.BaseUtility.GetUtilityMethods<IUtilityMethodData>().GetDatasAsync<bool>("0X 1", 1);
+            var ans22 = await _modbusRtuMachine.BaseUtility.GetUtilityMethods<IUtilityMethodData>().GetDatasAsync<bool>("0X 1", 1);
+            var ans23 = await _modbusAsciiMachine.BaseUtility.GetUtilityMethods<IUtilityMethodData>().GetDatasAsync<bool>("0X 1", 1);
+            Assert.AreEqual(ans21[0] ? 1 : 0, dic2["0X 1"]);
+            Assert.AreEqual(ans22[0] ? 1 : 0, dic2["0X 1"]);
+            Assert.AreEqual(ans23[0] ? 1 : 0, dic2["0X 1"]);
+        }
+
+
         [TestCleanup]
         public void MachineClean()
         {
