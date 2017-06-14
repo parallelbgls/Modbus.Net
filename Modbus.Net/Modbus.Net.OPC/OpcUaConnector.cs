@@ -17,7 +17,8 @@ namespace Modbus.Net.OPC
         ///     构造函数
         /// </summary>
         /// <param name="host">Opc UA 服务地址</param>
-        protected OpcUaConnector(string host) : base(host)
+        /// <param name="isRegexOn">是否开启正则匹配</param>
+        protected OpcUaConnector(string host, bool isRegexOn) : base(host, isRegexOn)
         {
             Client = new MyUaClient(new Uri(ConnectionToken));
         }
@@ -26,12 +27,13 @@ namespace Modbus.Net.OPC
         ///     根据地址获取UA连接器单例
         /// </summary>
         /// <param name="host">Opc UA服务地址</param>
+        /// <param name="isRegexOn">是否开启正则匹配</param>
         /// <returns>OPC UA实例</returns>
-        public static OpcUaConnector Instance(string host)
+        public static OpcUaConnector Instance(string host, bool isRegexOn)
         {
             if (!_instances.ContainsKey(host))
             {
-                var connector = new OpcUaConnector(host);
+                var connector = new OpcUaConnector(host, isRegexOn);
                 _instances.Add(host, connector);
             }
             return _instances[host];

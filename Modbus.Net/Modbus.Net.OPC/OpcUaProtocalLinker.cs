@@ -10,7 +10,8 @@ namespace Modbus.Net.OPC
         /// <summary>
         ///     构造函数
         /// </summary>
-        public OpcUaProtocalLinker() : this(ConfigurationManager.AppSettings["OpcUaHost"])
+        /// <param name="isRegexOn">是否开启正则匹配</param>
+        public OpcUaProtocalLinker(bool isRegexOn) : this(ConfigurationManager.AppSettings["OpcUaHost"], isRegexOn)
         {
         }
 
@@ -18,9 +19,10 @@ namespace Modbus.Net.OPC
         ///     构造函数
         /// </summary>
         /// <param name="host">Opc UA服务地址</param>
-        public OpcUaProtocalLinker(string host)
+        /// <param name="isRegexOn">是否开启正则匹配</param>
+        public OpcUaProtocalLinker(string host, bool isRegexOn)
         {
-            BaseConnector = OpcUaConnector.Instance(host);
+            BaseConnector = OpcUaConnector.Instance(host, isRegexOn);
         }
     }
 }

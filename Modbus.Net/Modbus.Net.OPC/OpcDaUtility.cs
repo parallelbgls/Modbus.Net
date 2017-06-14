@@ -9,9 +9,10 @@
         ///     构造函数
         /// </summary>
         /// <param name="connectionString">连接地址</param>
-        public OpcDaUtility(string connectionString) : base(connectionString)
+        /// <param name="isRegexOn">是否开启正则匹配</param>
+        public OpcDaUtility(string connectionString, bool isRegexOn = false) : base(connectionString)
         {
-            Wrapper = new OpcDaProtocal(ConnectionString);
+            Wrapper = new OpcDaProtocal(ConnectionString, isRegexOn);
         }
     }
 }

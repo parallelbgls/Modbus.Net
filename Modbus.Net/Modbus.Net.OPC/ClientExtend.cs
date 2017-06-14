@@ -115,7 +115,7 @@ namespace Modbus.Net.OPC
         /// <summary>
         ///     Tag of a node
         /// </summary>
-        public string Tag { get; set; }
+        public string[] Tag { get; set; }
 
         /// <summary>
         ///     Tag splitter of a node

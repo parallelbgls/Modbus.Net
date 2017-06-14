@@ -25,12 +25,19 @@ namespace Modbus.Net.OPC
         protected IClientExtend Client;
 
         /// <summary>
+        ///     是否开启正则匹配
+        /// </summary>
+        protected bool RegexOn { get; set; }
+
+        /// <summary>
         ///     构造函数
         /// </summary>
         /// <param name="host">服务端url</param>
-        protected OpcConnector(string host)
+        /// <param name="isRegexOn">是否开启正则匹配</param>
+        protected OpcConnector(string host, bool isRegexOn)
         {
             ConnectionToken = host;
+            RegexOn = isRegexOn;
         }
 
         /// <summary>
@@ -96,47 +103,6 @@ namespace Modbus.Net.OPC
         }
 
         /// <summary>
-        ///     根据括号折叠已经打开的标签
-        /// </summary>
-        /// <param name="tagSplitList">已经打开的标签</param>
-        /// <param name="splitChar">分割符</param>
-        /// <param name="startChar">开始字符</param>
-        /// <param name="endChar">结束字符</param>
-        private void FoldWith(List<string> tagSplitList, char splitChar, char startChar, char endChar)
-        {
-            for (var i = 0; i < tagSplitList.Count; i++)
-                if (tagSplitList[i].Count(ch => ch == startChar) > tagSplitList[i].Count(ch => ch == endChar))
-                    for (var j = i + 1; j < tagSplitList.Count; j++)
-                        if (tagSplitList[j].Contains(endChar))
-                        {
-                            for (var k = i + 1; k <= j; k++)
-                            {
-                                tagSplitList[i] += splitChar + tagSplitList[i + 1];
-                                tagSplitList.RemoveAt(i + 1);
-                            }
-                            i--;
-                            break;
-                        }
-        }
-
-        /// <summary>
-        ///     根据分隔符切分标签
-        /// </summary>
-        /// <param name="tag">标签</param>
-        /// <param name="split">分隔符</param>
-        /// <returns>分割后的标签</returns>
-        private string[] SplitTag(string tag, char split)
-        {
-            var tagSplitList = tag.Split(split).ToList();
-
-            FoldWith(tagSplitList, split, '(', ')');
-            FoldWith(tagSplitList, split, '[', ']');
-            FoldWith(tagSplitList, split, '{', '}');
-
-            return tagSplitList.ToArray();
-        }
-
-        /// <summary>
         ///     带返回发送数据
         /// </summary>
         /// <param name="message">需要发送的数据</param>
@@ -149,9 +115,8 @@ namespace Modbus.Net.OPC
                 {
                     var split = message.Split;
                     var tag = message.Tag;
-                    var tagSplit = SplitTag(tag, split);
                     var rootDirectory = await Client.ExploreFolderAsync("");
-                    var answerTag = await SearchTag(tagSplit, split, 0, rootDirectory);
+                    var answerTag = await SearchTag(tag, split, 0, rootDirectory);
                     if (answerTag != null)
                     {
                         var result = await Client.ReadAsync<object>(answerTag);
@@ -175,8 +140,7 @@ namespace Modbus.Net.OPC
                     var value = message.SetValue;
 
                     var rootDirectory = await Client.ExploreFolderAsync("");
-                    var tagSplit = SplitTag(tag, split);
-                    var answerTag = await SearchTag(tagSplit, split, 0, rootDirectory);
+                    var answerTag = await SearchTag(tag, split, 0, rootDirectory);
                     if (answerTag != null)
                     {
                         try
@@ -227,7 +191,7 @@ namespace Modbus.Net.OPC
             foreach (var node in nodes)
             {
                 var currentTag = node.Tag.Substring(node.Tag.LastIndexOf(split) + 1);
-                if (Regex.IsMatch(currentTag, tags[deep]))
+                if (RegexOn && Regex.IsMatch(currentTag, tags[deep]) || !RegexOn && currentTag == tags[deep])
                 {
                     if (deep == tags.Length - 1) return node.Tag;
                     var subDirectories = await Client.ExploreFolderAsync(node.Tag);

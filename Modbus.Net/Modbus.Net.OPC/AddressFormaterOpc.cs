@@ -53,7 +53,7 @@ namespace Modbus.Net.OPC
             var strings = TagGeter(Machine, findAddress);
             var ans = "";
             for (var i = 0; i < strings.Length; i++)
-                ans += strings[i].Trim().Replace(" ", "") + Seperator;
+                ans += strings[i].Trim().Replace(" ", "") + '\r';
             ans = ans.Substring(0, ans.Length - 1);
             return ans;
         }
