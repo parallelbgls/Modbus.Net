@@ -410,7 +410,7 @@ namespace Modbus.Net.Modbus
                 FunctionCode == (byte) ModbusProtocalWriteDataFunctionCode.WriteSingleCoil
                     ? ((bool) writeValue
                         ? new byte[] {0xFF, 0x00}
-                        : new byte[] {0x00, 0xFF})
+                        : new byte[] {0x00, 0x00})
                     : ValueHelper.GetInstance(endian).GetBytes(ushort.Parse(writeValue.ToString()));
             WriteValue = writeByteValue;
         }
