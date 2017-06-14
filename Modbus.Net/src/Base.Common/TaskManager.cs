@@ -416,8 +416,8 @@ namespace Modbus.Net
                 cts.CancelAfter(TimeSpan.FromMilliseconds(timeoutTime));
                 var ans =
                     await tasks.StartNew(
-                        async () => await machine.InvokeMachineMethod<IMachineMethodData,
-                            Task<Dictionary<string, ReturnUnit>>>("GetDatasAsync",
+                        async () => await machine.GetMachineMethods<IMachineMethodData>()
+                            .GetDatasAsync(
                             getDataType).WithCancellation(cts.Token)).Unwrap();
                 return new DataReturnDef
                 {
@@ -467,8 +467,8 @@ namespace Modbus.Net
                 cts.CancelAfter(TimeSpan.FromMilliseconds(timeoutTime));
                 var ans =
                     await tasks.StartNew(
-                        async () => await machine.InvokeMachineMethod<IMachineMethodData,
-                            Task<bool>>("SetDatasAsync", setDataType, parameters[0]
+                        async () => await machine.GetMachineMethods<IMachineMethodData>().
+                            SetDatasAsync(setDataType, (Dictionary<string, double>)parameters[0]
                             ).WithCancellation(cts.Token)).Unwrap();
                 return ans;
             };
