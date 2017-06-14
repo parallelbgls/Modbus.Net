@@ -85,7 +85,7 @@ RoadMap
 * AddressCombiner need to add maximum length now. Combiner will consider the maximum length when combining addresses (Complete)
 
 ### Version 1.3.8
-* Change Resx to appsettings.json, now you can set default params there (Complete)
+* Change Resx to appsettings.json, now you can set default params there (Complete - CORE ONLY)
 * Change ISpecialProtocalUnit to SpecialProtocalUnitAttribute (Complete)
 
 ### Version 1.3.9
