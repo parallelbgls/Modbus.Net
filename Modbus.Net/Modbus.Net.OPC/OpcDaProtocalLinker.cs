@@ -10,7 +10,8 @@ namespace Modbus.Net.OPC
         /// <summary>
         ///     构造函数
         /// </summary>
-        public OpcDaProtocalLinker() : this(ConfigurationManager.AppSettings["OpcDaHost"])
+        /// <param name="isRegexOn">是否开启正则匹配</param>
+        public OpcDaProtocalLinker(bool isRegexOn) : this(ConfigurationManager.AppSettings["OpcDaHost"], isRegexOn)
         {
         }
 
@@ -18,9 +19,10 @@ namespace Modbus.Net.OPC
         ///     构造函数
         /// </summary>
         /// <param name="host">Opc DA服务地址</param>
-        public OpcDaProtocalLinker(string host)
+        /// <param name="isRegexOn">是否开启正则匹配</param>
+        public OpcDaProtocalLinker(string host, bool isRegexOn)
         {
-            BaseConnector = OpcDaConnector.Instance(host);
+            BaseConnector = OpcDaConnector.Instance(host, isRegexOn);
         }
     }
 }

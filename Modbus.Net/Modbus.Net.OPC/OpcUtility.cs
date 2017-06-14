@@ -55,7 +55,7 @@ namespace Modbus.Net.OPC
             try
             {
                 var split = GetSeperator?.Invoke() ?? '/';
-                var readRequestOpcInputStruct = new ReadRequestOpcInputStruct(startAddress, split);
+                var readRequestOpcInputStruct = new ReadRequestOpcInputStruct(startAddress.Split('\r'), split);
                 var readRequestOpcOutputStruct =
                     await
                         Wrapper.SendReceiveAsync<ReadRequestOpcOutputStruct>(Wrapper[typeof(ReadRequestOpcProtocal)],
@@ -80,7 +80,7 @@ namespace Modbus.Net.OPC
             try
             {
                 var split = GetSeperator?.Invoke() ?? '/';
-                var writeRequestOpcInputStruct = new WriteRequestOpcInputStruct(startAddress, split, setContents[0]);
+                var writeRequestOpcInputStruct = new WriteRequestOpcInputStruct(startAddress.Split('\r'), split, setContents[0]);
                 var writeRequestOpcOutputStruct =
                     await
                         Wrapper.SendReceiveAsync<WriteRequestOpcOutputStruct>(Wrapper[typeof(WriteRequestOpcProtocal)],

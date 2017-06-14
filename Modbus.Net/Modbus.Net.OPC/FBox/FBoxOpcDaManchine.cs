@@ -19,7 +19,7 @@ namespace Modbus.Net.OPC.FBox
             IEnumerable<AddressUnit> getAddresses, bool keepConnect)
             : base(
                 ConfigurationManager.AppSettings["FBoxOpcDaHost"] ?? "opcda://localhost/FBoxOpcServer", getAddresses,
-                keepConnect)
+                keepConnect, true)
         {
             LocalSequence = localSequence;
             LinkerName = linkerName;

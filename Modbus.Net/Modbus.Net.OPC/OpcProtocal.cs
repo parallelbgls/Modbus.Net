@@ -25,7 +25,7 @@
         /// </summary>
         /// <param name="tag">标签</param>
         /// <param name="split">分隔符</param>
-        public ReadRequestOpcInputStruct(string tag, char split)
+        public ReadRequestOpcInputStruct(string[] tag, char split)
         {
             Tag = tag;
             Split = split;
@@ -34,7 +34,7 @@
         /// <summary>
         ///     标签
         /// </summary>
-        public string Tag { get; }
+        public string[] Tag { get; }
 
         /// <summary>
         ///     分隔符
@@ -111,7 +111,7 @@
         /// <param name="tag">标签</param>
         /// <param name="split">分隔符</param>
         /// <param name="setValue">写入的数据</param>
-        public WriteRequestOpcInputStruct(string tag, char split, object setValue)
+        public WriteRequestOpcInputStruct(string[] tag, char split, object setValue)
         {
             Tag = tag;
             Split = split;
@@ -121,7 +121,7 @@
         /// <summary>
         ///     标签
         /// </summary>
-        public string Tag { get; }
+        public string[] Tag { get; }
 
         /// <summary>
         ///     分隔符

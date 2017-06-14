@@ -17,10 +17,11 @@ namespace Modbus.Net.OPC
         /// <param name="connectionString">连接地址</param>
         /// <param name="getAddresses">需要读写的数据</param>
         /// <param name="keepConnect">是否保持连接</param>
-        public OpcUaMachine(string connectionString, IEnumerable<AddressUnit<TUnitKey>> getAddresses, bool keepConnect)
+        /// <param name="isRegexOn">是否开启正则匹配</param>
+        public OpcUaMachine(string connectionString, IEnumerable<AddressUnit<TUnitKey>> getAddresses, bool keepConnect, bool isRegexOn = false)
             : base(getAddresses, keepConnect)
         {
-            BaseUtility = new OpcUaUtility(connectionString);
+            BaseUtility = new OpcUaUtility(connectionString, isRegexOn);
             ((OpcUtility) BaseUtility).GetSeperator +=
                 () => ((AddressFormaterOpc<string, string>) AddressFormater).Seperator;
         }
@@ -47,10 +48,11 @@ namespace Modbus.Net.OPC
         /// <param name="connectionString">连接地址</param>
         /// <param name="getAddresses">需要读写的数据</param>
         /// <param name="keepConnect">是否保持连接</param>
-        public OpcUaMachine(string connectionString, IEnumerable<AddressUnit> getAddresses, bool keepConnect)
+        /// <param name="isRegexOn">是否开启正则匹配</param>
+        public OpcUaMachine(string connectionString, IEnumerable<AddressUnit> getAddresses, bool keepConnect, bool isRegexOn = false)
             : base(getAddresses, keepConnect)
         {
-            BaseUtility = new OpcUaUtility(connectionString);
+            BaseUtility = new OpcUaUtility(connectionString, isRegexOn);
             ((OpcUtility) BaseUtility).GetSeperator +=
                 () => ((AddressFormaterOpc<string, string>) AddressFormater).Seperator;
         }
