@@ -591,6 +591,11 @@ namespace Modbus.Net
         /// </summary>
         public string ConnectionToken => BaseUtility.ConnectionToken;
 
+        /// <summary>
+        ///     获取设备的方法集合
+        /// </summary>
+        /// <typeparam name="TMachineMethod">方法集合的类型</typeparam>
+        /// <returns>设备的方法集合</returns>
         public TMachineMethod GetMachineMethods<TMachineMethod>() where TMachineMethod : class, IMachineMethod
         {
             if (this is TMachineMethod)
