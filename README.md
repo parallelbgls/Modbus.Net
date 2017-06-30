@@ -92,9 +92,9 @@ RoadMap
 * Modbus Single Write for Coil and Reg (05 and 06) (Complete)
 * Fix OPC tag combine problem (Complete)
 
-###
-* Github wiki Document Chinese (Not Complete)
-* Github wiki Document English (In Road)
+### 1.3.X Other
+* Github wiki Document Chinese (Complete)
+* Github wiki Document English (Complete)
 
 ### Version 1.4.0
 * BaseController (In Road)
