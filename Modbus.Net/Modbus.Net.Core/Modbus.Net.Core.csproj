@@ -5,7 +5,7 @@
     <AssemblyName>Modbus.Net.Core</AssemblyName>
     <RootNamespace>Modbus.Net</RootNamespace>
     <PackageId>Modbus.Net.Core</PackageId>
-    <Version>1.3.9-beta1</Version>
+    <Version>1.3.9</Version>
     <Product>Modbus.Net</Product>
     <Authors>Chris L.(Luo Sheng)</Authors>
     <Company>Hangzhou Delian IoT Science Technology Co.,Ltd.</Company>
