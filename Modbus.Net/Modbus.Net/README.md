@@ -97,23 +97,37 @@ List<AddressUnit> addressUnits = new List<AddressUnit>
     new AddressUnit() {Id = "0", Area = "V", Address = 1, CommunicationTag = "D1", DataType = typeof (ushort), Zoom = 1},
     new AddressUnit() {Id = "1", Area = "V", Address = 3, CommunicationTag = "D2", DataType = typeof (float), Zoom = 1}
 };
-TaskManager task = new TaskManager(10, 300, true);
+TaskManager task = new TaskManager(10, true);
 task.AddMachine(new SiemensMachine(SiemensType.Tcp, "192.168.3.11", SiemensMachineModel.S7_300, addressUnits,
     true, 2, 0));
-task.ReturnValues += (returnValues) =>
+task.InvokeTimerAll(new TaskItemGetData(returnValues =>
 {
-    value = new List<string>();
+    //唯一的参数包含返回值，是一个唯一标识符（machine的第二个参数），返回值（类型ReturnUnit）的键值对。
     if (returnValues.ReturnValues != null)
     {
-        value = from val in returnValues.ReturnValues select val.Key + " " + val.Value.PlcValue;
-        siemensItems.Dispatcher.Invoke(() => siemensItems.ItemsSource = value);
+        lock (values)
+        {
+            var unitValues = from val in returnValues.ReturnValues
+                select
+                new Tuple<AddressUnit, double?>(
+                    addressUnits.FirstOrDefault(p => p.CommunicationTag == val.Key), val.Value.PlcValue);
+            values = from unitValue in unitValues
+                select
+                new TaskViewModel()
+                {
+                    Id = unitValue.Item1.Id,
+                    Name = unitValue.Item1.Name,
+                    Address = unitValue.Item1.Address.ToString(),
+                    Value = unitValue.Item2 ?? 0,
+                    Type = unitValue.Item1.DataType.Name
+                };
+        }
     }
     else
     {
         Console.WriteLine($"ip {returnValues.MachineId} not return value");
     }
-};
-task.TaskStart();
+}, MachineGetDataType.CommunicationTag, 5000, 60000));
 ```
 
 
@@ -129,26 +143,19 @@ More important, you can extend and implement your own field in UnitExtend in eve
 3. Add a machine to TaskManager.
 Add a machine like siemens machine to the task manager.
 
-4. Implement ReturnValues event.
-The argument return values is a key value pair. The architechture is:
-
-* Key : the link address of machine (in sample is the second parameter).
-* Value : Dictionary.
-* Key : CommunicationTag/Address(string) in AddressUnit.
-* Value : ReturnUnit.
-* PlcValue : The return data, all in double type.
-* UnitExtend : UnitExtend in AddressUnit. You should cast this class to your own class extends by UnitExtend.
+4. Add a TaskItem for one machine or all Machines.
+   Modbus.Net implement TaskItemGetDatas and TaskItemSetDatas as the default.
 
 ##<a name="tutorial"></a> Tutorial
 This platform has three level APIs that you could use: Low level API called "BaseUtility"; Middle level API called "BaseMachine"; High level API called "TaskManager".
 
-###BaseUtility
-BaseUtility is a low level api, in this level you can get or set data only by byte array or object array. Here is an example.
+### Utility
+IUtilityProperty is a low level api, in this level you can get or set data only by byte array or object array. Here is an example.
 
 ```C#
 string ip = "192.168.0.10";
-BaseUtility utility = new ModbusUtility(ModbusType.Tcp, ip, 0x02, 0x00);
-object[] getNum = utility.GetDatas("4X 1", new KeyValuePair<Type, int>(typeof(ushort), 4));
+IUtilityProperty utility = new ModbusUtility(ModbusType.Tcp, ip, 0x02, 0x00);
+object[] getNum = utility.InvokeUtilityMethod<IUtilityMethodData>?.GetDatas("4X 1", new KeyValuePair<Type, int>(typeof(ushort), 4));
 ```
 
 BaseUtility is an abstract class. You can check all apis in BaseUtility.cs in Modbus.Net project.
@@ -157,24 +164,25 @@ To use BaseUtility, follow these steps.
 
 1.New a BaseUtility instance, but remember BaseUtility is an abstract class, you should new class inherit from it.
 ```C#
-BaseUtility utility = new ModbusUtility(ModbusType.Tcp, ip, 0x02, 0x00);
+IUtilityPropety utility = new ModbusUtility(ModbusType.Tcp, ip, 0x02, 0x00);
 ```
 
-2.Use GetData and SetData Api in BaseUtility, like
+2.Use GetData and SetData Api in IUtilityMethodData, like
 ```C#
-object[] getNum = utility.GetDatas("4X 1", new KeyValuePair<Type, int>(typeof(ushort), 4));
+object[] getNum = utility.InvokeUtilityMethod<IUtilityMethodData>?.GetDatas("4X 1", new KeyValuePair<Type, int>(typeof(ushort), 4));
 
-utility.SetDatas("4X 1", new object[] { (ushort)1, (ushort)2, (ushort)3 });
+utility.InvokeUtilityMethod<IUtilityMethodData>?.SetDatas("4X 1", new object[] { (ushort)1, (ushort)2, (ushort)3 });
 ```
 Remember force set type of numbers because GetData and SetData Apis are type sensitive.
 
 You can also use async functions like
 ```C#
-object[] getNum = await utility.GetDatasAsync("4X 1", new KeyValuePair<Type, int>(typeof(ushort), 4));
+object[] getNum = await utility.InvokeUtilityMethod<IUtilityMethodData>?.GetDatasAsync("4X 1", new KeyValuePair<Type, int>(typeof(ushort), 4));
 ```
 
-###BaseMachine
-BaseMachine is a middle level api, in this level you could get and set datas in a managable data structure for a single machine.
+### Machine
+
+IMachineProperty is a middle level api, in this level you could get and set datas in a managable data structure for a single machine.
 To understand this class, you have to see the AddressUnit first.
 ```C#
 public class AddressUnit
@@ -205,9 +213,9 @@ For some reasons, AddressUnit has two keys: Id and CommunicationTag, one is inte
     * Unit : Unit of the Address. For example "¡æ".
     * UnitExtend : If you want to get something else when value returns, extend the class and give it to here.
 
-Then using BaseMachine like this.
+Then using IMachineProperty like this.
 ```C#
-BaseMachine machine = new ModbusMachine(ModbusType.Tcp, "192.168.3.12", new List<AddressUnit>()
+IMachineProperty machine = new ModbusMachine(ModbusType.Tcp, "192.168.3.12", new List<AddressUnit>()
 {
 machine = new ModbusMachine(ModbusType.Rtu, "COM3", new List<AddressUnit>()
 {
@@ -219,18 +227,18 @@ machine = new ModbusMachine(ModbusType.Rtu, "COM3", new List<AddressUnit>()
 machine.AddressCombiner = new AddressCombinerContinus(machine.AddressTranslator);
 machine.AddressCombinerSet = new AddressCombinerContinus(machine.AddressTranslator);
 machine.AddressCombiner = new AddressCombinerPercentageJump(20.0);
-var result = machine.GetDatas(MachineGetDataType.CommunicationTag);
+var result = machine.InvokeMachineMethods<IMachineMethodData>?.GetDatas(MachineGetDataType.CommunicationTag);
 var add1 = result["Add1"].PlcValue;
 var resultFormat = result.MapGetValuesToSetValues();
-machine.SetDatas(MachineSetDataType.CommunicationTag, resultFormat);
+machine.InvokeMachineMethods<IMachineMethodData>?.SetDatas(MachineSetDataType.CommunicationTag, resultFormat);
 ```
 
 To use BaseMachine, follow these steps.
 
-1.New a BaseMachine instance. Remeber BaseMachine is an abstract class.
+1.New a IMachineProperty instance.
 
 ```C#
-machine = new ModbusMachine(ModbusType.Rtu, "COM3", new List<AddressUnit>()
+IMachineProperty machine = new ModbusMachine(ModbusType.Rtu, "COM3", new List<AddressUnit>()
 {
     new AddressUnit() {Id = "1", Area = "4X", Address = 1, CommunicationTag = "Add1", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
     new AddressUnit() {Id = "2", Area = "4X", Address = 2, CommunicationTag = "Add2", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
@@ -259,8 +267,8 @@ There are 4 AddressCombiners implemented in the platform.
 
 3.Use GetDatas Api.
 ```C#
-var result = machine.GetDatas(MachineGetDataType.CommunicationTag);
-//var result = await machine.GetDatasAsync(MachineGetDataType.CommunicationTag);
+var result = machine.InvokeMachineMethods<IMachineMethodData>?.GetDatas(MachineGetDataType.CommunicationTag);
+//var result = await machine.InvokeMachineMethods<IMachineMethodData>?.GetDatasAsync(MachineGetDataType.CommunicationTag);
 ```
 
 4.Retrive data from result.
@@ -275,13 +283,15 @@ var resultFormat = result.MapGetValuesToSetValues();
 
 6.SetData to machine or another machine.
 ```C#
-machine.SetDatas(MachineSetDataType.CommunicationTag, resultFormat);
+machine.InvokeMachineMethods<IMachineMethodData>?.SetDatas(MachineSetDataType.CommunicationTag, resultFormat);
 ```
 There is also a SetDatasAsync Api.
-machine.SetDatas has two types. It is referenced as the first parameter.
+machine.SetDatas has four types. It is referenced as the first parameter.
 
 1. MachineSetDataType.Address: the key of the dictionary of the second parameter is address.
 2. MachineSetDataType.CommunicationTag: the key of the dictionary of the second parameter is communication tag.
+3. MachineSetDataType.Id: the key of the dictionary of the second paramenter is ID.
+4. MachineSetDataType.Name: the key of the dictionary of the second paramenter is name.
 
 ### TaskManager
 TaskManager is a high level api that you can manage and control many machines together. Remenber if you want to use this class, all communications must be asyncronized.
@@ -294,20 +304,33 @@ List<AddressUnit> addressUnits = new List<AddressUnit>
     new AddressUnit() {Id = 1, Area = "V", Address = 3, CommunicationTag = "D2", DataType = typeof (float), Zoom = 1}
 };
 task.AddMachine(new SiemensMachine(SiemensType.Tcp, "192.168.3.11",SiemensMachineModel.S7_300, addressUnits, true));
-task.ReturnValues += (returnValues) =>
+task.InvokeTimerAll(new TaskItemGetData(returnValues =>
 {
-     value = new List<string>();
-     if (returnValues.Value != null)
-     {
-         value = from val in returnValues.Value select val.Key + " " + val.Value.PlcValue;
-         siemensItems.Dispatcher.Invoke(() => siemensItems.ItemsSource = value);
-     }
-     else
-     {
-         Console.WriteLine($"ip {returnValues.Key} not return value");
-     }
-};
-task.TaskStart();
+    if (returnValues.ReturnValues != null)
+    {
+        lock (values)
+        {
+            var unitValues = from val in returnValues.ReturnValues
+                select
+                new Tuple<AddressUnit, double?>(
+                    addressUnits.FirstOrDefault(p => p.CommunicationTag == val.Key), val.Value.PlcValue);
+            values = from unitValue in unitValues
+                select
+                new TaskViewModel()
+                {
+                    Id = unitValue.Item1.Id,
+                    Name = unitValue.Item1.Name,
+                    Address = unitValue.Item1.Address.ToString(),
+                    Value = unitValue.Item2 ?? 0,
+                    Type = unitValue.Item1.DataType.Name
+                };
+        }
+    }
+    else
+    {
+        Console.WriteLine($"ip {returnValues.MachineId} not return value");
+    }
+}, MachineGetDataType.CommunicationTag, 5000, 60000));
 ```
 
 To use the TaskManager, use following steps.
@@ -327,28 +350,35 @@ List<AddressUnit> addressUnits = new List<AddressUnit>
 task.AddMachine(new SiemensMachine(SiemensType.Tcp, "192.168.3.11", SiemensMachineModel.S7_300, addressUnits, true));
 ```
 
-3.Register the ReturnValue Event.
+3.Add a get value cycling task. You can handle return values with your own code (ReturnValue event before 1.3.2).
 ```C#
-task.ReturnValues += (returnValues) =>
+task.InvokeTimerAll(new TaskItemGetData(returnValues =>
 {
-     value = new List<string>();
-     if (returnValues.Value != null)
-     {
-         value = from val in returnValues.Value select val.Key + " " + val.Value.PlcValue;
-         siemensItems.Dispatcher.Invoke(() => siemensItems.ItemsSource = value);
-     }
-     else
-     {
-         Console.WriteLine($"ip {returnValues.Key} not return value");
-     }
-};
-```
-The ReturnValues' key is the machineToken, this sample is "192.168.3.11".
-And the value is the same as the machine.GetDatas returns.
-
-4.Start the TaskManager.
-```C#
-task.TaskStart();
+    if (returnValues.ReturnValues != null)
+    {
+        lock (values)
+        {
+            var unitValues = from val in returnValues.ReturnValues
+                select
+                new Tuple<AddressUnit, double?>(
+                    addressUnits.FirstOrDefault(p => p.CommunicationTag == val.Key), val.Value.PlcValue);
+            values = from unitValue in unitValues
+                select
+                new TaskViewModel()
+                {
+                    Id = unitValue.Item1.Id,
+                    Name = unitValue.Item1.Name,
+                    Address = unitValue.Item1.Address.ToString(),
+                    Value = unitValue.Item2 ?? 0,
+                    Type = unitValue.Item1.DataType.Name
+                };
+        }
+    }
+    else
+    {
+        Console.WriteLine($"ip {returnValues.MachineId} not return value");
+    }
+}, MachineGetDataType.CommunicationTag, 5000, 60000));
 ```
 
 5.And don't forget that there is also a SetDatasAsync Api in the TaskManager.
@@ -462,8 +492,6 @@ You need to implement three functions.
 public override void SetConnectionType(int connectionType)
 protected override async Task<byte[]> GetDatasAsync(byte slaveAddress, byte masterAddress, string startAddress, int getByteCount)
 public override async Task<bool> SetDatasAsync(byte slaveAddress, byte masterAddress, string startAddress, object[] setContents)
-public override bool GetLittleEndian
-public override bool SetLittleEndian
 ```
 And don't remember set default AddressTranslator, slaveAddress, masterAddress and Protocal.
 ```C#
@@ -509,8 +537,8 @@ public class AddressFormaterModbus : AddressFormater
 
 ## <a name="addition"></a> Addition
 
-### For Subpos System
-Subpos system is implemented for reading and writing of bits.
+### For Subaddress System
+Subaddress system is implemented for reading and writing of bits.
 ```C#
 public class AddressUnit
 {
