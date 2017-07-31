@@ -81,7 +81,7 @@ namespace Modbus.Net.Siemens
         /// </summary>
         /// <param name="content">发送的数据</param>
         /// <returns>返回的数据</returns>
-        public override byte[] SendReceive(params object[] content)
+        public override PipeUnit SendReceive(params object[] content)
         {
             return AsyncHelper.RunSync(() => SendReceiveAsync(Endian, content));
         }
@@ -91,7 +91,7 @@ namespace Modbus.Net.Siemens
         /// </summary>
         /// <param name="content">发送的数据</param>
         /// <returns>返回的数据</returns>
-        public override async Task<byte[]> SendReceiveAsync(params object[] content)
+        public override async Task<PipeUnit> SendReceiveAsync(params object[] content)
         {
             if (ProtocalLinker == null || !ProtocalLinker.IsConnected)
                 await ConnectAsync();
@@ -104,7 +104,7 @@ namespace Modbus.Net.Siemens
         /// <param name="unit">协议的核心</param>
         /// <param name="content">协议的参数</param>
         /// <returns>返回的数据</returns>
-        public override IOutputStruct SendReceive(ProtocalUnit unit, IInputStruct content)
+        public override PipeUnit SendReceive(ProtocalUnit unit, IInputStruct content)
         {
             return AsyncHelper.RunSync(() => SendReceiveAsync(unit, content));
         }
@@ -115,15 +115,14 @@ namespace Modbus.Net.Siemens
         /// <param name="unit">发送的数据</param>
         /// <param name="content">协议的参数</param>
         /// <returns>返回的数据</returns>
-        public override async Task<IOutputStruct> SendReceiveAsync(ProtocalUnit unit, IInputStruct content)
+        public override async Task<PipeUnit> SendReceiveAsync(ProtocalUnit unit, IInputStruct content)
         {
             if (ProtocalLinker != null && ProtocalLinker.IsConnected) return await base.SendReceiveAsync(unit, content);
             if (_connectTryCount > 10) return null;
             return
                 await
-                    await
-                        ConnectAsync()
-                            .ContinueWith(answer => answer.Result ? base.SendReceiveAsync(unit, content) : null);
+                    ConnectAsync()
+                        .ContinueWith(answer => answer.Result ? base.SendReceiveAsync(unit, content) : null).Unwrap();
         }
 
         /// <summary>
@@ -132,7 +131,7 @@ namespace Modbus.Net.Siemens
         /// <param name="unit">发送的数据</param>
         /// <param name="content">协议的参数</param>
         /// <returns>返回的数据</returns>
-        private async Task<IOutputStruct> ForceSendReceiveAsync(ProtocalUnit unit, IInputStruct content)
+        private async Task<PipeUnit> ForceSendReceiveAsync(ProtocalUnit unit, IInputStruct content)
         {
             return await base.SendReceiveAsync(unit, content);
         }
@@ -157,23 +156,15 @@ namespace Modbus.Net.Siemens
             if (!await ProtocalLinker.ConnectAsync()) return false;
             _connectTryCount = 0;
             var inputStruct = new CreateReferenceSiemensInputStruct(_tdpuSize, _taspSrc, _tsapDst);
-            return
+            var outputStruct =
                 //先建立连接，然后建立设备的引用
-                await await
-                    ForceSendReceiveAsync(this[typeof(CreateReferenceSiemensProtocal)], inputStruct)
-                        .ContinueWith(async answer =>
-                        {
-                            if (!ProtocalLinker.IsConnected) return false;
-                            var inputStruct2 = new EstablishAssociationSiemensInputStruct(0x0101, _maxCalling,
-                                _maxCalled,
-                                _maxPdu);
-                            var outputStruct2 =
-                                (EstablishAssociationSiemensOutputStruct)
-                                await
-                                    SendReceiveAsync(this[typeof(EstablishAssociationSiemensProtocal)],
-                                        inputStruct2);
-                            return outputStruct2 != null;
-                        });
+                (await (await
+                    ForceSendReceiveAsync(this[typeof(CreateReferenceSiemensProtocal)], inputStruct)).SendReceiveAsync(
+                    this[typeof(EstablishAssociationSiemensProtocal)], answer =>
+                        new EstablishAssociationSiemensInputStruct(0x0101, _maxCalling,
+                            _maxCalled,
+                            _maxPdu))).Unwrap<EstablishAssociationSiemensOutputStruct>();
+            return outputStruct != null;
         }
     }
 }

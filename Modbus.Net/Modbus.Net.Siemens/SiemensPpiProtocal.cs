@@ -37,7 +37,7 @@ namespace Modbus.Net.Siemens
         /// </summary>
         /// <param name="content">写入的内容，使用对象数组描述</param>
         /// <returns>从设备获取的字节流</returns>
-        public override byte[] SendReceive(params object[] content)
+        public override PipeUnit SendReceive(params object[] content)
         {
             return AsyncHelper.RunSync(() => SendReceiveAsync(Endian, content));
         }
@@ -47,7 +47,7 @@ namespace Modbus.Net.Siemens
         /// </summary>
         /// <param name="content">写入的内容，使用对象数组描述</param>
         /// <returns>从设备获取的字节流</returns>
-        public override async Task<byte[]> SendReceiveAsync(params object[] content)
+        public override async Task<PipeUnit> SendReceiveAsync(params object[] content)
         {
             if (ProtocalLinker == null || !ProtocalLinker.IsConnected)
                 await ConnectAsync();
@@ -60,7 +60,7 @@ namespace Modbus.Net.Siemens
         /// <param name="unit">协议核心</param>
         /// <param name="content">协议的参数</param>
         /// <returns>设备返回的信息</returns>
-        private async Task<IOutputStruct> ForceSendReceiveAsync(ProtocalUnit unit, IInputStruct content)
+        private async Task<PipeUnit> ForceSendReceiveAsync(ProtocalUnit unit, IInputStruct content)
         {
             return await base.SendReceiveAsync(unit, content);
         }
@@ -83,21 +83,14 @@ namespace Modbus.Net.Siemens
             ProtocalLinker = new SiemensPpiProtocalLinker(_com, SlaveAddress);
             var inputStruct = new ComCreateReferenceSiemensInputStruct(SlaveAddress, MasterAddress);
             var outputStruct =
-                await await
+                (await (await
                     ForceSendReceiveAsync(this[typeof(ComCreateReferenceSiemensProtocal)],
-                            inputStruct).
-                        ContinueWith(async answer =>
-                        {
-                            if (!ProtocalLinker.IsConnected) return false;
-                            var inputStruct2 = new ComConfirmMessageSiemensInputStruct(SlaveAddress, MasterAddress);
-                            var outputStruct2 =
-                                (ComConfirmMessageSiemensOutputStruct)
-                                await
-                                    ForceSendReceiveAsync(this[typeof(ComConfirmMessageSiemensProtocal)],
-                                        inputStruct2);
-                            return outputStruct2 != null;
-                        });
-            return outputStruct;
+                            inputStruct)).
+                        SendReceiveAsync(this[typeof(ComConfirmMessageSiemensProtocal)], answer =>
+                        
+                            new ComConfirmMessageSiemensInputStruct(SlaveAddress, MasterAddress)
+                        )).Unwrap<ComConfirmMessageSiemensOutputStruct>();
+            return outputStruct != null;
         }
     }
 }

@@ -5,7 +5,7 @@
     <AssemblyName>Modbus.Net.Siemens</AssemblyName>
     <RootNamespace>Modbus.Net.Siemens</RootNamespace>
     <PackageId>Modbus.Net.Siemens</PackageId>
-    <Version>1.3.9</Version>
+    <Version>1.4.0</Version>
     <Authors>Chris L.(Luo Sheng)</Authors>
     <Company>Hangzhou Delian IoT Science Technology Co.,Ltd.</Company>
     <Description>Modbus.Net Siemens Profinet Implementation</Description>

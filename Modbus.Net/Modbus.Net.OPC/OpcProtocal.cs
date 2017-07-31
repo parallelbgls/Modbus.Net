@@ -3,7 +3,9 @@
     /// <summary>
     ///     Opc协议
     /// </summary>
-    public abstract class OpcProtocal : BaseProtocal<OpcParamIn, OpcParamOut, ProtocalUnit<OpcParamIn, OpcParamOut>>
+    public abstract class OpcProtocal : BaseProtocal<OpcParamIn, OpcParamOut, ProtocalUnit<OpcParamIn, OpcParamOut>,
+        PipeUnit<OpcParamIn, OpcParamOut, IProtocalLinker<OpcParamIn, OpcParamOut>,
+            ProtocalUnit<OpcParamIn, OpcParamOut>>>
     {
         /// <summary>
         ///     构造函数

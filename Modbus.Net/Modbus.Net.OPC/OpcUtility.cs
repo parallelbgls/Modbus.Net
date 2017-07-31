@@ -7,7 +7,9 @@ namespace Modbus.Net.OPC
     /// <summary>
     ///     Opc通用Api入口
     /// </summary>
-    public abstract class OpcUtility : BaseUtility<OpcParamIn, OpcParamOut, ProtocalUnit<OpcParamIn, OpcParamOut>>
+    public abstract class OpcUtility : BaseUtility<OpcParamIn, OpcParamOut, ProtocalUnit<OpcParamIn, OpcParamOut>,
+        PipeUnit<OpcParamIn, OpcParamOut, IProtocalLinker<OpcParamIn, OpcParamOut>,
+            ProtocalUnit<OpcParamIn, OpcParamOut>>>
     {
         /// <summary>
         ///     获取分隔符
@@ -80,7 +82,8 @@ namespace Modbus.Net.OPC
             try
             {
                 var split = GetSeperator?.Invoke() ?? '/';
-                var writeRequestOpcInputStruct = new WriteRequestOpcInputStruct(startAddress.Split('\r'), split, setContents[0]);
+                var writeRequestOpcInputStruct =
+                    new WriteRequestOpcInputStruct(startAddress.Split('\r'), split, setContents[0]);
                 var writeRequestOpcOutputStruct =
                     await
                         Wrapper.SendReceiveAsync<WriteRequestOpcOutputStruct>(Wrapper[typeof(WriteRequestOpcProtocal)],

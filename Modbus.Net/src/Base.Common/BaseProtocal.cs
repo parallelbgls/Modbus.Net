@@ -9,7 +9,7 @@ namespace Modbus.Net
     /// <summary>
     ///     基本协议
     /// </summary>
-    public abstract class BaseProtocal : BaseProtocal<byte[], byte[], ProtocalUnit>
+    public abstract class BaseProtocal : BaseProtocal<byte[], byte[], ProtocalUnit, PipeUnit>
     {
         /// <summary>
         ///     构造器
@@ -24,12 +24,32 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="content">写入的内容，使用对象数组描述</param>
         /// <returns>从设备获取的字节流</returns>
-        public override async Task<byte[]> SendReceiveAsync(params object[] content)
+        public override async Task<PipeUnit> SendReceiveAsync(params object[] content)
         {
-            if (ProtocalLinker == null || !ProtocalLinker.IsConnected)
-                await ConnectAsync();
-            if (ProtocalLinker != null)
-                return await ProtocalLinker.SendReceiveAsync(ProtocalUnit.TranslateContent(Endian, content));
+            if (content != null)
+            {
+                var pipeUnit =
+                    new PipeUnit(
+                        ProtocalLinker);
+                return await pipeUnit.SendReceiveAsync(Endian, paramOut => content);
+            }
+            return null;
+        }
+
+        /// <summary>
+        ///     发送协议，通过传入需要使用的协议内容和输入结构
+        /// </summary>
+        /// <param name="unit">协议的实例</param>
+        /// <param name="content">输入信息的结构化描述</param>
+        /// <returns>输出信息的结构化描述</returns>
+        public override async Task<PipeUnit>
+            SendReceiveAsync(ProtocalUnit unit, IInputStruct content)
+        {
+            if (content != null)
+            {
+                var pipeUnit = new PipeUnit(ProtocalLinker);
+                return await pipeUnit.SendReceiveAsync(unit, paramOut => content);
+            }
             return null;
         }
     }
@@ -37,9 +57,11 @@ namespace Modbus.Net
     /// <summary>
     ///     基本协议
     /// </summary>
-    public abstract class BaseProtocal<TParamIn, TParamOut, TProtocalUnit> :
-        IProtocal<TParamIn, TParamOut, TProtocalUnit> where TProtocalUnit : class, IProtocalFormatting<TParamIn, TParamOut>
+    public abstract class BaseProtocal<TParamIn, TParamOut, TProtocalUnit, TPipeUnit> :
+        IProtocal<TParamIn, TParamOut, TProtocalUnit, TPipeUnit>
+        where TProtocalUnit : class, IProtocalFormatting<TParamIn, TParamOut>
         where TParamOut : class
+        where TPipeUnit : PipeUnit<TParamIn, TParamOut, IProtocalLinker<TParamIn, TParamOut>, TProtocalUnit>
     {
         /// <summary>
         ///     构造器
@@ -93,7 +115,8 @@ namespace Modbus.Net
                     {
                         //自动寻找存在的协议并将其加载
                         var protocalUnit =
-                            Activator.CreateInstance(type.GetTypeInfo().Assembly.GetType(protocalName)) as TProtocalUnit;
+                            Activator.CreateInstance(type.GetTypeInfo().Assembly
+                                .GetType(protocalName)) as TProtocalUnit;
                         if (protocalUnit == null)
                             throw new InvalidCastException($"No ProtocalUnit {nameof(TProtocalUnit)} implemented");
                         protocalUnit.Endian = Endian;
@@ -138,7 +161,8 @@ namespace Modbus.Net
         /// <param name="unit">协议的实例</param>
         /// <param name="content">输入信息的结构化描述</param>
         /// <returns>输出信息的结构化描述</returns>
-        public virtual IOutputStruct SendReceive(TProtocalUnit unit, IInputStruct content)
+        public virtual TPipeUnit SendReceive(
+            TProtocalUnit unit, IInputStruct content)
         {
             return AsyncHelper.RunSync(() => SendReceiveAsync(unit, content));
         }
@@ -149,9 +173,17 @@ namespace Modbus.Net
         /// <param name="unit">协议的实例</param>
         /// <param name="content">输入信息的结构化描述</param>
         /// <returns>输出信息的结构化描述</returns>
-        public virtual async Task<IOutputStruct> SendReceiveAsync(TProtocalUnit unit, IInputStruct content)
+        public virtual async Task<TPipeUnit>
+            SendReceiveAsync(TProtocalUnit unit, IInputStruct content)
         {
-            return await SendReceiveAsync<IOutputStruct>(unit, content);
+            if (content != null)
+            {
+                var pipeUnit =
+                    new PipeUnit<TParamIn, TParamOut, IProtocalLinker<TParamIn, TParamOut>, TProtocalUnit>(
+                        ProtocalLinker);
+                return await pipeUnit.SendReceiveAsync(unit, paramOut => content) as TPipeUnit;
+            }
+            return null;
         }
 
         /// <summary>
@@ -159,7 +191,7 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="content">写入的内容，使用对象数组描述</param>
         /// <returns>从设备获取的字节流</returns>
-        public virtual TParamOut SendReceive(params object[] content)
+        public virtual TPipeUnit SendReceive(params object[] content)
         {
             return AsyncHelper.RunSync(() => SendReceiveAsync(content));
         }
@@ -169,7 +201,7 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="content">写入的内容，使用对象数组描述</param>
         /// <returns>从设备获取的字节流</returns>
-        public virtual Task<TParamOut> SendReceiveAsync(params object[] content)
+        public virtual Task<TPipeUnit> SendReceiveAsync(params object[] content)
         {
             throw new NotImplementedException();
         }
@@ -196,20 +228,7 @@ namespace Modbus.Net
         public virtual async Task<T> SendReceiveAsync<T>(TProtocalUnit unit, IInputStruct content)
             where T : class, IOutputStruct
         {
-            var t = 0;
-            var formatContent = unit.Format(content);
-            if (formatContent != null)
-            {
-                TParamOut receiveContent;
-                //如果为特别处理协议的话，跳过协议扩展收缩
-                if (unit.GetType().GetTypeInfo().GetCustomAttributes(typeof(SpecialProtocalUnitAttribute)).Any())
-                    receiveContent = await ProtocalLinker.SendReceiveWithoutExtAndDecAsync(formatContent);
-                else
-                    receiveContent = await ProtocalLinker.SendReceiveAsync(formatContent);
-                if (receiveContent != null)
-                    return unit.Unformat<T>(receiveContent, ref t);
-            }
-            return null;
+            return (await SendReceiveAsync(unit, content)).Unwrap<T>();
         }
 
         /// <summary>

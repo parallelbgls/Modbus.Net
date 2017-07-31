@@ -30,7 +30,7 @@ namespace Modbus.Net
     /// <summary>
     ///     基础Api入口
     /// </summary>
-    public abstract class BaseUtility : BaseUtility<byte[], byte[], ProtocalUnit>
+    public abstract class BaseUtility : BaseUtility<byte[], byte[], ProtocalUnit, PipeUnit>
     {
         /// <summary>
         ///     构造器
@@ -43,13 +43,14 @@ namespace Modbus.Net
     /// <summary>
     ///     基础Api入口
     /// </summary>
-    public abstract class BaseUtility<TParamIn, TParamOut, TProtocalUnit> : IUtilityProperty, IUtilityMethodData
+    public abstract class BaseUtility<TParamIn, TParamOut, TProtocalUnit, TPipeUnit> : IUtilityProperty, IUtilityMethodData
         where TProtocalUnit : class, IProtocalFormatting<TParamIn, TParamOut> where TParamOut : class
+        where TPipeUnit : PipeUnit<TParamIn, TParamOut, IProtocalLinker<TParamIn, TParamOut>, TProtocalUnit>
     {
         /// <summary>
         ///     协议收发主体
         /// </summary>
-        protected IProtocal<TParamIn, TParamOut, TProtocalUnit> Wrapper;
+        protected IProtocal<TParamIn, TParamOut, TProtocalUnit, TPipeUnit> Wrapper;
 
         /// <summary>
         ///     构造器
