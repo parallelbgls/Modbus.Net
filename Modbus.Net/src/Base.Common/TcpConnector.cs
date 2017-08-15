@@ -241,7 +241,7 @@ namespace Modbus.Net
                 var stream = _socketClient.GetStream();
 
                 Log.Verbose("Tcp client {ConnectionToken} send text len = {Length}", ConnectionToken, datagram.Length);
-                Log.Verbose($"Tcp client {ConnectionToken} send text = {String.Concat(datagram.Select(p => " " + p))}");
+                Log.Verbose($"Tcp client {ConnectionToken} send text = {String.Concat(datagram.Select(p => " " + p.ToString("X2")))}");
                 await stream.WriteAsync(datagram, 0, datagram.Length);
 
                 RefreshSendCount();
@@ -285,13 +285,13 @@ namespace Modbus.Net
                 RefreshSendCount();
 
                 Log.Verbose("Tcp client {ConnectionToken} send text len = {Length}", ConnectionToken, datagram.Length);
-                Log.Verbose($"Tcp client {ConnectionToken} send: {String.Concat(datagram.Select(p => " " + p))}");
+                Log.Verbose($"Tcp client {ConnectionToken} send: {String.Concat(datagram.Select(p => " " + p.ToString("X2")))}");
                 await stream.WriteAsync(datagram, 0, datagram.Length);
 
                 var receiveBytes = await ReceiveAsync(stream);
                 Log.Verbose("Tcp client {ConnectionToken} receive text len = {Length}", ConnectionToken,
                     receiveBytes.Length);
-                Log.Verbose($"Tcp client {ConnectionToken} receive: {String.Concat(receiveBytes.Select(p => " " + p))}");
+                Log.Verbose($"Tcp client {ConnectionToken} receive: {String.Concat(receiveBytes.Select(p => " " + p.ToString("X2")))}");
 
                 RefreshReceiveCount();
 

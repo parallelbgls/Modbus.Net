@@ -459,7 +459,7 @@ namespace Modbus.Net
                         Log.Verbose("Com client {ConnectionToken} send msg length: {Length}", ConnectionToken,
                             sendbytes.Length);
                         Log.Verbose(
-                            $"Com client {ConnectionToken} send msg: {String.Concat(sendbytes.Select(p => " " + p))}");
+                            $"Com client {ConnectionToken} send msg: {String.Concat(sendbytes.Select(p => " " + p.ToString("X2")))}");
                         SerialPort.Write(sendbytes, 0, sendbytes.Length);
                     }
                     catch (Exception err)
@@ -475,7 +475,7 @@ namespace Modbus.Net
                         Log.Verbose("Com client {ConnectionToken} receive msg length: {Length}", ConnectionToken,
                             returnBytes.Length);
                         Log.Verbose(
-                            $"Com client {ConnectionToken} receive msg: {String.Concat(returnBytes.Select(p => " " + p))}");
+                            $"Com client {ConnectionToken} receive msg: {String.Concat(returnBytes.Select(p => " " + p.ToString("X2")))}");
                     }
                     catch (Exception e)
                     {
@@ -531,7 +531,7 @@ namespace Modbus.Net
                         Log.Verbose("Com client {ConnectionToken} send msg length: {Length}", ConnectionToken,
                             sendbytes.Length);
                         Log.Verbose(
-                            $"Com client {ConnectionToken} send msg: {string.Concat(sendbytes.Select(p => " " + p))}");
+                            $"Com client {ConnectionToken} send msg: {string.Concat(sendbytes.Select(p => " " + p.ToString("X2")))}");
                         SerialPort.Write(sendbytes, 0, sendbytes.Length);
                     }
                     catch (Exception err)
