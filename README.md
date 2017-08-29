@@ -114,6 +114,7 @@ RoadMap
 * Unite TransServer.Net into Modbus.Net (In Road)
 * Passive Connector and Controller (In Road)
 * Architechture rebuild (In Road)
+* English comment (In Road)
 
 ### Version 2.0.0
 * Rename to Transport.Net (Undetermined)

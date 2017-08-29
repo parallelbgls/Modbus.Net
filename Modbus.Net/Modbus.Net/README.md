@@ -102,7 +102,6 @@ task.AddMachine(new SiemensMachine(SiemensType.Tcp, "192.168.3.11", SiemensMachi
     true, 2, 0));
 task.InvokeTimerAll(new TaskItemGetData(returnValues =>
 {
-    //唯一的参数包含返回值，是一个唯一标识符（machine的第二个参数），返回值（类型ReturnUnit）的键值对。
     if (returnValues.ReturnValues != null)
     {
         lock (values)
