@@ -24,7 +24,7 @@ Platform Supported
 -------------------
 * Visual Studio 2017
 * .NET Framework 4.5
-* .NET Standard 1.3
+* .NET Standard 2.0
 
 Thanks
 -------------------
@@ -96,16 +96,36 @@ RoadMap
 * Github wiki Document Chinese (Complete)
 * Github wiki Document English (Complete)
 
+### Version 1.3.10
+* Update to .Net Standard 2.0 (Complete)
+
 ### Version 1.4.0
-* BaseController (In Road)
-* New ComConnector (In Road)
-* Serial Port Connection with Multiple Master Station (In Road)
+* New Protocal Pipeline System (Coding)
 
 ### Version 1.4.1
-* New Protocal Pipeline System (In Road)
-* PPI Remake (In Road)
+* BaseController (In Road)
+* New ComConnector (In Road)
+* New TcpConnector (In Road)
+* New UdpConnector (In Road)
+* Serial Port Connection with Multiple Master Station (In Road)
 
 ### Version 1.4.2
+* PPI Remake (In Road)
 * Siemens MPI Support (In Road)
 * Siemens MultiStation PPI Support (In Road)
+
+### Version 1.5.X
+* Unite TransServer.Net into Modbus.Net (In Road)
+* Passive Connector and Controller (In Road)
+* Architechture rebuild (In Road)
+
+### Version 1.6.X
+* English comment (In Road)
+* ValueHelper remake to interface, users can add their own value translate function (In Road)
+* New Zoom (In Road)
+
+### Version 2.0.0
+* Rename to Transport.Net (In Road)
+* Puzzle System (In Road)
+* Machine Builder (In Road)
 
