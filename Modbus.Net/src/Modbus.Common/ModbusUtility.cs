@@ -173,7 +173,10 @@ namespace Modbus.Net.Modbus
                     {
                         Wrapper = ConnectionString == null
                             ? new ModbusRtuInTcpProtocal(SlaveAddress, MasterAddress, Endian)
-                            : new ModbusRtuInTcpProtocal(ConnectionString, SlaveAddress, MasterAddress, Endian);
+                            : (ConnectionStringPort == null
+                                ? new ModbusRtuInTcpProtocal(ConnectionString, SlaveAddress, MasterAddress, Endian)
+                                : new ModbusRtuInTcpProtocal(ConnectionStringIp, ConnectionStringPort.Value, SlaveAddress,
+                                    MasterAddress, Endian));
                         break;
                     }
                     //Ascii协议
@@ -181,7 +184,10 @@ namespace Modbus.Net.Modbus
                     {
                         Wrapper = ConnectionString == null
                             ? new ModbusAsciiInTcpProtocal(SlaveAddress, MasterAddress, Endian)
-                            : new ModbusAsciiInTcpProtocal(ConnectionString, SlaveAddress, MasterAddress, Endian);
+                            : (ConnectionStringPort == null
+                                ? new ModbusAsciiInTcpProtocal(ConnectionString, SlaveAddress, MasterAddress, Endian)
+                                : new ModbusAsciiInTcpProtocal(ConnectionStringIp, ConnectionStringPort.Value, SlaveAddress,
+                                    MasterAddress, Endian));
                         break;
                     }
                 }
