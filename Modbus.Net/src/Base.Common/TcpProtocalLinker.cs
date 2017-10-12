@@ -1,7 +1,4 @@
-﻿#if NET40||NET45||NET451||NET452||NET46||NET461||NET462||NET47
-using System.Configuration;
-
-#endif
+﻿using System.Configuration;
 
 namespace Modbus.Net
 {

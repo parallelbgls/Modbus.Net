@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Nito.AsyncEx;
 using Serilog;
 
 namespace Modbus.Net
@@ -108,11 +107,7 @@ namespace Modbus.Net
         /// </summary>
         private void NotifyThreadPoolOfPendingWork()
         {
-#if NET40 || NET45 || NET451 || NET452 || NET46 || NET461 || NET462 || NET47
             ThreadPool.UnsafeQueueUserWorkItem(_ =>
-#else
-            ThreadPool.QueueUserWorkItem(_ =>
-#endif
             {
                 // Note that the current thread is now processing work items.
                 // This is necessary to enable inlining of tasks into this thread.

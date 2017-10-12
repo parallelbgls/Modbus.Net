@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>Modbus.Net.Siemens.Core</AssemblyName>
+    <RootNamespace>Modbus.Net.Siemens</RootNamespace>
+    <PackageId>Modbus.Net.Siemens.Core</PackageId>
+    <Version>1.3.10</Version>
+    <Authors>Chris L.(Luo Sheng)</Authors>
+    <Company>Hangzhou Delian IoT Science Technology Co.,Ltd.</Company>
+    <Description>Modbus.Net Siemens Profinet Implementation</Description>
+    <Copyright>Copyright 2017 Hangzhou Delian IoT Science Technology Co.,Ltd.</Copyright>
+    <PackageLicenseUrl>https://github.com/parallelbgls/Modbus.Net/blob/master/LICENSE.md</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/parallelbgls/Modbus.Net/tree/master/Modbus.Net/Modbus.Net.Siemens</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/parallelbgls/Modbus.Net</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>hardware communicate protocal Siemens profinet Delian</PackageTags>
+    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <IncludeSymbols>True</IncludeSymbols>
+    <IncludeSource>True</IncludeSource>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\netstandard2.0\Modbus.Net.Siemens.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\src\Siemens.Common\AddressFormaterSiemens.cs" Link="AddressFormaterSiemens.cs" />
+    <Compile Include="..\src\Siemens.Common\AddressTranslatorSiemens.cs" Link="AddressTranslatorSiemens.cs" />
+    <Compile Include="..\src\Siemens.Common\SiemensMachine.cs" Link="SiemensMachine.cs" />
+    <Compile Include="..\src\Siemens.Common\SiemensPpiProtocal.cs" Link="SiemensPpiProtocal.cs" />
+    <Compile Include="..\src\Siemens.Common\SiemensPpiProtocalLinker.cs" Link="SiemensPpiProtocalLinker.cs" />
+    <Compile Include="..\src\Siemens.Common\SiemensProtocal.cs" Link="SiemensProtocal.cs" />
+    <Compile Include="..\src\Siemens.Common\SiemensProtocalLinkerBytesExtend.cs" Link="SiemensProtocalLinkerBytesExtend.cs" />
+    <Compile Include="..\src\Siemens.Common\SiemensTcpProtocal.cs" Link="SiemensTcpProtocal.cs" />
+    <Compile Include="..\src\Siemens.Common\SiemensTcpProtocalLinker.cs" Link="SiemensTcpProtocalLinker.cs" />
+    <Compile Include="..\src\Siemens.Common\SiemensUtility.cs" Link="SiemensUtility.cs" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="System.IO.Ports" Version="4.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Modbus.Net.Core\Modbus.Net.Core.csproj" />
+  </ItemGroup>
+
+</Project>

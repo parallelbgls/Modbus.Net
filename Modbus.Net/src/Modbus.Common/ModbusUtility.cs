@@ -22,7 +22,17 @@ namespace Modbus.Net.Modbus
         /// <summary>
         ///     Ascii连接
         /// </summary>
-        Ascii = 2
+        Ascii = 2,
+
+        /// <summary>
+        ///     Rtu连接Tcp透传
+        /// </summary>
+        RtuInTcp = 3,
+
+        /// <summary>
+        ///     Ascii连接Tcp透传
+        /// </summary>
+        AsciiInTcp = 4,
     }
 
     public interface IUtilityMethodWriteSingle : IUtilityMethod
@@ -156,6 +166,28 @@ namespace Modbus.Net.Modbus
                         Wrapper = ConnectionString == null
                             ? new ModbusAsciiProtocal(SlaveAddress, MasterAddress, Endian)
                             : new ModbusAsciiProtocal(ConnectionString, SlaveAddress, MasterAddress, Endian);
+                        break;
+                    }
+                    //Rtu协议
+                    case ModbusType.RtuInTcp:
+                    {
+                        Wrapper = ConnectionString == null
+                            ? new ModbusRtuInTcpProtocal(SlaveAddress, MasterAddress, Endian)
+                            : (ConnectionStringPort == null
+                                ? new ModbusRtuInTcpProtocal(ConnectionString, SlaveAddress, MasterAddress, Endian)
+                                : new ModbusRtuInTcpProtocal(ConnectionStringIp, ConnectionStringPort.Value, SlaveAddress,
+                                    MasterAddress, Endian));
+                        break;
+                    }
+                    //Ascii协议
+                    case ModbusType.AsciiInTcp:
+                    {
+                        Wrapper = ConnectionString == null
+                            ? new ModbusAsciiInTcpProtocal(SlaveAddress, MasterAddress, Endian)
+                            : (ConnectionStringPort == null
+                                ? new ModbusAsciiInTcpProtocal(ConnectionString, SlaveAddress, MasterAddress, Endian)
+                                : new ModbusAsciiInTcpProtocal(ConnectionStringIp, ConnectionStringPort.Value, SlaveAddress,
+                                    MasterAddress, Endian));
                         break;
                     }
                 }
