@@ -73,26 +73,6 @@ namespace Modbus.Net.OPC
         }
 
         /// <summary>
-        ///     无返回发送数据
-        /// </summary>
-        /// <param name="message">需要发送的数据</param>
-        /// <returns>是否发送成功</returns>
-        public override bool SendMsgWithoutReturn(OpcParamIn message)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        ///     无返回发送数据
-        /// </summary>
-        /// <param name="message">需要发送的数据</param>
-        /// <returns>是否发送成功</returns>
-        public override Task<bool> SendMsgWithoutReturnAsync(OpcParamIn message)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
         ///     带返回发送数据
         /// </summary>
         /// <param name="message">需要发送的数据</param>

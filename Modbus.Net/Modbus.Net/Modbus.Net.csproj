@@ -50,24 +50,19 @@
     <Compile Include="..\src\Base.Common\ValueHelper.cs" Link="ValueHelper.cs" />
     <Compile Include="..\src\Base.Common\IUtilityMethod.cs" Link="IUtilityMethod.cs" />
     <Compile Include="..\src\Base.Common\IMachineMethod.cs" Link="IMachineMethod.cs" />
-    <Compile Include="..\src\Base.Common\TypeExtensions.cs" Link="TypeExtensions.cs" />
     <Compile Include="..\src\Base.Common\IConnector.cs" Link="IConnector.cs" />
+    <Compile Include="..\src\Base.Common\ComProtocalLinker.cs" Link="ComProtocalLinker.cs" />
+    <Compile Include="..\src\Base.Common\ComConnector.cs" Link="ComConnector.cs" />
     <Compile Include="..\src\Base.Common\PipeUnit.cs" Link="PipeUnit.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Nito.AsyncEx" Version="4.0.1" />
-    <PackageReference Include="Serilog" Version="2.4.0" />
+    <PackageReference Include="Serilog" Version="2.5.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="System.Configuration" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="ComConnector.cs">
-      <SubType>Component</SubType>
-    </Compile>
   </ItemGroup>
 
 </Project>

@@ -215,48 +215,6 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        ///     发送数据，不需要返回任何值
-        /// </summary>
-        /// <param name="message">发送的信息</param>
-        /// <returns>是否发送成功</returns>
-        public override bool SendMsgWithoutReturn(byte[] message)
-        {
-            return AsyncHelper.RunSync(() => SendMsgWithoutReturnAsync(message));
-        }
-
-        /// <summary>
-        ///     发送数据，不需要返回任何值
-        /// </summary>
-        /// <param name="message">发送的信息</param>
-        /// <returns>是否发送成功</returns>
-        public override async Task<bool> SendMsgWithoutReturnAsync(byte[] message)
-        {
-            var datagram = message;
-
-            try
-            {
-                if (!IsConnected)
-                    await ConnectAsync();
-
-                var stream = _socketClient.GetStream();
-
-                Log.Verbose("Tcp client {ConnectionToken} send text len = {Length}", ConnectionToken, datagram.Length);
-                Log.Verbose($"Tcp client {ConnectionToken} send text = {String.Concat(datagram.Select(p => " " + p.ToString("X2")))}");
-                await stream.WriteAsync(datagram, 0, datagram.Length);
-
-                RefreshSendCount();
-
-                return true;
-            }
-            catch (Exception err)
-            {
-                Log.Error(err, "Tcp client {ConnectionToken} send exception", ConnectionToken);
-                CloseClientSocket();
-                return false;
-            }
-        }
-
-        /// <summary>
         ///     发送数据，需要返回
         /// </summary>
         /// <param name="message">发送的数据</param>

@@ -420,16 +420,6 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        ///     无返回发送数据
-        /// </summary>
-        /// <param name="message">需要发送的数据</param>
-        /// <returns>是否发送成功</returns>
-        public override Task<bool> SendMsgWithoutReturnAsync(byte[] message)
-        {
-            return Task.FromResult(SendMsgWithoutReturn(message));
-        }
-
-        /// <summary>
         ///     带返回发送数据
         /// </summary>
         /// <param name="sendbytes">需要发送的数据</param>
@@ -502,53 +492,6 @@ namespace Modbus.Net
         public override Task<byte[]> SendMsgAsync(byte[] message)
         {
             return Task.FromResult(SendMsg(message));
-        }
-
-        /// <summary>
-        ///     无返回发送数据
-        /// </summary>
-        /// <param name="sendbytes">需要发送的数据</param>
-        /// <returns>是否发送成功</returns>
-        public override bool SendMsgWithoutReturn(byte[] sendbytes)
-        {
-            try
-            {
-                if (!SerialPort.IsOpen)
-                    try
-                    {
-                        SerialPort.Open();
-                    }
-                    catch (Exception err)
-                    {
-                        Log.Error(err, "Com client {ConnectionToken} open error", ConnectionToken);
-                        Dispose();
-                        SerialPort.Open();
-                    }
-                lock (SerialPort.Lock)
-                {
-                    try
-                    {
-                        Log.Verbose("Com client {ConnectionToken} send msg length: {Length}", ConnectionToken,
-                            sendbytes.Length);
-                        Log.Verbose(
-                            $"Com client {ConnectionToken} send msg: {string.Concat(sendbytes.Select(p => " " + p.ToString("X2")))}");
-                        SerialPort.Write(sendbytes, 0, sendbytes.Length);
-                    }
-                    catch (Exception err)
-                    {
-                        Log.Error(err, "Com client {ConnectionToken} send msg error", ConnectionToken);
-                        Dispose();
-                        return false;
-                    }
-                    RefreshSendCount();
-                }
-                return true;
-            }
-            catch (Exception err)
-            {
-                Log.Error(err, "Com client {ConnectionToken} reopen error", ConnectionToken);
-                return false;
-            }
         }
 
         private byte[] ReadMsg()

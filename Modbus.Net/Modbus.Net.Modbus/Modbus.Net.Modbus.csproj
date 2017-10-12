@@ -31,10 +31,29 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\src\Modbus.Common\AddressFormaterModbus.cs" Link="AddressFormaterModbus.cs" />
+    <Compile Include="..\src\Modbus.Common\AddressTranslatorModbus.cs" Link="AddressTranslatorModbus.cs" />
+    <Compile Include="..\src\Modbus.Common\ModbusAsciiProtocal.cs" Link="ModbusAsciiProtocal.cs" />
+    <Compile Include="..\src\Modbus.Common\ModbusAsciiProtocalLinker.cs" Link="ModbusAsciiProtocalLinker.cs" />
+    <Compile Include="..\src\Modbus.Common\ModbusAsciiInTcpProtocal.cs" Link="ModbusAsciiInTcpProtocal.cs" />
+    <Compile Include="..\src\Modbus.Common\ModbusAsciiInTcpProtocalLinker.cs" Link="ModbusAsciiInTcpProtocalLinker.cs" />
+    <Compile Include="..\src\Modbus.Common\ModbusMachine.cs" Link="ModbusMachine.cs" />
+    <Compile Include="..\src\Modbus.Common\ModbusProtocal.cs" Link="ModbusProtocal.cs" />
+    <Compile Include="..\src\Modbus.Common\ModbusProtocalLinkerBytesExtend.cs" Link="ModbusProtocalLinkerBytesExtend.cs" />
+    <Compile Include="..\src\Modbus.Common\ModbusRtuProtocal.cs" Link="ModbusRtuProtocal.cs" />
+    <Compile Include="..\src\Modbus.Common\ModbusRtuProtocalLinker.cs" Link="ModbusRtuProtocalLinker.cs" />
+    <Compile Include="..\src\Modbus.Common\ModbusRtuInTcpProtocal.cs" Link="ModbusRtuInTcpProtocal.cs" />
+    <Compile Include="..\src\Modbus.Common\ModbusRtuInTcpProtocalLinker.cs" Link="ModbusRtuInTcpProtocalLinker.cs" />
+    <Compile Include="..\src\Modbus.Common\ModbusTcpProtocal.cs" Link="ModbusTcpProtocal.cs" />
+    <Compile Include="..\src\Modbus.Common\ModbusTcpProtocalLinker.cs" Link="ModbusTcpProtocalLinker.cs" />
+    <Compile Include="..\src\Modbus.Common\ModbusUtility.cs" Link="ModbusUtility.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="System.Configuration" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.ValueTuple" Version="4.3.1" />
+    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
   </ItemGroup>
 </Project>

@@ -36,20 +36,6 @@ namespace Modbus.Net
         bool Disconnect();
 
         /// <summary>
-        ///     无返回发送数据
-        /// </summary>
-        /// <param name="message">需要发送的数据</param>
-        /// <returns>是否发送成功</returns>
-        bool SendMsgWithoutReturn(TParamIn message);
-
-        /// <summary>
-        ///     无返回发送数据
-        /// </summary>
-        /// <param name="message">需要发送的数据</param>
-        /// <returns>是否发送成功</returns>
-        Task<bool> SendMsgWithoutReturnAsync(TParamIn message);
-
-        /// <summary>
         ///     带返回发送数据
         /// </summary>
         /// <param name="message">需要发送的数据</param>

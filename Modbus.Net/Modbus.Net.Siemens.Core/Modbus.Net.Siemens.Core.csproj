@@ -5,7 +5,7 @@
     <AssemblyName>Modbus.Net.Siemens.Core</AssemblyName>
     <RootNamespace>Modbus.Net.Siemens</RootNamespace>
     <PackageId>Modbus.Net.Siemens.Core</PackageId>
-    <Version>1.3.10</Version>
+    <Version>1.4.0</Version>
     <Authors>Chris L.(Luo Sheng)</Authors>
     <Company>Hangzhou Delian IoT Science Technology Co.,Ltd.</Company>
     <Description>Modbus.Net Siemens Profinet Implementation</Description>
@@ -37,7 +37,7 @@
     <Compile Include="..\src\Siemens.Common\SiemensTcpProtocalLinker.cs" Link="SiemensTcpProtocalLinker.cs" />
     <Compile Include="..\src\Siemens.Common\SiemensUtility.cs" Link="SiemensUtility.cs" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="System.IO.Ports" Version="4.4.0" />
   </ItemGroup>
