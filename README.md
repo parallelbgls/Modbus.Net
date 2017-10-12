@@ -100,7 +100,7 @@ RoadMap
 * Update to .Net Standard 2.0 (Complete)
 
 ### Version 1.4.0
-* New Protocal Pipeline System (Coding)
+* New Protocal Pipeline System (Complete)
 
 ### Version 1.4.1
 * BaseController (In Road)
