@@ -860,13 +860,26 @@ namespace Modbus.Net.Siemens
             {0xEF, "Layer 2 specific error"}
         };
 
+        private static readonly Dictionary<int, string> ProtocalErrorDetailDictionary = new Dictionary<int, string>
+        {
+            {0x8304, "Resource not available,\r\n there are no more resources available for application associations to be established" },
+            {0x8104, "Context is not supported:\r\n -Error in PDU structure\r\n -Unknown service" },
+            {0x8404, "Fatal error detected.\r\n Service or function aborted" },
+            {0x8500, "PDU size error"}
+        };
+
         /// <summary>
         ///     构造函数
         /// </summary>
         /// <param name="errCls">错误分类</param>
         /// <param name="errCod">错误码</param>
         public SiemensProtocalErrorException(int errCls, int errCod)
-            : base(ProtocalErrorDictionary[errCls] + " : " + errCod)
+            : base((ProtocalErrorDictionary.ContainsKey(errCls)
+                       ? ProtocalErrorDictionary[errCls]
+                       : "Unknown error") + " \r\n " +
+                   (ProtocalErrorDetailDictionary.ContainsKey(errCls * 256 + errCod)
+                       ? ProtocalErrorDetailDictionary[errCls * 256 + errCod]
+                       : "Unknown error detail"))
         {
             ErrorClass = errCls;
             ErrorCode = errCod;
