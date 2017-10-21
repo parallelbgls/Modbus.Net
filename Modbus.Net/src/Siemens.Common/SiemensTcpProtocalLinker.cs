@@ -43,6 +43,8 @@ namespace Modbus.Net.Siemens
                 case 0xf0:
                     switch (content[8])
                     {
+                        case 0x01:
+                        case 0x02:
                         case 0x03:
                             if (content[17] == 0x00 && content[18] == 0x00) return true;
                             throw new SiemensProtocalErrorException(content[17], content[18]);
