@@ -15,7 +15,7 @@ namespace Modbus.Net.Tests
         [TestInitialize]
         public void Init()
         {
-            _opcMachine = new FBoxOpcDaMachine("1","德联科技测试", null, true);
+            _opcMachine = new FBoxOpcDaMachine("1", "1", "德联科技测试", null, true);
         }
 
         [TestMethod]

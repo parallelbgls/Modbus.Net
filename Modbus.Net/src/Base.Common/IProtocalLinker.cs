@@ -23,12 +23,6 @@ namespace Modbus.Net
         ///     连接设备
         /// </summary>
         /// <returns>设备是否连接成功</returns>
-        bool Connect();
-
-        /// <summary>
-        ///     连接设备
-        /// </summary>
-        /// <returns>设备是否连接成功</returns>
         Task<bool> ConnectAsync();
 
         /// <summary>

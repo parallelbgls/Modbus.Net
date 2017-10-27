@@ -108,15 +108,6 @@ namespace Modbus.Net.Modbus
         ///     连接
         /// </summary>
         /// <returns>是否连接成功</returns>
-        public override bool Connect()
-        {
-            return ProtocalLinker.Connect();
-        }
-
-        /// <summary>
-        ///     连接
-        /// </summary>
-        /// <returns>是否连接成功</returns>
         public override async Task<bool> ConnectAsync()
         {
             return await ProtocalLinker.ConnectAsync();

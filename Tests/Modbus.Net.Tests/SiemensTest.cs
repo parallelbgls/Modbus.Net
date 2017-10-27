@@ -15,7 +15,7 @@ namespace Modbus.Net.Tests
         [TestInitialize]
         public void Init()
         {
-            _siemensTcpMachine = new SiemensMachine(SiemensType.Tcp, "192.168.3.10", SiemensMachineModel.S7_1200, null, true, 2, 0);
+            _siemensTcpMachine = new SiemensMachine("1", SiemensType.Tcp, "192.168.3.10", SiemensMachineModel.S7_1200, null, true, 2, 0);
         }
 
         [TestMethod]

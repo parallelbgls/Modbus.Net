@@ -51,7 +51,7 @@ namespace TripleAdd.Controllers
         {
             if (machine == null)
             {
-                machine = new ModbusMachine(ModbusType.Tcp, "192.168.3.10", new List<AddressUnit>()
+                machine = new ModbusMachine("1", ModbusType.Tcp, "192.168.3.10", new List<AddressUnit>()
                 {
                     new AddressUnit() {Id = "1", Area = "4X", Address = 1, CommunicationTag = "Add1", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
                     new AddressUnit() {Id = "2", Area = "4X", Address = 2, CommunicationTag = "Add2", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},

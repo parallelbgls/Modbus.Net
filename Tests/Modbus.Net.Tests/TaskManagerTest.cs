@@ -80,10 +80,7 @@ namespace Modbus.Net.Tests
                 }
             };
 
-            BaseMachine machine = new ModbusMachine(ModbusType.Tcp, "192.168.3.10", addresses, true, 2, 0)
-            {
-                Id = "1"
-            };
+            BaseMachine machine = new ModbusMachine("1", ModbusType.Tcp, "192.168.3.10", addresses, true, 2, 0);
 
             _taskManager.AddMachine(machine);
 

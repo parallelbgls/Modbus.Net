@@ -14,8 +14,8 @@ namespace Modbus.Net.OPC
         /// </summary>
         /// <param name="getAddresses">需要读写的地址</param>
         /// <param name="keepConnect">是否保持连接</param>
-        protected OpcMachine(IEnumerable<AddressUnit<TUnitKey>> getAddresses, bool keepConnect)
-            : base(getAddresses, keepConnect)
+        protected OpcMachine(TKey id, IEnumerable<AddressUnit<TUnitKey>> getAddresses, bool keepConnect)
+            : base(id, getAddresses, keepConnect)
         {
             AddressCombiner = new AddressCombinerSingle<TUnitKey>();
             AddressCombinerSet = new AddressCombinerSingle<TUnitKey>();
@@ -32,8 +32,8 @@ namespace Modbus.Net.OPC
         /// </summary>
         /// <param name="getAddresses">需要读写的地址</param>
         /// <param name="keepConnect">是否保持连接</param>
-        protected OpcMachine(IEnumerable<AddressUnit> getAddresses, bool keepConnect)
-            : base(getAddresses, keepConnect)
+        protected OpcMachine(string id, IEnumerable<AddressUnit> getAddresses, bool keepConnect)
+            : base(id, getAddresses, keepConnect)
         {
             AddressCombiner = new AddressCombinerSingle();
             AddressCombinerSet = new AddressCombinerSingle();

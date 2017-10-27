@@ -129,20 +129,18 @@ namespace Modbus.Net.Tests
                 },
             };
 
-            _baseMachine = new ModbusMachine<int, int>(ModbusType.Tcp, "192.168.1.1", _addressUnits, true, 2, 0)
+            _baseMachine = new ModbusMachine<int, int>(1, ModbusType.Tcp, "192.168.1.1", _addressUnits, true, 2, 0)
             {
-                Id = 1,
                 ProjectName = "Project 1",
                 MachineName = "Test 1"
             };
-            _baseMachine2 = new SiemensMachine<int, int>(SiemensType.Tcp, "192.168.3.10", SiemensMachineModel.S7_1200, _addressUnits, true, 2, 0)
+            _baseMachine2 = new SiemensMachine<int, int>(2, SiemensType.Tcp, "192.168.3.10", SiemensMachineModel.S7_1200, _addressUnits, true, 2, 0)
             {
-                Id = 2,
                 ProjectName = "Project 1",
                 MachineName = "Test 2"
             };
 
-            _baseMachine2.Connect();
+            _baseMachine2.ConnectAsync().Wait();
 
             _taskManager = new TaskManager<int>(10, true);
 

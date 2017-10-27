@@ -15,9 +15,9 @@ namespace Modbus.Net.OPC.FBox
         /// <param name="linkerName">设备名称</param>
         /// <param name="getAddresses">获取地址</param>
         /// <param name="keepConnect">是否保持连接</param>
-        public FBoxOpcDaMachine(string localSequence, string linkerName,
+        public FBoxOpcDaMachine(string id, string localSequence, string linkerName,
             IEnumerable<AddressUnit> getAddresses, bool keepConnect)
-            : base(
+            : base(id,
                 ConfigurationManager.AppSettings["FBoxOpcDaHost"] ?? "opcda://localhost/FBoxOpcServer", getAddresses,
                 keepConnect, true)
         {
@@ -39,9 +39,9 @@ namespace Modbus.Net.OPC.FBox
         /// <param name="localSequence">页名称</param>
         /// <param name="linkerName">设备名称</param>
         /// <param name="getAddresses">获取地址</param>
-        public FBoxOpcDaMachine(string localSequence, string linkerName,
+        public FBoxOpcDaMachine(string id, string localSequence, string linkerName,
             IEnumerable<AddressUnit> getAddresses)
-            : this(localSequence, linkerName, getAddresses, false)
+            : this(id, localSequence, linkerName, getAddresses, false)
         {
         }
 

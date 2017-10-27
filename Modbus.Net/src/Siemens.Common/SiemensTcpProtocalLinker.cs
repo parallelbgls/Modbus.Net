@@ -25,6 +25,7 @@ namespace Modbus.Net.Siemens
         public SiemensTcpProtocalLinker(string ip, int port)
             : base(ip, port)
         {
+            ((BaseConnector)BaseConnector).AddController(new FIFOController(500));
         }
 
         /// <summary>

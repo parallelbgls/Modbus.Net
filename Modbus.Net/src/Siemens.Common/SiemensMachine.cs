@@ -19,9 +19,9 @@ namespace Modbus.Net.Siemens
         /// <param name="keepConnect">是否保持连接</param>
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
-        public SiemensMachine(SiemensType connectionType, string connectionString, SiemensMachineModel model,
+        public SiemensMachine(TKey id, SiemensType connectionType, string connectionString, SiemensMachineModel model,
             IEnumerable<AddressUnit<TUnitKey>> getAddresses, bool keepConnect, byte slaveAddress, byte masterAddress)
-            : base(getAddresses, keepConnect, slaveAddress, masterAddress)
+            : base(id, getAddresses, keepConnect, slaveAddress, masterAddress)
         {
             BaseUtility = new SiemensUtility(connectionType, connectionString, model, slaveAddress, masterAddress);
             AddressFormater = new AddressFormaterSiemens();
@@ -38,9 +38,9 @@ namespace Modbus.Net.Siemens
         /// <param name="getAddresses">读写的地址</param>
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
-        public SiemensMachine(SiemensType connectionType, string connectionString, SiemensMachineModel model,
+        public SiemensMachine(TKey id, SiemensType connectionType, string connectionString, SiemensMachineModel model,
             IEnumerable<AddressUnit<TUnitKey>> getAddresses, byte slaveAddress, byte masterAddress)
-            : this(connectionType, connectionString, model, getAddresses, false, slaveAddress, masterAddress)
+            : this(id, connectionType, connectionString, model, getAddresses, false, slaveAddress, masterAddress)
         {
         }
     }
@@ -60,9 +60,9 @@ namespace Modbus.Net.Siemens
         /// <param name="keepConnect">是否保持连接</param>
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
-        public SiemensMachine(SiemensType connectionType, string connectionString, SiemensMachineModel model,
+        public SiemensMachine(string id, SiemensType connectionType, string connectionString, SiemensMachineModel model,
             IEnumerable<AddressUnit> getAddresses, bool keepConnect, byte slaveAddress, byte masterAddress)
-            : base(getAddresses, keepConnect, slaveAddress, masterAddress)
+            : base(id, getAddresses, keepConnect, slaveAddress, masterAddress)
         {
             BaseUtility = new SiemensUtility(connectionType, connectionString, model, slaveAddress, masterAddress);
             AddressFormater = new AddressFormaterSiemens();
@@ -79,9 +79,9 @@ namespace Modbus.Net.Siemens
         /// <param name="getAddresses">读写的地址</param>
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
-        public SiemensMachine(SiemensType connectionType, string connectionString, SiemensMachineModel model,
+        public SiemensMachine(string id, SiemensType connectionType, string connectionString, SiemensMachineModel model,
             IEnumerable<AddressUnit> getAddresses, byte slaveAddress, byte masterAddress)
-            : this(connectionType, connectionString, model, getAddresses, false, slaveAddress, masterAddress)
+            : this(id, connectionType, connectionString, model, getAddresses, false, slaveAddress, masterAddress)
         {
         }
     }

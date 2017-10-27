@@ -142,13 +142,13 @@ namespace Modbus.Net.Modbus
                 switch (_modbusType)
                 {
                     //Rtu协议
-                    case ModbusType.Rtu:
+                    /*case ModbusType.Rtu:
                     {
                         Wrapper = ConnectionString == null
                             ? new ModbusRtuProtocal(SlaveAddress, MasterAddress, Endian)
                             : new ModbusRtuProtocal(ConnectionString, SlaveAddress, MasterAddress, Endian);
                         break;
-                    }
+                    }*/
                     //Tcp协议
                     case ModbusType.Tcp:
                     {
@@ -161,6 +161,7 @@ namespace Modbus.Net.Modbus
                         break;
                     }
                     //Ascii协议
+                    /*
                     case ModbusType.Ascii:
                     {
                         Wrapper = ConnectionString == null
@@ -190,6 +191,7 @@ namespace Modbus.Net.Modbus
                                     MasterAddress, Endian));
                         break;
                     }
+                    */
                 }
             }
         }

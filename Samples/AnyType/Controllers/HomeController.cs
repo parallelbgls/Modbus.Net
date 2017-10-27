@@ -57,7 +57,7 @@ namespace AnyType.Controllers
             //初始化任务管理器
             task = new TaskManager(10, true);
             //向任务管理器中添加设备
-            task.AddMachine(new ModbusMachine(ModbusType.Tcp, "192.168.3.10", addressUnits,
+            task.AddMachine(new ModbusMachine("1", ModbusType.Tcp, "192.168.3.10", addressUnits,
             true, 2, 0));
             //启动任务
             task.InvokeTimerAll(new TaskItemGetData(returnValues =>

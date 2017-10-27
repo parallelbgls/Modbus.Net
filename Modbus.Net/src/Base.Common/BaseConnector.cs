@@ -14,6 +14,17 @@ namespace Modbus.Net
     /// </summary>
     public abstract class BaseConnector<TParamIn, TParamOut> : IConnector<TParamIn, TParamOut>
     {
+        //protected delegate MessageReturnCallbackArgs MessageReturnDelegate(object sender, MessageReturnArgs args);
+
+        //protected event MessageReturnDelegate MessageReturn;
+
+        public void AddController(IController controller)
+        {
+            Controller = controller;
+        }
+
+        protected IController Controller { get; set; }
+
         /// <summary>
         ///     标识Connector的连接关键字
         /// </summary>
@@ -23,12 +34,6 @@ namespace Modbus.Net
         ///     是否处于连接状态
         /// </summary>
         public abstract bool IsConnected { get; }
-
-        /// <summary>
-        ///     连接PLC
-        /// </summary>
-        /// <returns>是否连接成功</returns>
-        public abstract bool Connect();
 
         /// <summary>
         ///     连接PLC，异步
@@ -47,13 +52,36 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="message">需要发送的数据</param>
         /// <returns>是否发送成功</returns>
-        public abstract TParamOut SendMsg(TParamIn message);
+        public abstract Task<TParamOut> SendMsgAsync(TParamIn message);
 
         /// <summary>
-        ///     带返回发送数据
+        ///     发送数据，不确认
         /// </summary>
         /// <param name="message">需要发送的数据</param>
-        /// <returns>是否发送成功</returns>
-        public abstract Task<TParamOut> SendMsgAsync(TParamIn message);
+        protected abstract Task SendMsgWithoutConfirm(TParamIn message);
+
+        /// <summary>
+        ///     接收消息单独线程开启
+        /// </summary>
+        protected abstract void ReceiveMsgThreadStart();
+
+        /// <summary>
+        ///     接收消息单独线程停止
+        /// </summary>
+        protected abstract void ReceiveMsgThreadStop();
     }
+
+    /*public class MessageReturnArgs
+    {
+        public byte[] ReturnMessage { get; set; }
+
+        public string MessageKey { get; set; }
+    }
+
+    public class MessageReturnCallbackArgs
+    {
+        public bool ShouldLockSender { get; set; } = false;
+
+        public bool ShouldReleaseSender { get; set; } = false;
+    }*/
 }

@@ -14,7 +14,7 @@ namespace Modbus.Net.Tests
         [TestMethod]
         public void GetUtility()
         {
-            BaseMachine<int, int> baseMachine = new ModbusMachine<int, int>(ModbusType.Tcp, "192.168.3.12", null, true, 2, 0);
+            BaseMachine<int, int> baseMachine = new ModbusMachine<int, int>(1, ModbusType.Tcp, "192.168.3.12", null, true, 2, 0);
             var utility = baseMachine.GetUtility<IUtilityMethodTime>();
             var methods = utility.GetType().GetRuntimeMethods();
             Assert.AreEqual(methods.FirstOrDefault(method => method.Name == "GetTimeAsync") != null, true);
@@ -25,7 +25,7 @@ namespace Modbus.Net.Tests
         [TestMethod]
         public async Task InvokeUtility()
         {
-            BaseMachine<int, int> baseMachine = new ModbusMachine<int, int>(ModbusType.Tcp, "192.168.3.12", null, true, 2, 0);
+            BaseMachine<int, int> baseMachine = new ModbusMachine<int, int>(1, ModbusType.Tcp, "192.168.3.12", null, true, 2, 0);
             var success = await baseMachine.BaseUtility.GetUtilityMethods<IUtilityMethodTime>().SetTimeAsync(DateTime.Now);
             Assert.AreEqual(success, true);
             var time = await baseMachine.BaseUtility.GetUtilityMethods<IUtilityMethodTime>().GetTimeAsync();
@@ -36,7 +36,7 @@ namespace Modbus.Net.Tests
         [TestMethod]
         public async Task InvokeMachine()
         {
-            BaseMachine<int, int> baseMachine = new ModbusMachine<int, int>(ModbusType.Tcp, "192.168.3.10", new List<AddressUnit<int>>
+            BaseMachine<int, int> baseMachine = new ModbusMachine<int, int>(1, ModbusType.Tcp, "192.168.3.10", new List<AddressUnit<int>>
             {
                 new AddressUnit<int>
                 {

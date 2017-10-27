@@ -12,7 +12,7 @@ namespace Modbus.Net.Modbus
         /// </summary>
         /// <param name="ip">IP地址</param>
         public ModbusTcpProtocalLinker(string ip)
-            : base(ip, int.Parse(ConfigurationManager.AppSettings["ModbusPort"] ?? "502"))
+            : this(ip, int.Parse(ConfigurationManager.AppSettings["ModbusPort"] ?? "502"))
         {
         }
 
@@ -23,6 +23,7 @@ namespace Modbus.Net.Modbus
         /// <param name="port">端口</param>
         public ModbusTcpProtocalLinker(string ip, int port) : base(ip, port)
         {
+            ((BaseConnector)BaseConnector).AddController(new FIFOController(500));
         }
 
         /// <summary>

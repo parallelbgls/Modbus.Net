@@ -140,15 +140,6 @@ namespace Modbus.Net.Siemens
         ///     连接设备
         /// </summary>
         /// <returns>设备是否连接成功</returns>
-        public override bool Connect()
-        {
-            return AsyncHelper.RunSync(ConnectAsync);
-        }
-
-        /// <summary>
-        ///     连接设备
-        /// </summary>
-        /// <returns>设备是否连接成功</returns>
         public override async Task<bool> ConnectAsync()
         {
             _connectTryCount++;

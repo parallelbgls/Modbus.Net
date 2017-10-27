@@ -5,7 +5,7 @@
     <AssemblyName>Modbus.Net.Siemens</AssemblyName>
     <RootNamespace>Modbus.Net.Siemens</RootNamespace>
     <PackageId>Modbus.Net.Siemens</PackageId>
-    <Version>1.4.0</Version>
+    <Version>1.4.1</Version>
     <Authors>Chris L.(Luo Sheng)</Authors>
     <Company>Hangzhou Delian IoT Science Technology Co.,Ltd.</Company>
     <Description>Modbus.Net Siemens Profinet Implementation</Description>
@@ -29,8 +29,10 @@
     <Compile Include="..\src\Siemens.Common\AddressFormaterSiemens.cs" Link="AddressFormaterSiemens.cs" />
     <Compile Include="..\src\Siemens.Common\AddressTranslatorSiemens.cs" Link="AddressTranslatorSiemens.cs" />
     <Compile Include="..\src\Siemens.Common\SiemensMachine.cs" Link="SiemensMachine.cs" />
+    <!--
     <Compile Include="..\src\Siemens.Common\SiemensPpiProtocal.cs" Link="SiemensPpiProtocal.cs" />
     <Compile Include="..\src\Siemens.Common\SiemensPpiProtocalLinker.cs" Link="SiemensPpiProtocalLinker.cs" />
+    -->
     <Compile Include="..\src\Siemens.Common\SiemensProtocal.cs" Link="SiemensProtocal.cs" />
     <Compile Include="..\src\Siemens.Common\SiemensProtocalLinkerBytesExtend.cs" Link="SiemensProtocalLinkerBytesExtend.cs" />
     <Compile Include="..\src\Siemens.Common\SiemensTcpProtocal.cs" Link="SiemensTcpProtocal.cs" />

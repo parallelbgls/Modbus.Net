@@ -93,7 +93,7 @@ namespace Modbus.Net
         ///     构造器
         /// </summary>
         /// <param name="getAddresses">需要与设备通讯的地址</param>
-        protected BaseMachine(IEnumerable<AddressUnit> getAddresses) : base(getAddresses)
+        protected BaseMachine(string id, IEnumerable<AddressUnit> getAddresses) : base(id, getAddresses)
         {
         }
 
@@ -102,8 +102,8 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="getAddresses">需要与设备通讯的地址</param>
         /// <param name="keepConnect">是否保持连接</param>
-        protected BaseMachine(IEnumerable<AddressUnit> getAddresses, bool keepConnect)
-            : base(getAddresses, keepConnect)
+        protected BaseMachine(string id, IEnumerable<AddressUnit> getAddresses, bool keepConnect)
+            : base(id, getAddresses, keepConnect)
         {
         }
 
@@ -114,8 +114,8 @@ namespace Modbus.Net
         /// <param name="keepConnect">是否保持连接</param>
         /// <param name="slaveAddress">从站地址</param>
         /// <param name="masterAddress">主站地址</param>
-        protected BaseMachine(IEnumerable<AddressUnit> getAddresses, bool keepConnect, byte slaveAddress,
-            byte masterAddress) : base(getAddresses, keepConnect, slaveAddress, masterAddress)
+        protected BaseMachine(string id, IEnumerable<AddressUnit> getAddresses, bool keepConnect, byte slaveAddress,
+            byte masterAddress) : base(id, getAddresses, keepConnect, slaveAddress, masterAddress)
         {
         }
     }
@@ -135,8 +135,8 @@ namespace Modbus.Net
         ///     构造器
         /// </summary>
         /// <param name="getAddresses">需要与设备通讯的地址</param>
-        protected BaseMachine(IEnumerable<AddressUnit<TUnitKey>> getAddresses)
-            : this(getAddresses, false)
+        protected BaseMachine(TKey id, IEnumerable<AddressUnit<TUnitKey>> getAddresses)
+            : this(id, getAddresses, false)
         {
         }
 
@@ -145,8 +145,9 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="getAddresses">需要与设备通讯的地址</param>
         /// <param name="keepConnect">是否保持连接</param>
-        protected BaseMachine(IEnumerable<AddressUnit<TUnitKey>> getAddresses, bool keepConnect)
+        protected BaseMachine(TKey id, IEnumerable<AddressUnit<TUnitKey>> getAddresses, bool keepConnect)
         {
+            Id = id;
             GetAddresses = getAddresses;
             KeepConnect = keepConnect;
         }
@@ -158,8 +159,8 @@ namespace Modbus.Net
         /// <param name="keepConnect">是否保持连接</param>
         /// <param name="slaveAddress">从站地址</param>
         /// <param name="masterAddress">主站地址</param>
-        protected BaseMachine(IEnumerable<AddressUnit<TUnitKey>> getAddresses, bool keepConnect, byte slaveAddress,
-            byte masterAddress) : this(getAddresses, keepConnect)
+        protected BaseMachine(TKey id, IEnumerable<AddressUnit<TUnitKey>> getAddresses, bool keepConnect, byte slaveAddress,
+            byte masterAddress) : this(id, getAddresses, keepConnect)
         {
             SlaveAddress = slaveAddress;
             MasterAddress = masterAddress;
@@ -608,15 +609,6 @@ namespace Modbus.Net
         ///     连接设备
         /// </summary>
         /// <returns>是否连接成功</returns>
-        public bool Connect()
-        {
-            return BaseUtility.Connect();
-        }
-
-        /// <summary>
-        ///     连接设备
-        /// </summary>
-        /// <returns>是否连接成功</returns>
         public async Task<bool> ConnectAsync()
         {
             return await BaseUtility.ConnectAsync();
@@ -873,12 +865,6 @@ namespace Modbus.Net
         /// <typeparam name="TMachineMethod">方法集合的类型</typeparam>
         /// <returns>设备的方法集合</returns>
         TMachineMethod GetMachineMethods<TMachineMethod>() where TMachineMethod : class, IMachineMethod;
-
-        /// <summary>
-        ///     连接设备
-        /// </summary>
-        /// <returns>是否连接成功</returns>
-        bool Connect();
 
         /// <summary>
         ///     连接设备

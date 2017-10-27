@@ -18,11 +18,11 @@ namespace Modbus.Net.Tests
         [TestInitialize]
         public void Init()
         {
-            _modbusTcpMachine = new ModbusMachine(ModbusType.Tcp, "192.168.3.10", null, true, 2, 0);
+            _modbusTcpMachine = new ModbusMachine("1", ModbusType.Tcp, "192.168.3.10", null, true, 2, 0);
 
-            _modbusRtuMachine = new ModbusMachine(ModbusType.Rtu, "COM3", null, true, 2, 0);
+            //_modbusRtuMachine = new ModbusMachine("2", ModbusType.Rtu, "COM3", null, true, 2, 0);
 
-            _modbusAsciiMachine = new ModbusMachine(ModbusType.Ascii, "COM5", null, true, 2, 0);
+            //_modbusAsciiMachine = new ModbusMachine("3", ModbusType.Ascii, "COM5", null, true, 2, 0);
         }
 
         [TestMethod]
@@ -51,17 +51,17 @@ namespace Modbus.Net.Tests
             };
 
             _modbusTcpMachine.GetAddresses = addresses;
-            _modbusAsciiMachine.GetAddresses = addresses;
-            _modbusRtuMachine.GetAddresses = addresses;
+            //_modbusAsciiMachine.GetAddresses = addresses;
+            //_modbusRtuMachine.GetAddresses = addresses;
             await _modbusTcpMachine.SetDatasAsync(MachineSetDataType.Address, dic1);
-            await _modbusAsciiMachine.SetDatasAsync(MachineSetDataType.Address, dic1);
-            await _modbusRtuMachine.SetDatasAsync(MachineSetDataType.Address, dic1);
+            //await _modbusAsciiMachine.SetDatasAsync(MachineSetDataType.Address, dic1);
+            //await _modbusRtuMachine.SetDatasAsync(MachineSetDataType.Address, dic1);
             var ans = await _modbusTcpMachine.GetDatasAsync(MachineGetDataType.Address);
-            var ans2 = await _modbusRtuMachine.GetDatasAsync(MachineGetDataType.Address);
-            var ans3 = await _modbusAsciiMachine.GetDatasAsync(MachineGetDataType.Address);
+            //var ans2 = await _modbusRtuMachine.GetDatasAsync(MachineGetDataType.Address);
+            //var ans3 = await _modbusAsciiMachine.GetDatasAsync(MachineGetDataType.Address);
             Assert.AreEqual(ans["0X 1.0"].PlcValue, dic1["0X 1.0"]);
-            Assert.AreEqual(ans2["0X 1.0"].PlcValue, dic1["0X 1.0"]);
-            Assert.AreEqual(ans3["0X 1.0"].PlcValue, dic1["0X 1.0"]);
+            //Assert.AreEqual(ans2["0X 1.0"].PlcValue, dic1["0X 1.0"]);
+            //Assert.AreEqual(ans3["0X 1.0"].PlcValue, dic1["0X 1.0"]);
         }
 
         [TestMethod]
@@ -316,8 +316,8 @@ namespace Modbus.Net.Tests
         [TestCleanup]
         public void MachineClean()
         {
-            _modbusAsciiMachine.Disconnect();
-            _modbusRtuMachine.Disconnect();
+            //_modbusAsciiMachine.Disconnect();
+            //_modbusRtuMachine.Disconnect();
             _modbusTcpMachine.Disconnect();
         }
     }

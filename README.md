@@ -8,7 +8,7 @@ Overview
 -------------------
 Modbus.Net is an open hardware communication platform written by C# 7.0.
 
-You can only focusing on the protocal itself, and the platform can automaticaly create a full asynchronized or synchronized communication library.
+You can only focusing on the Protocol itself, and the platform can automaticaly create a full asynchronized or synchronized communication library.
 
 Why called Modbus.Net
 -------------------
@@ -18,7 +18,7 @@ The real Modbus Implementation has been moved to Modbus.Net.Modbus. If you want 
 
 There are also "Modbus.Net.Siemens" that can communicate to Siemens S7-200, S7-200 Smart, S7-300, S7-400, S7-1200, S7-1500 using PPI or TCP/IP.
 
-"Modbus.Net.OPC" Implements OPC DA and OPC UA protocal.
+"Modbus.Net.OPC" Implements OPC DA and OPC UA Protocol.
 
 Platform Supported
 -------------------
@@ -61,7 +61,7 @@ RoadMap
 
 ### Version 1.3.1
 * InputStruct -> IInputStruct, OutputStruct -> IOutputStruct (Complete)
-* Generic Method For ProtocalUnit (Complete)
+* Generic Method For ProtocolUnit (Complete)
 
 ### Version 1.3.2
 * Add Interface IMachineMethod and IUtilityMethod. Utiltiy and Machine can extend function using interface (Complete)
@@ -86,7 +86,7 @@ RoadMap
 
 ### Version 1.3.8
 * Change Resx to appsettings.json, now you can set default params there (Complete - CORE ONLY)
-* Change ISpecialProtocalUnit to SpecialProtocalUnitAttribute (Complete)
+* Change ISpecialProtocolUnit to SpecialProtocolUnitAttribute (Complete)
 
 ### Version 1.3.9
 * Modbus Single Write for Coil and Reg (05 and 06) (Complete)
@@ -100,32 +100,33 @@ RoadMap
 * Update to .Net Standard 2.0 (Complete)
 
 ### Version 1.4.0
-* New Protocal Pipeline System (Complete)
+* New Protocol Pipeline System (Complete)
 
 ### Version 1.4.1
-* BaseController (In Road)
-* New ComConnector (In Road)
-* New TcpConnector (In Road)
-* New UdpConnector (In Road)
-* Serial Port Connection with Multiple Master Station (In Road)
+* BaseController and IController (Programming)
+* New ComConnector (Programming)
+* New TcpConnector (Programming)
+* New UdpConnector (Programming)
+* Serial Port Connection with Multiple Master Station (Delay)
 
 ### Version 1.4.2
-* PPI Remake (In Road)
-* Siemens MPI Support (In Road)
-* Siemens MultiStation PPI Support (In Road)
+* PPI Remake (Delay)
+* Siemens MPI Support (Delay)
+* Siemens MultiStation PPI Support (Delay)
 
 ### Version 1.5.X
 * Unite TransServer.Net into Modbus.Net (In Road)
 * Passive Connector and Controller (In Road)
 * Architechture rebuild (In Road)
-
-### Version 1.6.X
-* English comment (In Road)
 * ValueHelper remake to interface, users can add their own value translate function (In Road)
 * New Zoom (In Road)
 
+### Version 1.6.X
+* English comment (In Road)
+
 ### Version 2.0.0
 * Rename to Transport.Net (In Road)
-* Puzzle System (In Road)
+* Puzzle Builder (In Road)
 * Machine Builder (In Road)
+* Protocol Builer (In Road)
 

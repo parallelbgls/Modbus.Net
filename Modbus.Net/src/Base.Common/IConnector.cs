@@ -18,12 +18,6 @@ namespace Modbus.Net
         bool IsConnected { get; }
 
         /// <summary>
-        ///     连接PLC
-        /// </summary>
-        /// <returns>是否连接成功</returns>
-        bool Connect();
-
-        /// <summary>
         ///     连接PLC，异步
         /// </summary>
         /// <returns>是否连接成功</returns>
@@ -34,13 +28,6 @@ namespace Modbus.Net
         /// </summary>
         /// <returns>是否断开成功</returns>
         bool Disconnect();
-
-        /// <summary>
-        ///     带返回发送数据
-        /// </summary>
-        /// <param name="message">需要发送的数据</param>
-        /// <returns>是否发送成功</returns>
-        TParamOut SendMsg(TParamIn message);
 
         /// <summary>
         ///     带返回发送数据

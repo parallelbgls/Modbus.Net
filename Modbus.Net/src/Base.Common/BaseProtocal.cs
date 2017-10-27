@@ -136,12 +136,6 @@ namespace Modbus.Net
         ///     协议连接开始
         /// </summary>
         /// <returns></returns>
-        public abstract bool Connect();
-
-        /// <summary>
-        ///     协议连接开始（异步）
-        /// </summary>
-        /// <returns></returns>
         public abstract Task<bool> ConnectAsync();
 
         /// <summary>

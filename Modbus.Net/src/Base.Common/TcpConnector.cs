@@ -52,6 +52,9 @@ namespace Modbus.Net
 
         private bool m_disposed;
 
+        private Task _receiveThread;
+        private bool _taskCancel = false;
+
         /// <summary>
         ///     构造器
         /// </summary>
@@ -142,15 +145,6 @@ namespace Modbus.Net
         ///     连接
         /// </summary>
         /// <returns>是否连接成功</returns>
-        public override bool Connect()
-        {
-            return AsyncHelper.RunSync(ConnectAsync);
-        }
-
-        /// <summary>
-        ///     连接
-        /// </summary>
-        /// <returns>是否连接成功</returns>
         public override async Task<bool> ConnectAsync()
         {
             if (_socketClient != null)
@@ -175,7 +169,9 @@ namespace Modbus.Net
                 }
                 if (_socketClient.Connected)
                 {
-                    Log.Information("Tcp client {ConnectionToken} connected", ConnectionToken);
+                    Controller.SendStart();
+                    ReceiveMsgThreadStart();
+                    Log.Information("Tcp client {ConnectionToken} connected", ConnectionToken);                   
                     return true;
                 }
                 Log.Error("Tcp client {ConnectionToken} connect failed.", ConnectionToken);
@@ -219,17 +215,28 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="message">发送的数据</param>
         /// <returns>是否发送成功</returns>
-        public override byte[] SendMsg(byte[] message)
+        public override async Task<byte[]> SendMsgAsync(byte[] message)
         {
-            return AsyncHelper.RunSync(() => SendMsgAsync(message));
+            var task = SendMsgInner(message).WithCancellation(new CancellationTokenSource(10000).Token);
+            var ans = await task;
+            if (task.IsCanceled)
+            {
+                Controller.ForceRemoveWaitingMessage(ans);
+                return null;
+            }
+            return ans.ReceiveMessage;
         }
 
-        /// <summary>
-        ///     发送数据，需要返回
-        /// </summary>
-        /// <param name="message">发送的数据</param>
-        /// <returns>是否发送成功</returns>
-        public override async Task<byte[]> SendMsgAsync(byte[] message)
+        private async Task<MessageWaitingDef> SendMsgInner(byte[] message)
+        {
+            var messageSendingdef = Controller.AddMessage(message);
+            messageSendingdef.SendMutex.WaitOne();
+            await SendMsgWithoutConfirm(message);
+            messageSendingdef.ReceiveMutex.WaitOne();
+            return messageSendingdef;
+        }
+
+        protected override async Task SendMsgWithoutConfirm(byte[] message)
         {
             var datagram = message;
 
@@ -245,45 +252,64 @@ namespace Modbus.Net
                 Log.Verbose("Tcp client {ConnectionToken} send text len = {Length}", ConnectionToken, datagram.Length);
                 Log.Verbose($"Tcp client {ConnectionToken} send: {String.Concat(datagram.Select(p => " " + p.ToString("X2")))}");
                 await stream.WriteAsync(datagram, 0, datagram.Length);
-
-                var receiveBytes = await ReceiveAsync(stream);
-                Log.Verbose("Tcp client {ConnectionToken} receive text len = {Length}", ConnectionToken,
-                    receiveBytes.Length);
-                Log.Verbose($"Tcp client {ConnectionToken} receive: {String.Concat(receiveBytes.Select(p => " " + p.ToString("X2")))}");
-
-                RefreshReceiveCount();
-
-                return receiveBytes;
             }
             catch (Exception err)
             {
                 Log.Error(err, "Tcp client {ConnectionToken} send exception", ConnectionToken);
                 CloseClientSocket();
-                return null;
             }
+        }
+
+        protected override void ReceiveMsgThreadStart()
+        {
+            _receiveThread = Task.Run(ReceiveMessage);
+        }
+
+        protected override void ReceiveMsgThreadStop()
+        {
+            _taskCancel = true;
         }
 
         /// <summary>
         ///     接收返回消息
         /// </summary>
-        /// <param name="stream">Network Stream</param>
         /// <returns>返回的消息</returns>
-        protected async Task<byte[]> ReceiveAsync(NetworkStream stream)
+        protected async Task ReceiveMessage()
         {
             try
             {
-                var len = await stream.ReadAsync(_receiveBuffer, 0, _receiveBuffer.Length);
-                stream.Flush();
-                // 异步接收回答
-                if (len > 0)
-                    return CheckReplyDatagram(len);
-                return null;
+                while (!_taskCancel)
+                {
+                    NetworkStream stream = _socketClient.GetStream();
+                    var len = await stream.ReadAsync(_receiveBuffer, 0, _receiveBuffer.Length);
+                    stream.Flush();
+
+                    // 异步接收回答
+                    if (len > 0)
+                    {
+                        byte[] receiveBytes = CheckReplyDatagram(len);
+                        Log.Verbose("Tcp client {ConnectionToken} receive text len = {Length}", ConnectionToken,
+                            receiveBytes.Length);
+                        Log.Verbose(
+                            $"Tcp client {ConnectionToken} receive: {String.Concat(receiveBytes.Select(p => " " + p.ToString("X2")))}");
+                        var isMessageConfirmed = Controller.ConfirmMessage(receiveBytes);
+                        if (isMessageConfirmed == false)
+                        {
+                            //主动传输事件
+                        }
+                    }
+
+                    RefreshReceiveCount();
+                }
+            }
+            catch (ObjectDisposedException)
+            {
+                //ignore
             }
             catch (Exception err)
             {
                 Log.Error(err, "Tcp client {ConnectionToken} receive exception", ConnectionToken);
                 CloseClientSocket();
-                return null;
             }
         }
 
@@ -324,10 +350,11 @@ namespace Modbus.Net
         {
             try
             {
-                var stream = _socketClient.GetStream();
-                stream.Dispose();
-                _socketClient.Client.Shutdown(SocketShutdown.Both);
-                _socketClient.Client.Dispose();
+                Controller.SendStop();
+                Controller.Clear();
+                ReceiveMsgThreadStop();
+                _socketClient?.GetStream().Dispose();
+                _socketClient?.Close();           
             }
             catch (Exception ex)
             {

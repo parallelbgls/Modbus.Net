@@ -254,15 +254,6 @@ namespace Modbus.Net
         ///     连接设备
         /// </summary>
         /// <returns>设备是否连接成功</returns>
-        public bool Connect()
-        {
-            return Wrapper.Connect();
-        }
-
-        /// <summary>
-        ///     连接设备
-        /// </summary>
-        /// <returns>设备是否连接成功</returns>
         public async Task<bool> ConnectAsync()
         {
             return await Wrapper.ConnectAsync();
@@ -322,12 +313,6 @@ namespace Modbus.Net
         ///     地址翻译器
         /// </summary>
         AddressTranslator AddressTranslator { get; set; }
-
-        /// <summary>
-        ///     连接设备
-        /// </summary>
-        /// <returns>设备是否连接成功</returns>
-        bool Connect();
 
         /// <summary>
         ///     连接设备

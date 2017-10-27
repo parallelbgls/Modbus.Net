@@ -18,8 +18,8 @@ namespace Modbus.Net.OPC
         /// <param name="getAddresses">需要读写的数据</param>
         /// <param name="keepConnect">是否保持连接</param>
         /// <param name="isRegexOn">是否开启正则匹配</param>
-        public OpcDaMachine(string connectionString, IEnumerable<AddressUnit<TUnitKey>> getAddresses, bool keepConnect, bool isRegexOn = false)
-            : base(getAddresses, keepConnect)
+        public OpcDaMachine(TKey id, string connectionString, IEnumerable<AddressUnit<TUnitKey>> getAddresses, bool keepConnect, bool isRegexOn = false)
+            : base(id, getAddresses, keepConnect)
         {
             BaseUtility = new OpcDaUtility(connectionString, isRegexOn);
             ((OpcUtility) BaseUtility).GetSeperator +=
@@ -31,8 +31,8 @@ namespace Modbus.Net.OPC
         /// </summary>
         /// <param name="connectionString">连接地址</param>
         /// <param name="getAddresses">需要读写的数据</param>
-        public OpcDaMachine(string connectionString, IEnumerable<AddressUnit<TUnitKey>> getAddresses)
-            : this(connectionString, getAddresses, false)
+        public OpcDaMachine(TKey id, string connectionString, IEnumerable<AddressUnit<TUnitKey>> getAddresses)
+            : this(id, connectionString, getAddresses, false)
         {
         }
     }
@@ -49,8 +49,8 @@ namespace Modbus.Net.OPC
         /// <param name="getAddresses">需要读写的数据</param>
         /// <param name="keepConnect">是否保持连接</param>
         /// <param name="isRegexOn">是否开启正则匹配</param>
-        public OpcDaMachine(string connectionString, IEnumerable<AddressUnit> getAddresses, bool keepConnect, bool isRegexOn = false)
-            : base(getAddresses, keepConnect)
+        public OpcDaMachine(string id, string connectionString, IEnumerable<AddressUnit> getAddresses, bool keepConnect, bool isRegexOn = false)
+            : base(id, getAddresses, keepConnect)
         {
             BaseUtility = new OpcDaUtility(connectionString, isRegexOn);
             ((OpcUtility) BaseUtility).GetSeperator +=
@@ -62,8 +62,8 @@ namespace Modbus.Net.OPC
         /// </summary>
         /// <param name="connectionString">连接地址</param>
         /// <param name="getAddresses">需要读写的数据</param>
-        public OpcDaMachine(string connectionString, IEnumerable<AddressUnit> getAddresses)
-            : this(connectionString, getAddresses, false)
+        public OpcDaMachine(string id, string connectionString, IEnumerable<AddressUnit> getAddresses)
+            : this(id, connectionString, getAddresses, false)
         {
         }
     }

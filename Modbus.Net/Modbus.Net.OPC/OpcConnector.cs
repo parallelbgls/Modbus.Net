@@ -12,7 +12,7 @@ namespace Modbus.Net.OPC
     /// <summary>
     ///     Opc连接器
     /// </summary>
-    public abstract class OpcConnector : BaseConnector<OpcParamIn, OpcParamOut>
+    public abstract class OpcConnector : IConnector<OpcParamIn, OpcParamOut>
     {
         /// <summary>
         ///     是否正在连接
@@ -43,18 +43,18 @@ namespace Modbus.Net.OPC
         /// <summary>
         ///     连接标识
         /// </summary>
-        public override string ConnectionToken { get; }
+        public virtual string ConnectionToken { get; }
 
         /// <summary>
         ///     是否正在连接
         /// </summary>
-        public override bool IsConnected => _connect;
+        public virtual bool IsConnected => _connect;
 
         /// <summary>
         ///     断开连接
         /// </summary>
         /// <returns></returns>
-        public override bool Disconnect()
+        public virtual bool Disconnect()
         {
             try
             {
@@ -77,17 +77,7 @@ namespace Modbus.Net.OPC
         /// </summary>
         /// <param name="message">需要发送的数据</param>
         /// <returns>是否发送成功</returns>
-        public override OpcParamOut SendMsg(OpcParamIn message)
-        {
-            return AsyncHelper.RunSync(() => SendMsgAsync(message));
-        }
-
-        /// <summary>
-        ///     带返回发送数据
-        /// </summary>
-        /// <param name="message">需要发送的数据</param>
-        /// <returns>是否发送成功</returns>
-        public override async Task<OpcParamOut> SendMsgAsync(OpcParamIn message)
+        public virtual async Task<OpcParamOut> SendMsgAsync(OpcParamIn message)
         {
             try
             {
@@ -186,7 +176,7 @@ namespace Modbus.Net.OPC
         ///     连接PLC
         /// </summary>
         /// <returns>是否连接成功</returns>
-        public override bool Connect()
+        protected bool Connect()
         {
             try
             {
@@ -207,7 +197,7 @@ namespace Modbus.Net.OPC
         ///     连接PLC，异步
         /// </summary>
         /// <returns>是否连接成功</returns>
-        public override Task<bool> ConnectAsync()
+        public virtual Task<bool> ConnectAsync()
         {
             return Task.FromResult(Connect());
         }
