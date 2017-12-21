@@ -215,6 +215,7 @@ namespace Modbus.Net
                 if (disposing)
                 {
                     // Release managed resources
+                    Controller.SendStop();
                 }
                 // Release unmanaged resources
                 if (SerialPort != null)
@@ -233,10 +234,11 @@ namespace Modbus.Net
                         Log.Information("Com interface {Com} Disposed", _com);
                         Connectors[_com] = null;
                         Connectors.Remove(_com);
+                        ReceiveMsgThreadStop();
                     }
                     Linkers.Remove(_slave);
                     Log.Information("Com connector {ConnectionToken} Removed", ConnectionToken);
-                }
+                }                
                 m_disposed = true;
             }
         }
@@ -292,6 +294,7 @@ namespace Modbus.Net
             try
             {
                 if (!Connectors.ContainsKey(_com))
+                {
                     Connectors.Add(_com, new SerialPortLock
                     {
                         PortName = _com,
@@ -301,12 +304,24 @@ namespace Modbus.Net
                         DataBits = _dataBits,
                         ReadTimeout = _timeoutTime
                     });
+                }
                 if (!Linkers.ContainsKey(_slave))
+                {
                     Linkers.Add(_slave, _com);
-                SerialPort.Open();
-                Log.Information("Com client {ConnectionToken} connect success", ConnectionToken);
+                }
+                if (!SerialPort.IsOpen)
+                {
+                    lock (SerialPort)
+                    {
+                        SerialPort.Open();
+                        ReceiveMsgThreadStart();
+                    }
+                }
+
                 Controller.SendStart();
-                ReceiveMsgThreadStart();
+
+                Log.Information("Com client {ConnectionToken} connect success", ConnectionToken);
+
                 return true;
             }
             catch (Exception e)
@@ -334,8 +349,6 @@ namespace Modbus.Net
             if (Linkers.ContainsKey(_slave) && Connectors.ContainsKey(_com))
                 try
                 {
-                    ReceiveMsgThreadStop();
-                    Controller.SendStop();
                     Dispose();
                     Log.Information("Com client {ConnectionToken} disconnect success", ConnectionToken);
                     return true;
