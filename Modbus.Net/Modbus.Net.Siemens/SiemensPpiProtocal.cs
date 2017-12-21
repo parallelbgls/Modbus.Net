@@ -69,15 +69,6 @@ namespace Modbus.Net.Siemens
         ///     连接设备
         /// </summary>
         /// <returns>是否连接成功</returns>
-        public override bool Connect()
-        {
-            return AsyncHelper.RunSync(ConnectAsync);
-        }
-
-        /// <summary>
-        ///     连接设备
-        /// </summary>
-        /// <returns>是否连接成功</returns>
         public override async Task<bool> ConnectAsync()
         {
             ProtocalLinker = new SiemensPpiProtocalLinker(_com, SlaveAddress);

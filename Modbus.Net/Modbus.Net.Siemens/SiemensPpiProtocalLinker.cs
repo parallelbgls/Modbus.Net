@@ -17,6 +17,7 @@ namespace Modbus.Net.Siemens
         public SiemensPpiProtocalLinker(string com, int slaveAddress)
             : base(com, 9600, Parity.Even, StopBits.One, 8, slaveAddress)
         {
+            ((BaseConnector)BaseConnector).AddController(new FIFOController(500));
         }
 
         /// <summary>

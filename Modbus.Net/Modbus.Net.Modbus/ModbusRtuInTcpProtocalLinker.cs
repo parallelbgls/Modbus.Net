@@ -24,6 +24,7 @@ namespace Modbus.Net.Modbus
         public ModbusRtuInTcpProtocalLinker(string ip, int port)
             : base(ip, port)
         {
+            ((BaseConnector)BaseConnector).AddController(new FIFOController(500));
         }
 
         /// <summary>

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Nito.AsyncEx;
 using Serilog;
 
 namespace Modbus.Net
@@ -18,7 +19,7 @@ namespace Modbus.Net
         /// <summary>
         ///     发送锁
         /// </summary>
-        public object Lock { get; set; } = new object();
+        public AsyncLock Lock { get; set; } = new AsyncLock();
     }
 
     /// <summary>
@@ -65,6 +66,9 @@ namespace Modbus.Net
         private int _receiveCount;
 
         private int _sendCount;
+
+        private Task _receiveThread;
+        private bool _taskCancel = false;
 
         /// <summary>
         ///     Dispose是否执行
@@ -200,69 +204,6 @@ namespace Modbus.Net
             return nBytelen;
         }
 
-
-        /// <summary>
-        ///     字符数组转字符串16进制
-        /// </summary>
-        /// <param name="inBytes"> 二进制字节 </param>
-        /// <returns>类似"01 02 0F" </returns>
-        public static string ByteToString(byte[] inBytes)
-        {
-            var stringOut = "";
-            foreach (var inByte in inBytes)
-                stringOut = stringOut + $"{inByte:X2}" + " ";
-
-            return stringOut.Trim();
-        }
-
-        /// <summary>
-        ///     strhex 转字节数组
-        /// </summary>
-        /// <param name="inString">类似"01 02 0F" 用空格分开的  </param>
-        /// <returns> </returns>
-        public static byte[] StringToByte(string inString)
-        {
-            var byteStrings = inString.Split(" ".ToCharArray());
-            var byteOut = new byte[byteStrings.Length];
-            for (var i = 0; i <= byteStrings.Length - 1; i++)
-                byteOut[i] = byte.Parse(byteStrings[i], NumberStyles.HexNumber);
-            return byteOut;
-        }
-
-        /// <summary>
-        ///     strhex 转字节数组
-        /// </summary>
-        /// <param name="inString">类似"01 02 0F" 中间无空格 </param>
-        /// <returns> </returns>
-        public static byte[] StringToByte_2(string inString)
-        {
-            inString = inString.Replace(" ", "");
-
-            var byteStrings = new string[inString.Length / 2];
-            var j = 0;
-            for (var i = 0; i < byteStrings.Length; i++)
-            {
-                byteStrings[i] = inString.Substring(j, 2);
-                j += 2;
-            }
-
-            var byteOut = new byte[byteStrings.Length];
-            for (var i = 0; i <= byteStrings.Length - 1; i++)
-                byteOut[i] = byte.Parse(byteStrings[i], NumberStyles.HexNumber);
-
-            return byteOut;
-        }
-
-        /// <summary>
-        ///     字符串 转16进制字符串
-        /// </summary>
-        /// <param name="inString">unico </param>
-        /// <returns>类似“01 0f” </returns>
-        public static string Str_To_0X(string inString)
-        {
-            return ByteToString(Encoding.Default.GetBytes(inString));
-        }
-
         /// <summary>
         ///     虚方法，可供子类重写
         /// </summary>
@@ -346,7 +287,7 @@ namespace Modbus.Net
         ///     连接串口
         /// </summary>
         /// <returns>是否连接成功</returns>
-        public override bool Connect()
+        protected bool Connect()
         {
             try
             {
@@ -364,6 +305,8 @@ namespace Modbus.Net
                     Linkers.Add(_slave, _com);
                 SerialPort.Open();
                 Log.Information("Com client {ConnectionToken} connect success", ConnectionToken);
+                Controller.SendStart();
+                ReceiveMsgThreadStart();
                 return true;
             }
             catch (Exception e)
@@ -391,6 +334,8 @@ namespace Modbus.Net
             if (Linkers.ContainsKey(_slave) && Connectors.ContainsKey(_com))
                 try
                 {
+                    ReceiveMsgThreadStop();
+                    Controller.SendStop();
                     Dispose();
                     Log.Information("Com client {ConnectionToken} disconnect success", ConnectionToken);
                     return true;
@@ -412,101 +357,152 @@ namespace Modbus.Net
         /// <returns>是否发送成功</returns>
         public string SendMsg(string sendStr)
         {
-            var myByte = StringToByte_2(sendStr);
+            var myByte = sendStr.StringToByte_2();
 
             var returnBytes = SendMsg(myByte);
 
-            return ByteToString(returnBytes);
+            return returnBytes.ByteToString();
+        }
+
+        protected void CheckOpen()
+        {
+            if (!SerialPort.IsOpen)
+            {
+                try
+                {
+                    SerialPort.Open();
+                }
+                catch (Exception err)
+                {
+                    Log.Error(err, "Com client {ConnectionToken} open error", ConnectionToken);
+                    Dispose();
+                    try
+                    {
+                        SerialPort.Open();
+                    }
+                    catch (Exception err2)
+                    {
+                        Log.Error(err2, "Com client {ConnectionToken} open error", ConnectionToken);
+                        Dispose();
+                    }
+                }
+            }
         }
 
         /// <summary>
-        ///     带返回发送数据
+        ///     发送数据，需要返回
         /// </summary>
-        /// <param name="sendbytes">需要发送的数据</param>
+        /// <param name="message">发送的数据</param>
         /// <returns>是否发送成功</returns>
-        public override byte[] SendMsg(byte[] sendbytes)
+        protected byte[] SendMsg(byte[] message)
         {
-            try
+            return AsyncHelper.RunSync(() => SendMsgAsync(message));
+        }
+
+        /// <summary>
+        ///     发送数据，需要返回
+        /// </summary>
+        /// <param name="message">发送的数据</param>
+        /// <returns>是否发送成功</returns>
+        public override async Task<byte[]> SendMsgAsync(byte[] message)
+        {
+            CheckOpen();
+            var task = SendMsgInner(message).WithCancellation(new CancellationTokenSource(10000).Token);
+            var ans = await task;
+            if (task.IsCanceled)
             {
-                if (!SerialPort.IsOpen)
-                    try
-                    {
-                        SerialPort.Open();
-                    }
-                    catch (Exception err)
-                    {
-                        Log.Error(err, "Com client {ConnectionToken} open error", ConnectionToken);
-                        Dispose();
-                        SerialPort.Open();
-                    }
+                Controller.ForceRemoveWaitingMessage(ans);
+                return null;
+            }
+            return ans.ReceiveMessage;
+        }
 
-                byte[] returnBytes;
+        private async Task<MessageWaitingDef> SendMsgInner(byte[] message)
+        {
+            var messageSendingdef = Controller.AddMessage(message);
+            messageSendingdef.SendMutex.WaitOne();
+            await SendMsgWithoutConfirm(message);
+            messageSendingdef.ReceiveMutex.WaitOne();
+            return messageSendingdef;
+        }
 
-                lock (SerialPort.Lock)
+        protected override async Task SendMsgWithoutConfirm(byte[] message)
+        {
+            using (await SerialPort.Lock.LockAsync())
+            {
+                try
                 {
-                    try
-                    {
-                        Log.Verbose("Com client {ConnectionToken} send msg length: {Length}", ConnectionToken,
-                            sendbytes.Length);
-                        Log.Verbose(
-                            $"Com client {ConnectionToken} send msg: {String.Concat(sendbytes.Select(p => " " + p.ToString("X2")))}");
-                        SerialPort.Write(sendbytes, 0, sendbytes.Length);
-                    }
-                    catch (Exception err)
-                    {
-                        Log.Error(err, "Com client {ConnectionToken} send msg error", ConnectionToken);
-                        return null;
-                    }
-                    RefreshSendCount();
+                    Log.Verbose("Com client {ConnectionToken} send msg length: {Length}", ConnectionToken,
+                        message.Length);
+                    Log.Verbose(
+                        $"Com client {ConnectionToken} send msg: {String.Concat(message.Select(p => " " + p.ToString("X2")))}");
+                    await Task.Run(()=>SerialPort.Write(message, 0, message.Length));
+                }
+                catch (Exception err)
+                {
+                    Log.Error(err, "Com client {ConnectionToken} send msg error", ConnectionToken);
+                }
+                RefreshSendCount();
+            }
+        }
 
-                    try
+        protected override void ReceiveMsgThreadStart()
+        {
+            _receiveThread = Task.Run(()=>ReceiveMessage());
+        }
+
+        protected override void ReceiveMsgThreadStop()
+        {
+            _taskCancel = true;
+        }
+
+        private void ReceiveMessage()
+        {
+            while (!_taskCancel)
+            {
+                try
+                {
+                    var returnBytes = ReadMsg();
+                    if (returnBytes != null)
                     {
-                        returnBytes = ReadMsg();
                         Log.Verbose("Com client {ConnectionToken} receive msg length: {Length}", ConnectionToken,
                             returnBytes.Length);
                         Log.Verbose(
                             $"Com client {ConnectionToken} receive msg: {String.Concat(returnBytes.Select(p => " " + p.ToString("X2")))}");
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Error(e, "Com client {ConnectionToken} read msg error", ConnectionToken);
-                        return null;
+
+                        var isMessageConfirmed = Controller.ConfirmMessage(returnBytes);
+                        if (isMessageConfirmed == false)
+                        {
+                            //主动传输事件
+                        }
                     }
                     RefreshReceiveCount();
-                }
-                return returnBytes;
-            }
-            catch (Exception err)
-            {
-                Log.Error(err, "Com client {ConnectionToken} read error", ConnectionToken);
-                Dispose();
-                return null;
-            }
-        }
 
-        /// <summary>
-        ///     带返回发送数据
-        /// </summary>
-        /// <param name="message">需要发送的数据</param>
-        /// <returns>是否发送成功</returns>
-        public override Task<byte[]> SendMsgAsync(byte[] message)
-        {
-            return Task.FromResult(SendMsg(message));
+                    Thread.Sleep(500);
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e, "Com client {ConnectionToken} read msg error", ConnectionToken);
+                }
+            }
         }
 
         private byte[] ReadMsg()
         {
             try
             {
-                if (!SerialPort.IsOpen)
-                    SerialPort.Open();
+                CheckOpen();
 
                 byte[] data;
                 Thread.Sleep(100);
                 var i = ReadComm(out data, 10, 5000, 1000);
-                var returndata = new byte[i];
-                Array.Copy(data, 0, returndata, 0, i);
-                return returndata;
+                if (i > 0)
+                {
+                    var returndata = new byte[i];
+                    Array.Copy(data, 0, returndata, 0, i);
+                    return returndata;
+                }
+                return null;
             }
             catch (Exception e)
             {

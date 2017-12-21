@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFrameworks>net45;netstandard20</TargetFrameworks>
     <AssemblyName>Modbus.Net</AssemblyName>
     <RootNamespace>Modbus.Net</RootNamespace>
     <PackageId>Modbus.Net</PackageId>
@@ -27,46 +27,24 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\src\Base.Common\AddressCombiner.cs" Link="AddressCombiner.cs" />
-    <Compile Include="..\src\Base.Common\AddressFormater.cs" Link="AddressFormater.cs" />
-    <Compile Include="..\src\Base.Common\AddressHelper.cs" Link="AddressHelper.cs" />
-    <Compile Include="..\src\Base.Common\AddressTranslator.cs" Link="AddressTranslator.cs" />
-    <Compile Include="..\src\Base.Common\AsyncHelper.cs" Link="AsyncHelper.cs" />
-    <Compile Include="..\src\Base.Common\BaseConnector.cs" Link="BaseConnector.cs" />
-    <Compile Include="..\src\Base.Common\BaseMachine.cs" Link="BaseMachine.cs" />
-    <Compile Include="..\src\Base.Common\BaseMachineExtend.cs" Link="BaseMachineExtend.cs" />
-    <Compile Include="..\src\Base.Common\BaseProtocal.cs" Link="BaseProtocal.cs" />
-    <Compile Include="..\src\Base.Common\BaseUtility.cs" Link="BaseUtility.cs" />
-    <Compile Include="..\src\Base.Common\CRC16.cs" Link="CRC16.cs" />
-    <Compile Include="..\src\Base.Common\IProtocal.cs" Link="IProtocal.cs" />
-    <Compile Include="..\src\Base.Common\IProtocalFormatting.cs" Link="IProtocalFormatting.cs" />
-    <Compile Include="..\src\Base.Common\IProtocalLinker.cs" Link="IProtocalLinker.cs" />
-    <Compile Include="..\src\Base.Common\IProtocalLinkerBytesExtend.cs" Link="IProtocalLinkerBytesExtend.cs" />
-    <Compile Include="..\src\Base.Common\ProtocalLinker.cs" Link="ProtocalLinker.cs" />
-    <Compile Include="..\src\Base.Common\ProtocalUnit.cs" Link="ProtocalUnit.cs" />
-    <Compile Include="..\src\Base.Common\TaskManager.cs" Link="TaskManager.cs" />
-    <Compile Include="..\src\Base.Common\TcpConnector.cs" Link="TcpConnector.cs" />
-    <Compile Include="..\src\Base.Common\TcpProtocalLinker.cs" Link="TcpProtocalLinker.cs" />
-    <Compile Include="..\src\Base.Common\ValueHelper.cs" Link="ValueHelper.cs" />
-    <Compile Include="..\src\Base.Common\IUtilityMethod.cs" Link="IUtilityMethod.cs" />
-    <Compile Include="..\src\Base.Common\IMachineMethod.cs" Link="IMachineMethod.cs" />
-    <Compile Include="..\src\Base.Common\IConnector.cs" Link="IConnector.cs" />
-    <!--
-    <Compile Include="..\src\Base.Common\ComProtocalLinker.cs" Link="ComProtocalLinker.cs" />
-    <Compile Include="..\src\Base.Common\ComConnector.cs" Link="ComConnector.cs" />
-    -->
-    <Compile Include="..\src\Base.Common\PipeUnit.cs" Link="PipeUnit.cs" />
-    <Compile Include="..\src\Base.Common\IController.cs" Link="IController.cs" />
-    <Compile Include="..\src\Base.Common\BaseController.cs" Link="BaseController.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Nito.AsyncEx" Version="4.0.1" />
     <PackageReference Include="Serilog" Version="2.5.0" />
   </ItemGroup>
+  
+  <ItemGroup Condition="'$(TargetFramework)' == 'net45' ">
+    <PackageReference Include="Nito.AsyncEx" Version="4.0.1" />
+  </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net45' ">
     <Reference Include="System.Configuration" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard20' ">
+    <PackageReference Include="Nito.AsyncEx.Tasks" Version="1.1.0" />
+    <PackageReference Include="Nito.AsyncEx.Coordination" Version="1.0.2" />
+    <PackageReference Include="System.Collections.NonGeneric" Version="4.3.0" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.4.0" />
+    <PackageReference Include="System.Threading.ThreadPool" Version="4.3.0" />
+    <PackageReference Include="System.IO.Ports" Version="4.4.0" />
+  </ItemGroup>
+  
 </Project>

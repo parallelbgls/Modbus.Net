@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFrameworks>net45;netstandard20</TargetFrameworks>
     <AssemblyName>Modbus.Net.Siemens</AssemblyName>
     <RootNamespace>Modbus.Net.Siemens</RootNamespace>
     <PackageId>Modbus.Net.Siemens</PackageId>
@@ -26,25 +26,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\src\Siemens.Common\AddressFormaterSiemens.cs" Link="AddressFormaterSiemens.cs" />
-    <Compile Include="..\src\Siemens.Common\AddressTranslatorSiemens.cs" Link="AddressTranslatorSiemens.cs" />
-    <Compile Include="..\src\Siemens.Common\SiemensMachine.cs" Link="SiemensMachine.cs" />
-    <!--
-    <Compile Include="..\src\Siemens.Common\SiemensPpiProtocal.cs" Link="SiemensPpiProtocal.cs" />
-    <Compile Include="..\src\Siemens.Common\SiemensPpiProtocalLinker.cs" Link="SiemensPpiProtocalLinker.cs" />
-    -->
-    <Compile Include="..\src\Siemens.Common\SiemensProtocal.cs" Link="SiemensProtocal.cs" />
-    <Compile Include="..\src\Siemens.Common\SiemensProtocalLinkerBytesExtend.cs" Link="SiemensProtocalLinkerBytesExtend.cs" />
-    <Compile Include="..\src\Siemens.Common\SiemensTcpProtocal.cs" Link="SiemensTcpProtocal.cs" />
-    <Compile Include="..\src\Siemens.Common\SiemensTcpProtocalLinker.cs" Link="SiemensTcpProtocalLinker.cs" />
-    <Compile Include="..\src\Siemens.Common\SiemensUtility.cs" Link="SiemensUtility.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Modbus.Net\Modbus.Net.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net45' ">
     <Reference Include="System.Configuration" />
   </ItemGroup>
 

@@ -196,6 +196,7 @@ namespace Modbus.Net
             try
             {
                 Dispose();
+                Controller.SendStop();
                 Log.Information("Tcp client {ConnectionToken} disconnected successfully", ConnectionToken);
                 return true;
             }

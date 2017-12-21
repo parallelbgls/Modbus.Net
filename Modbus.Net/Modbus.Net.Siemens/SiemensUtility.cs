@@ -183,8 +183,7 @@ namespace Modbus.Net.Siemens
                 _siemensType = value;
                 switch (_siemensType)
                 {
-                    //PPI
-                    /*
+                    //PPI                    
                     case SiemensType.Ppi:
                     {
                         Wrapper = ConnectionString == null
@@ -196,8 +195,7 @@ namespace Modbus.Net.Siemens
                     case SiemensType.Mpi:
                     {
                         throw new NotImplementedException();
-                    }
-                    */
+                    }                   
                     //Ethenet
                     case SiemensType.Tcp:
                     {
