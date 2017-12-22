@@ -12,6 +12,7 @@ namespace Modbus.Net.Siemens
         /// <summary>
         ///     构造函数
         /// </summary>
+        /// <param name="id">设备id号</param>
         /// <param name="connectionType">连接类型</param>
         /// <param name="connectionString">连接地址</param>
         /// <param name="model">设备类型</param>
@@ -19,11 +20,13 @@ namespace Modbus.Net.Siemens
         /// <param name="keepConnect">是否保持连接</param>
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
+        /// <param name="src">本机模块位，0到7，仅200使用，其它型号不要填写</param>
+        /// <param name="dst">PLC模块位，0到7，仅200使用，其它型号不要填写</param>
         public SiemensMachine(TKey id, SiemensType connectionType, string connectionString, SiemensMachineModel model,
-            IEnumerable<AddressUnit<TUnitKey>> getAddresses, bool keepConnect, byte slaveAddress, byte masterAddress)
+            IEnumerable<AddressUnit<TUnitKey>> getAddresses, bool keepConnect, byte slaveAddress, byte masterAddress, byte src = 1, byte dst = 0)
             : base(id, getAddresses, keepConnect, slaveAddress, masterAddress)
         {
-            BaseUtility = new SiemensUtility(connectionType, connectionString, model, slaveAddress, masterAddress);
+            BaseUtility = new SiemensUtility(connectionType, connectionString, model, slaveAddress, masterAddress, src, dst);
             AddressFormater = new AddressFormaterSiemens();
             AddressCombiner = new AddressCombinerContinus<TUnitKey>(AddressTranslator, 100);
             AddressCombinerSet = new AddressCombinerContinus<TUnitKey>(AddressTranslator, 100);
@@ -32,15 +35,18 @@ namespace Modbus.Net.Siemens
         /// <summary>
         ///     构造函数
         /// </summary>
+        /// <param name="id">设备id号</param>
         /// <param name="connectionType">连接类型</param>
         /// <param name="connectionString">连接地址</param>
         /// <param name="model">设备类型</param>
         /// <param name="getAddresses">读写的地址</param>
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
+        /// <param name="src">本机模块位，0到7，仅200使用，其它型号不要填写</param>
+        /// <param name="dst">PLC模块位，0到7，仅200使用，其它型号不要填写</param>
         public SiemensMachine(TKey id, SiemensType connectionType, string connectionString, SiemensMachineModel model,
-            IEnumerable<AddressUnit<TUnitKey>> getAddresses, byte slaveAddress, byte masterAddress)
-            : this(id, connectionType, connectionString, model, getAddresses, false, slaveAddress, masterAddress)
+            IEnumerable<AddressUnit<TUnitKey>> getAddresses, byte slaveAddress, byte masterAddress, byte src = 1, byte dst = 0)
+            : this(id, connectionType, connectionString, model, getAddresses, false, slaveAddress, masterAddress, src, dst)
         {
         }
     }
@@ -53,6 +59,7 @@ namespace Modbus.Net.Siemens
         /// <summary>
         ///     构造函数
         /// </summary>
+        /// <param name="id">设备id号</param>
         /// <param name="connectionType">连接类型</param>
         /// <param name="connectionString">连接地址</param>
         /// <param name="model">设备类型</param>
@@ -60,11 +67,13 @@ namespace Modbus.Net.Siemens
         /// <param name="keepConnect">是否保持连接</param>
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
+        /// <param name="src">本机模块位，0到7，仅200使用，其它型号不要填写</param>
+        /// <param name="dst">PLC模块位，0到7，仅200使用，其它型号不要填写</param>
         public SiemensMachine(string id, SiemensType connectionType, string connectionString, SiemensMachineModel model,
-            IEnumerable<AddressUnit> getAddresses, bool keepConnect, byte slaveAddress, byte masterAddress)
+            IEnumerable<AddressUnit> getAddresses, bool keepConnect, byte slaveAddress, byte masterAddress, byte src = 1, byte dst = 0)
             : base(id, getAddresses, keepConnect, slaveAddress, masterAddress)
         {
-            BaseUtility = new SiemensUtility(connectionType, connectionString, model, slaveAddress, masterAddress);
+            BaseUtility = new SiemensUtility(connectionType, connectionString, model, slaveAddress, masterAddress, src, dst);
             AddressFormater = new AddressFormaterSiemens();
             AddressCombiner = new AddressCombinerContinus(AddressTranslator, 100);
             AddressCombinerSet = new AddressCombinerContinus(AddressTranslator, 100);
@@ -73,15 +82,18 @@ namespace Modbus.Net.Siemens
         /// <summary>
         ///     构造函数
         /// </summary>
+        /// <param name="id">设备id号</param>
         /// <param name="connectionType">连接类型</param>
         /// <param name="connectionString">连接地址</param>
         /// <param name="model">设备类型</param>
         /// <param name="getAddresses">读写的地址</param>
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
+        /// <param name="src">本机模块位，0到7，仅200使用，其它型号不要填写</param>
+        /// <param name="dst">PLC模块位，0到7，仅200使用，其它型号不要填写</param>
         public SiemensMachine(string id, SiemensType connectionType, string connectionString, SiemensMachineModel model,
-            IEnumerable<AddressUnit> getAddresses, byte slaveAddress, byte masterAddress)
-            : this(id, connectionType, connectionString, model, getAddresses, false, slaveAddress, masterAddress)
+            IEnumerable<AddressUnit> getAddresses, byte slaveAddress, byte masterAddress, byte src = 1, byte dst = 0)
+            : this(id, connectionType, connectionString, model, getAddresses, false, slaveAddress, masterAddress, src, dst)
         {
         }
     }

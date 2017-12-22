@@ -66,6 +66,8 @@ namespace Modbus.Net.Siemens
         private readonly byte _tdpuSize;
         private readonly ushort _tsapDst;
 
+        private ushort _sendCount;
+
         private SiemensType _siemensType;
 
         /// <summary>
@@ -76,8 +78,10 @@ namespace Modbus.Net.Siemens
         /// <param name="model">设备类型</param>
         /// <param name="slaveAddress">从站地址</param>
         /// <param name="masterAddress">主站地址</param>
+        /// <param name="src">本机模块位，0到7，仅200使用，其它型号不要填写</param>
+        /// <param name="dst">PLC模块位，0到7，仅200使用，其它型号不要填写</param>
         public SiemensUtility(SiemensType connectionType, string connectionString, SiemensMachineModel model,
-            byte slaveAddress, byte masterAddress) : base(slaveAddress, masterAddress)
+            byte slaveAddress, byte masterAddress, byte src = 1, byte dst = 0) : base(slaveAddress, masterAddress)
         {
             ConnectionString = connectionString;
             switch (model)
@@ -85,8 +89,8 @@ namespace Modbus.Net.Siemens
                 case SiemensMachineModel.S7_200:
                 {
                     _tdpuSize = 0x09;
-                    _taspSrc = 0x1001;
-                    _tsapDst = 0x1000;
+                    _taspSrc = (ushort)(0x1000 + src);
+                    _tsapDst = (ushort)(0x1000 + dst);
                     _maxCalling = 0x0001;
                     _maxCalled = 0x0001;
                     _maxPdu = 0x03c0;
@@ -131,6 +135,7 @@ namespace Modbus.Net.Siemens
             }
             ConnectionType = connectionType;
             AddressTranslator = new AddressTranslatorSiemens();
+            _sendCount = 0;
         }
 
         /// <summary>
@@ -231,8 +236,9 @@ namespace Modbus.Net.Siemens
         {
             try
             {
+                _sendCount = (ushort)(_sendCount % 65535 + 1);
                 var readRequestSiemensInputStruct = new ReadRequestSiemensInputStruct(SlaveAddress, MasterAddress,
-                    0xd3c7, SiemensTypeCode.Byte, startAddress, (ushort) getByteCount, AddressTranslator);
+                    _sendCount, SiemensTypeCode.Byte, startAddress, (ushort) getByteCount, AddressTranslator);
                 var readRequestSiemensOutputStruct =
                     await
                         Wrapper.SendReceiveAsync<ReadRequestSiemensOutputStruct>(
@@ -257,8 +263,9 @@ namespace Modbus.Net.Siemens
         {
             try
             {
+                _sendCount = (ushort)(_sendCount % 65535 + 1);
                 var writeRequestSiemensInputStruct = new WriteRequestSiemensInputStruct(SlaveAddress, MasterAddress,
-                    0xd3c8, startAddress, setContents, AddressTranslator);
+                    _sendCount, startAddress, setContents, AddressTranslator);
                 var writeRequestSiemensOutputStruct =
                     await
                         Wrapper.SendReceiveAsync<WriteRequestSiemensOutputStruct>(
