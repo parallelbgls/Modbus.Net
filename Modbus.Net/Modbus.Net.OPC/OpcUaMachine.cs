@@ -14,6 +14,7 @@ namespace Modbus.Net.OPC
         /// <summary>
         ///     构造函数
         /// </summary>
+        /// <param name="id">设备的ID号</param>
         /// <param name="connectionString">连接地址</param>
         /// <param name="getAddresses">需要读写的数据</param>
         /// <param name="keepConnect">是否保持连接</param>
@@ -29,6 +30,7 @@ namespace Modbus.Net.OPC
         /// <summary>
         ///     构造函数
         /// </summary>
+        /// <param name="id">设备的ID号</param>
         /// <param name="connectionString">连接地址</param>
         /// <param name="getAddresses">需要读写的数据</param>
         public OpcUaMachine(TKey id, string connectionString, IEnumerable<AddressUnit<TUnitKey>> getAddresses)
@@ -45,6 +47,7 @@ namespace Modbus.Net.OPC
         /// <summary>
         ///     构造函数
         /// </summary>
+        /// <param name="id">设备的ID号</param>
         /// <param name="connectionString">连接地址</param>
         /// <param name="getAddresses">需要读写的数据</param>
         /// <param name="keepConnect">是否保持连接</param>
@@ -60,6 +63,7 @@ namespace Modbus.Net.OPC
         /// <summary>
         ///     构造函数
         /// </summary>
+        /// <param name="id">设备的ID号</param>
         /// <param name="connectionString">连接地址</param>
         /// <param name="getAddresses">需要读写的数据</param>
         public OpcUaMachine(string id, string connectionString, IEnumerable<AddressUnit> getAddresses)

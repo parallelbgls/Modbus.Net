@@ -377,6 +377,9 @@ namespace Modbus.Net
             return returnBytes.ByteToString();
         }
 
+        /// <summary>
+        ///     确认串口是否已经打开，如果没有打开则尝试打开两次，连续失败直接释放连接资源
+        /// </summary>
         protected void CheckOpen()
         {
             if (!SerialPort.IsOpen)
@@ -439,6 +442,10 @@ namespace Modbus.Net
             return messageSendingdef;
         }
 
+        /// <summary>
+        ///     发送数据，不确认
+        /// </summary>
+        /// <param name="message">需要发送的数据</param>
         protected override async Task SendMsgWithoutConfirm(byte[] message)
         {
             using (await SerialPort.Lock.LockAsync())
@@ -459,11 +466,13 @@ namespace Modbus.Net
             }
         }
 
+        /// <inheritdoc />
         protected override void ReceiveMsgThreadStart()
         {
             _receiveThread = Task.Run(()=>ReceiveMessage());
         }
 
+        /// <inheritdoc />
         protected override void ReceiveMsgThreadStop()
         {
             _taskCancel = true;

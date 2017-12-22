@@ -237,6 +237,10 @@ namespace Modbus.Net
             return messageSendingdef;
         }
 
+        /// <summary>
+        ///     发送信息，不进行返回确认
+        /// </summary>
+        /// <param name="message">发送的信息</param>
         protected override async Task SendMsgWithoutConfirm(byte[] message)
         {
             var datagram = message;
@@ -261,11 +265,17 @@ namespace Modbus.Net
             }
         }
 
+        /// <summary>
+        ///     启动获取线程
+        /// </summary>
         protected override void ReceiveMsgThreadStart()
         {
             _receiveThread = Task.Run(ReceiveMessage);
         }
 
+        /// <summary>
+        ///     停止获取线程
+        /// </summary>
         protected override void ReceiveMsgThreadStop()
         {
             _taskCancel = true;
@@ -317,7 +327,7 @@ namespace Modbus.Net
         /// <summary>
         ///     接收消息，并转换成字符串
         /// </summary>
-        /// <param name="len"></param>
+        /// <param name="len">消息的长度</param>
         private byte[] CheckReplyDatagram(int len)
         {
             var replyMessage = new byte[len];

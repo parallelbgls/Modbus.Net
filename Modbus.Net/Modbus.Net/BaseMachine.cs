@@ -92,6 +92,7 @@ namespace Modbus.Net
         /// <summary>
         ///     构造器
         /// </summary>
+        /// <param name="id">设备的ID号</param>
         /// <param name="getAddresses">需要与设备通讯的地址</param>
         protected BaseMachine(string id, IEnumerable<AddressUnit> getAddresses) : base(id, getAddresses)
         {
@@ -100,6 +101,7 @@ namespace Modbus.Net
         /// <summary>
         ///     构造器
         /// </summary>
+        /// <param name="id">设备的ID号</param>
         /// <param name="getAddresses">需要与设备通讯的地址</param>
         /// <param name="keepConnect">是否保持连接</param>
         protected BaseMachine(string id, IEnumerable<AddressUnit> getAddresses, bool keepConnect)
@@ -110,6 +112,7 @@ namespace Modbus.Net
         /// <summary>
         ///     构造器
         /// </summary>
+        /// <param name="id">设备的ID号</param>
         /// <param name="getAddresses">需要与设备通讯的地址</param>
         /// <param name="keepConnect">是否保持连接</param>
         /// <param name="slaveAddress">从站地址</param>
@@ -134,6 +137,7 @@ namespace Modbus.Net
         /// <summary>
         ///     构造器
         /// </summary>
+        /// <param name="id">设备的ID号</param>
         /// <param name="getAddresses">需要与设备通讯的地址</param>
         protected BaseMachine(TKey id, IEnumerable<AddressUnit<TUnitKey>> getAddresses)
             : this(id, getAddresses, false)
@@ -143,6 +147,7 @@ namespace Modbus.Net
         /// <summary>
         ///     构造器
         /// </summary>
+        /// <param name="id">设备的ID号</param>
         /// <param name="getAddresses">需要与设备通讯的地址</param>
         /// <param name="keepConnect">是否保持连接</param>
         protected BaseMachine(TKey id, IEnumerable<AddressUnit<TUnitKey>> getAddresses, bool keepConnect)
@@ -155,6 +160,7 @@ namespace Modbus.Net
         /// <summary>
         ///     构造器
         /// </summary>
+        /// <param name="id">设备的ID号</param>
         /// <param name="getAddresses">需要与设备通讯的地址</param>
         /// <param name="keepConnect">是否保持连接</param>
         /// <param name="slaveAddress">从站地址</param>
@@ -188,8 +194,8 @@ namespace Modbus.Net
         /// </summary>
         public AddressTranslator AddressTranslator
         {
-            get { return BaseUtility.AddressTranslator; }
-            set { BaseUtility.AddressTranslator = value; }
+            get => BaseUtility.AddressTranslator;
+            set => BaseUtility.AddressTranslator = value;
         }
 
         /// <summary>

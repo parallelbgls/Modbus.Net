@@ -8,17 +8,30 @@ using Serilog;
 
 namespace Modbus.Net
 {
+    /// <summary>
+    ///     先入先出式控制器
+    /// </summary>
     public class FifoController : BaseController
     {
         private MessageWaitingDef _currentSendingPos;
 
+        private bool _taskCancel = false;
+
+        /// <summary>
+        ///     间隔时间
+        /// </summary>
         public int AcquireTime { get; }
 
+        /// <summary>
+        ///     构造器
+        /// </summary>
+        /// <param name="acquireTime">间隔时间</param>
         public FifoController(int acquireTime)
         {
             AcquireTime = acquireTime;
         }
 
+        /// <inheritdoc cref="BaseController.SendingMessageControlInner"/>
         protected override void SendingMessageControlInner()
         {
             try
@@ -64,11 +77,19 @@ namespace Modbus.Net
 
         }
 
+        /// <inheritdoc cref="BaseController.SendStop"/>
+        public override void SendStop()
+        {
+            _taskCancel = true;
+        }
+
+        /// <inheritdoc cref="BaseController.GetKeyFromMessage(byte[])"/>
         protected override string GetKeyFromMessage(byte[] message)
         {
             return null;
         }
 
+        /// <inheritdoc cref="BaseController.GetMessageFromWaitingList(byte[])"/>
         protected override MessageWaitingDef GetMessageFromWaitingList(byte[] receiveMessage)
         {
             return WaitingMessages.FirstOrDefault();

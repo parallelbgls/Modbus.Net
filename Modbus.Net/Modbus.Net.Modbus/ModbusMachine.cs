@@ -12,6 +12,7 @@ namespace Modbus.Net.Modbus
         /// <summary>
         ///     构造函数
         /// </summary>
+        /// <param name="id">设备的ID号</param>
         /// <param name="connectionType">连接类型</param>
         /// <param name="connectionString">连接地址</param>
         /// <param name="getAddresses">读写的地址</param>
@@ -33,6 +34,7 @@ namespace Modbus.Net.Modbus
         /// <summary>
         ///     构造函数
         /// </summary>
+        /// <param name="id">设备的ID号</param>
         /// <param name="connectionType">连接类型</param>
         /// <param name="connectionString">连接地址</param>
         /// <param name="getAddresses">读写的地址</param>
@@ -55,6 +57,7 @@ namespace Modbus.Net.Modbus
         /// <summary>
         ///     构造函数
         /// </summary>
+        /// <param name="id">设备的ID号</param>
         /// <param name="connectionType">连接类型</param>
         /// <param name="connectionString">连接地址</param>
         /// <param name="getAddresses">读写的地址</param>
@@ -76,6 +79,7 @@ namespace Modbus.Net.Modbus
         /// <summary>
         ///     构造函数
         /// </summary>
+        /// <param name="id">设备的ID号</param>
         /// <param name="connectionType">连接类型</param>
         /// <param name="connectionString">连接地址</param>
         /// <param name="getAddresses">读写的地址</param>

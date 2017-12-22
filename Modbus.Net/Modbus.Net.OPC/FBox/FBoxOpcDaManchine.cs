@@ -11,6 +11,7 @@ namespace Modbus.Net.OPC.FBox
         /// <summary>
         ///     构造函数
         /// </summary>
+        /// <param name="id">设备的ID号</param>
         /// <param name="localSequence">页名称</param>
         /// <param name="linkerName">设备名称</param>
         /// <param name="getAddresses">获取地址</param>
@@ -36,6 +37,7 @@ namespace Modbus.Net.OPC.FBox
         /// <summary>
         ///     构造函数
         /// </summary>
+        /// <param name="id">设备的ID号</param>
         /// <param name="localSequence">页名称</param>
         /// <param name="linkerName">设备名称</param>
         /// <param name="getAddresses">获取地址</param>

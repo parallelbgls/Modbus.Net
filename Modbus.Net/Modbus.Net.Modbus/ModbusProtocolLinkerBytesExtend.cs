@@ -5,11 +5,17 @@ using System.Text;
 
 namespace Modbus.Net.Modbus
 {
+    /// <summary>
+    ///     Rtu透传字节伸缩
+    /// </summary>
     public class ModbusRtuInTcpProtocolLinkerBytesExtend : ModbusRtuProtocolLinkerBytesExtend
     {
         
     }
 
+    /// <summary>
+    ///     Ascii透传字节伸缩
+    /// </summary>
     public class ModbusAsciiInTcpProtocolLinkerBytesExtend : ModbusAsciiProtocolLinkerBytesExtend
     {
 

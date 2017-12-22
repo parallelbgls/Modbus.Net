@@ -18,11 +18,18 @@ namespace Modbus.Net
 
         //protected event MessageReturnDelegate MessageReturn;
 
+        /// <summary>
+        ///     增加传输控制器
+        /// </summary>
+        /// <param name="controller">传输控制器</param>
         public void AddController(IController controller)
         {
             Controller = controller;
         }
 
+        /// <summary>
+        ///     传输控制器
+        /// </summary>
         protected IController Controller { get; set; }
 
         /// <summary>

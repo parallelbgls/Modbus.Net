@@ -8,20 +8,37 @@ using Serilog;
 
 namespace Modbus.Net
 {
+    /// <summary>
+    ///     通讯号匹配模式的控制器
+    /// </summary>
     public class MatchController : BaseController
     {
         private MessageWaitingDef _currentSendingPos;
 
+        private bool _taskCancel = false;
+
+        /// <summary>
+        ///     获取间隔
+        /// </summary>
         public int AcquireTime { get; }
 
+        /// <summary>
+        ///     匹配字典
+        /// </summary>
         protected ICollection<int>[] KeyMatches { get; }
 
+        /// <summary>
+        ///     构造器
+        /// </summary>
+        /// <param name="keyMatches">匹配字典，每个Collection代表一个匹配集合，每一个匹配集合中的数字代表需要匹配的位置，最后计算出来的数字是所有位置数字按照集合排序后叠放在一起</param>
+        /// <param name="acquireTime">获取间隔</param>
         public MatchController(ICollection<int>[] keyMatches, int acquireTime)
         {
             KeyMatches = keyMatches;
             AcquireTime = acquireTime;
         }
 
+        /// <inheritdoc cref="BaseController.SendingMessageControlInner" />
         protected override void SendingMessageControlInner()
         {
             try
@@ -67,6 +84,13 @@ namespace Modbus.Net
 
         }
 
+        /// <inheritdoc cref="BaseController.SendStop" />
+        public override void SendStop()
+        {
+            _taskCancel = false;
+        }
+
+        /// <inheritdoc cref="BaseController.GetKeyFromMessage(byte[])" />
         protected override string GetKeyFromMessage(byte[] message)
         {
             string ans = "";
@@ -82,6 +106,7 @@ namespace Modbus.Net
             return ans;
         }
 
+        /// <inheritdoc cref="BaseController.GetMessageFromWaitingList(byte[])" />
         protected override MessageWaitingDef GetMessageFromWaitingList(byte[] receiveMessage)
         {
             var returnKey = GetKeyFromMessage(receiveMessage);

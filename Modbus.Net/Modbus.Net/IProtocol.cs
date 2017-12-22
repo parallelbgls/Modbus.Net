@@ -9,6 +9,7 @@ namespace Modbus.Net
     /// <typeparam name="TParamIn">向Connector传入的类型</typeparam>
     /// <typeparam name="TParamOut">从Connector返回的类型</typeparam>
     /// <typeparam name="TProtocolUnit">协议单元的类型</typeparam>
+    /// <typeparam name="TPipeUnit">管道的类型</typeparam>
     public interface IProtocol<TParamIn, TParamOut, TProtocolUnit, TPipeUnit>
         where TProtocolUnit : class, IProtocolFormatting<TParamIn, TParamOut>
         where TParamOut : class

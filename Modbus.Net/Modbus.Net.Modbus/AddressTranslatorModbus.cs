@@ -3,6 +3,9 @@ using System.Linq;
 
 namespace Modbus.Net.Modbus
 {
+    /// <summary>
+    ///     Modbus地址翻译器基类
+    /// </summary>
     public abstract class ModbusTranslatorBase : AddressTranslator
     {
         /// <summary>

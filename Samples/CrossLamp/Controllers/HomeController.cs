@@ -58,7 +58,7 @@ namespace CrossLamp.Controllers
                 light.SetStart(lamps[6]);
                 return Json(light, JsonRequestBehavior.AllowGet);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return null;
             }

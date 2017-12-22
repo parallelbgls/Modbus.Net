@@ -35,6 +35,9 @@ namespace Modbus.Net.Modbus
         AsciiInTcp = 4,
     }
 
+    /// <summary>
+    ///     写单个单元的方法接口
+    /// </summary>
     public interface IUtilityMethodWriteSingle : IUtilityMethod
     {
         /// <summary>

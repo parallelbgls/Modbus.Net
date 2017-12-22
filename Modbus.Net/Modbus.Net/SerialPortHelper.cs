@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
+﻿using System.Globalization;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Modbus.Net
 {
+    /// <summary>
+    ///     串口辅助类
+    /// </summary>
     public static class SerialPortHelper
     {
         /// <summary>

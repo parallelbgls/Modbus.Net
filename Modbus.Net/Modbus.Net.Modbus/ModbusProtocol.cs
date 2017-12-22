@@ -396,7 +396,6 @@ namespace Modbus.Net.Modbus
             var translateAddress = addressTranslator.AddressTranslate(startAddress, false, true);
             FunctionCode = (byte) translateAddress.Area;
             StartAddress = (ushort) translateAddress.Address;
-            int a = 0, b = 0;
             var writeByteValue =
                 FunctionCode == (byte) ModbusProtocolWriteDataFunctionCode.WriteSingleCoil
                     ? ((bool) writeValue

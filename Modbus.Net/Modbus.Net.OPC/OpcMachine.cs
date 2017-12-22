@@ -12,6 +12,7 @@ namespace Modbus.Net.OPC
         /// <summary>
         ///     构造函数
         /// </summary>
+        /// <param name="id">设备的ID号</param>
         /// <param name="getAddresses">需要读写的地址</param>
         /// <param name="keepConnect">是否保持连接</param>
         protected OpcMachine(TKey id, IEnumerable<AddressUnit<TUnitKey>> getAddresses, bool keepConnect)
@@ -30,6 +31,7 @@ namespace Modbus.Net.OPC
         /// <summary>
         ///     构造函数
         /// </summary>
+        /// <param name="id">设备的ID号</param>
         /// <param name="getAddresses">需要读写的地址</param>
         /// <param name="keepConnect">是否保持连接</param>
         protected OpcMachine(string id, IEnumerable<AddressUnit> getAddresses, bool keepConnect)
