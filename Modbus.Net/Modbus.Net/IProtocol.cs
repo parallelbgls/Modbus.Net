@@ -8,23 +8,23 @@ namespace Modbus.Net
     /// </summary>
     /// <typeparam name="TParamIn">向Connector传入的类型</typeparam>
     /// <typeparam name="TParamOut">从Connector返回的类型</typeparam>
-    /// <typeparam name="TProtocalUnit">协议单元的类型</typeparam>
-    public interface IProtocal<TParamIn, TParamOut, TProtocalUnit, TPipeUnit>
-        where TProtocalUnit : class, IProtocalFormatting<TParamIn, TParamOut>
+    /// <typeparam name="TProtocolUnit">协议单元的类型</typeparam>
+    public interface IProtocol<TParamIn, TParamOut, TProtocolUnit, TPipeUnit>
+        where TProtocolUnit : class, IProtocolFormatting<TParamIn, TParamOut>
         where TParamOut : class
-        where TPipeUnit : PipeUnit<TParamIn, TParamOut, IProtocalLinker<TParamIn, TParamOut>, TProtocalUnit>
+        where TPipeUnit : PipeUnit<TParamIn, TParamOut, IProtocolLinker<TParamIn, TParamOut>, TProtocolUnit>
     {
         /// <summary>
         ///     协议的连接器
         /// </summary>
-        IProtocalLinker<TParamIn, TParamOut> ProtocalLinker { get; }
+        IProtocolLinker<TParamIn, TParamOut> ProtocolLinker { get; }
 
         /// <summary>
         ///     协议索引器，这是一个懒加载协议，当字典中不存在协议时自动加载协议，否则调用已经加载的协议
         /// </summary>
         /// <param name="type">协议的类的GetType</param>
         /// <returns>协议的实例</returns>
-        TProtocalUnit this[Type type] { get; }
+        TProtocolUnit this[Type type] { get; }
 
         /// <summary>
         ///     协议连接开始
@@ -58,7 +58,7 @@ namespace Modbus.Net
         /// <param name="unit">协议的实例</param>
         /// <param name="content">输入信息的结构化描述</param>
         /// <returns>输出信息的结构化描述</returns>
-        TPipeUnit SendReceive(TProtocalUnit unit, IInputStruct content);
+        TPipeUnit SendReceive(TProtocolUnit unit, IInputStruct content);
 
         /// <summary>
         ///     发送协议，通过传入需要使用的协议内容和输入结构
@@ -66,7 +66,7 @@ namespace Modbus.Net
         /// <param name="unit">协议的实例</param>
         /// <param name="content">输入信息的结构化描述</param>
         /// <returns>输出信息的结构化描述</returns>
-        Task<TPipeUnit> SendReceiveAsync(TProtocalUnit unit, IInputStruct content);
+        Task<TPipeUnit> SendReceiveAsync(TProtocolUnit unit, IInputStruct content);
 
         /// <summary>
         ///     发送协议，通过传入需要使用的协议内容和输入结构
@@ -76,7 +76,7 @@ namespace Modbus.Net
         /// <returns>输出信息的结构化描述</returns>
         /// <typeparam name="T">IOutputStruct的具体类型</typeparam>
         T SendReceive<T>(
-            TProtocalUnit unit, IInputStruct content) where T : class, IOutputStruct;
+            TProtocolUnit unit, IInputStruct content) where T : class, IOutputStruct;
 
         /// <summary>
         ///     发送协议，通过传入需要使用的协议内容和输入结构
@@ -86,6 +86,6 @@ namespace Modbus.Net
         /// <returns>输出信息的结构化描述</returns>
         /// <typeparam name="T">IOutputStruct的具体类型</typeparam>
         Task<T> SendReceiveAsync<T>(
-            TProtocalUnit unit, IInputStruct content) where T : class, IOutputStruct;
+            TProtocolUnit unit, IInputStruct content) where T : class, IOutputStruct;
     }
 }

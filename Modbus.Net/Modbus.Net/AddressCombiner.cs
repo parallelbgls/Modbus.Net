@@ -76,7 +76,7 @@ namespace Modbus.Net
             //按从小到大的顺序对地址进行排序
             var groupedAddresses = from address in addresses
                 orderby
-                AddressHelper.GetProtocalCoordinate(address.Address, address.SubAddress,
+                AddressHelper.GetProtocolCoordinate(address.Address, address.SubAddress,
                     AddressTranslator.GetAreaByteLength(address.Area))
                 group address by address.Area
                 into grouped
@@ -97,42 +97,42 @@ namespace Modbus.Net
                 var orderedAddresses =
                     groupedAddress.OrderBy(
                         address =>
-                            AddressHelper.GetProtocalCoordinate(address.Address, address.SubAddress,
+                            AddressHelper.GetProtocolCoordinate(address.Address, address.SubAddress,
                                 AddressTranslator.GetAreaByteLength(address.Area)));
                 foreach (var address in orderedAddresses)
                 {
                     //第一次进入时直接压入地址
                     if (initNum < 0)
                     {
-                        initNum = AddressHelper.GetProtocalCoordinate(address.Address, address.SubAddress,
+                        initNum = AddressHelper.GetProtocolCoordinate(address.Address, address.SubAddress,
                             AddressTranslator.GetAreaByteLength(address.Area));
                         originalAddresses.Add(address);
                     }
                     else
                     {
                         //如果当前地址小于已经记录的地址域，表示这个地址的开始已经记录过了
-                        if (AddressHelper.GetProtocalCoordinate(address.Address, address.SubAddress,
+                        if (AddressHelper.GetProtocolCoordinate(address.Address, address.SubAddress,
                                 AddressTranslator.GetAreaByteLength(address.Area)) <
-                            AddressHelper.GetProtocalCoordinateNextPosition(preNum,
+                            AddressHelper.GetProtocolCoordinateNextPosition(preNum,
                                 preType,
                                 AddressTranslator.GetAreaByteLength(address.Area)))
                         {
                             originalAddresses.Add(address);
                             //如果当前地址的末尾被记录，表示地址被记录的地址域覆盖，这个地址没有记录的必要
-                            if (AddressHelper.GetProtocalCoordinateNextPosition(
-                                    AddressHelper.GetProtocalCoordinate(address.Address, address.SubAddress,
+                            if (AddressHelper.GetProtocolCoordinateNextPosition(
+                                    AddressHelper.GetProtocolCoordinate(address.Address, address.SubAddress,
                                         AddressTranslator.GetAreaByteLength(address.Area)),
                                     address.DataType,
                                     AddressTranslator.GetAreaByteLength(address.Area)) <=
-                                AddressHelper.GetProtocalCoordinateNextPosition(preNum,
+                                AddressHelper.GetProtocolCoordinateNextPosition(preNum,
                                     preType,
                                     AddressTranslator.GetAreaByteLength(address.Area)))
                                 continue;
                         }
                         //如果当前地址大于记录的地址域的开头，则表示地址已经不连续了
-                        else if (AddressHelper.GetProtocalCoordinate(address.Address, address.SubAddress,
+                        else if (AddressHelper.GetProtocolCoordinate(address.Address, address.SubAddress,
                                      AddressTranslator.GetAreaByteLength(address.Area)) >
-                                 AddressHelper.GetProtocalCoordinateNextPosition(preNum,
+                                 AddressHelper.GetProtocolCoordinateNextPosition(preNum,
                                      preType,
                                      AddressTranslator.GetAreaByteLength(address.Area)))
                         {
@@ -144,7 +144,7 @@ namespace Modbus.Net
                                 GetCount =
                                     (int)
                                     Math.Ceiling(
-                                        AddressHelper.MapProtocalGetCountToAbstractByteCount(
+                                        AddressHelper.MapProtocolGetCountToAbstractByteCount(
                                             preNum - (int) Math.Floor(initNum),
                                             AddressTranslator.GetAreaByteLength(address.Area),
                                             BigEndianValueHelper.Instance.ByteLength[preType.FullName])),
@@ -162,7 +162,7 @@ namespace Modbus.Net
                         }
                     }
                     //把当前地址变为上一个地址
-                    preNum = AddressHelper.GetProtocalCoordinate(address.Address, address.SubAddress,
+                    preNum = AddressHelper.GetProtocolCoordinate(address.Address, address.SubAddress,
                         AddressTranslator.GetAreaByteLength(address.Area));
                     preType = address.DataType;
                 }
@@ -174,7 +174,7 @@ namespace Modbus.Net
                     GetCount =
                         (int)
                         Math.Ceiling(
-                            AddressHelper.MapProtocalGetCountToAbstractByteCount(
+                            AddressHelper.MapProtocolGetCountToAbstractByteCount(
                                 preNum - (int) Math.Floor(initNum), AddressTranslator.GetAreaByteLength(area),
                                 BigEndianValueHelper.Instance.ByteLength[preType.FullName])),
                     DataType = typeof(byte),
@@ -333,7 +333,7 @@ namespace Modbus.Net
                         EndUnit = continusAddress,
                         GapNumber =
                             (int)
-                            Math.Ceiling(AddressHelper.MapProtocalCoordinateToAbstractCoordinate(
+                            Math.Ceiling(AddressHelper.MapProtocolCoordinateToAbstractCoordinate(
                                              continusAddress.Address, preCommunicationUnit.Address,
                                              AddressTranslator.GetAreaByteLength(continusAddress.Area)) -
                                          preCommunicationUnit.GetCount *

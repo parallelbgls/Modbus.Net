@@ -3,14 +3,14 @@
     /// <summary>
     ///     协议字节伸缩
     /// </summary>
-    public interface IProtocalLinkerBytesExtend : IProtocalLinkerBytesExtend<byte[], byte[]>
+    public interface IProtocolLinkerBytesExtend : IProtocolLinkerBytesExtend<byte[], byte[]>
     {
     }
 
     /// <summary>
     ///     协议字节伸缩
     /// </summary>
-    public interface IProtocalLinkerBytesExtend<TParamIn, TParamOut>
+    public interface IProtocolLinkerBytesExtend<TParamIn, TParamOut>
     {
         /// <summary>
         ///     协议扩展，协议内容发送前调用

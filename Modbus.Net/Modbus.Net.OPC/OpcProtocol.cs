@@ -3,14 +3,14 @@
     /// <summary>
     ///     Opc协议
     /// </summary>
-    public abstract class OpcProtocal : BaseProtocal<OpcParamIn, OpcParamOut, ProtocalUnit<OpcParamIn, OpcParamOut>,
-        PipeUnit<OpcParamIn, OpcParamOut, IProtocalLinker<OpcParamIn, OpcParamOut>,
-            ProtocalUnit<OpcParamIn, OpcParamOut>>>
+    public abstract class OpcProtocol : BaseProtocol<OpcParamIn, OpcParamOut, ProtocolUnit<OpcParamIn, OpcParamOut>,
+        PipeUnit<OpcParamIn, OpcParamOut, IProtocolLinker<OpcParamIn, OpcParamOut>,
+            ProtocolUnit<OpcParamIn, OpcParamOut>>>
     {
         /// <summary>
         ///     构造函数
         /// </summary>
-        protected OpcProtocal() : base(0, 0, Endian.BigEndianLsb)
+        protected OpcProtocol() : base(0, 0, Endian.BigEndianLsb)
         {
         }
     }
@@ -67,8 +67,8 @@
     /// <summary>
     ///     读数据协议
     /// </summary>
-    [SpecialProtocalUnit]
-    public class ReadRequestOpcProtocal : ProtocalUnit<OpcParamIn, OpcParamOut>
+    [SpecialProtocolUnit]
+    public class ReadRequestOpcProtocol : ProtocolUnit<OpcParamIn, OpcParamOut>
     {
         /// <summary>
         ///     从对象的参数数组格式化
@@ -159,8 +159,8 @@
     /// <summary>
     ///     写数据协议
     /// </summary>
-    [SpecialProtocalUnit]
-    public class WriteRequestOpcProtocal : ProtocalUnit<OpcParamIn, OpcParamOut>
+    [SpecialProtocolUnit]
+    public class WriteRequestOpcProtocol : ProtocolUnit<OpcParamIn, OpcParamOut>
     {
         /// <summary>
         ///     从对象的参数数组格式化

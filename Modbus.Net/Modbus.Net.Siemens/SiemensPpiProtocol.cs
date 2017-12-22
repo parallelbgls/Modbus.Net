@@ -6,7 +6,7 @@ namespace Modbus.Net.Siemens
     /// <summary>
     ///     西门子Ppi协议
     /// </summary>
-    public class SiemensPpiProtocal : SiemensProtocal
+    public class SiemensPpiProtocol : SiemensProtocol
     {
         private readonly string _com;
 
@@ -15,7 +15,7 @@ namespace Modbus.Net.Siemens
         /// </summary>
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
-        public SiemensPpiProtocal(byte slaveAddress, byte masterAddress)
+        public SiemensPpiProtocol(byte slaveAddress, byte masterAddress)
             : this(ConfigurationManager.AppSettings["COM"], slaveAddress, masterAddress)
         {
         }
@@ -26,7 +26,7 @@ namespace Modbus.Net.Siemens
         /// <param name="com">串口地址</param>
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
-        public SiemensPpiProtocal(string com, byte slaveAddress, byte masterAddress)
+        public SiemensPpiProtocol(string com, byte slaveAddress, byte masterAddress)
             : base(slaveAddress, masterAddress)
         {
             _com = com;
@@ -49,7 +49,7 @@ namespace Modbus.Net.Siemens
         /// <returns>从设备获取的字节流</returns>
         public override async Task<PipeUnit> SendReceiveAsync(params object[] content)
         {
-            if (ProtocalLinker == null || !ProtocalLinker.IsConnected)
+            if (ProtocolLinker == null || !ProtocolLinker.IsConnected)
                 await ConnectAsync();
             return await base.SendReceiveAsync(Endian, content);
         }
@@ -60,7 +60,7 @@ namespace Modbus.Net.Siemens
         /// <param name="unit">协议核心</param>
         /// <param name="content">协议的参数</param>
         /// <returns>设备返回的信息</returns>
-        private async Task<PipeUnit> ForceSendReceiveAsync(ProtocalUnit unit, IInputStruct content)
+        private async Task<PipeUnit> ForceSendReceiveAsync(ProtocolUnit unit, IInputStruct content)
         {
             return await base.SendReceiveAsync(unit, content);
         }
@@ -71,13 +71,13 @@ namespace Modbus.Net.Siemens
         /// <returns>是否连接成功</returns>
         public override async Task<bool> ConnectAsync()
         {
-            ProtocalLinker = new SiemensPpiProtocalLinker(_com, SlaveAddress);
+            ProtocolLinker = new SiemensPpiProtocolLinker(_com, SlaveAddress);
             var inputStruct = new ComCreateReferenceSiemensInputStruct(SlaveAddress, MasterAddress);
             var outputStruct =
                 (await (await
-                    ForceSendReceiveAsync(this[typeof(ComCreateReferenceSiemensProtocal)],
+                    ForceSendReceiveAsync(this[typeof(ComCreateReferenceSiemensProtocol)],
                             inputStruct)).
-                        SendReceiveAsync(this[typeof(ComConfirmMessageSiemensProtocal)], answer =>
+                        SendReceiveAsync(this[typeof(ComConfirmMessageSiemensProtocol)], answer =>
                         
                             new ComConfirmMessageSiemensInputStruct(SlaveAddress, MasterAddress)
                         )).Unwrap<ComConfirmMessageSiemensOutputStruct>();

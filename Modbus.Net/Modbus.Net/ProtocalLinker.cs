@@ -7,7 +7,7 @@ namespace Modbus.Net
     /// <summary>
     ///     基本的协议连接器
     /// </summary>
-    public abstract class ProtocalLinker : ProtocalLinker<byte[], byte[]>
+    public abstract class ProtocolLinker : ProtocolLinker<byte[], byte[]>
     {
         /// <summary>
         ///     发送并接收数据
@@ -47,7 +47,7 @@ namespace Modbus.Net
             var bytesExtend =
                 Activator.CreateInstance(GetType().GetTypeInfo().Assembly.GetType(GetType().FullName + "BytesExtend"))
                     as
-                    IProtocalLinkerBytesExtend;
+                    IProtocolLinkerBytesExtend;
             return bytesExtend?.BytesExtend(content);
         }
 
@@ -62,7 +62,7 @@ namespace Modbus.Net
             var bytesExtend =
                 Activator.CreateInstance(GetType().GetTypeInfo().Assembly.GetType(GetType().FullName + "BytesExtend"))
                     as
-                    IProtocalLinkerBytesExtend;
+                    IProtocolLinkerBytesExtend;
             return bytesExtend?.BytesDecact(content);
         }
     }
@@ -70,7 +70,7 @@ namespace Modbus.Net
     /// <summary>
     ///     基本的协议连接器
     /// </summary>
-    public abstract class ProtocalLinker<TParamIn, TParamOut> : IProtocalLinker<TParamIn, TParamOut>
+    public abstract class ProtocolLinker<TParamIn, TParamOut> : IProtocolLinker<TParamIn, TParamOut>
         where TParamOut : class
     {
         /// <summary>

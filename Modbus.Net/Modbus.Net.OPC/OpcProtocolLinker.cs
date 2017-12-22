@@ -6,7 +6,7 @@ namespace Modbus.Net.OPC
     /// <summary>
     ///     Opc协议连接器
     /// </summary>
-    public abstract class OpcProtocalLinker : ProtocalLinker<OpcParamIn, OpcParamOut>
+    public abstract class OpcProtocolLinker : ProtocolLinker<OpcParamIn, OpcParamOut>
     {
         /// <summary>
         ///     发送并接收数据

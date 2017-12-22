@@ -105,14 +105,14 @@ namespace Modbus.Net.Siemens
     /// <summary>
     ///     西门子协议
     /// </summary>
-    public abstract class SiemensProtocal : BaseProtocal
+    public abstract class SiemensProtocol : BaseProtocol
     {
         /// <summary>
         ///     构造函数
         /// </summary>
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
-        protected SiemensProtocal(byte slaveAddress, byte masterAddress)
+        protected SiemensProtocol(byte slaveAddress, byte masterAddress)
             : base(slaveAddress, masterAddress, Endian.BigEndianLsb)
         {
         }
@@ -146,8 +146,8 @@ namespace Modbus.Net.Siemens
         public byte ConfirmMessage { get; set; }
     }
 
-    [SpecialProtocalUnit]
-    internal class ComCreateReferenceSiemensProtocal : ProtocalUnit
+    [SpecialProtocolUnit]
+    internal class ComCreateReferenceSiemensProtocol : ProtocolUnit
     {
         public override byte[] Format(IInputStruct message)
         {
@@ -201,8 +201,8 @@ namespace Modbus.Net.Siemens
         public ushort TsapDst { get; }
     }
 
-    [SpecialProtocalUnit]
-    internal class CreateReferenceSiemensProtocal : ProtocalUnit
+    [SpecialProtocolUnit]
+    internal class CreateReferenceSiemensProtocol : ProtocolUnit
     {
         public override byte[] Format(IInputStruct message)
         {
@@ -308,8 +308,8 @@ namespace Modbus.Net.Siemens
     /// <summary>
     ///     串口消息确认协议
     /// </summary>
-    [SpecialProtocalUnit]
-    public class ComConfirmMessageSiemensProtocal : ProtocalUnit
+    [SpecialProtocolUnit]
+    public class ComConfirmMessageSiemensProtocol : ProtocolUnit
     {
         /// <summary>
         ///     格式化
@@ -374,7 +374,7 @@ namespace Modbus.Net.Siemens
         public ushort MaxPdu { get; }
     }
 
-    internal class EstablishAssociationSiemensProtocal : ProtocalUnit
+    internal class EstablishAssociationSiemensProtocol : ProtocolUnit
     {
         public override byte[] Format(IInputStruct message)
         {
@@ -533,7 +533,7 @@ namespace Modbus.Net.Siemens
     /// <summary>
     ///     读数据协议
     /// </summary>
-    public class ReadRequestSiemensProtocal : ProtocalUnit
+    public class ReadRequestSiemensProtocol : ProtocolUnit
     {
         /// <summary>
         ///     格式化
@@ -688,7 +688,7 @@ namespace Modbus.Net.Siemens
     /// <summary>
     ///     写数据协议
     /// </summary>
-    public class WriteRequestSiemensProtocal : ProtocalUnit
+    public class WriteRequestSiemensProtocol : ProtocolUnit
     {
         /// <summary>
         ///     格式化
@@ -780,7 +780,7 @@ namespace Modbus.Net.Siemens
         public TodClockStatus TodClockStatus { get; private set; }
     }
 
-    public class ReadTimeSiemensProtocal : ProtocalUnit
+    public class ReadTimeSiemensProtocol : ProtocolUnit
     {
         public override byte[] Format(IInputStruct message)
         {
@@ -823,7 +823,7 @@ namespace Modbus.Net.Siemens
         public byte ErrCod { get;private set; }
     }
 
-    public class WriteTimeSiemensProtocal : ProtocalUnit
+    public class WriteTimeSiemensProtocol : ProtocolUnit
     {
         public override byte[] Format(IInputStruct message)
         {
@@ -842,9 +842,9 @@ namespace Modbus.Net.Siemens
     /// <summary>
     ///     西门子通讯报错信息
     /// </summary>
-    public class SiemensProtocalErrorException : ProtocalErrorException
+    public class SiemensProtocolErrorException : ProtocolErrorException
     {
-        private static readonly Dictionary<int, string> ProtocalErrorDictionary = new Dictionary<int, string>
+        private static readonly Dictionary<int, string> ProtocolErrorDictionary = new Dictionary<int, string>
         {
             {0x00, "No Error"},
             {0x81, "Error in the application Id of the request"},
@@ -860,7 +860,7 @@ namespace Modbus.Net.Siemens
             {0xEF, "Layer 2 specific error"}
         };
 
-        private static readonly Dictionary<int, string> ProtocalErrorDetailDictionary = new Dictionary<int, string>
+        private static readonly Dictionary<int, string> ProtocolErrorDetailDictionary = new Dictionary<int, string>
         {
             {0x8304, "Resource not available,\r\n there are no more resources available for application associations to be established" },
             {0x8104, "Context is not supported:\r\n -Error in PDU structure\r\n -Unknown service" },
@@ -873,12 +873,12 @@ namespace Modbus.Net.Siemens
         /// </summary>
         /// <param name="errCls">错误分类</param>
         /// <param name="errCod">错误码</param>
-        public SiemensProtocalErrorException(int errCls, int errCod)
-            : base((ProtocalErrorDictionary.ContainsKey(errCls)
-                       ? ProtocalErrorDictionary[errCls]
+        public SiemensProtocolErrorException(int errCls, int errCod)
+            : base((ProtocolErrorDictionary.ContainsKey(errCls)
+                       ? ProtocolErrorDictionary[errCls]
                        : "Unknown error") + " \r\n " +
-                   (ProtocalErrorDetailDictionary.ContainsKey(errCls * 256 + errCod)
-                       ? ProtocalErrorDetailDictionary[errCls * 256 + errCod]
+                   (ProtocolErrorDetailDictionary.ContainsKey(errCls * 256 + errCod)
+                       ? ProtocolErrorDetailDictionary[errCls * 256 + errCod]
                        : "Unknown error detail"))
         {
             ErrorClass = errCls;

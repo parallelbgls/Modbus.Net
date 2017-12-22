@@ -42,15 +42,15 @@ Modbus TCP connection and Siemens Ethenet Connection are supported at the same t
 
 Connector implements the basic connecting methods, like Socket, Com and SignalR.
 
-### ProtocalLinker
+### ProtocolLinker
 
-ProtocalLinker implements the link, send, and send recevice actions.
+ProtocolLinker implements the link, send, and send recevice actions.
 
-### ProtocalLinkerBytesExtend
+### ProtocolLinkerBytesExtend
 
-Some Protocal has the same head or tail in the same connection way, but different in different connection way, so bytes extend can extend sending message when they are sended in different type of connection.
+Some Protocol has the same head or tail in the same connection way, but different in different connection way, so bytes extend can extend sending message when they are sended in different type of connection.
 
-### ProtocalUnit
+### ProtocolUnit
 
 Format and deformat the protocal message between the structual class and bytes array.
 
@@ -58,13 +58,13 @@ Format and deformat the protocal message between the structual class and bytes a
 
 Help change the value between number and bytes, or number array to bytes array.
 
-### Protocal
+### Protocol
 
 Manage all protocals and implement a lazy loading method.
 
 ### Utility
 
-Manage several types of Protocal to a same calling interface.
+Manage several types of Protocol to a same calling interface.
 
 ### Machine
 
@@ -385,7 +385,7 @@ task.InvokeTimerAll(new TaskItemGetData(returnValues =>
 public async Task<bool> SetDatasAsync(string connectionToken, MachineSetDataType setDataType, Dictionary<string, double> values)
 ```
 
-##<a name="implement"></a> Implementing Your Own Protocal
+##<a name="implement"></a> Implementing Your Own Protocol
 The main target of Modbus.Net is building a high extensable hardware communication protocal, so we allow everyone to extend the protocal.
 
 To extend Modbus.Net, first of all ValueHelper.cs in Modbus.Net is a really powerful tool that you can use to modify values in byte array.There are two ValueHelpers: ValueHelper(Little Endian) and BigEndianValueHelper(Big Endian). Remember using the correct one.
@@ -394,17 +394,17 @@ In this tutorial I will use Modbus.Net.Modbus to tell you how to implement your 
 
 You should follow the following steps to implement your own protocal.
 
-1.Implement Protocal. (ModbusProtocal.cs, ModbusTcpProtocal.cs)
-First: Extend BaseProtocal to ModbusProtocal.
+1.Implement Protocol. (ModbusProtocol.cs, ModbusTcpProtocol.cs)
+First: Extend BaseProtocol to ModbusProtocol.
 ```C#
-public abstract class ModbusProtocal : BaseProtocal
-public class ModbusTcpProtocal : ModbusProtocal
+public abstract class ModbusProtocol : BaseProtocol
+public class ModbusTcpProtocol : ModbusProtocol
 ```
 "abstract" keyword is optional because if user can use this protocal don't write abstract.
 
-Second: Extend ProtocalUnit, IInputStruct and IOutputStruct.
+Second: Extend ProtocolUnit, IInputStruct and IOutputStruct.
 ```C#
-public class ReadDataModbusProtocal : ProtocalUnit
+public class ReadDataModbusProtocol : ProtocolUnit
 {
     public override byte[] Format(IInputStruct message)
     {
@@ -423,27 +423,27 @@ public class ReadDataModbusProtocal : ProtocalUnit
     }
 }
 ```
-There is another attribute called SpecialProtocalUnitAttribute.
-If you add SpecialProtocalUnitAttribute to ProtocalUnit, then the protocal will not run BytesExtend and BytesDecact.
+There is another attribute called SpecialProtocolUnitAttribute.
+If you add SpecialProtocolUnitAttribute to ProtocolUnit, then the protocal will not run BytesExtend and BytesDecact.
 ```C#
-[SpecialProtocalUnit]
-internal class CreateReferenceSiemensProtocal : ProtocalUnit
+[SpecialProtocolUnit]
+internal class CreateReferenceSiemensProtocol : ProtocolUnit
 {
     ...
 }
 ```
 
-2.Implement Protocal based ProtocalLinker. (ModbusTcpProtocalLinker)
-ProtocalLinker connect the Protocal to the BaseConnector, so that byte array can be sended using some specific way like Ethenet.
+2.Implement Protocol based ProtocolLinker. (ModbusTcpProtocolLinker)
+ProtocolLinker connect the Protocol to the BaseConnector, so that byte array can be sended using some specific way like Ethenet.
 ```C#
-public class ModbusTcpProtocalLinker : TcpProtocalLinker
+public class ModbusTcpProtocolLinker : TcpProtocolLinker
 {
     public override bool CheckRight(byte[] content)
 ```
 CheckRight is the return check function, if you got the wrong bytes answer, you can return false or throw exceptions.
 
-3.Implement Connector based ProtocalLinker and BaseConnector. (TcpProtocalLinker.cs, TcpConnector.cs) (Optional)
-If you want to connect to hardware using another way, please implement your own ProtocalLinker and BaseConnector. And please remember that if you want to connector hardware using serial line, please don't use ComConnector in Modbus.Net and implement your own ComConnector.
+3.Implement Connector based ProtocolLinker and BaseConnector. (TcpProtocolLinker.cs, TcpConnector.cs) (Optional)
+If you want to connect to hardware using another way, please implement your own ProtocolLinker and BaseConnector. And please remember that if you want to connector hardware using serial line, please don't use ComConnector in Modbus.Net and implement your own ComConnector.
 You should implement all of these functions in BaseConnector.
 ```C#
 public abstract string ConnectionToken { get; }
@@ -457,11 +457,11 @@ public abstract byte[] SendMsg(byte[] message);
 public abstract Task<byte[]> SendMsgAsync(byte[] message);
 ```
 
-4.Implement ProtocalLinkerBytesExtend (ModbusProtocalLinkerBytesExtend.cs)
-If you want to use extend bytes when you send your bytes array to the hardware, you can set ProtocalLinkerBytesExtend.
-The name of ProtocalLinkerBytesExtend is ProtocalLinker name + BytesExtend, like ModbusTcpProtocalLinkerBytesExtend.
+4.Implement ProtocolLinkerBytesExtend (ModbusProtocolLinkerBytesExtend.cs)
+If you want to use extend bytes when you send your bytes array to the hardware, you can set ProtocolLinkerBytesExtend.
+The name of ProtocolLinkerBytesExtend is ProtocolLinker name + BytesExtend, like ModbusTcpProtocolLinkerBytesExtend.
 ```C#
-public class ModbusTcpProtocalLinkerBytesExtend : ProtocalLinkerBytesExtend
+public class ModbusTcpProtocolLinkerBytesExtend : ProtocolLinkerBytesExtend
 {
     public override byte[] BytesExtend(byte[] content)
     {        
@@ -482,7 +482,7 @@ public class ModbusTcpProtocalLinkerBytesExtend : ProtocalLinkerBytesExtend
     }
 }
 ```
-For example modbus tcp has a 6 bytes head: 4 bytes 0 and 2 bytes length. And when you get the bytes, please remove the head to fit the ModbusProtocal Unformat function.
+For example modbus tcp has a 6 bytes head: 4 bytes 0 and 2 bytes length. And when you get the bytes, please remove the head to fit the ModbusProtocol Unformat function.
 
 5.Implement BaseUtility.cs (ModbusUtility.cs)
 Implement low level api for Modbus.
@@ -492,7 +492,7 @@ public override void SetConnectionType(int connectionType)
 protected override async Task<byte[]> GetDatasAsync(byte slaveAddress, byte masterAddress, string startAddress, int getByteCount)
 public override async Task<bool> SetDatasAsync(byte slaveAddress, byte masterAddress, string startAddress, object[] setContents)
 ```
-And don't remember set default AddressTranslator, slaveAddress, masterAddress and Protocal.
+And don't remember set default AddressTranslator, slaveAddress, masterAddress and Protocol.
 ```C#
 public ModbusUtility(int connectionType, byte slaveAddress, byte masterAddress) : base(slaveAddress, masterAddress)
 {
@@ -544,13 +544,13 @@ public class AddressUnit
     public int SubAddress { get; set; } = 0;
 }
 ```
-First of all, there are two types of coordinates in Modbus.Net Address System - Protocal Coordinate and Abstract Coordinate.
+First of all, there are two types of coordinates in Modbus.Net Address System - Protocol Coordinate and Abstract Coordinate.
 
 Here is an example of the differences between them:
 
 In Register of Modbus, the minimum type is short, but Modbus.Net use type of byte to show the result. If you want to get value from 400003 in protocal coordinate, you actually get 5th and 6th byte value in abstract coordinate.
 
-Version 1.0 and 1.1 used abstract coordinate so you need to convert the address. But fortunatly after 1.2, AddressUnit uses Protocal Coordinate so that you donnot need the convert the address descripted by modbus protocal itself, but this means if you want to get a bit or byte value in modbus, you need to use the subpos system.
+Version 1.0 and 1.1 used abstract coordinate so you need to convert the address. But fortunatly after 1.2, AddressUnit uses Protocol Coordinate so that you donnot need the convert the address descripted by modbus protocal itself, but this means if you want to get a bit or byte value in modbus, you need to use the subpos system.
 
 For example if you want the get a value from the 6th byte in Hold Register. In traditional modbus you can only get 400003 of 2 bytes and get the 2nd byte from it. But in Modbus.Net there is an easy way to get it.
 ```

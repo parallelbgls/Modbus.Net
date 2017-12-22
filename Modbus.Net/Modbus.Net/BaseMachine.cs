@@ -264,7 +264,7 @@ namespace Modbus.Net
                     foreach (var address in communicateAddress.OriginalAddresses)
                     {
                         //字节坐标的位置
-                        var localPos = AddressHelper.MapProtocalCoordinateToAbstractCoordinate(address.Address,
+                        var localPos = AddressHelper.MapProtocolCoordinateToAbstractCoordinate(address.Address,
                                            communicateAddress.Address,
                                            AddressTranslator.GetAreaByteLength(communicateAddress.Area)) +
                                        address.SubAddress * 0.125;
@@ -469,7 +469,7 @@ namespace Modbus.Net
                     {
                         //字节坐标地址
                         var byteCount =
-                            AddressHelper.MapProtocalGetCountToAbstractByteCount(
+                            AddressHelper.MapProtocolGetCountToAbstractByteCount(
                                 addressUnit.Address - communicateAddress.Address +
                                 addressUnit.SubAddress * 0.125 /
                                 AddressTranslator.GetAreaByteLength(communicateAddress.Area),

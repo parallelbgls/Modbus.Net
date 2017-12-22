@@ -5,12 +5,12 @@ using System.Text;
 
 namespace Modbus.Net.Modbus
 {
-    public class ModbusRtuInTcpProtocalLinkerBytesExtend : ModbusRtuProtocalLinkerBytesExtend
+    public class ModbusRtuInTcpProtocolLinkerBytesExtend : ModbusRtuProtocolLinkerBytesExtend
     {
         
     }
 
-    public class ModbusAsciiInTcpProtocalLinkerBytesExtend : ModbusAsciiProtocalLinkerBytesExtend
+    public class ModbusAsciiInTcpProtocolLinkerBytesExtend : ModbusAsciiProtocolLinkerBytesExtend
     {
 
     }
@@ -18,7 +18,7 @@ namespace Modbus.Net.Modbus
     /// <summary>
     ///     Tcp协议字节伸缩
     /// </summary>
-    public class ModbusTcpProtocalLinkerBytesExtend : IProtocalLinkerBytesExtend
+    public class ModbusTcpProtocolLinkerBytesExtend : IProtocolLinkerBytesExtend
     {
         /// <summary>
         ///     协议扩展，协议内容发送前调用
@@ -54,7 +54,7 @@ namespace Modbus.Net.Modbus
     /// <summary>
     ///     Rtu协议字节伸缩
     /// </summary>
-    public class ModbusRtuProtocalLinkerBytesExtend : IProtocalLinkerBytesExtend
+    public class ModbusRtuProtocolLinkerBytesExtend : IProtocolLinkerBytesExtend
     {
         /// <summary>
         ///     协议扩展，协议内容发送前调用
@@ -89,7 +89,7 @@ namespace Modbus.Net.Modbus
     /// <summary>
     ///     Ascii协议字节伸缩
     /// </summary>
-    public class ModbusAsciiProtocalLinkerBytesExtend : IProtocalLinkerBytesExtend
+    public class ModbusAsciiProtocolLinkerBytesExtend : IProtocolLinkerBytesExtend
     {
         /// <summary>
         ///     协议扩展，协议内容发送前调用

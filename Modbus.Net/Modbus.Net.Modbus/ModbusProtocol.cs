@@ -7,7 +7,7 @@ namespace Modbus.Net.Modbus
     /// <summary>
     ///     变量功能码
     /// </summary>
-    internal enum ModbusProtocalVariableFunctionCode : byte
+    internal enum ModbusProtocolVariableFunctionCode : byte
     {
         /// <summary>
         ///     读变量
@@ -23,7 +23,7 @@ namespace Modbus.Net.Modbus
     /// <summary>
     ///     跟时间有关的功能码
     /// </summary>
-    public enum ModbusProtocalTimeFunctionCode : byte
+    public enum ModbusProtocolTimeFunctionCode : byte
     {
         /// <summary>
         ///     读时间
@@ -39,7 +39,7 @@ namespace Modbus.Net.Modbus
     /// <summary>
     ///     跟读数据有关的功能码
     /// </summary>
-    public enum ModbusProtocalReadDataFunctionCode : byte
+    public enum ModbusProtocolReadDataFunctionCode : byte
     {
         /// <summary>
         ///     读线圈
@@ -65,7 +65,7 @@ namespace Modbus.Net.Modbus
     /// <summary>
     ///     跟写数据有关的功能码
     /// </summary>
-    internal enum ModbusProtocalWriteDataFunctionCode : byte
+    internal enum ModbusProtocolWriteDataFunctionCode : byte
     {
         /// <summary>
         ///     写单个线圈
@@ -91,7 +91,7 @@ namespace Modbus.Net.Modbus
     /// <summary>
     ///     Modbus协议
     /// </summary>
-    public abstract class ModbusProtocal : BaseProtocal
+    public abstract class ModbusProtocol : BaseProtocol
     {
         /// <summary>
         ///     构造函数
@@ -99,7 +99,7 @@ namespace Modbus.Net.Modbus
         /// <param name="slaveAddress">从站地址</param>
         /// <param name="masterAddress">主站地址</param>
         /// <param name="endian">端格式</param>
-        protected ModbusProtocal(byte slaveAddress, byte masterAddress, Endian endian)
+        protected ModbusProtocol(byte slaveAddress, byte masterAddress, Endian endian)
             : base(slaveAddress, masterAddress, endian)
         {
         }
@@ -110,7 +110,7 @@ namespace Modbus.Net.Modbus
         /// <returns>是否连接成功</returns>
         public override async Task<bool> ConnectAsync()
         {
-            return await ProtocalLinker.ConnectAsync();
+            return await ProtocolLinker.ConnectAsync();
         }
     }
 
@@ -205,7 +205,7 @@ namespace Modbus.Net.Modbus
     /// <summary>
     ///     读数据协议
     /// </summary>
-    public class ReadDataModbusProtocal : ProtocalUnit
+    public class ReadDataModbusProtocol : ProtocolUnit
     {
         /// <summary>
         ///     格式化
@@ -343,7 +343,7 @@ namespace Modbus.Net.Modbus
     /// <summary>
     ///     写多个寄存器协议
     /// </summary>
-    public class WriteDataModbusProtocal : ProtocalUnit
+    public class WriteDataModbusProtocol : ProtocolUnit
     {
         /// <summary>
         ///     格式化
@@ -398,7 +398,7 @@ namespace Modbus.Net.Modbus
             StartAddress = (ushort) translateAddress.Address;
             int a = 0, b = 0;
             var writeByteValue =
-                FunctionCode == (byte) ModbusProtocalWriteDataFunctionCode.WriteSingleCoil
+                FunctionCode == (byte) ModbusProtocolWriteDataFunctionCode.WriteSingleCoil
                     ? ((bool) writeValue
                         ? new byte[] {0xFF, 0x00}
                         : new byte[] {0x00, 0x00})
@@ -473,7 +473,7 @@ namespace Modbus.Net.Modbus
     /// <summary>
     ///     写多个寄存器协议
     /// </summary>
-    public class WriteSingleDataModbusProtocal : ProtocalUnit
+    public class WriteSingleDataModbusProtocol : ProtocolUnit
     {
         /// <summary>
         ///     格式化
@@ -501,7 +501,7 @@ namespace Modbus.Net.Modbus
             var functionCode = ValueHelper.GetInstance(Endian).GetByte(messageBytes, ref flag);
             var startAddress = ValueHelper.GetInstance(Endian).GetUShort(messageBytes, ref flag);
             var writeValue = ValueHelper.GetInstance(Endian).GetUShort(messageBytes, ref flag);
-            var returnValue = functionCode == (byte)ModbusProtocalWriteDataFunctionCode.WriteSingleCoil
+            var returnValue = functionCode == (byte)ModbusProtocolWriteDataFunctionCode.WriteSingleCoil
                 ? (object)(writeValue == 0xFF00) : writeValue;
             return new WriteSingleDataModbusOutputStruct(slaveAddress, functionCode, startAddress,
                 returnValue);
@@ -524,7 +524,7 @@ namespace Modbus.Net.Modbus
         public GetSystemTimeModbusInputStruct(byte slaveAddress)
         {
             SlaveAddress = slaveAddress;
-            FunctionCode = (byte) ModbusProtocalTimeFunctionCode.GetSystemTime;
+            FunctionCode = (byte) ModbusProtocolTimeFunctionCode.GetSystemTime;
             StartAddress = 30000;
             GetCount = 5;
         }
@@ -602,7 +602,7 @@ namespace Modbus.Net.Modbus
     /// <summary>
     ///     读系统时间协议
     /// </summary>
-    public class GetSystemTimeModbusProtocal : ProtocalUnit
+    public class GetSystemTimeModbusProtocol : ProtocolUnit
     {
         /// <summary>
         ///     格式化
@@ -656,7 +656,7 @@ namespace Modbus.Net.Modbus
         public SetSystemTimeModbusInputStruct(byte slaveAddress, DateTime time)
         {
             SlaveAddress = slaveAddress;
-            FunctionCode = (byte) ModbusProtocalTimeFunctionCode.SetSystemTime;
+            FunctionCode = (byte) ModbusProtocolTimeFunctionCode.SetSystemTime;
             StartAddress = 30000;
             WriteCount = 5;
             WriteByteCount = 10;
@@ -775,7 +775,7 @@ namespace Modbus.Net.Modbus
     /// <summary>
     ///     写系统时间协议
     /// </summary>
-    public class SetSystemTimeModbusProtocal : ProtocalUnit
+    public class SetSystemTimeModbusProtocol : ProtocolUnit
     {
         /// <summary>
         ///     格式化
@@ -812,9 +812,9 @@ namespace Modbus.Net.Modbus
     /// <summary>
     ///     Modbus协议错误表
     /// </summary>
-    public class ModbusProtocalErrorException : ProtocalErrorException
+    public class ModbusProtocolErrorException : ProtocolErrorException
     {
-        private static readonly Dictionary<int, string> ProtocalErrorDictionary = new Dictionary<int, string>
+        private static readonly Dictionary<int, string> ProtocolErrorDictionary = new Dictionary<int, string>
         {
             {1, "ILLEGAL_FUNCTION"},
             {2, "ILLEGAL_DATA_ACCESS"},
@@ -830,8 +830,8 @@ namespace Modbus.Net.Modbus
         ///     Modbus错误
         /// </summary>
         /// <param name="messageNumber">Modbus错误号</param>
-        public ModbusProtocalErrorException(int messageNumber)
-            : base(ProtocalErrorDictionary[messageNumber])
+        public ModbusProtocolErrorException(int messageNumber)
+            : base(ProtocolErrorDictionary[messageNumber])
         {
             ErrorMessageNumber = messageNumber;
         }

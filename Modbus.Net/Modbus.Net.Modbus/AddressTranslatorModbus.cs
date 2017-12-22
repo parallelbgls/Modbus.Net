@@ -70,7 +70,7 @@ namespace Modbus.Net.Modbus
                     "Q",
                     new AreaOutputDef
                     {
-                        Code = (int) ModbusProtocalReadDataFunctionCode.ReadCoilStatus,
+                        Code = (int) ModbusProtocolReadDataFunctionCode.ReadCoilStatus,
                         AreaWidth = 0.125
                     }
                 },
@@ -78,7 +78,7 @@ namespace Modbus.Net.Modbus
                     "M",
                     new AreaOutputDef
                     {
-                        Code = (int) ModbusProtocalReadDataFunctionCode.ReadCoilStatus,
+                        Code = (int) ModbusProtocolReadDataFunctionCode.ReadCoilStatus,
                         AreaWidth = 0.125
                     }
                 },
@@ -86,7 +86,7 @@ namespace Modbus.Net.Modbus
                     "N",
                     new AreaOutputDef
                     {
-                        Code = (int) ModbusProtocalReadDataFunctionCode.ReadCoilStatus,
+                        Code = (int) ModbusProtocolReadDataFunctionCode.ReadCoilStatus,
                         AreaWidth = 0.125
                     }
                 },
@@ -94,7 +94,7 @@ namespace Modbus.Net.Modbus
                     "I",
                     new AreaOutputDef
                     {
-                        Code = (int) ModbusProtocalReadDataFunctionCode.ReadInputStatus,
+                        Code = (int) ModbusProtocolReadDataFunctionCode.ReadInputStatus,
                         AreaWidth = 0.125
                     }
                 },
@@ -102,29 +102,29 @@ namespace Modbus.Net.Modbus
                     "S",
                     new AreaOutputDef
                     {
-                        Code = (int) ModbusProtocalReadDataFunctionCode.ReadInputStatus,
+                        Code = (int) ModbusProtocolReadDataFunctionCode.ReadInputStatus,
                         AreaWidth = 0.125
                     }
                 },
                 {
                     "IW",
-                    new AreaOutputDef {Code = (int) ModbusProtocalReadDataFunctionCode.ReadInputRegister, AreaWidth = 2}
+                    new AreaOutputDef {Code = (int) ModbusProtocolReadDataFunctionCode.ReadInputRegister, AreaWidth = 2}
                 },
                 {
                     "SW",
-                    new AreaOutputDef {Code = (int) ModbusProtocalReadDataFunctionCode.ReadInputRegister, AreaWidth = 2}
+                    new AreaOutputDef {Code = (int) ModbusProtocolReadDataFunctionCode.ReadInputRegister, AreaWidth = 2}
                 },
                 {
                     "MW",
-                    new AreaOutputDef {Code = (int) ModbusProtocalReadDataFunctionCode.ReadHoldRegister, AreaWidth = 2}
+                    new AreaOutputDef {Code = (int) ModbusProtocolReadDataFunctionCode.ReadHoldRegister, AreaWidth = 2}
                 },
                 {
                     "NW",
-                    new AreaOutputDef {Code = (int) ModbusProtocalReadDataFunctionCode.ReadHoldRegister, AreaWidth = 2}
+                    new AreaOutputDef {Code = (int) ModbusProtocolReadDataFunctionCode.ReadHoldRegister, AreaWidth = 2}
                 },
                 {
                     "QW",
-                    new AreaOutputDef {Code = (int) ModbusProtocalReadDataFunctionCode.ReadHoldRegister, AreaWidth = 2}
+                    new AreaOutputDef {Code = (int) ModbusProtocolReadDataFunctionCode.ReadHoldRegister, AreaWidth = 2}
                 }
             };
             WriteFunctionCodeDictionary = new Dictionary<(string, bool), AreaOutputDef>
@@ -133,7 +133,7 @@ namespace Modbus.Net.Modbus
                     ("Q", false),
                     new AreaOutputDef
                     {
-                        Code = (int) ModbusProtocalWriteDataFunctionCode.WriteMultiCoil,
+                        Code = (int) ModbusProtocolWriteDataFunctionCode.WriteMultiCoil,
                         AreaWidth = 0.125
                     }
                 },
@@ -141,7 +141,7 @@ namespace Modbus.Net.Modbus
                     ("M", false),
                     new AreaOutputDef
                     {
-                        Code = (int) ModbusProtocalWriteDataFunctionCode.WriteMultiCoil,
+                        Code = (int) ModbusProtocolWriteDataFunctionCode.WriteMultiCoil,
                         AreaWidth = 0.125
                     }
                 },
@@ -149,7 +149,7 @@ namespace Modbus.Net.Modbus
                     ("N", false),
                     new AreaOutputDef
                     {
-                        Code = (int) ModbusProtocalWriteDataFunctionCode.WriteMultiCoil,
+                        Code = (int) ModbusProtocolWriteDataFunctionCode.WriteMultiCoil,
                         AreaWidth = 0.125
                     }
                 },
@@ -157,7 +157,7 @@ namespace Modbus.Net.Modbus
                     ("MW", false),
                     new AreaOutputDef
                     {
-                        Code = (int) ModbusProtocalWriteDataFunctionCode.WriteMultiRegister,
+                        Code = (int) ModbusProtocolWriteDataFunctionCode.WriteMultiRegister,
                         AreaWidth = 2
                     }
                 },
@@ -165,7 +165,7 @@ namespace Modbus.Net.Modbus
                     ("NW", false),
                     new AreaOutputDef
                     {
-                        Code = (int) ModbusProtocalWriteDataFunctionCode.WriteMultiRegister,
+                        Code = (int) ModbusProtocolWriteDataFunctionCode.WriteMultiRegister,
                         AreaWidth = 2
                     }
                 },
@@ -173,7 +173,7 @@ namespace Modbus.Net.Modbus
                     ("QW", false),
                     new AreaOutputDef
                     {
-                        Code = (int) ModbusProtocalWriteDataFunctionCode.WriteMultiRegister,
+                        Code = (int) ModbusProtocolWriteDataFunctionCode.WriteMultiRegister,
                         AreaWidth = 2
                     }
                 },
@@ -181,7 +181,7 @@ namespace Modbus.Net.Modbus
                     ("Q", true),
                     new AreaOutputDef
                     {
-                        Code = (int) ModbusProtocalWriteDataFunctionCode.WriteSingleCoil,
+                        Code = (int) ModbusProtocolWriteDataFunctionCode.WriteSingleCoil,
                         AreaWidth = 0.125
                     }
                 },
@@ -189,7 +189,7 @@ namespace Modbus.Net.Modbus
                     ("M", true),
                     new AreaOutputDef
                     {
-                        Code = (int) ModbusProtocalWriteDataFunctionCode.WriteSingleCoil,
+                        Code = (int) ModbusProtocolWriteDataFunctionCode.WriteSingleCoil,
                         AreaWidth = 0.125
                     }
                 },
@@ -197,7 +197,7 @@ namespace Modbus.Net.Modbus
                     ("N", true),
                     new AreaOutputDef
                     {
-                        Code = (int) ModbusProtocalWriteDataFunctionCode.WriteSingleCoil,
+                        Code = (int) ModbusProtocolWriteDataFunctionCode.WriteSingleCoil,
                         AreaWidth = 0.125
                     }
                 },
@@ -205,7 +205,7 @@ namespace Modbus.Net.Modbus
                     ("MW", true),
                     new AreaOutputDef
                     {
-                        Code = (int) ModbusProtocalWriteDataFunctionCode.WriteSingleRegister,
+                        Code = (int) ModbusProtocolWriteDataFunctionCode.WriteSingleRegister,
                         AreaWidth = 2
                     }
                 },
@@ -213,7 +213,7 @@ namespace Modbus.Net.Modbus
                     ("NW", true),
                     new AreaOutputDef
                     {
-                        Code = (int) ModbusProtocalWriteDataFunctionCode.WriteSingleRegister,
+                        Code = (int) ModbusProtocolWriteDataFunctionCode.WriteSingleRegister,
                         AreaWidth = 2
                     }
                 },
@@ -221,7 +221,7 @@ namespace Modbus.Net.Modbus
                     ("QW", true),
                     new AreaOutputDef
                     {
-                        Code = (int) ModbusProtocalWriteDataFunctionCode.WriteSingleRegister,
+                        Code = (int) ModbusProtocolWriteDataFunctionCode.WriteSingleRegister,
                         AreaWidth = 2
                     }
                 }
@@ -306,7 +306,7 @@ namespace Modbus.Net.Modbus
                     "0X",
                     new AreaOutputDef
                     {
-                        Code = (int) ModbusProtocalReadDataFunctionCode.ReadCoilStatus,
+                        Code = (int) ModbusProtocolReadDataFunctionCode.ReadCoilStatus,
                         AreaWidth = 0.125
                     }
                 },
@@ -314,17 +314,17 @@ namespace Modbus.Net.Modbus
                     "1X",
                     new AreaOutputDef
                     {
-                        Code = (int) ModbusProtocalReadDataFunctionCode.ReadInputStatus,
+                        Code = (int) ModbusProtocolReadDataFunctionCode.ReadInputStatus,
                         AreaWidth = 0.125
                     }
                 },
                 {
                     "3X",
-                    new AreaOutputDef {Code = (int) ModbusProtocalReadDataFunctionCode.ReadInputRegister, AreaWidth = 2}
+                    new AreaOutputDef {Code = (int) ModbusProtocolReadDataFunctionCode.ReadInputRegister, AreaWidth = 2}
                 },
                 {
                     "4X",
-                    new AreaOutputDef {Code = (int) ModbusProtocalReadDataFunctionCode.ReadHoldRegister, AreaWidth = 2}
+                    new AreaOutputDef {Code = (int) ModbusProtocolReadDataFunctionCode.ReadHoldRegister, AreaWidth = 2}
                 }
             };
             WriteFunctionCodeDictionary = new Dictionary<(string, bool), AreaOutputDef>
@@ -333,7 +333,7 @@ namespace Modbus.Net.Modbus
                     ("0X", false),
                     new AreaOutputDef
                     {
-                        Code = (int) ModbusProtocalWriteDataFunctionCode.WriteMultiCoil,
+                        Code = (int) ModbusProtocolWriteDataFunctionCode.WriteMultiCoil,
                         AreaWidth = 0.125
                     }
                 },
@@ -341,7 +341,7 @@ namespace Modbus.Net.Modbus
                     ("4X", false),
                     new AreaOutputDef
                     {
-                        Code = (int) ModbusProtocalWriteDataFunctionCode.WriteMultiRegister,
+                        Code = (int) ModbusProtocolWriteDataFunctionCode.WriteMultiRegister,
                         AreaWidth = 2
                     }
                 },
@@ -349,7 +349,7 @@ namespace Modbus.Net.Modbus
                     ("0X", true),
                     new AreaOutputDef
                     {
-                        Code = (int) ModbusProtocalWriteDataFunctionCode.WriteSingleCoil,
+                        Code = (int) ModbusProtocolWriteDataFunctionCode.WriteSingleCoil,
                         AreaWidth = 0.125
                     }
                 },
@@ -357,7 +357,7 @@ namespace Modbus.Net.Modbus
                     ("4X", true),
                     new AreaOutputDef
                     {
-                        Code = (int) ModbusProtocalWriteDataFunctionCode.WriteSingleRegister,
+                        Code = (int) ModbusProtocolWriteDataFunctionCode.WriteSingleRegister,
                         AreaWidth = 2
                     }
                 }

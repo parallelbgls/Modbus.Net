@@ -14,7 +14,7 @@ namespace Modbus.Net
         /// <param name="startAddress">起始地址</param>
         /// <param name="byteLength">协议坐标单个地址的字节长度</param>
         /// <returns></returns>
-        public static double MapAbstractCoordinateToProtocalCoordinate(double abstractAddress, int startAddress,
+        public static double MapAbstractCoordinateToProtocolCoordinate(double abstractAddress, int startAddress,
             double byteLength)
         {
             return abstractAddress / byteLength + startAddress;
@@ -27,7 +27,7 @@ namespace Modbus.Net
         /// <param name="startAddress">起始地址</param>
         /// <param name="byteLength">协议坐标单个地址的字节长度</param>
         /// <returns></returns>
-        public static double MapProtocalCoordinateToAbstractCoordinate(double protocalAddress, int startAddress,
+        public static double MapProtocolCoordinateToAbstractCoordinate(double protocalAddress, int startAddress,
             double byteLength)
         {
             return (protocalAddress - startAddress) * byteLength;
@@ -40,7 +40,7 @@ namespace Modbus.Net
         /// <param name="areaLength">协议坐标区域与字节之间的防缩倍数</param>
         /// <param name="byteLength">协议坐标单个地址的字节长度</param>
         /// <returns></returns>
-        public static double MapProtocalGetCountToAbstractByteCount(double protocalGetCount, double areaLength,
+        public static double MapProtocolGetCountToAbstractByteCount(double protocalGetCount, double areaLength,
             double byteLength)
         {
             return protocalGetCount * areaLength + byteLength;
@@ -53,7 +53,7 @@ namespace Modbus.Net
         /// <param name="subAddress">子地址</param>
         /// <param name="byteLength">协议坐标单个地址的字节长度</param>
         /// <returns></returns>
-        public static double GetProtocalCoordinate(int address, int subAddress, double byteLength)
+        public static double GetProtocolCoordinate(int address, int subAddress, double byteLength)
         {
             return address + subAddress * (0.125 / byteLength);
         }
@@ -76,7 +76,7 @@ namespace Modbus.Net
         /// <param name="nextPositionBetweenType">间隔的数据类型</param>
         /// <param name="byteLength">协议坐标单个地址的字节长度</param>
         /// <returns></returns>
-        public static double GetProtocalCoordinateNextPosition(double protocalAddress, Type nextPositionBetweenType,
+        public static double GetProtocolCoordinateNextPosition(double protocalAddress, Type nextPositionBetweenType,
             double byteLength)
         {
             return protocalAddress +

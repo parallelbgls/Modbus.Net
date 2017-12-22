@@ -3,7 +3,7 @@
     /// <summary>
     ///     协议转换的接口
     /// </summary>
-    public interface IProtocalFormatting : IProtocalFormatting<byte[], byte[]>
+    public interface IProtocolFormatting : IProtocolFormatting<byte[], byte[]>
     {
     }
 
@@ -12,7 +12,7 @@
     /// </summary>
     /// <typeparam name="TParamIn">向Connector传入的数据类型</typeparam>
     /// <typeparam name="TParamOut">从Connector返回的数据类型</typeparam>
-    public interface IProtocalFormatting<out TParamIn, in TParamOut>
+    public interface IProtocolFormatting<out TParamIn, in TParamOut>
     {
         /// <summary>
         ///     是否为小端格式

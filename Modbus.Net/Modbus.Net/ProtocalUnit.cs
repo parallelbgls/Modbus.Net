@@ -5,14 +5,14 @@ namespace Modbus.Net
     /// <summary>
     ///     协议单元
     /// </summary>
-    public abstract class ProtocalUnit : ProtocalUnit<byte[], byte[]>
+    public abstract class ProtocolUnit : ProtocolUnit<byte[], byte[]>
     {
     }
 
     /// <summary>
     ///     协议单元
     /// </summary>
-    public abstract class ProtocalUnit<TParamIn, TParamOut> : IProtocalFormatting<TParamIn, TParamOut>
+    public abstract class ProtocolUnit<TParamIn, TParamOut> : IProtocolFormatting<TParamIn, TParamOut>
     {
         /// <summary>
         ///     是否为小端格式
@@ -72,7 +72,7 @@ namespace Modbus.Net
     ///     特殊协议单元，写入这个协议不会执行BytesExtend和BytesDecact
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-    public class SpecialProtocalUnitAttribute : Attribute
+    public class SpecialProtocolUnitAttribute : Attribute
     {
     }
 
@@ -93,13 +93,13 @@ namespace Modbus.Net
     /// <summary>
     ///     协议错误
     /// </summary>
-    public class ProtocalErrorException : Exception
+    public class ProtocolErrorException : Exception
     {
         /// <summary>
         ///     构造函数
         /// </summary>
         /// <param name="message"></param>
-        public ProtocalErrorException(string message)
+        public ProtocolErrorException(string message)
             : base(message)
         {
         }

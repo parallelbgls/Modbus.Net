@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 
 namespace Modbus.Net.Siemens
@@ -6,13 +7,13 @@ namespace Modbus.Net.Siemens
     /// <summary>
     ///     西门子Tcp协议连接器
     /// </summary>
-    public class SiemensTcpProtocalLinker : TcpProtocalLinker
+    public class SiemensTcpProtocolLinker : TcpProtocolLinker
     {
         /// <summary>
         ///     构造函数
         /// </summary>
         /// <param name="ip">IP地址</param>
-        public SiemensTcpProtocalLinker(string ip)
+        public SiemensTcpProtocolLinker(string ip)
             : this(ip, int.Parse(ConfigurationManager.AppSettings["SiemensPort"] ?? "102"))
         {
         }
@@ -22,10 +23,10 @@ namespace Modbus.Net.Siemens
         /// </summary>
         /// <param name="ip">IP地址</param>
         /// <param name="port">端口</param>
-        public SiemensTcpProtocalLinker(string ip, int port)
+        public SiemensTcpProtocolLinker(string ip, int port)
             : base(ip, port)
         {
-            ((BaseConnector)BaseConnector).AddController(new FIFOController(500));
+            ((BaseConnector)BaseConnector).AddController(new MatchController(new ICollection<int>[] { new List<int> { 11, 12 } }, 500));
         }
 
         /// <summary>
@@ -48,10 +49,10 @@ namespace Modbus.Net.Siemens
                         case 0x02:
                         case 0x03:
                             if (content[17] == 0x00 && content[18] == 0x00) return true;
-                            throw new SiemensProtocalErrorException(content[17], content[18]);
+                            throw new SiemensProtocolErrorException(content[17], content[18]);
                         case 0x07:
                             if (content[27] == 0x00 && content[28] == 0x00) return true;
-                            throw new SiemensProtocalErrorException(content[27], content[28]);
+                            throw new SiemensProtocolErrorException(content[27], content[28]);
                     }
                     return true;
                 default:

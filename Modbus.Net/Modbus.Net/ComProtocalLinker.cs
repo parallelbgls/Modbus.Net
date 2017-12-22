@@ -6,7 +6,7 @@ namespace Modbus.Net
     /// <summary>
     ///     串口连接对象
     /// </summary>
-    public abstract class ComProtocalLinker : ProtocalLinker
+    public abstract class ComProtocolLinker : ProtocolLinker
     {
         /// <summary>
         ///     构造器
@@ -16,7 +16,7 @@ namespace Modbus.Net
         /// <param name="stopBits">停止位</param>
         /// <param name="dataBits">数据位</param>
         /// <param name="slaveAddress">从站地址</param>
-        protected ComProtocalLinker(int baudRate, Parity parity, StopBits stopBits, int dataBits, int slaveAddress)
+        protected ComProtocolLinker(int baudRate, Parity parity, StopBits stopBits, int dataBits, int slaveAddress)
             : this(ConfigurationManager.AppSettings["COM"], baudRate, parity, stopBits, dataBits, slaveAddress)
         {
         }
@@ -30,7 +30,7 @@ namespace Modbus.Net
         /// <param name="stopBits">停止位</param>
         /// <param name="dataBits">数据位</param>
         /// <param name="slaveAddress">从站地址</param>
-        protected ComProtocalLinker(string com, int baudRate, Parity parity, StopBits stopBits, int dataBits,
+        protected ComProtocolLinker(string com, int baudRate, Parity parity, StopBits stopBits, int dataBits,
             int slaveAddress)
             : this(
                 com, baudRate, parity, stopBits, dataBits,
@@ -48,7 +48,7 @@ namespace Modbus.Net
         /// <param name="dataBits">数据位</param>
         /// <param name="connectionTimeout">超时时间</param>
         /// <param name="slaveAddress">从站地址</param>
-        protected ComProtocalLinker(string com, int baudRate, Parity parity, StopBits stopBits, int dataBits,
+        protected ComProtocolLinker(string com, int baudRate, Parity parity, StopBits stopBits, int dataBits,
             int connectionTimeout, int slaveAddress)
         {
             BaseConnector = new ComConnector(com + ":" + slaveAddress, baudRate, parity, stopBits, dataBits,

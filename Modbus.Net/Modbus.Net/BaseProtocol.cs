@@ -9,12 +9,12 @@ namespace Modbus.Net
     /// <summary>
     ///     基本协议
     /// </summary>
-    public abstract class BaseProtocal : BaseProtocal<byte[], byte[], ProtocalUnit, PipeUnit>
+    public abstract class BaseProtocol : BaseProtocol<byte[], byte[], ProtocolUnit, PipeUnit>
     {
         /// <summary>
         ///     构造器
         /// </summary>
-        protected BaseProtocal(byte slaveAddress, byte masterAddress, Endian endian)
+        protected BaseProtocol(byte slaveAddress, byte masterAddress, Endian endian)
             : base(slaveAddress, masterAddress, endian)
         {
         }
@@ -30,7 +30,7 @@ namespace Modbus.Net
             {
                 var pipeUnit =
                     new PipeUnit(
-                        ProtocalLinker);
+                        ProtocolLinker);
                 return await pipeUnit.SendReceiveAsync(Endian, paramOut => content);
             }
             return null;
@@ -43,11 +43,11 @@ namespace Modbus.Net
         /// <param name="content">输入信息的结构化描述</param>
         /// <returns>输出信息的结构化描述</returns>
         public override async Task<PipeUnit>
-            SendReceiveAsync(ProtocalUnit unit, IInputStruct content)
+            SendReceiveAsync(ProtocolUnit unit, IInputStruct content)
         {
             if (content != null)
             {
-                var pipeUnit = new PipeUnit(ProtocalLinker);
+                var pipeUnit = new PipeUnit(ProtocolLinker);
                 return await pipeUnit.SendReceiveAsync(unit, paramOut => content);
             }
             return null;
@@ -57,19 +57,19 @@ namespace Modbus.Net
     /// <summary>
     ///     基本协议
     /// </summary>
-    public abstract class BaseProtocal<TParamIn, TParamOut, TProtocalUnit, TPipeUnit> :
-        IProtocal<TParamIn, TParamOut, TProtocalUnit, TPipeUnit>
-        where TProtocalUnit : class, IProtocalFormatting<TParamIn, TParamOut>
+    public abstract class BaseProtocol<TParamIn, TParamOut, TProtocolUnit, TPipeUnit> :
+        IProtocol<TParamIn, TParamOut, TProtocolUnit, TPipeUnit>
+        where TProtocolUnit : class, IProtocolFormatting<TParamIn, TParamOut>
         where TParamOut : class
-        where TPipeUnit : PipeUnit<TParamIn, TParamOut, IProtocalLinker<TParamIn, TParamOut>, TProtocalUnit>
+        where TPipeUnit : PipeUnit<TParamIn, TParamOut, IProtocolLinker<TParamIn, TParamOut>, TProtocolUnit>
     {
         /// <summary>
         ///     构造器
         /// </summary>
-        protected BaseProtocal(byte slaveAddress, byte masterAddress, Endian endian)
+        protected BaseProtocol(byte slaveAddress, byte masterAddress, Endian endian)
         {
             Endian = endian;
-            Protocals = new Dictionary<string, TProtocalUnit>();
+            Protocols = new Dictionary<string, TProtocolUnit>();
             SlaveAddress = slaveAddress;
             MasterAddress = masterAddress;
         }
@@ -92,45 +92,45 @@ namespace Modbus.Net
         /// <summary>
         ///     协议集合
         /// </summary>
-        protected Dictionary<string, TProtocalUnit> Protocals { get; }
+        protected Dictionary<string, TProtocolUnit> Protocols { get; }
 
         /// <summary>
         ///     协议索引器，这是一个懒加载协议，当字典中不存在协议时自动加载协议，否则调用已经加载的协议
         /// </summary>
         /// <param name="type">协议的类的GetType</param>
         /// <returns>协议的实例</returns>
-        public TProtocalUnit this[Type type]
+        public TProtocolUnit this[Type type]
         {
             get
             {
                 var protocalName = type.FullName;
-                TProtocalUnit protocalUnitReturn = null;
-                lock (Protocals)
+                TProtocolUnit protocalUnitReturn = null;
+                lock (Protocols)
                 {
-                    if (Protocals.ContainsKey(protocalName))
+                    if (Protocols.ContainsKey(protocalName))
                     {
-                        protocalUnitReturn = Protocals[protocalName];
+                        protocalUnitReturn = Protocols[protocalName];
                     }
                     else
                     {
                         //自动寻找存在的协议并将其加载
                         var protocalUnit =
                             Activator.CreateInstance(type.GetTypeInfo().Assembly
-                                .GetType(protocalName)) as TProtocalUnit;
+                                .GetType(protocalName)) as TProtocolUnit;
                         if (protocalUnit == null)
-                            throw new InvalidCastException($"No ProtocalUnit {nameof(TProtocalUnit)} implemented");
+                            throw new InvalidCastException($"No ProtocolUnit {nameof(TProtocolUnit)} implemented");
                         protocalUnit.Endian = Endian;
                         Register(protocalUnit);
                     }
                 }
-                return protocalUnitReturn ?? Protocals[protocalName];
+                return protocalUnitReturn ?? Protocols[protocalName];
             }
         }
 
         /// <summary>
         ///     协议的连接器
         /// </summary>
-        public IProtocalLinker<TParamIn, TParamOut> ProtocalLinker { get; protected set; }
+        public IProtocolLinker<TParamIn, TParamOut> ProtocolLinker { get; protected set; }
 
         /// <summary>
         ///     协议连接开始
@@ -144,8 +144,8 @@ namespace Modbus.Net
         /// <returns></returns>
         public virtual bool Disconnect()
         {
-            if (ProtocalLinker != null)
-                return ProtocalLinker.Disconnect();
+            if (ProtocolLinker != null)
+                return ProtocolLinker.Disconnect();
             return false;
         }
 
@@ -156,7 +156,7 @@ namespace Modbus.Net
         /// <param name="content">输入信息的结构化描述</param>
         /// <returns>输出信息的结构化描述</returns>
         public virtual TPipeUnit SendReceive(
-            TProtocalUnit unit, IInputStruct content)
+            TProtocolUnit unit, IInputStruct content)
         {
             return AsyncHelper.RunSync(() => SendReceiveAsync(unit, content));
         }
@@ -168,13 +168,13 @@ namespace Modbus.Net
         /// <param name="content">输入信息的结构化描述</param>
         /// <returns>输出信息的结构化描述</returns>
         public virtual async Task<TPipeUnit>
-            SendReceiveAsync(TProtocalUnit unit, IInputStruct content)
+            SendReceiveAsync(TProtocolUnit unit, IInputStruct content)
         {
             if (content != null)
             {
                 var pipeUnit =
-                    new PipeUnit<TParamIn, TParamOut, IProtocalLinker<TParamIn, TParamOut>, TProtocalUnit>(
-                        ProtocalLinker);
+                    new PipeUnit<TParamIn, TParamOut, IProtocolLinker<TParamIn, TParamOut>, TProtocolUnit>(
+                        ProtocolLinker);
                 return await pipeUnit.SendReceiveAsync(unit, paramOut => content) as TPipeUnit;
             }
             return null;
@@ -207,7 +207,7 @@ namespace Modbus.Net
         /// <param name="content">输入信息的结构化描述</param>
         /// <returns>输出信息的结构化描述</returns>
         /// <typeparam name="T">IOutputStruct的具体类型</typeparam>
-        public virtual T SendReceive<T>(TProtocalUnit unit, IInputStruct content) where T : class, IOutputStruct
+        public virtual T SendReceive<T>(TProtocolUnit unit, IInputStruct content) where T : class, IOutputStruct
         {
             return AsyncHelper.RunSync(() => SendReceiveAsync<T>(unit, content));
         }
@@ -219,7 +219,7 @@ namespace Modbus.Net
         /// <param name="content">输入信息的结构化描述</param>
         /// <returns>输出信息的结构化描述</returns>
         /// <typeparam name="T">IOutputStruct的具体类型</typeparam>
-        public virtual async Task<T> SendReceiveAsync<T>(TProtocalUnit unit, IInputStruct content)
+        public virtual async Task<T> SendReceiveAsync<T>(TProtocolUnit unit, IInputStruct content)
             where T : class, IOutputStruct
         {
             return (await SendReceiveAsync(unit, content)).Unwrap<T>();
@@ -228,11 +228,11 @@ namespace Modbus.Net
         /// <summary>
         ///     注册一个协议
         /// </summary>
-        /// <param name="linkProtocal">需要注册的协议</param>
-        protected void Register(TProtocalUnit linkProtocal)
+        /// <param name="linkProtocol">需要注册的协议</param>
+        protected void Register(TProtocolUnit linkProtocol)
         {
-            if (linkProtocal == null) return;
-            Protocals.Add(linkProtocal.GetType().FullName, linkProtocal);
+            if (linkProtocol == null) return;
+            Protocols.Add(linkProtocol.GetType().FullName, linkProtocol);
         }
     }
 }

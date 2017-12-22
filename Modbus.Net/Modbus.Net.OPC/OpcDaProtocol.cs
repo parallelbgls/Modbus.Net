@@ -5,7 +5,7 @@ namespace Modbus.Net.OPC
     /// <summary>
     ///     Opc Da协议
     /// </summary>
-    public class OpcDaProtocal : OpcProtocal
+    public class OpcDaProtocol : OpcProtocol
     {
         private readonly string _host;
 
@@ -16,7 +16,7 @@ namespace Modbus.Net.OPC
         /// </summary>
         /// <param name="host">Opc DA服务地址</param>
         /// <param name="isRegexOn">是否开启正则匹配</param>
-        public OpcDaProtocal(string host, bool isRegexOn)
+        public OpcDaProtocol(string host, bool isRegexOn)
         {
             _host = host;
             _isRegexOn = isRegexOn;
@@ -28,8 +28,8 @@ namespace Modbus.Net.OPC
         /// <returns>是否连接成功</returns>
         public override async Task<bool> ConnectAsync()
         {
-            ProtocalLinker = new OpcDaProtocalLinker(_host, _isRegexOn);
-            if (!await ProtocalLinker.ConnectAsync())
+            ProtocolLinker = new OpcDaProtocolLinker(_host, _isRegexOn);
+            if (!await ProtocolLinker.ConnectAsync())
                 return false;
             return true;
         }

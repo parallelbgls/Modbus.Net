@@ -187,8 +187,8 @@ namespace Modbus.Net.Siemens
                     case SiemensType.Ppi:
                     {
                         Wrapper = ConnectionString == null
-                            ? new SiemensPpiProtocal(SlaveAddress, MasterAddress)
-                            : new SiemensPpiProtocal(ConnectionString, SlaveAddress, MasterAddress);
+                            ? new SiemensPpiProtocol(SlaveAddress, MasterAddress)
+                            : new SiemensPpiProtocol(ConnectionString, SlaveAddress, MasterAddress);
                         break;
                     }
                     //MPI
@@ -200,11 +200,11 @@ namespace Modbus.Net.Siemens
                     case SiemensType.Tcp:
                     {
                         Wrapper = ConnectionString == null
-                            ? new SiemensTcpProtocal(_tdpuSize, _taspSrc, _tsapDst, _maxCalling, _maxCalled, _maxPdu)
+                            ? new SiemensTcpProtocol(_tdpuSize, _taspSrc, _tsapDst, _maxCalling, _maxCalled, _maxPdu)
                             : (ConnectionStringPort == null
-                                ? new SiemensTcpProtocal(_tdpuSize, _taspSrc, _tsapDst, _maxCalling, _maxCalled, _maxPdu,
+                                ? new SiemensTcpProtocol(_tdpuSize, _taspSrc, _tsapDst, _maxCalling, _maxCalled, _maxPdu,
                                     ConnectionString)
-                                : new SiemensTcpProtocal(_tdpuSize, _taspSrc, _tsapDst, _maxCalling, _maxCalled, _maxPdu,
+                                : new SiemensTcpProtocol(_tdpuSize, _taspSrc, _tsapDst, _maxCalling, _maxCalled, _maxPdu,
                                     ConnectionStringIp, ConnectionStringPort.Value));
                         break;
                     }
@@ -236,7 +236,7 @@ namespace Modbus.Net.Siemens
                 var readRequestSiemensOutputStruct =
                     await
                         Wrapper.SendReceiveAsync<ReadRequestSiemensOutputStruct>(
-                            Wrapper[typeof(ReadRequestSiemensProtocal)],
+                            Wrapper[typeof(ReadRequestSiemensProtocol)],
                             readRequestSiemensInputStruct);
                 return readRequestSiemensOutputStruct?.GetValue;
             }
@@ -262,7 +262,7 @@ namespace Modbus.Net.Siemens
                 var writeRequestSiemensOutputStruct =
                     await
                         Wrapper.SendReceiveAsync<WriteRequestSiemensOutputStruct>(
-                            Wrapper[typeof(WriteRequestSiemensProtocal)],
+                            Wrapper[typeof(WriteRequestSiemensProtocol)],
                             writeRequestSiemensInputStruct);
                 return writeRequestSiemensOutputStruct?.AccessResult == SiemensAccessResult.NoError;
             }

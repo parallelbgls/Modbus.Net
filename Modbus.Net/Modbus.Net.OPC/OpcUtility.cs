@@ -7,9 +7,9 @@ namespace Modbus.Net.OPC
     /// <summary>
     ///     Opc通用Api入口
     /// </summary>
-    public abstract class OpcUtility : BaseUtility<OpcParamIn, OpcParamOut, ProtocalUnit<OpcParamIn, OpcParamOut>,
-        PipeUnit<OpcParamIn, OpcParamOut, IProtocalLinker<OpcParamIn, OpcParamOut>,
-            ProtocalUnit<OpcParamIn, OpcParamOut>>>
+    public abstract class OpcUtility : BaseUtility<OpcParamIn, OpcParamOut, ProtocolUnit<OpcParamIn, OpcParamOut>,
+        PipeUnit<OpcParamIn, OpcParamOut, IProtocolLinker<OpcParamIn, OpcParamOut>,
+            ProtocolUnit<OpcParamIn, OpcParamOut>>>
     {
         /// <summary>
         ///     获取分隔符
@@ -60,7 +60,7 @@ namespace Modbus.Net.OPC
                 var readRequestOpcInputStruct = new ReadRequestOpcInputStruct(startAddress.Split('\r'), split);
                 var readRequestOpcOutputStruct =
                     await
-                        Wrapper.SendReceiveAsync<ReadRequestOpcOutputStruct>(Wrapper[typeof(ReadRequestOpcProtocal)],
+                        Wrapper.SendReceiveAsync<ReadRequestOpcOutputStruct>(Wrapper[typeof(ReadRequestOpcProtocol)],
                             readRequestOpcInputStruct);
                 return readRequestOpcOutputStruct?.GetValue;
             }
@@ -86,7 +86,7 @@ namespace Modbus.Net.OPC
                     new WriteRequestOpcInputStruct(startAddress.Split('\r'), split, setContents[0]);
                 var writeRequestOpcOutputStruct =
                     await
-                        Wrapper.SendReceiveAsync<WriteRequestOpcOutputStruct>(Wrapper[typeof(WriteRequestOpcProtocal)],
+                        Wrapper.SendReceiveAsync<WriteRequestOpcOutputStruct>(Wrapper[typeof(WriteRequestOpcProtocol)],
                             writeRequestOpcInputStruct);
                 return writeRequestOpcOutputStruct?.WriteResult == true;
             }

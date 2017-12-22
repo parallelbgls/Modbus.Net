@@ -1,4 +1,5 @@
-﻿using System.IO.Ports;
+﻿using System.Collections.Generic;
+using System.IO.Ports;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -7,17 +8,17 @@ namespace Modbus.Net.Siemens
     /// <summary>
     ///     西门子Ppi协议连接器
     /// </summary>
-    public class SiemensPpiProtocalLinker : ComProtocalLinker
+    public class SiemensPpiProtocolLinker : ComProtocolLinker
     {
         /// <summary>
         ///     构造函数
         /// </summary>
         /// <param name="com">串口地址</param>
         /// <param name="slaveAddress">从站号</param>
-        public SiemensPpiProtocalLinker(string com, int slaveAddress)
+        public SiemensPpiProtocolLinker(string com, int slaveAddress)
             : base(com, 9600, Parity.Even, StopBits.One, 8, slaveAddress)
         {
-            ((BaseConnector)BaseConnector).AddController(new FIFOController(500));
+            ((BaseConnector)BaseConnector).AddController(new MatchController(new ICollection<int>[] { new List<int> { 5 }, new List<int> { 6 }, new List<int> { 11, 12 } }, 500));
         }
 
         /// <summary>
@@ -33,7 +34,7 @@ namespace Modbus.Net.Siemens
                 var inputStruct2 = new ComConfirmMessageSiemensInputStruct(content[4], content[5]);
                 var receiveBytes2 =
                     await SendReceiveWithoutExtAndDecAsync(
-                        new ComConfirmMessageSiemensProtocal().Format(inputStruct2));
+                        new ComConfirmMessageSiemensProtocol().Format(inputStruct2));
             }
             var receiveBytes = await SendReceiveWithoutExtAndDecAsync(extBytes);
             if (content.Length > 6 && receiveBytes.Length == 1 && receiveBytes[0] == 0xe5)
@@ -41,7 +42,7 @@ namespace Modbus.Net.Siemens
                 var inputStruct2 = new ComConfirmMessageSiemensInputStruct(content[4], content[5]);
                 var receiveBytes2 =
                     await SendReceiveWithoutExtAndDecAsync(
-                        new ComConfirmMessageSiemensProtocal().Format(inputStruct2));
+                        new ComConfirmMessageSiemensProtocol().Format(inputStruct2));
                 return BytesDecact(receiveBytes2);
             }
             return BytesDecact(receiveBytes);
@@ -63,14 +64,14 @@ namespace Modbus.Net.Siemens
                     var inputStruct2 = new ComConfirmMessageSiemensInputStruct(content[1], content[2]);
                     ans =
                         await SendReceiveWithoutExtAndDecAsync(
-                            new ComConfirmMessageSiemensProtocal().Format(inputStruct2));
+                            new ComConfirmMessageSiemensProtocol().Format(inputStruct2));
                 }
                 else
                 {
                     var inputStruct2 = new ComConfirmMessageSiemensInputStruct(content[4], content[5]);
                     ans =
                         await SendReceiveWithoutExtAndDecAsync(
-                            new ComConfirmMessageSiemensProtocal().Format(inputStruct2));
+                            new ComConfirmMessageSiemensProtocol().Format(inputStruct2));
                 }
             }
             return ans;

@@ -30,7 +30,7 @@ namespace Modbus.Net
     /// <summary>
     ///     基础Api入口
     /// </summary>
-    public abstract class BaseUtility : BaseUtility<byte[], byte[], ProtocalUnit, PipeUnit>
+    public abstract class BaseUtility : BaseUtility<byte[], byte[], ProtocolUnit, PipeUnit>
     {
         /// <summary>
         ///     构造器
@@ -43,14 +43,14 @@ namespace Modbus.Net
     /// <summary>
     ///     基础Api入口
     /// </summary>
-    public abstract class BaseUtility<TParamIn, TParamOut, TProtocalUnit, TPipeUnit> : IUtilityProperty, IUtilityMethodData
-        where TProtocalUnit : class, IProtocalFormatting<TParamIn, TParamOut> where TParamOut : class
-        where TPipeUnit : PipeUnit<TParamIn, TParamOut, IProtocalLinker<TParamIn, TParamOut>, TProtocalUnit>
+    public abstract class BaseUtility<TParamIn, TParamOut, TProtocolUnit, TPipeUnit> : IUtilityProperty, IUtilityMethodData
+        where TProtocolUnit : class, IProtocolFormatting<TParamIn, TParamOut> where TParamOut : class
+        where TPipeUnit : PipeUnit<TParamIn, TParamOut, IProtocolLinker<TParamIn, TParamOut>, TProtocolUnit>
     {
         /// <summary>
         ///     协议收发主体
         /// </summary>
-        protected IProtocal<TParamIn, TParamOut, TProtocalUnit, TPipeUnit> Wrapper;
+        protected IProtocol<TParamIn, TParamOut, TProtocolUnit, TPipeUnit> Wrapper;
 
         /// <summary>
         ///     构造器
@@ -237,13 +237,13 @@ namespace Modbus.Net
         /// <summary>
         ///     设备是否已经连接
         /// </summary>
-        public bool IsConnected => Wrapper?.ProtocalLinker != null && Wrapper.ProtocalLinker.IsConnected;
+        public bool IsConnected => Wrapper?.ProtocolLinker != null && Wrapper.ProtocolLinker.IsConnected;
 
         /// <summary>
         ///     标识设备的连接关键字
         /// </summary>
         public string ConnectionToken
-            => Wrapper?.ProtocalLinker == null ? ConnectionString : Wrapper.ProtocalLinker.ConnectionToken;
+            => Wrapper?.ProtocolLinker == null ? ConnectionString : Wrapper.ProtocolLinker.ConnectionToken;
 
         /// <summary>
         ///     地址翻译器

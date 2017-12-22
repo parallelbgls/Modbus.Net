@@ -5,7 +5,7 @@ namespace Modbus.Net.Modbus
     /// <summary>
     ///     Modbus/Rtu协议
     /// </summary>
-    public class ModbusRtuProtocal : ModbusProtocal
+    public class ModbusRtuProtocol : ModbusProtocol
     {
         /// <summary>
         ///     构造函数
@@ -13,7 +13,7 @@ namespace Modbus.Net.Modbus
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
         /// <param name="endian">端格式</param>
-        public ModbusRtuProtocal(byte slaveAddress, byte masterAddress, Endian endian)
+        public ModbusRtuProtocol(byte slaveAddress, byte masterAddress, Endian endian)
             : this(ConfigurationManager.AppSettings["COM"], slaveAddress, masterAddress, endian)
         {
         }
@@ -25,10 +25,10 @@ namespace Modbus.Net.Modbus
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
         /// <param name="endian">端格式</param>
-        public ModbusRtuProtocal(string com, byte slaveAddress, byte masterAddress, Endian endian)
+        public ModbusRtuProtocol(string com, byte slaveAddress, byte masterAddress, Endian endian)
             : base(slaveAddress, masterAddress, endian)
         {
-            ProtocalLinker = new ModbusRtuProtocalLinker(com, slaveAddress);
+            ProtocolLinker = new ModbusRtuProtocolLinker(com, slaveAddress);
         }
     }
 }

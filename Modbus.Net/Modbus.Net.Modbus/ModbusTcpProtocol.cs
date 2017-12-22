@@ -1,12 +1,11 @@
 ﻿using System.Configuration;
 
-
 namespace Modbus.Net.Modbus
 {
     /// <summary>
-    ///     Modbus/Rtu协议tcp透传
+    ///     Modbus/Tcp协议
     /// </summary>
-    public class ModbusRtuInTcpProtocal : ModbusProtocal
+    public class ModbusTcpProtocol : ModbusProtocol
     {
         /// <summary>
         ///     构造函数
@@ -14,7 +13,7 @@ namespace Modbus.Net.Modbus
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
         /// <param name="endian">端格式</param>
-        public ModbusRtuInTcpProtocal(byte slaveAddress, byte masterAddress, Endian endian)
+        public ModbusTcpProtocol(byte slaveAddress, byte masterAddress, Endian endian)
             : this(ConfigurationManager.AppSettings["IP"], slaveAddress, masterAddress, endian)
         {
         }
@@ -26,23 +25,24 @@ namespace Modbus.Net.Modbus
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
         /// <param name="endian">端格式</param>
-        public ModbusRtuInTcpProtocal(string ip, byte slaveAddress, byte masterAddress, Endian endian)
+        public ModbusTcpProtocol(string ip, byte slaveAddress, byte masterAddress, Endian endian)
             : base(slaveAddress, masterAddress, endian)
         {
-            ProtocalLinker = new ModbusTcpProtocalLinker(ip);
+            ProtocolLinker = new ModbusTcpProtocolLinker(ip);
         }
 
         /// <summary>
         ///     构造函数
         /// </summary>
-        /// <param name="com">串口</param>
+        /// <param name="ip">ip地址</param>
+        /// <param name="port">端口</param>
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
         /// <param name="endian">端格式</param>
-        public ModbusRtuInTcpProtocal(string ip, int port, byte slaveAddress, byte masterAddress, Endian endian)
+        public ModbusTcpProtocol(string ip, int port, byte slaveAddress, byte masterAddress, Endian endian)
             : base(slaveAddress, masterAddress, endian)
         {
-            ProtocalLinker = new ModbusRtuInTcpProtocalLinker(ip, port);
+            ProtocolLinker = new ModbusTcpProtocolLinker(ip, port);
         }
     }
 }

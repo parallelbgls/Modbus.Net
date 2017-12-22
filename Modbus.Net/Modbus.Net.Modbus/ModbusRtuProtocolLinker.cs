@@ -1,21 +1,22 @@
-﻿using System.IO.Ports;
+﻿using System.Collections.Generic;
+using System.IO.Ports;
 
 namespace Modbus.Net.Modbus
 {
     /// <summary>
     ///     Modbus/Rtu协议连接器
     /// </summary>
-    public class ModbusRtuProtocalLinker : ComProtocalLinker
+    public class ModbusRtuProtocolLinker : ComProtocolLinker
     {
         /// <summary>
         ///     构造函数
         /// </summary>
         /// <param name="com">串口地址</param>
         /// <param name="slaveAddress">从站号</param>
-        public ModbusRtuProtocalLinker(string com, int slaveAddress)
+        public ModbusRtuProtocolLinker(string com, int slaveAddress)
             : base(com, 9600, Parity.None, StopBits.One, 8, slaveAddress)
         {
-            ((BaseConnector)BaseConnector).AddController(new FIFOController(500));
+            ((BaseConnector)BaseConnector).AddController(new MatchController(new ICollection<int>[]{new List<int>{0}}, 500));
         }
 
         /// <summary>
@@ -25,14 +26,14 @@ namespace Modbus.Net.Modbus
         /// <returns>数据是否正确</returns>
         public override bool? CheckRight(byte[] content)
         {
-            //ProtocalLinker的CheckRight不会返回null
+            //ProtocolLinker的CheckRight不会返回null
             if (!base.CheckRight(content).Value) return false;
             //CRC校验失败
             if (!Crc16.GetInstance().CrcEfficacy(content))
-                throw new ModbusProtocalErrorException(501);
+                throw new ModbusProtocolErrorException(501);
             //Modbus协议错误
             if (content[1] > 127)
-                throw new ModbusProtocalErrorException(content[2]);
+                throw new ModbusProtocolErrorException(content[2]);
             return true;
         }
     }
