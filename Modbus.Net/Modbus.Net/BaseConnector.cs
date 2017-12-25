@@ -30,7 +30,7 @@ namespace Modbus.Net
         /// <summary>
         ///     传输控制器
         /// </summary>
-        protected IController Controller { get; set; }
+        protected virtual IController Controller { get; set; }
 
         /// <summary>
         ///     标识Connector的连接关键字

@@ -30,6 +30,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossLamp", "..\Samples\Cro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnyType", "..\Samples\AnyType\AnyType.csproj", "{25FABD48-D82E-4E08-91A4-46F7057EC954}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modbus.Net.PersistedTests", "Modbus.Net.PersistedTests\Modbus.Net.PersistedTests.csproj", "{5BFCA3D4-D809-485E-B69C-6F80A6A917D4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -72,6 +74,10 @@ Global
 		{25FABD48-D82E-4E08-91A4-46F7057EC954}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{25FABD48-D82E-4E08-91A4-46F7057EC954}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{25FABD48-D82E-4E08-91A4-46F7057EC954}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BFCA3D4-D809-485E-B69C-6F80A6A917D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BFCA3D4-D809-485E-B69C-6F80A6A917D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BFCA3D4-D809-485E-B69C-6F80A6A917D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BFCA3D4-D809-485E-B69C-6F80A6A917D4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -82,6 +88,7 @@ Global
 		{2D939825-8459-438A-AC82-4C67A73E373E} = {145DA93A-6768-4D98-8512-AB22339933F7}
 		{41F40C27-AB1A-4153-BBAD-BFC7BD57B380} = {145DA93A-6768-4D98-8512-AB22339933F7}
 		{25FABD48-D82E-4E08-91A4-46F7057EC954} = {145DA93A-6768-4D98-8512-AB22339933F7}
+		{5BFCA3D4-D809-485E-B69C-6F80A6A917D4} = {D8DD32FC-CF39-4A1A-8FBF-9E82C5278C34}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AF00D64E-3C70-474A-8A81-E9E48017C4B5}

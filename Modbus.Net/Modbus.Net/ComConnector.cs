@@ -108,6 +108,28 @@ namespace Modbus.Net
         private static Dictionary<string, SerialPortLock> Connectors { get; } = new Dictionary<string, SerialPortLock>()
             ;
 
+        private static Dictionary<string, IController> Controllers { get; } = new Dictionary<string, IController>()
+            ;
+
+        /// <inheritdoc />
+        protected override IController Controller {
+            get
+            {
+                if (Controllers.ContainsKey(_com))
+                {
+                    return Controllers[_com];
+                }
+                return null;
+            }
+            set
+            {
+                if (!Controllers.ContainsKey(_com))
+                {
+                    Controllers.Add(_com, value);
+                }
+            } 
+        }
+
         /// <summary>
         ///     连接中的连接器
         /// </summary>
@@ -272,9 +294,7 @@ namespace Modbus.Net
 
         #region 发送接收数据
 
-        /// <summary>
-        ///     是否正在连接
-        /// </summary>
+        /// <inheritdoc />
         public override bool IsConnected
         {
             get
@@ -293,31 +313,33 @@ namespace Modbus.Net
         {
             try
             {
-                if (!Connectors.ContainsKey(_com))
+                lock (Connectors)
                 {
-                    Connectors.Add(_com, new SerialPortLock
+                    if (!Connectors.ContainsKey(_com))
                     {
-                        PortName = _com,
-                        BaudRate = _baudRate,
-                        Parity = _parity,
-                        StopBits = _stopBits,
-                        DataBits = _dataBits,
-                        ReadTimeout = _timeoutTime
-                    });
-                }
-                if (!Linkers.ContainsKey(_slave))
-                {
-                    Linkers.Add(_slave, _com);
-                }
-                if (!SerialPort.IsOpen)
-                {
-                    lock (SerialPort)
+                        Connectors.Add(_com, new SerialPortLock
+                        {
+                            PortName = _com,
+                            BaudRate = _baudRate,
+                            Parity = _parity,
+                            StopBits = _stopBits,
+                            DataBits = _dataBits,
+                            ReadTimeout = _timeoutTime
+                        });
+                    }
+                    if (!Linkers.ContainsKey(_slave))
                     {
-                        SerialPort.Open();
-                        ReceiveMsgThreadStart();
+                        Linkers.Add(_slave, _com);
+                    }
+                    if (!SerialPort.IsOpen)
+                    {
+                        lock (SerialPort)
+                        {
+                            SerialPort.Open();
+                            ReceiveMsgThreadStart();
+                        }
                     }
                 }
-
                 Controller.SendStart();
 
                 Log.Information("Com client {ConnectionToken} connect success", ConnectionToken);
@@ -331,19 +353,13 @@ namespace Modbus.Net
             }
         }
 
-        /// <summary>
-        ///     连接串口
-        /// </summary>
-        /// <returns>是否连接成功</returns>
+        /// <inheritdoc />
         public override Task<bool> ConnectAsync()
         {
             return Task.FromResult(Connect());
         }
 
-        /// <summary>
-        ///     断开串口
-        /// </summary>
-        /// <returns>是否断开成功</returns>
+        /// <inheritdoc />
         public override bool Disconnect()
         {
             if (Linkers.ContainsKey(_slave) && Connectors.ContainsKey(_com))
@@ -415,15 +431,11 @@ namespace Modbus.Net
             return AsyncHelper.RunSync(() => SendMsgAsync(message));
         }
 
-        /// <summary>
-        ///     发送数据，需要返回
-        /// </summary>
-        /// <param name="message">发送的数据</param>
-        /// <returns>是否发送成功</returns>
+        /// <inheritdoc />
         public override async Task<byte[]> SendMsgAsync(byte[] message)
         {
             CheckOpen();
-            var task = SendMsgInner(message).WithCancellation(new CancellationTokenSource(10000).Token);
+            var task = SendMsgInner(message).WithCancellation(new CancellationTokenSource(100000).Token);
             var ans = await task;
             if (task.IsCanceled)
             {
@@ -435,35 +447,32 @@ namespace Modbus.Net
 
         private async Task<MessageWaitingDef> SendMsgInner(byte[] message)
         {
-            var messageSendingdef = Controller.AddMessage(message);
-            messageSendingdef.SendMutex.WaitOne();
-            await SendMsgWithoutConfirm(message);
-            messageSendingdef.ReceiveMutex.WaitOne();
-            return messageSendingdef;
-        }
-
-        /// <summary>
-        ///     发送数据，不确认
-        /// </summary>
-        /// <param name="message">需要发送的数据</param>
-        protected override async Task SendMsgWithoutConfirm(byte[] message)
-        {
             using (await SerialPort.Lock.LockAsync())
             {
-                try
-                {
-                    Log.Verbose("Com client {ConnectionToken} send msg length: {Length}", ConnectionToken,
-                        message.Length);
-                    Log.Verbose(
-                        $"Com client {ConnectionToken} send msg: {String.Concat(message.Select(p => " " + p.ToString("X2")))}");
-                    await Task.Run(()=>SerialPort.Write(message, 0, message.Length));
-                }
-                catch (Exception err)
-                {
-                    Log.Error(err, "Com client {ConnectionToken} send msg error", ConnectionToken);
-                }
-                RefreshSendCount();
+                var messageSendingdef = Controller.AddMessage(message);
+                messageSendingdef.SendMutex.WaitOne();
+                await SendMsgWithoutConfirm(message);
+                messageSendingdef.ReceiveMutex.WaitOne();
+                return messageSendingdef;
             }
+        }
+
+        /// <inheritdoc />
+        protected override async Task SendMsgWithoutConfirm(byte[] message)
+        {
+            try
+            {
+                Log.Verbose("Com client {ConnectionToken} send msg length: {Length}", ConnectionToken,
+                    message.Length);
+                Log.Verbose(
+                    $"Com client {ConnectionToken} send msg: {String.Concat(message.Select(p => " " + p.ToString("X2")))}");
+                await Task.Run(() => SerialPort.Write(message, 0, message.Length));
+            }
+            catch (Exception err)
+            {
+                Log.Error(err, "Com client {ConnectionToken} send msg error", ConnectionToken);
+            }
+            RefreshSendCount();
         }
 
         /// <inheritdoc />
@@ -497,8 +506,9 @@ namespace Modbus.Net
                         {
                             //主动传输事件
                         }
-                    }
-                    RefreshReceiveCount();
+
+                        RefreshReceiveCount();
+                    }                   
 
                     Thread.Sleep(500);
                 }
@@ -515,9 +525,8 @@ namespace Modbus.Net
             {
                 CheckOpen();
 
-                byte[] data;
                 Thread.Sleep(100);
-                var i = ReadComm(out data, 10, 5000, 1000);
+                var i = ReadComm(out var data, 10, 5000, 1000);
                 if (i > 0)
                 {
                     var returndata = new byte[i];

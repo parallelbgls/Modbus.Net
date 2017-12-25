@@ -30,7 +30,7 @@ namespace Modbus.Net
             WaitingMessages = new List<MessageWaitingDef>();
         }
 
-        /// <inheritdoc cref="IController.AddMessage(byte[])" />
+        /// <inheritdoc />
         public MessageWaitingDef AddMessage(byte[] sendMessage)
         {
             var def = new MessageWaitingDef
@@ -40,8 +40,11 @@ namespace Modbus.Net
                 SendMutex = new AutoResetEvent(false),
                 ReceiveMutex = new AutoResetEvent(false)
             };
-            AddMessageToList(def);         
-            return def;
+            if (AddMessageToList(def))
+            {
+                return def;
+            }
+            return null;
         }
 
         /// <summary>
@@ -49,10 +52,10 @@ namespace Modbus.Net
         /// </summary>
         protected abstract void SendingMessageControlInner();
 
-        /// <inheritdoc cref="IController.SendStop" />
+        /// <inheritdoc />
         public abstract void SendStop();
 
-        /// <inheritdoc cref="IController.SendStart" />
+        /// <inheritdoc />
         public void SendStart()
         {
             if (SendingThread == null)
@@ -61,7 +64,7 @@ namespace Modbus.Net
             }
         }
 
-        /// <inheritdoc cref="IController.Clear" />
+        /// <inheritdoc />
         public void Clear()
         {
             lock (WaitingMessages)
@@ -74,11 +77,16 @@ namespace Modbus.Net
         ///     将信息添加到队列
         /// </summary>
         /// <param name="def">需要添加的信息信息</param>
-        protected virtual void AddMessageToList(MessageWaitingDef def)
+        protected virtual bool AddMessageToList(MessageWaitingDef def)
         {
             lock (WaitingMessages)
             {
-                WaitingMessages.Add(def);
+                if (WaitingMessages.FirstOrDefault(p => p.Key == def.Key) == null)
+                {
+                    WaitingMessages.Add(def);
+                    return true;
+                }
+                return false;
             }
         }
 
@@ -89,7 +97,7 @@ namespace Modbus.Net
         /// <returns>信息的检索关键字</returns>
         protected abstract string GetKeyFromMessage(byte[] message);
 
-        /// <inheritdoc cref="IController.ConfirmMessage(byte[])" />
+        /// <inheritdoc />
         public bool ConfirmMessage(byte[] receiveMessage)
         {
             var def = GetMessageFromWaitingList(receiveMessage);

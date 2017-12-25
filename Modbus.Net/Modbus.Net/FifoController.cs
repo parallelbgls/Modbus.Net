@@ -31,7 +31,7 @@ namespace Modbus.Net
             AcquireTime = acquireTime;
         }
 
-        /// <inheritdoc cref="BaseController.SendingMessageControlInner"/>
+        /// <inheritdoc />
         protected override void SendingMessageControlInner()
         {
             try
@@ -54,14 +54,9 @@ namespace Modbus.Net
                         if (_currentSendingPos != null)
                         {
                             _currentSendingPos.SendMutex.Set();
-                            if (WaitingMessages.Count <= 1)
-                            {
-                                _currentSendingPos = null;
-                            }
-                            else
-                            {
-                                _currentSendingPos = WaitingMessages[WaitingMessages.IndexOf(_currentSendingPos) + 1];
-                            }
+                            _currentSendingPos = WaitingMessages.Count <= 1
+                                ? null
+                                : WaitingMessages[WaitingMessages.IndexOf(_currentSendingPos) + 1];
                         }
                     }
                 }
@@ -77,19 +72,19 @@ namespace Modbus.Net
 
         }
 
-        /// <inheritdoc cref="BaseController.SendStop"/>
+        /// <inheritdoc />
         public override void SendStop()
         {
             _taskCancel = true;
         }
 
-        /// <inheritdoc cref="BaseController.GetKeyFromMessage(byte[])"/>
+        /// <inheritdoc />
         protected override string GetKeyFromMessage(byte[] message)
         {
             return null;
         }
 
-        /// <inheritdoc cref="BaseController.GetMessageFromWaitingList(byte[])"/>
+        /// <inheritdoc />
         protected override MessageWaitingDef GetMessageFromWaitingList(byte[] receiveMessage)
         {
             return WaitingMessages.FirstOrDefault();

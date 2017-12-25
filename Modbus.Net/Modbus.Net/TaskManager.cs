@@ -691,7 +691,7 @@ namespace Modbus.Net
         /// <param name="machines">多台设备</param>
         public void AddMachines(IEnumerable<BaseMachine> machines)
         {
-            base.AddMachines(machines);
+            base.AddMachines<string>(machines);
         }
 
         /// <summary>
@@ -699,9 +699,9 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="id">设备Id</param>
         /// <returns>获取的设备</returns>
-        public BaseMachine GetMachineById(string id)
+        public new BaseMachine GetMachineById(string id)
         {
-            return base.GetMachineById<string>(id) as BaseMachine;
+            return base.GetMachineById(id) as BaseMachine;
         }
 
         /// <summary>
@@ -709,9 +709,9 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="connectionToken">通讯标志</param>
         /// <returns>获取的设备</returns>
-        public BaseMachine GetMachineByConnectionToken(string connectionToken)
+        public new BaseMachine GetMachineByConnectionToken(string connectionToken)
         {
-            return base.GetMachineByConnectionToken<string>(connectionToken) as BaseMachine;
+            return base.GetMachineByConnectionToken(connectionToken) as BaseMachine;
         }
     }
 
@@ -808,8 +808,7 @@ namespace Modbus.Net
         ///     添加一台设备
         /// </summary>
         /// <param name="machine">设备</param>
-        public void AddMachine<TUnitKey>(BaseMachine<TMachineKey, TUnitKey> machine)
-            where TUnitKey : IEquatable<TUnitKey>
+        public void AddMachine(IMachineProperty<TMachineKey> machine)
         {
             machine.KeepConnect = KeepConnect;
             lock (_machines)
@@ -822,7 +821,7 @@ namespace Modbus.Net
         ///     添加多台设备
         /// </summary>
         /// <param name="machines">设备的列表</param>
-        public void AddMachines<TUnitKey>(IEnumerable<BaseMachine<TMachineKey, TUnitKey>> machines)
+        public void AddMachines<TUnitKey>(IEnumerable<IMachineProperty<TMachineKey>> machines)
             where TUnitKey : IEquatable<TUnitKey>
         {
             foreach (var machine in machines)
@@ -832,11 +831,9 @@ namespace Modbus.Net
         /// <summary>
         ///     通过Id获取设备
         /// </summary>
-        /// <typeparam name="TUnitKey">设备地址Id的类型</typeparam>
         /// <param name="id">设备的Id</param>
         /// <returns>获取设备</returns>
-        public BaseMachine<TMachineKey, TUnitKey> GetMachineById<TUnitKey>(TMachineKey id)
-            where TUnitKey : IEquatable<TUnitKey>
+        public IMachineProperty<TMachineKey> GetMachineById(TMachineKey id)
         {
             try
             {
@@ -845,7 +842,7 @@ namespace Modbus.Net
                 {
                     machine = _machines.SingleOrDefault(p => p.Machine.Id.Equals(id));
                 }
-                return machine?.Machine as BaseMachine<TMachineKey, TUnitKey>;
+                return machine?.Machine;
             }
             catch (Exception e)
             {
@@ -857,11 +854,9 @@ namespace Modbus.Net
         /// <summary>
         ///     通过通讯标志获取设备
         /// </summary>
-        /// <typeparam name="TUnitKey">设备地址Id的类型</typeparam>
         /// <param name="connectionToken">通讯标志</param>
         /// <returns>获取的数据</returns>
-        public BaseMachine<TMachineKey, TUnitKey> GetMachineByConnectionToken<TUnitKey>(string connectionToken)
-            where TUnitKey : IEquatable<TUnitKey>
+        public IMachineProperty<TMachineKey> GetMachineByConnectionToken(string connectionToken)
         {
             try
             {
@@ -870,7 +865,7 @@ namespace Modbus.Net
                 {
                     machine = _machines.SingleOrDefault(p => p.Machine.ConnectionToken == connectionToken && p.Machine.IsConnected);
                 }
-                return machine?.Machine as BaseMachine<TMachineKey, TUnitKey>;
+                return machine?.Machine;
             }
             catch (Exception e)
             {
