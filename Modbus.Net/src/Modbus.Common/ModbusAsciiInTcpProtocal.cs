@@ -12,21 +12,19 @@ namespace Modbus.Net.Modbus
         /// </summary>
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
-        /// <param name="endian">端格式</param>
-        public ModbusAsciiInTcpProtocal(byte slaveAddress, byte masterAddress, Endian endian)
-            : this(ConfigurationManager.AppSettings["IP"], slaveAddress, masterAddress, endian)
+        public ModbusAsciiInTcpProtocal(byte slaveAddress, byte masterAddress)
+            : this(ConfigurationManager.AppSettings["IP"], slaveAddress, masterAddress)
         {
         }
 
         /// <summary>
         ///     构造函数
         /// </summary>
-        /// <param name="com">串口地址</param>
+        /// <param name="ip">ip地址</param>
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
-        /// <param name="endian">端格式</param>
-        public ModbusAsciiInTcpProtocal(string ip, byte slaveAddress, byte masterAddress, Endian endian)
-            : base(slaveAddress, masterAddress, endian)
+        public ModbusAsciiInTcpProtocal(string ip, byte slaveAddress, byte masterAddress)
+            : base(slaveAddress, masterAddress)
         {
             ProtocalLinker = new ModbusAsciiInTcpProtocalLinker(ip, slaveAddress);
         }
@@ -38,9 +36,8 @@ namespace Modbus.Net.Modbus
         /// <param name="port">端口</param>
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
-        /// <param name="endian">端格式</param>
-        public ModbusAsciiInTcpProtocal(string ip, int port, byte slaveAddress, byte masterAddress, Endian endian)
-            : base(slaveAddress, masterAddress, endian)
+        public ModbusAsciiInTcpProtocal(string ip, int port, byte slaveAddress, byte masterAddress)
+            : base(slaveAddress, masterAddress)
         {
             ProtocalLinker = new ModbusTcpProtocalLinker(ip, port);
         }
