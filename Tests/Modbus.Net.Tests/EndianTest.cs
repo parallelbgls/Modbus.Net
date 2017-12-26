@@ -18,9 +18,9 @@ namespace Modbus.Net.Tests
         [TestInitialize]
         public void Init()
         {
-            _modbusTcpMachine = new ModbusMachine(ModbusType.Tcp, "127.0.0.1", null, true, 1, 0);
+            _modbusTcpMachine = new ModbusMachine("1", ModbusType.Tcp, "127.0.0.1", null, true, 1, 0);
 
-            _modbusTcpMachine2 = new ModbusMachine(ModbusType.Tcp, "127.0.0.1", null, true, 1, 0, Endian.LittleEndianLsb);
+            _modbusTcpMachine2 = new ModbusMachine("2", ModbusType.Tcp, "127.0.0.1", null, true, 1, 0, Endian.LittleEndianLsb);
         }
 
         [TestMethod]
