@@ -67,6 +67,7 @@ namespace Modbus.Net.Siemens
         private readonly ushort _tsapDst;
 
         private ushort _sendCount;
+        private object _counterLock = new object();
 
         private SiemensType _siemensType;
 
@@ -236,7 +237,10 @@ namespace Modbus.Net.Siemens
         {
             try
             {
-                _sendCount = (ushort)(_sendCount % 65535 + 1);
+                lock (_counterLock)
+                {
+                    _sendCount = (ushort)(_sendCount % ushort.MaxValue + 1);
+                }
                 var readRequestSiemensInputStruct = new ReadRequestSiemensInputStruct(SlaveAddress, MasterAddress,
                     _sendCount, SiemensTypeCode.Byte, startAddress, (ushort) getByteCount, AddressTranslator);
                 var readRequestSiemensOutputStruct =
@@ -263,7 +267,10 @@ namespace Modbus.Net.Siemens
         {
             try
             {
-                _sendCount = (ushort)(_sendCount % 65535 + 1);
+                lock (_counterLock)
+                {
+                    _sendCount = (ushort)(_sendCount % ushort.MaxValue + 1);
+                }
                 var writeRequestSiemensInputStruct = new WriteRequestSiemensInputStruct(SlaveAddress, MasterAddress,
                     _sendCount, startAddress, setContents, AddressTranslator);
                 var writeRequestSiemensOutputStruct =
