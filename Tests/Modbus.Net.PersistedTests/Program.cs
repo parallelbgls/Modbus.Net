@@ -100,36 +100,42 @@ namespace Modbus.Net.PersistedTests
             TaskManager<int> manager = new TaskManager<int>(20, true);
             manager.AddMachines<string>(new List<IMachineProperty<int>>{machine, machine2, machine3});
             Random r = new Random();
-            manager.InvokeTimerAll(new TaskItemSetData(()=>new Dictionary<string, double>
+            manager.InvokeTimerForMachine(1, new TaskItemSetData(() => new Dictionary<string, double>
             {
                 {
-                    "4X 1.0", r.Next()%65536
+                    "4X 1.0", r.Next() % 65536
                 },
                 {
-                    "4X 2.0", r.Next()%65536
+                    "4X 2.0", r.Next() % 65536
                 },
                 {
-                    "4X 3.0", r.Next()%65536
-                },
-                {
-                    "4X 11.0", r.Next()%65536
-                },
-                {
-                    "4X 12.0", r.Next()%65536
-                },
-                {
-                    "4X 13.0", r.Next()%65536
-                },
-                {
-                    "4X 21.0", r.Next()%65536
-                },
-                {
-                    "4X 22.0", r.Next()%65536
-                },
-                {
-                    "4X 23.0", r.Next()%65536
+                    "4X 3.0", r.Next() % 65536
                 },
             }, MachineSetDataType.Address, 10000, 10000));
+            manager.InvokeTimerForMachine(2, new TaskItemSetData(() => new Dictionary<string, double>
+            {
+                {
+                    "4X 11.0", r.Next() % 65536
+                },
+                {
+                    "4X 12.0", r.Next() % 65536
+                },
+                {
+                    "4X 13.0", r.Next() % 65536
+                },
+            }, MachineSetDataType.Address, 10000, 10000));
+            manager.InvokeTimerForMachine(3, new TaskItemSetData(() => new Dictionary<string, double>
+            {
+                {
+                    "4X 21.0", r.Next() % 65536
+                },
+                {
+                    "4X 22.0", r.Next() % 65536
+                },
+                {
+                    "4X 23.0", r.Next() % 65536
+                },
+            }, MachineSetDataType.Address, 10000, 10000));           
             Thread.Sleep(5000);
             manager.InvokeTimerAll(new TaskItemGetData(data =>
             {
