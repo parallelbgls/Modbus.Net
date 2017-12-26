@@ -148,18 +148,18 @@ namespace Modbus.Net.Modbus
                     case ModbusType.Rtu:
                     {
                         Wrapper = ConnectionString == null
-                            ? new ModbusRtuProtocal(SlaveAddress, MasterAddress)
-                            : new ModbusRtuProtocal(ConnectionString, SlaveAddress, MasterAddress);
+                            ? new ModbusRtuProtocol(SlaveAddress, MasterAddress)
+                            : new ModbusRtuProtocol(ConnectionString, SlaveAddress, MasterAddress);
                         break;
                     }
                     //Tcp协议
                     case ModbusType.Tcp:
                     {
                         Wrapper = ConnectionString == null
-                            ? new ModbusTcpProtocal(SlaveAddress, MasterAddress)
+                            ? new ModbusTcpProtocol(SlaveAddress, MasterAddress)
                             : (ConnectionStringPort == null
-                                ? new ModbusTcpProtocal(ConnectionString, SlaveAddress, MasterAddress)
-                                : new ModbusTcpProtocal(ConnectionStringIp, ConnectionStringPort.Value, SlaveAddress,
+                                ? new ModbusTcpProtocol(ConnectionString, SlaveAddress, MasterAddress)
+                                : new ModbusTcpProtocol(ConnectionStringIp, ConnectionStringPort.Value, SlaveAddress,
                                     MasterAddress));
                         break;
                     }
@@ -167,18 +167,18 @@ namespace Modbus.Net.Modbus
                     case ModbusType.Ascii:
                     {
                         Wrapper = ConnectionString == null
-                            ? new ModbusAsciiProtocal(SlaveAddress, MasterAddress)
-                            : new ModbusAsciiProtocal(ConnectionString, SlaveAddress, MasterAddress);
+                            ? new ModbusAsciiProtocol(SlaveAddress, MasterAddress)
+                            : new ModbusAsciiProtocol(ConnectionString, SlaveAddress, MasterAddress);
                         break;
                     }
                     //Rtu协议
                     case ModbusType.RtuInTcp:
                     {
                         Wrapper = ConnectionString == null
-                            ? new ModbusRtuInTcpProtocal(SlaveAddress, MasterAddress)
+                            ? new ModbusRtuInTcpProtocol(SlaveAddress, MasterAddress)
                             : (ConnectionStringPort == null
-                                ? new ModbusRtuInTcpProtocal(ConnectionString, SlaveAddress, MasterAddress)
-                                : new ModbusRtuInTcpProtocal(ConnectionStringIp, ConnectionStringPort.Value, SlaveAddress,
+                                ? new ModbusRtuInTcpProtocol(ConnectionString, SlaveAddress, MasterAddress)
+                                : new ModbusRtuInTcpProtocol(ConnectionStringIp, ConnectionStringPort.Value, SlaveAddress,
                                     MasterAddress));
                         break;
                     }
@@ -186,10 +186,10 @@ namespace Modbus.Net.Modbus
                     case ModbusType.AsciiInTcp:
                     {
                         Wrapper = ConnectionString == null
-                            ? new ModbusAsciiInTcpProtocal(SlaveAddress, MasterAddress)
+                            ? new ModbusAsciiInTcpProtocol(SlaveAddress, MasterAddress)
                             : (ConnectionStringPort == null
-                                ? new ModbusAsciiInTcpProtocal(ConnectionString, SlaveAddress, MasterAddress)
-                                : new ModbusAsciiInTcpProtocal(ConnectionStringIp, ConnectionStringPort.Value, SlaveAddress,
+                                ? new ModbusAsciiInTcpProtocol(ConnectionString, SlaveAddress, MasterAddress)
+                                : new ModbusAsciiInTcpProtocol(ConnectionStringIp, ConnectionStringPort.Value, SlaveAddress,
                                     MasterAddress));
                         break;
                     }
