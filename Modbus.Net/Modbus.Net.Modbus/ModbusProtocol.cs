@@ -98,7 +98,7 @@ namespace Modbus.Net.Modbus
         /// </summary>
         /// <param name="slaveAddress">从站地址</param>
         /// <param name="masterAddress">主站地址</param>
-        protected ModbusProtocal(byte slaveAddress, byte masterAddress)
+        protected ModbusProtocol(byte slaveAddress, byte masterAddress)
             : base(slaveAddress, masterAddress, Endian.BigEndianLsb)
         {
         }

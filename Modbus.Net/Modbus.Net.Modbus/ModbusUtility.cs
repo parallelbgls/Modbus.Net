@@ -148,49 +148,49 @@ namespace Modbus.Net.Modbus
                     case ModbusType.Rtu:
                     {
                         Wrapper = ConnectionString == null
-                            ? new ModbusRtuProtocal(SlaveAddress, MasterAddress, Endian)
-                            : new ModbusRtuProtocal(ConnectionString, SlaveAddress, MasterAddress, Endian);
+                            ? new ModbusRtuProtocal(SlaveAddress, MasterAddress)
+                            : new ModbusRtuProtocal(ConnectionString, SlaveAddress, MasterAddress);
                         break;
                     }
                     //Tcp协议
                     case ModbusType.Tcp:
                     {
                         Wrapper = ConnectionString == null
-                            ? new ModbusTcpProtocal(SlaveAddress, MasterAddress, Endian)
+                            ? new ModbusTcpProtocal(SlaveAddress, MasterAddress)
                             : (ConnectionStringPort == null
-                                ? new ModbusTcpProtocal(ConnectionString, SlaveAddress, MasterAddress, Endian)
+                                ? new ModbusTcpProtocal(ConnectionString, SlaveAddress, MasterAddress)
                                 : new ModbusTcpProtocal(ConnectionStringIp, ConnectionStringPort.Value, SlaveAddress,
-                                    MasterAddress, Endian));
+                                    MasterAddress));
                         break;
                     }
                     //Ascii协议                    
                     case ModbusType.Ascii:
                     {
                         Wrapper = ConnectionString == null
-                            ? new ModbusAsciiProtocal(SlaveAddress, MasterAddress, Endian)
-                            : new ModbusAsciiProtocal(ConnectionString, SlaveAddress, MasterAddress, Endian);
+                            ? new ModbusAsciiProtocal(SlaveAddress, MasterAddress)
+                            : new ModbusAsciiProtocal(ConnectionString, SlaveAddress, MasterAddress);
                         break;
                     }
                     //Rtu协议
                     case ModbusType.RtuInTcp:
                     {
                         Wrapper = ConnectionString == null
-                            ? new ModbusRtuInTcpProtocal(SlaveAddress, MasterAddress, Endian)
+                            ? new ModbusRtuInTcpProtocal(SlaveAddress, MasterAddress)
                             : (ConnectionStringPort == null
-                                ? new ModbusRtuInTcpProtocal(ConnectionString, SlaveAddress, MasterAddress, Endian)
+                                ? new ModbusRtuInTcpProtocal(ConnectionString, SlaveAddress, MasterAddress)
                                 : new ModbusRtuInTcpProtocal(ConnectionStringIp, ConnectionStringPort.Value, SlaveAddress,
-                                    MasterAddress, Endian));
+                                    MasterAddress));
                         break;
                     }
                     //Ascii协议
                     case ModbusType.AsciiInTcp:
                     {
                         Wrapper = ConnectionString == null
-                            ? new ModbusAsciiInTcpProtocal(SlaveAddress, MasterAddress, Endian)
+                            ? new ModbusAsciiInTcpProtocal(SlaveAddress, MasterAddress)
                             : (ConnectionStringPort == null
-                                ? new ModbusAsciiInTcpProtocal(ConnectionString, SlaveAddress, MasterAddress, Endian)
+                                ? new ModbusAsciiInTcpProtocal(ConnectionString, SlaveAddress, MasterAddress)
                                 : new ModbusAsciiInTcpProtocal(ConnectionStringIp, ConnectionStringPort.Value, SlaveAddress,
-                                    MasterAddress, Endian));
+                                    MasterAddress));
                         break;
                     }
                 }

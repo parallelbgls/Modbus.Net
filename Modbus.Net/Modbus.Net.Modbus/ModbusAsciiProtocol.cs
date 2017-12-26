@@ -12,7 +12,7 @@ namespace Modbus.Net.Modbus
         /// </summary>
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
-        public ModbusAsciiProtocal(byte slaveAddress, byte masterAddress)
+        public ModbusAsciiProtocol(byte slaveAddress, byte masterAddress)
             : this(ConfigurationManager.AppSettings["COM"], slaveAddress, masterAddress)
         {
         }
@@ -23,7 +23,7 @@ namespace Modbus.Net.Modbus
         /// <param name="com">串口地址</param>
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
-        public ModbusAsciiProtocal(string com, byte slaveAddress, byte masterAddress)
+        public ModbusAsciiProtocol(string com, byte slaveAddress, byte masterAddress)
             : base(slaveAddress, masterAddress)
         {
             ProtocolLinker = new ModbusAsciiProtocolLinker(com, slaveAddress);

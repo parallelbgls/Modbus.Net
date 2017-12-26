@@ -12,7 +12,7 @@ namespace Modbus.Net.Modbus
         /// </summary>
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
-        public ModbusAsciiInTcpProtocal(byte slaveAddress, byte masterAddress)
+        public ModbusAsciiInTcpProtocol(byte slaveAddress, byte masterAddress)
             : this(ConfigurationManager.AppSettings["IP"], slaveAddress, masterAddress)
         {
         }
@@ -23,7 +23,7 @@ namespace Modbus.Net.Modbus
         /// <param name="ip">ip地址</param>
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
-        public ModbusAsciiInTcpProtocal(string ip, byte slaveAddress, byte masterAddress)
+        public ModbusAsciiInTcpProtocol(string ip, byte slaveAddress, byte masterAddress)
             : base(slaveAddress, masterAddress)
         {
             ProtocolLinker = new ModbusAsciiInTcpProtocolLinker(ip, slaveAddress);
@@ -36,7 +36,7 @@ namespace Modbus.Net.Modbus
         /// <param name="port">端口</param>
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
-        public ModbusAsciiInTcpProtocal(string ip, int port, byte slaveAddress, byte masterAddress)
+        public ModbusAsciiInTcpProtocol(string ip, int port, byte slaveAddress, byte masterAddress)
             : base(slaveAddress, masterAddress)
         {
             ProtocolLinker = new ModbusTcpProtocolLinker(ip, port);
