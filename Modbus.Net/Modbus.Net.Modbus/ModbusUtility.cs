@@ -36,7 +36,7 @@ namespace Modbus.Net.Modbus
     }
 
     /// <summary>
-    ///     写单个单元的方法接口
+    ///     写单个数据方法接口
     /// </summary>
     public interface IUtilityMethodWriteSingle : IUtilityMethod
     {
@@ -148,18 +148,18 @@ namespace Modbus.Net.Modbus
                     case ModbusType.Rtu:
                     {
                         Wrapper = ConnectionString == null
-                            ? new ModbusRtuProtocol(SlaveAddress, MasterAddress, Endian)
-                            : new ModbusRtuProtocol(ConnectionString, SlaveAddress, MasterAddress, Endian);
+                            ? new ModbusRtuProtocal(SlaveAddress, MasterAddress, Endian)
+                            : new ModbusRtuProtocal(ConnectionString, SlaveAddress, MasterAddress, Endian);
                         break;
                     }
                     //Tcp协议
                     case ModbusType.Tcp:
                     {
                         Wrapper = ConnectionString == null
-                            ? new ModbusTcpProtocol(SlaveAddress, MasterAddress, Endian)
+                            ? new ModbusTcpProtocal(SlaveAddress, MasterAddress, Endian)
                             : (ConnectionStringPort == null
-                                ? new ModbusTcpProtocol(ConnectionString, SlaveAddress, MasterAddress, Endian)
-                                : new ModbusTcpProtocol(ConnectionStringIp, ConnectionStringPort.Value, SlaveAddress,
+                                ? new ModbusTcpProtocal(ConnectionString, SlaveAddress, MasterAddress, Endian)
+                                : new ModbusTcpProtocal(ConnectionStringIp, ConnectionStringPort.Value, SlaveAddress,
                                     MasterAddress, Endian));
                         break;
                     }
@@ -167,18 +167,18 @@ namespace Modbus.Net.Modbus
                     case ModbusType.Ascii:
                     {
                         Wrapper = ConnectionString == null
-                            ? new ModbusAsciiProtocol(SlaveAddress, MasterAddress, Endian)
-                            : new ModbusAsciiProtocol(ConnectionString, SlaveAddress, MasterAddress, Endian);
+                            ? new ModbusAsciiProtocal(SlaveAddress, MasterAddress, Endian)
+                            : new ModbusAsciiProtocal(ConnectionString, SlaveAddress, MasterAddress, Endian);
                         break;
                     }
                     //Rtu协议
                     case ModbusType.RtuInTcp:
                     {
                         Wrapper = ConnectionString == null
-                            ? new ModbusRtuInTcpProtocol(SlaveAddress, MasterAddress, Endian)
+                            ? new ModbusRtuInTcpProtocal(SlaveAddress, MasterAddress, Endian)
                             : (ConnectionStringPort == null
-                                ? new ModbusRtuInTcpProtocol(ConnectionString, SlaveAddress, MasterAddress, Endian)
-                                : new ModbusRtuInTcpProtocol(ConnectionStringIp, ConnectionStringPort.Value, SlaveAddress,
+                                ? new ModbusRtuInTcpProtocal(ConnectionString, SlaveAddress, MasterAddress, Endian)
+                                : new ModbusRtuInTcpProtocal(ConnectionStringIp, ConnectionStringPort.Value, SlaveAddress,
                                     MasterAddress, Endian));
                         break;
                     }
@@ -186,10 +186,10 @@ namespace Modbus.Net.Modbus
                     case ModbusType.AsciiInTcp:
                     {
                         Wrapper = ConnectionString == null
-                            ? new ModbusAsciiInTcpProtocol(SlaveAddress, MasterAddress, Endian)
+                            ? new ModbusAsciiInTcpProtocal(SlaveAddress, MasterAddress, Endian)
                             : (ConnectionStringPort == null
-                                ? new ModbusAsciiInTcpProtocol(ConnectionString, SlaveAddress, MasterAddress, Endian)
-                                : new ModbusAsciiInTcpProtocol(ConnectionStringIp, ConnectionStringPort.Value, SlaveAddress,
+                                ? new ModbusAsciiInTcpProtocal(ConnectionString, SlaveAddress, MasterAddress, Endian)
+                                : new ModbusAsciiInTcpProtocal(ConnectionStringIp, ConnectionStringPort.Value, SlaveAddress,
                                     MasterAddress, Endian));
                         break;
                     }
