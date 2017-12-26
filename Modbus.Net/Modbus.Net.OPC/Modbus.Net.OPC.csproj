@@ -23,11 +23,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\net45\Modbus.Net.OPC.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\Modbus.Net.OPC.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="H.Opc" Version="0.9.2" />
+    <PackageReference Include="H.Opc" Version="0.9.3" />
   </ItemGroup>
 
   <ItemGroup>

@@ -31,7 +31,7 @@ namespace Modbus.Net.OPC
         ///     E.g: the tag `foo.bar` reads the tag `bar` on the folder `foo`
         /// </param>
         /// <returns>The value retrieved from the OPC</returns>
-        T Read<T>(string tag);
+        ReadEvent<T> Read<T>(string tag);
 
         /// <summary>
         ///     Write a value on the specified opc tag
@@ -47,7 +47,7 @@ namespace Modbus.Net.OPC
         /// <summary>
         ///     Read a tag asynchronusly
         /// </summary>
-        Task<T> ReadAsync<T>(string tag);
+        Task<ReadEvent<T>> ReadAsync<T>(string tag);
 
         /// <summary>
         ///     Write a value on the specified opc tag asynchronously

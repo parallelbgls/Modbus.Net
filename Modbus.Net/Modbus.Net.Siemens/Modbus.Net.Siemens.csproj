@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net45;netstandard20</TargetFrameworks>
+    <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
     <AssemblyName>Modbus.Net.Siemens</AssemblyName>
     <RootNamespace>Modbus.Net.Siemens</RootNamespace>
     <PackageId>Modbus.Net.Siemens</PackageId>
@@ -22,7 +22,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\net45\Modbus.Net.Siemens.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\Modbus.Net.Siemens.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

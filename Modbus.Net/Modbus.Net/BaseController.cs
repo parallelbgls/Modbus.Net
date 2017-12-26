@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Serilog;
 
 namespace Modbus.Net
 {
@@ -121,8 +120,7 @@ namespace Modbus.Net
         /// <returns>从等待队列中匹配的信息</returns>
         protected abstract MessageWaitingDef GetMessageFromWaitingList(byte[] receiveMessage);
 
-        /// <inheritdoc cref="IController.ForceRemoveWaitingMessage(MessageWaitingDef)"/>
-        /// <param name="def"></param>
+        /// <inheritdoc />
         public void ForceRemoveWaitingMessage(MessageWaitingDef def)
         {
             lock (WaitingMessages)

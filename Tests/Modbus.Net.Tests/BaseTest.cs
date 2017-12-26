@@ -310,10 +310,10 @@ namespace Modbus.Net.Tests
         [TestMethod]
         public void TaskManagerGetMachineTest()
         {
-            var machine = _taskManager.GetMachineById<int>(1);
+            var machine = _taskManager.GetMachineById(1);
             Assert.AreEqual(machine.MachineName, "Test 1");
 
-            var machine2 = _taskManager.GetMachineByConnectionToken<int>("192.168.3.10");
+            var machine2 = _taskManager.GetMachineByConnectionToken("192.168.3.10");
             Assert.AreEqual(machine2.MachineName, "Test 2");
         }
 
