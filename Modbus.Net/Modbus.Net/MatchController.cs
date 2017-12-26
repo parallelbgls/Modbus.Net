@@ -56,14 +56,20 @@ namespace Modbus.Net
                             if (WaitingMessages.Count > 0)
                             {
                                 _currentSendingPos = WaitingMessages.First();
+                                _currentSendingPos.SendMutex.Set();                                
                             }
                         }
                         if (_currentSendingPos != null)
                         {
-                            _currentSendingPos.SendMutex.Set();
-                            _currentSendingPos = WaitingMessages.Count <= 1
-                                ? null
-                                : WaitingMessages[WaitingMessages.IndexOf(_currentSendingPos) + 1];
+                            if (WaitingMessages.Count <= 0)
+                            {
+                                _currentSendingPos = null;
+                            }
+                            if (WaitingMessages.Count > WaitingMessages.IndexOf(_currentSendingPos) + 1)
+                            {
+                                _currentSendingPos = WaitingMessages[WaitingMessages.IndexOf(_currentSendingPos) + 1];
+                                _currentSendingPos.SendMutex.Set();
+                            }
                         }
                     }
                 }

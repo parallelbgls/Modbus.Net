@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Nito.AsyncEx;
 using Serilog;
 
 namespace Modbus.Net
@@ -61,22 +62,17 @@ namespace Modbus.Net
         /// <param name="ipaddress">Ip地址</param>
         /// <param name="port">端口</param>
         /// <param name="timeoutTime">超时时间</param>
-        public TcpConnector(string ipaddress, int port, int timeoutTime)
+        public TcpConnector(string ipaddress, int port, int timeoutTime = 10000) : base(timeoutTime)
         {
             _host = ipaddress;
             _port = port;
-            TimeoutTime = timeoutTime;
         }
 
-        /// <summary>
-        ///     连接关键字
-        /// </summary>
+        /// <inheritdoc />
         public override string ConnectionToken => _host;
 
-        /// <summary>
-        ///     超时时间
-        /// </summary>
-        public int TimeoutTime
+        /// <inheritdoc />
+        protected override int TimeoutTime
         {
             get  =>
             _timeoutTime;
@@ -88,14 +84,13 @@ namespace Modbus.Net
             }
         }
 
-        /// <summary>
-        ///     是否已经连接
-        /// </summary>
+        /// <inheritdoc />
         public override bool IsConnected => _socketClient?.Client != null && _socketClient.Connected;
 
-        /// <summary>
-        ///     实现IDisposable接口
-        /// </summary>
+        /// <inheritdoc />
+        protected override AsyncLock Lock { get; } = new AsyncLock();
+
+        /// <inheritdoc />
         public void Dispose()
         {
             Dispose(true);
@@ -141,10 +136,7 @@ namespace Modbus.Net
             Dispose(false);
         }
 
-        /// <summary>
-        ///     连接
-        /// </summary>
-        /// <returns>是否连接成功</returns>
+        /// <inheritdoc />
         public override async Task<bool> ConnectAsync()
         {
             if (_socketClient != null)
@@ -184,10 +176,7 @@ namespace Modbus.Net
             }
         }
 
-        /// <summary>
-        ///     断开
-        /// </summary>
-        /// <returns>是否断开成功</returns>
+        /// <inheritdoc />
         public override bool Disconnect()
         {
             if (_socketClient == null)
@@ -211,36 +200,7 @@ namespace Modbus.Net
             }
         }
 
-        /// <summary>
-        ///     发送数据，需要返回
-        /// </summary>
-        /// <param name="message">发送的数据</param>
-        /// <returns>是否发送成功</returns>
-        public override async Task<byte[]> SendMsgAsync(byte[] message)
-        {
-            var task = SendMsgInner(message).WithCancellation(new CancellationTokenSource(10000).Token);
-            var ans = await task;
-            if (task.IsCanceled)
-            {
-                Controller.ForceRemoveWaitingMessage(ans);
-                return null;
-            }
-            return ans.ReceiveMessage;
-        }
-
-        private async Task<MessageWaitingDef> SendMsgInner(byte[] message)
-        {
-            var messageSendingdef = Controller.AddMessage(message);
-            messageSendingdef.SendMutex.WaitOne();
-            await SendMsgWithoutConfirm(message);
-            messageSendingdef.ReceiveMutex.WaitOne();
-            return messageSendingdef;
-        }
-
-        /// <summary>
-        ///     发送信息，不进行返回确认
-        /// </summary>
-        /// <param name="message">发送的信息</param>
+        /// <inheritdoc />
         protected override async Task SendMsgWithoutConfirm(byte[] message)
         {
             var datagram = message;
@@ -265,17 +225,13 @@ namespace Modbus.Net
             }
         }
 
-        /// <summary>
-        ///     启动获取线程
-        /// </summary>
+        /// <inheritdoc />
         protected override void ReceiveMsgThreadStart()
         {
             _receiveThread = Task.Run(ReceiveMessage);
         }
 
-        /// <summary>
-        ///     停止获取线程
-        /// </summary>
+        /// <inheritdoc />
         protected override void ReceiveMsgThreadStop()
         {
             _taskCancel = true;

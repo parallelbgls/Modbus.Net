@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO.Ports;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Nito.AsyncEx;
@@ -57,17 +55,29 @@ namespace Modbus.Net
         /// </summary>
         private readonly StopBits _stopBits;
 
+        /// <inheritdoc />
+        protected override int TimeoutTime { get; set; }
+
         /// <summary>
-        ///     超时时间
+        ///     错误次数
         /// </summary>
-        private readonly int _timeoutTime;
-
         private int _errorCount;
+        /// <summary>
+        ///     获取次数
+        /// </summary>
         private int _receiveCount;
-
+        /// <summary>
+        ///     发送次数
+        /// </summary>
         private int _sendCount;
 
+        /// <summary>
+        ///     获取线程
+        /// </summary>
         private Task _receiveThread;
+        /// <summary>
+        ///     获取线程关闭
+        /// </summary>
         private bool _taskCancel = false;
 
         /// <summary>
@@ -84,12 +94,11 @@ namespace Modbus.Net
         /// <param name="stopBits">停止位</param>
         /// <param name="dataBits">数据位</param>
         /// <param name="timeoutTime">超时时间</param>
-        public ComConnector(string com, int baudRate, Parity parity, StopBits stopBits, int dataBits, int timeoutTime)
+        /// <param name="isFullDuplex">是否为全双工</param>
+        public ComConnector(string com, int baudRate, Parity parity, StopBits stopBits, int dataBits, int timeoutTime = 10000, bool isFullDuplex = false) : base(timeoutTime, isFullDuplex)
         {
             //端口号 
             _com = com.Split(':')[0];
-            //读超时
-            _timeoutTime = timeoutTime;
             //波特率
             _baudRate = baudRate;
             //奇偶校验
@@ -108,6 +117,9 @@ namespace Modbus.Net
         private static Dictionary<string, SerialPortLock> Connectors { get; } = new Dictionary<string, SerialPortLock>()
             ;
 
+        /// <summary>
+        ///     连接中的连接器
+        /// </summary>
         private static Dictionary<string, IController> Controllers { get; } = new Dictionary<string, IController>()
             ;
 
@@ -130,6 +142,9 @@ namespace Modbus.Net
             } 
         }
 
+        /// <inheritdoc />
+        protected override AsyncLock Lock => SerialPort.Lock;
+
         /// <summary>
         ///     连接中的连接器
         /// </summary>
@@ -140,6 +155,9 @@ namespace Modbus.Net
         /// </summary>
         public override string ConnectionToken => _slave + ":" + _com;
 
+        /// <summary>
+        ///     获取当前连接器使用的串口
+        /// </summary>
         private SerialPortLock SerialPort
         {
             get
@@ -150,9 +168,7 @@ namespace Modbus.Net
             }
         }
 
-        /// <summary>
-        ///     实现IDisposable接口
-        /// </summary>
+        /// <inheritdoc />
         public void Dispose()
         {
             Dispose(true);
@@ -292,8 +308,6 @@ namespace Modbus.Net
             Log.Verbose("Com client {ConnectionToken} error count: {ErrorCount}", ConnectionToken, _errorCount);
         }
 
-        #region 发送接收数据
-
         /// <inheritdoc />
         public override bool IsConnected
         {
@@ -324,7 +338,7 @@ namespace Modbus.Net
                             Parity = _parity,
                             StopBits = _stopBits,
                             DataBits = _dataBits,
-                            ReadTimeout = _timeoutTime
+                            ReadTimeout = TimeoutTime
                         });
                     }
                     if (!Linkers.ContainsKey(_slave))
@@ -379,16 +393,18 @@ namespace Modbus.Net
             return false;
         }
 
+        #region 发送接收数据
+
         /// <summary>
         ///     带返回发送数据
         /// </summary>
         /// <param name="sendStr">需要发送的数据</param>
         /// <returns>是否发送成功</returns>
-        public string SendMsg(string sendStr)
+        public async Task<string> SendMsgAsync(string sendStr)
         {
             var myByte = sendStr.StringToByte_2();
 
-            var returnBytes = SendMsg(myByte);
+            var returnBytes = await SendMsgAsync(myByte);
 
             return returnBytes.ByteToString();
         }
@@ -421,40 +437,11 @@ namespace Modbus.Net
             }
         }
 
-        /// <summary>
-        ///     发送数据，需要返回
-        /// </summary>
-        /// <param name="message">发送的数据</param>
-        /// <returns>是否发送成功</returns>
-        protected byte[] SendMsg(byte[] message)
-        {
-            return AsyncHelper.RunSync(() => SendMsgAsync(message));
-        }
-
         /// <inheritdoc />
         public override async Task<byte[]> SendMsgAsync(byte[] message)
         {
             CheckOpen();
-            var task = SendMsgInner(message).WithCancellation(new CancellationTokenSource(100000).Token);
-            var ans = await task;
-            if (task.IsCanceled)
-            {
-                Controller.ForceRemoveWaitingMessage(ans);
-                return null;
-            }
-            return ans.ReceiveMessage;
-        }
-
-        private async Task<MessageWaitingDef> SendMsgInner(byte[] message)
-        {
-            using (await SerialPort.Lock.LockAsync())
-            {
-                var messageSendingdef = Controller.AddMessage(message);
-                messageSendingdef.SendMutex.WaitOne();
-                await SendMsgWithoutConfirm(message);
-                messageSendingdef.ReceiveMutex.WaitOne();
-                return messageSendingdef;
-            }
+            return await base.SendMsgAsync(message);
         }
 
         /// <inheritdoc />

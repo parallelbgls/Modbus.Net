@@ -5,7 +5,7 @@ namespace Modbus.Net
     /// <summary>
     ///     基础的协议连接接口
     /// </summary>
-    public interface IConnector<TParamIn, TParamOut>
+    public interface IConnector<in TParamIn, TParamOut>
     {
         /// <summary>
         ///     标识Connector的连接关键字

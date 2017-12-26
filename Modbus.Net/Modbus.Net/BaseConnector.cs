@@ -1,12 +1,102 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Nito.AsyncEx;
+using Serilog;
 
 namespace Modbus.Net
 {
-    /// <summary>
-    ///     基础的协议连接类
-    /// </summary>
+    /// <inheritdoc />
     public abstract class BaseConnector : BaseConnector<byte[], byte[]>
     {
+        /// <summary>
+        ///     发送锁
+        /// </summary>
+        protected abstract AsyncLock Lock { get; }
+        
+        /// <summary>
+        ///     是否为全双工
+        /// </summary>
+        public bool IsFullDuplex { get; }
+
+        /// <summary>
+        ///     发送超时时间
+        /// </summary>
+        protected abstract int TimeoutTime { get; set; }
+
+        /// <summary>
+        ///     构造器
+        /// </summary>
+        /// <param name="timeoutTime">发送超时时间</param>
+        /// <param name="isFullDuplex">是否为全双工</param>
+        protected BaseConnector(int timeoutTime = 10000, bool isFullDuplex = true)
+        {
+            IsFullDuplex = isFullDuplex;
+            TimeoutTime = timeoutTime;
+        }
+
+        /// <inheritdoc />
+        public override async Task<byte[]> SendMsgAsync(byte[] message)
+        {
+            var ans = await SendMsgCtrl(message);
+            return ans?.ReceiveMessage;
+        }
+
+        /// <summary>
+        ///     发送主控
+        /// </summary>
+        /// <param name="message">发送的信息</param>
+        /// <returns>等待信息的定义</returns>
+        protected async Task<MessageWaitingDef> SendMsgCtrl(byte[] message)
+        {
+            MessageWaitingDef ans;
+            if (!IsFullDuplex)
+            {
+                using (await Lock.LockAsync())
+                {
+                    ans = await SendMsgInner(message);
+                }
+            }
+            else
+            {
+                ans = await SendMsgInner(message);
+            }
+            return ans;
+        }
+
+        /// <summary>
+        ///     发送内部
+        /// </summary>
+        /// <param name="message">发送的信息</param>
+        /// <returns>发送信息的定义</returns>
+        protected async Task<MessageWaitingDef> SendMsgInner(byte[] message)
+        {
+            try
+            {
+                var messageSendingdef = Controller.AddMessage(message);
+                if (messageSendingdef != null)
+                {
+                    var success = messageSendingdef.SendMutex.WaitOne(TimeoutTime);
+                    if (success)
+                    {
+                        await SendMsgWithoutConfirm(message);
+                        success = messageSendingdef.ReceiveMutex.WaitOne(TimeoutTime);
+                        if (success)
+                        {
+                            return messageSendingdef;
+                        }
+                    }
+                    Controller.ForceRemoveWaitingMessage(messageSendingdef);
+                }
+                return null;
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Connector {0} Send Error.", ConnectionToken);
+                return null;
+            }
+            
+        }
     }
 
     /// <summary>
@@ -32,33 +122,19 @@ namespace Modbus.Net
         /// </summary>
         protected virtual IController Controller { get; set; }
 
-        /// <summary>
-        ///     标识Connector的连接关键字
-        /// </summary>
+        /// <inheritdoc />
         public abstract string ConnectionToken { get; }
 
-        /// <summary>
-        ///     是否处于连接状态
-        /// </summary>
+        /// <inheritdoc />
         public abstract bool IsConnected { get; }
 
-        /// <summary>
-        ///     连接PLC，异步
-        /// </summary>
-        /// <returns>是否连接成功</returns>
+        /// <inheritdoc />
         public abstract Task<bool> ConnectAsync();
 
-        /// <summary>
-        ///     断开PLC
-        /// </summary>
-        /// <returns>是否断开成功</returns>
+        /// <inheritdoc />
         public abstract bool Disconnect();
 
-        /// <summary>
-        ///     带返回发送数据
-        /// </summary>
-        /// <param name="message">需要发送的数据</param>
-        /// <returns>是否发送成功</returns>
+        /// <inheritdoc />
         public abstract Task<TParamOut> SendMsgAsync(TParamIn message);
 
         /// <summary>
