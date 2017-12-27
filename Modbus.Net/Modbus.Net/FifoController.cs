@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Serilog;
 
 namespace Modbus.Net
@@ -19,7 +16,7 @@ namespace Modbus.Net
 
         private int _waitingListMaxCount = 10000;
 
-        private Semaphore _taskCycleSema;
+        private readonly Semaphore _taskCycleSema;
 
         /// <summary>
         ///     间隔时间
@@ -77,7 +74,7 @@ namespace Modbus.Net
                         }
                     }
                     if (sendSuccess)
-                    {
+                    { 
                         _taskCycleSema.WaitOne();
                     }
                 }

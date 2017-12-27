@@ -481,6 +481,7 @@ namespace Modbus.Net
             {
                 try
                 {
+                    Thread.Sleep(100);
                     var returnBytes = ReadMsg();
                     if (returnBytes != null)
                     {
@@ -496,9 +497,7 @@ namespace Modbus.Net
                         }
 
                         RefreshReceiveCount();
-                    }                   
-
-                    Thread.Sleep(500);
+                    }                                      
                 }
                 catch (Exception e)
                 {
@@ -513,7 +512,6 @@ namespace Modbus.Net
             {
                 CheckOpen();
 
-                Thread.Sleep(100);
                 var i = ReadComm(out var data, 10, 5000, 1000);
                 if (i > 0)
                 {

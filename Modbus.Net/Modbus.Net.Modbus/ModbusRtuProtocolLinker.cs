@@ -16,7 +16,7 @@ namespace Modbus.Net.Modbus
         public ModbusRtuProtocolLinker(string com, int slaveAddress)
             : base(com, 9600, Parity.None, StopBits.One, 8, slaveAddress)
         {
-            ((BaseConnector)BaseConnector).AddController(new MatchController(new ICollection<(int,int)>[]{new List<(int,int)>{(0,0), (1,1)}}, 100));
+            ((BaseConnector)BaseConnector).AddController(new MatchController(new ICollection<(int,int)>[]{new List<(int,int)>{(0,0)}, new List<(int, int)>{(1,1)}}, 0));
         }
 
         /// <summary>

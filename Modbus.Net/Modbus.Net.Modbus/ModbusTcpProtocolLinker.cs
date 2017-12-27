@@ -23,7 +23,7 @@ namespace Modbus.Net.Modbus
         /// <param name="port">端口</param>
         public ModbusTcpProtocolLinker(string ip, int port) : base(ip, port)
         {
-            ((BaseConnector)BaseConnector).AddController(new FifoController(500));
+            ((BaseConnector)BaseConnector).AddController(new FifoController(0));
         }
 
         /// <summary>

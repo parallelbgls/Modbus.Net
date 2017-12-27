@@ -18,7 +18,7 @@ namespace Modbus.Net.Siemens
         public SiemensPpiProtocolLinker(string com, int slaveAddress)
             : base(com, 9600, Parity.Even, StopBits.One, 8, slaveAddress)
         {
-            ((BaseConnector)BaseConnector).AddController(new MatchController(new ICollection<(int,int)>[] { new List<(int,int)> { (4,5) }, new List<(int,int)> {(5,4) }, new List<(int,int)> { (11 ,11), (12,12) } }, 100));
+            ((BaseConnector)BaseConnector).AddController(new MatchController(new ICollection<(int,int)>[] { new List<(int,int)> { (4,5) }, new List<(int,int)> {(5,4) }, new List<(int,int)> { (11 ,11), (12,12) } }, 0));
         }
 
         /// <summary>
