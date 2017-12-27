@@ -18,6 +18,7 @@ namespace Modbus.Net.Siemens
         public SiemensPpiProtocol(byte slaveAddress, byte masterAddress)
             : this(ConfigurationManager.AppSettings["COM"], slaveAddress, masterAddress)
         {
+            ProtocolLinker = new SiemensPpiProtocolLinker(_com, SlaveAddress);
         }
 
         /// <summary>
@@ -71,7 +72,8 @@ namespace Modbus.Net.Siemens
         /// <returns>是否连接成功</returns>
         public override async Task<bool> ConnectAsync()
         {
-            ProtocolLinker = new SiemensPpiProtocolLinker(_com, SlaveAddress);
+            if (ProtocolLinker.IsConnected) return true;
+            if (!await ProtocolLinker.ConnectAsync()) return false;
             var inputStruct = new ComCreateReferenceSiemensInputStruct(SlaveAddress, MasterAddress);
             var outputStruct =
                 (await (await

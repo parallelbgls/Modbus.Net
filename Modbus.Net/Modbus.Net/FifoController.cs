@@ -44,6 +44,14 @@ namespace Modbus.Net
                     }
                     lock (WaitingMessages)
                     {
+                        if (_currentSendingPos == null)
+                        {
+                            if (WaitingMessages.Count > 0)
+                            {
+                                _currentSendingPos = WaitingMessages.First();
+                                _currentSendingPos.SendMutex.Set();
+                            }
+                        }
                         if (_currentSendingPos != null)
                         {
                             if (WaitingMessages.Count <= 0)
@@ -68,6 +76,13 @@ namespace Modbus.Net
                 Log.Error(e, "Controller throws exception");
             }
 
+        }
+
+        /// <inheritdoc />
+        public override void SendStart()
+        {
+            _taskCancel = false;
+            base.SendStart();
         }
 
         /// <inheritdoc />

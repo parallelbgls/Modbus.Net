@@ -349,13 +349,14 @@ namespace Modbus.Net
                     {
                         lock (SerialPort)
                         {
+                            _taskCancel = false;
                             SerialPort.Open();
                             ReceiveMsgThreadStart();
+                            Controller.SendStart();
                         }
                     }
                 }
-                Controller.SendStart();
-
+                
                 Log.Information("Com client {ConnectionToken} connect success", ConnectionToken);
 
                 return true;

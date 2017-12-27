@@ -34,7 +34,7 @@ namespace Modbus.Net
             int slaveAddress)
             : this(
                 com, baudRate, parity, stopBits, dataBits,
-                int.Parse(ConfigurationManager.AppSettings["ComConnectionTimeout"] ?? "3000"), slaveAddress)
+                int.Parse(ConfigurationManager.AppSettings["ComConnectionTimeout"] ?? "-1"), slaveAddress)
         {
         }
 
@@ -51,8 +51,16 @@ namespace Modbus.Net
         protected ComProtocolLinker(string com, int baudRate, Parity parity, StopBits stopBits, int dataBits,
             int connectionTimeout, int slaveAddress)
         {
-            BaseConnector = new ComConnector(com + ":" + slaveAddress, baudRate, parity, stopBits, dataBits,
-                connectionTimeout);
+            if (connectionTimeout == -1)
+            {
+                BaseConnector = new ComConnector(com + ":" + slaveAddress, baudRate, parity, stopBits, dataBits);
+            }
+            else
+            {
+                BaseConnector = new ComConnector(com + ":" + slaveAddress, baudRate, parity, stopBits, dataBits,
+                    connectionTimeout);
+            }
+            
         }
     }
 }

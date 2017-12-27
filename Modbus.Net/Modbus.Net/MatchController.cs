@@ -86,6 +86,13 @@ namespace Modbus.Net
         }
 
         /// <inheritdoc />
+        public override void SendStart()
+        {
+            _taskCancel = false;
+            base.SendStart();
+        }
+
+        /// <inheritdoc />
         public override void SendStop()
         {
             _taskCancel = false;

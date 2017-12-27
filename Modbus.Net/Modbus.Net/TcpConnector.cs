@@ -139,40 +139,46 @@ namespace Modbus.Net
         /// <inheritdoc />
         public override async Task<bool> ConnectAsync()
         {
-            if (_socketClient != null)
-                Disconnect();
-            try
+            using (await Lock.LockAsync())
             {
-                _socketClient = new TcpClient
+                if (_socketClient != null)
                 {
-                    SendTimeout = TimeoutTime,
-                    ReceiveTimeout = TimeoutTime
-                };
-
-                try
-                {
-                    var cts = new CancellationTokenSource();
-                    cts.CancelAfter(TimeoutTime);
-                    await _socketClient.ConnectAsync(_host, _port).WithCancellation(cts.Token);
-                }
-                catch (Exception e)
-                {
-                    Log.Error(e, "Tcp client {ConnectionToken} connect error", ConnectionToken);
-                }
-                if (_socketClient.Connected)
-                {
-                    Controller.SendStart();
-                    ReceiveMsgThreadStart();
-                    Log.Information("Tcp client {ConnectionToken} connected", ConnectionToken);                   
                     return true;
                 }
-                Log.Error("Tcp client {ConnectionToken} connect failed.", ConnectionToken);
-                return false;
-            }
-            catch (Exception err)
-            {
-                Log.Error(err, "Tcp client {ConnectionToken} connect exception", ConnectionToken);
-                return false;
+                try
+                {
+                    _socketClient = new TcpClient
+                    {
+                        SendTimeout = TimeoutTime,
+                        ReceiveTimeout = TimeoutTime
+                    };
+
+                    try
+                    {
+                        var cts = new CancellationTokenSource();
+                        cts.CancelAfter(TimeoutTime);
+                        await _socketClient.ConnectAsync(_host, _port).WithCancellation(cts.Token);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error(e, "Tcp client {ConnectionToken} connect error", ConnectionToken);
+                    }
+                    if (_socketClient.Connected)
+                    {
+                        _taskCancel = false;
+                        Controller.SendStart();
+                        ReceiveMsgThreadStart();
+                        Log.Information("Tcp client {ConnectionToken} connected", ConnectionToken);
+                        return true;
+                    }
+                    Log.Error("Tcp client {ConnectionToken} connect failed.", ConnectionToken);
+                    return false;
+                }
+                catch (Exception err)
+                {
+                    Log.Error(err, "Tcp client {ConnectionToken} connect exception", ConnectionToken);
+                    return false;
+                }
             }
         }
 
@@ -185,7 +191,6 @@ namespace Modbus.Net
             try
             {
                 Dispose();
-                Controller.SendStop();
                 Log.Information("Tcp client {ConnectionToken} disconnected successfully", ConnectionToken);
                 return true;
             }
@@ -276,7 +281,7 @@ namespace Modbus.Net
             catch (Exception err)
             {
                 Log.Error(err, "Tcp client {ConnectionToken} receive exception", ConnectionToken);
-                CloseClientSocket();
+                //CloseClientSocket();
             }
         }
 
@@ -320,7 +325,10 @@ namespace Modbus.Net
                 Controller.SendStop();
                 Controller.Clear();
                 ReceiveMsgThreadStop();
-                _socketClient?.GetStream().Dispose();
+                if (_socketClient.Connected)
+                {
+                    _socketClient?.GetStream().Dispose();
+                }
                 _socketClient?.Close();           
             }
             catch (Exception ex)

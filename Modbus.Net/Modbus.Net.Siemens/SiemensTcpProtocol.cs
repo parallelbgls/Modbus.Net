@@ -74,6 +74,7 @@ namespace Modbus.Net.Siemens
             _ip = ip;
             _port = port;
             _connectTryCount = 0;
+            ProtocolLinker = new SiemensTcpProtocolLinker(_ip, _port);
         }
 
         /// <summary>
@@ -143,7 +144,7 @@ namespace Modbus.Net.Siemens
         public override async Task<bool> ConnectAsync()
         {
             _connectTryCount++;
-            ProtocolLinker = new SiemensTcpProtocolLinker(_ip, _port);
+            if (ProtocolLinker.IsConnected) return true;
             if (!await ProtocolLinker.ConnectAsync()) return false;
             _connectTryCount = 0;
             var inputStruct = new CreateReferenceSiemensInputStruct(_tdpuSize, _taspSrc, _tsapDst);

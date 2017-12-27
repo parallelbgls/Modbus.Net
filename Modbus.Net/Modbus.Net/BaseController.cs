@@ -55,7 +55,7 @@ namespace Modbus.Net
         public abstract void SendStop();
 
         /// <inheritdoc />
-        public void SendStart()
+        public virtual void SendStart()
         {
             if (SendingThread == null)
             {
@@ -80,7 +80,7 @@ namespace Modbus.Net
         {
             lock (WaitingMessages)
             {
-                if (WaitingMessages.FirstOrDefault(p => p.Key == def.Key) == null)
+                if (WaitingMessages.FirstOrDefault(p => p.Key == def.Key) == null || def.Key == null)
                 {
                     WaitingMessages.Add(def);
                     return true;
