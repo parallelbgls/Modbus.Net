@@ -237,12 +237,13 @@ namespace Modbus.Net.Siemens
         {
             try
             {
+                ReadRequestSiemensInputStruct readRequestSiemensInputStruct;
                 lock (_counterLock)
                 {
                     _sendCount = (ushort)(_sendCount % ushort.MaxValue + 1);
-                }
-                var readRequestSiemensInputStruct = new ReadRequestSiemensInputStruct(SlaveAddress, MasterAddress,
-                    _sendCount, SiemensTypeCode.Byte, startAddress, (ushort) getByteCount, AddressTranslator);
+                    readRequestSiemensInputStruct = new ReadRequestSiemensInputStruct(SlaveAddress, MasterAddress,
+                        _sendCount, SiemensTypeCode.Byte, startAddress, (ushort)getByteCount, AddressTranslator);
+                }               
                 var readRequestSiemensOutputStruct =
                     await
                         Wrapper.SendReceiveAsync<ReadRequestSiemensOutputStruct>(
@@ -267,12 +268,13 @@ namespace Modbus.Net.Siemens
         {
             try
             {
+                WriteRequestSiemensInputStruct writeRequestSiemensInputStruct;
                 lock (_counterLock)
                 {
                     _sendCount = (ushort)(_sendCount % ushort.MaxValue + 1);
-                }
-                var writeRequestSiemensInputStruct = new WriteRequestSiemensInputStruct(SlaveAddress, MasterAddress,
-                    _sendCount, startAddress, setContents, AddressTranslator);
+                    writeRequestSiemensInputStruct = new WriteRequestSiemensInputStruct(SlaveAddress, MasterAddress,
+                        _sendCount, startAddress, setContents, AddressTranslator);
+                }                
                 var writeRequestSiemensOutputStruct =
                     await
                         Wrapper.SendReceiveAsync<WriteRequestSiemensOutputStruct>(
