@@ -34,7 +34,7 @@ namespace Modbus.Net
         {
             var def = new MessageWaitingDef
             {
-                Key = GetKeyFromMessage(sendMessage),
+                Key = GetKeyFromMessage(sendMessage)?.Item1,
                 SendMessage = sendMessage,
                 SendMutex = new AutoResetEvent(false),
                 ReceiveMutex = new AutoResetEvent(false)
@@ -94,7 +94,7 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="message">待确认的信息</param>
         /// <returns>信息的检索关键字</returns>
-        protected abstract string GetKeyFromMessage(byte[] message);
+        protected abstract (string,string)? GetKeyFromMessage(byte[] message);
 
         /// <inheritdoc />
         public bool ConfirmMessage(byte[] receiveMessage)

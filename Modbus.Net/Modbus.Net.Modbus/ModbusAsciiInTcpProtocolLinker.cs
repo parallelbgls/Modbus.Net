@@ -36,7 +36,7 @@ namespace Modbus.Net.Modbus
         public override bool? CheckRight(byte[] content)
         {
             //ProtocolLinker不会返回null
-            if (!base.CheckRight(content).Value) return false;
+            if (base.CheckRight(content) != true) return false;
             //CRC校验失败
             var contentString = Encoding.ASCII.GetString(content);
             if (!Crc16.GetInstance().LrcEfficacy(contentString))

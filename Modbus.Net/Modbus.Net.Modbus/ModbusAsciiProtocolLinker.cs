@@ -17,7 +17,7 @@ namespace Modbus.Net.Modbus
         public ModbusAsciiProtocolLinker(string com, int slaveAddress)
             : base(com, 9600, Parity.None, StopBits.One, 8, slaveAddress)
         {
-            ((BaseConnector)BaseConnector).AddController(new MatchController(new ICollection<int>[] { new List<int> { 0, 1 }}, 500));
+            ((BaseConnector)BaseConnector).AddController(new MatchController(new ICollection<(int,int)>[] { new List<(int,int)> { (0,0), (1,1) }}, 100));
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Modbus.Net.Modbus
         public override bool? CheckRight(byte[] content)
         {
             //ProtocolLinker不会返回null
-            if (!base.CheckRight(content).Value) return false;
+            if (base.CheckRight(content) != true) return false;
             //CRC校验失败
             var contentString = Encoding.ASCII.GetString(content);
             if (!Crc16.GetInstance().LrcEfficacy(contentString))

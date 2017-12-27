@@ -12,7 +12,7 @@ namespace Modbus.Net.PersistedTests
         {
             Log.Logger = new LoggerConfiguration().MinimumLevel.Verbose().WriteTo.Console().CreateLogger();
 
-            IMachineProperty<int> machine = new ModbusMachine<int, string>(1, ModbusType.Rtu, "COM1",
+            IMachineProperty<int> machine = new ModbusMachine<int, string>(1, ModbusType.Ascii, "COM5",
                 new List<AddressUnit>()
                 {
                     new AddressUnit()
@@ -40,65 +40,9 @@ namespace Modbus.Net.PersistedTests
                         DataType = typeof(ushort)
                     },
                 }, true, 2, 1);
-            IMachineProperty<int> machine2 = new ModbusMachine<int, string>(2, ModbusType.Rtu, "COM1",
-                new List<AddressUnit>()
-                {
-                    new AddressUnit()
-                    {
-                        Id = "1",
-                        Area = "4X",
-                        Address = 11,
-                        Name = "test 1",
-                        DataType = typeof(ushort)
-                    },
-                    new AddressUnit()
-                    {
-                        Id = "2",
-                        Area = "4X",
-                        Address = 12,
-                        Name = "test 2",
-                        DataType = typeof(ushort)
-                    },
-                    new AddressUnit()
-                    {
-                        Id = "3",
-                        Area = "4X",
-                        Address = 13,
-                        Name = "test 3",
-                        DataType = typeof(ushort)
-                    },
-                }, true, 3, 1);
-            IMachineProperty<int> machine3 = new ModbusMachine<int, string>(3, ModbusType.Rtu, "COM1",
-                new List<AddressUnit>()
-                {
-                    new AddressUnit()
-                    {
-                        Id = "1",
-                        Area = "4X",
-                        Address = 21,
-                        Name = "test 1",
-                        DataType = typeof(ushort)
-                    },
-                    new AddressUnit()
-                    {
-                        Id = "2",
-                        Area = "4X",
-                        Address = 22,
-                        Name = "test 2",
-                        DataType = typeof(ushort)
-                    },
-                    new AddressUnit()
-                    {
-                        Id = "3",
-                        Area = "4X",
-                        Address = 23,
-                        Name = "test 3",
-                        DataType = typeof(ushort)
-                    },
-                }, true, 4, 1);
-
+            
             TaskManager<int> manager = new TaskManager<int>(20, true);
-            manager.AddMachines<string>(new List<IMachineProperty<int>>{machine, machine2, machine3});
+            manager.AddMachines<string>(new List<IMachineProperty<int>>{machine});
             Random r = new Random();
             manager.InvokeTimerForMachine(1, new TaskItemSetData(() => new Dictionary<string, double>
             {

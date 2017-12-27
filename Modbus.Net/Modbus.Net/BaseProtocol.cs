@@ -114,10 +114,8 @@ namespace Modbus.Net
                     else
                     {
                         //自动寻找存在的协议并将其加载
-                        var protocalUnit =
-                            Activator.CreateInstance(type.GetTypeInfo().Assembly
-                                .GetType(protocalName)) as TProtocolUnit;
-                        if (protocalUnit == null)
+                        if (!(Activator.CreateInstance(type.GetTypeInfo().Assembly
+                            .GetType(protocalName)) is TProtocolUnit protocalUnit))
                             throw new InvalidCastException($"No ProtocolUnit {nameof(TProtocolUnit)} implemented");
                         protocalUnit.Endian = Endian;
                         Register(protocalUnit);

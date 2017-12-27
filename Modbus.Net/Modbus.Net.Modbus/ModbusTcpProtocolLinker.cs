@@ -34,7 +34,7 @@ namespace Modbus.Net.Modbus
         public override bool? CheckRight(byte[] content)
         {
             //ProtocolLinker的CheckRight不会返回null
-            if (!base.CheckRight(content).Value) return false;
+            if (base.CheckRight(content) != true) return false;
             //长度校验失败
             if (content[5] != content.Length - 6)
                 throw new ModbusProtocolErrorException(500);

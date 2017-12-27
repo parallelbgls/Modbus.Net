@@ -92,7 +92,7 @@ namespace Modbus.Net
         }
 
         /// <inheritdoc />
-        protected override string GetKeyFromMessage(byte[] message)
+        protected override (string,string)? GetKeyFromMessage(byte[] message)
         {
             return null;
         }

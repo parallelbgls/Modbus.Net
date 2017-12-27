@@ -18,7 +18,7 @@ namespace Modbus.Net.Siemens
         public SiemensPpiProtocolLinker(string com, int slaveAddress)
             : base(com, 9600, Parity.Even, StopBits.One, 8, slaveAddress)
         {
-            ((BaseConnector)BaseConnector).AddController(new MatchController(new ICollection<int>[] { new List<int> { 5 }, new List<int> { 6 }, new List<int> { 11, 12 } }, 500));
+            ((BaseConnector)BaseConnector).AddController(new MatchController(new ICollection<(int,int)>[] { new List<(int,int)> { (4,5) }, new List<(int,int)> {(5,4) }, new List<(int,int)> { (11 ,11), (12,12) } }, 100));
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace Modbus.Net.Siemens
         /// <returns>报文是否正确</returns>
         public override bool? CheckRight(byte[] content)
         {
-            if (!base.CheckRight(content).Value) return false;
+            if (base.CheckRight(content) != true) return false;
             var fcsCheck = 0;
             if (content.Length == 1 && content[0] == 0xe5)
                 return true;

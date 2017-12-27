@@ -65,8 +65,19 @@ namespace Modbus.Net
                     IProtocolLinkerBytesExtend;
             return bytesExtend?.BytesDecact(content);
         }
-    }
 
+        public override bool? CheckRight(byte[] content)
+        {
+            if (content == null)
+            {
+                Disconnect();
+                return false;
+            }
+            if (content.Length == 0) return null;
+            return true;
+        }
+    }
+    
     /// <summary>
     ///     基本的协议连接器
     /// </summary>

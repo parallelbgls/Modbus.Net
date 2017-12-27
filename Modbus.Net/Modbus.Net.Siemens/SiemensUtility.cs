@@ -67,7 +67,7 @@ namespace Modbus.Net.Siemens
         private readonly ushort _tsapDst;
 
         private ushort _sendCount;
-        private object _counterLock = new object();
+        private readonly object _counterLock = new object();
 
         private SiemensType _siemensType;
 

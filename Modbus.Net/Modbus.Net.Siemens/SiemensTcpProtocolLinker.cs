@@ -26,7 +26,7 @@ namespace Modbus.Net.Siemens
         public SiemensTcpProtocolLinker(string ip, int port)
             : base(ip, port)
         {
-            ((BaseConnector)BaseConnector).AddController(new MatchController(new ICollection<int>[] { new List<int> { 11, 12 } }, 500));
+            ((BaseConnector)BaseConnector).AddController(new MatchDirectlySendController(new ICollection<(int,int)>[] { new List<(int,int)> { (11,11), (12,12) } }, 500));
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace Modbus.Net.Siemens
         /// <returns>报文是否正确</returns>
         public override bool? CheckRight(byte[] content)
         {
-            if (!base.CheckRight(content).Value) return false;
+            if (base.CheckRight(content) != true) return false;
             switch (content[5])
             {
                 case 0xd0:

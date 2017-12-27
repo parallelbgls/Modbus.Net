@@ -53,7 +53,11 @@ namespace Modbus.Net
         /// <returns>结构化的输出数据</returns>
         public T Unformat<T>(TParamOut messageBytes, ref int pos) where T : class, IOutputStruct
         {
-            return Unformat(messageBytes, ref pos) as T;
+            if (messageBytes != null)
+            {
+                return Unformat(messageBytes, ref pos) as T;
+            }
+            return null;
         }
 
         /// <summary>

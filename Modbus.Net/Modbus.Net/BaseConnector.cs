@@ -39,7 +39,8 @@ namespace Modbus.Net
         public override async Task<byte[]> SendMsgAsync(byte[] message)
         {
             var ans = await SendMsgCtrl(message);
-            return ans?.ReceiveMessage;
+            if (ans == null) return new byte[0];
+            return ans.ReceiveMessage;
         }
 
         /// <summary>
