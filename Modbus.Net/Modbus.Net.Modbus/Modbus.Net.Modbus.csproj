@@ -31,6 +31,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="packages.config" />
+    <None Remove="package-lock.json" />
+    <None Remove="project.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Modbus.Net\Modbus.Net.csproj" />
   </ItemGroup>
 

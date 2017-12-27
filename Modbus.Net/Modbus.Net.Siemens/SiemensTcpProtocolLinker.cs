@@ -26,7 +26,7 @@ namespace Modbus.Net.Siemens
         public SiemensTcpProtocolLinker(string ip, int port)
             : base(ip, port)
         {
-            ((BaseConnector)BaseConnector).AddController(new MatchDirectlySendController(new ICollection<(int,int)>[] { new List<(int,int)> { (11,11), (12,12) } }, 500));
+            ((BaseConnector)BaseConnector).AddController(new MatchDirectlySendController(new ICollection<(int,int)>[] { new List<(int,int)> { (11,11), (12,12) } }));
         }
 
         /// <summary>

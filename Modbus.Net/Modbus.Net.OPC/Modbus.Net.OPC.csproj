@@ -31,6 +31,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="packages.config" />
+    <None Remove="package-lock.json" />
+    <None Remove="project.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="H.Opc" Version="0.9.3" />
   </ItemGroup>
 
