@@ -13,7 +13,7 @@ namespace Modbus.Net
     {
         /// <inheritdoc />
         public MatchDirectlySendController(ICollection<(int, int)>[] keyMatches) : base(keyMatches,
-            0)
+            0, false)
         {
         }
 

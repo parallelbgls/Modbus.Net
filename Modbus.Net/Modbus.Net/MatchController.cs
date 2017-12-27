@@ -18,7 +18,8 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="keyMatches">匹配字典，每个Collection代表一个匹配集合，每一个匹配集合中的数字代表需要匹配的位置，最后计算出来的数字是所有位置数字按照集合排序后叠放在一起</param>
         /// <param name="acquireTime">获取间隔</param>
-        public MatchController(ICollection<(int,int)>[] keyMatches, int acquireTime) : base(acquireTime)
+        /// <param name="activateSema">是否开启信号量</param>
+        public MatchController(ICollection<(int,int)>[] keyMatches, int acquireTime, bool activateSema = true) : base(acquireTime, activateSema)
         {
             KeyMatches = keyMatches;
         }

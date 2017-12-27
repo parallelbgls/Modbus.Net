@@ -27,9 +27,13 @@ namespace Modbus.Net
         ///     构造器
         /// </summary>
         /// <param name="acquireTime">间隔时间</param>
-        public FifoController(int acquireTime)
+        /// <param name="activateSema">是否开启信号量</param>
+        public FifoController(int acquireTime, bool activateSema = true)
         {
-            _taskCycleSema = new Semaphore(0, _waitingListMaxCount);
+            if (activateSema)
+            {
+                _taskCycleSema = new Semaphore(0, _waitingListMaxCount);
+            }
             AcquireTime = acquireTime;
         }
 
@@ -38,7 +42,7 @@ namespace Modbus.Net
         {
             try
             {
-                _taskCycleSema.WaitOne();
+                _taskCycleSema?.WaitOne();
                 while (!_taskCancel)
                 {
                     if (AcquireTime > 0)
@@ -62,7 +66,7 @@ namespace Modbus.Net
                             if (WaitingMessages.Count <= 0)
                             {
                                 _currentSendingPos = null;
-                                _taskCycleSema.Close();
+                                _taskCycleSema?.Close();
                                 sendSuccess = true;
                             }
                             else if (WaitingMessages.Count > WaitingMessages.IndexOf(_currentSendingPos) + 1)
@@ -75,7 +79,7 @@ namespace Modbus.Net
                     }
                     if (sendSuccess)
                     { 
-                        _taskCycleSema.WaitOne();
+                        _taskCycleSema?.WaitOne();
                     }
                 }
             }
@@ -125,7 +129,7 @@ namespace Modbus.Net
             var success = base.AddMessageToList(def);
             if (success)
             {
-                _taskCycleSema.Release();
+                _taskCycleSema?.Release();
             }
             return success;
         }
