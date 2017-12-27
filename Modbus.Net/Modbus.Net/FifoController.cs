@@ -17,6 +17,10 @@ namespace Modbus.Net
 
         private bool _taskCancel = false;
 
+        private int _waitingListMaxCount = 10000;
+
+        private Semaphore _taskCycleSema;
+
         /// <summary>
         ///     间隔时间
         /// </summary>
@@ -28,6 +32,7 @@ namespace Modbus.Net
         /// <param name="acquireTime">间隔时间</param>
         public FifoController(int acquireTime)
         {
+            _taskCycleSema = new Semaphore(0, _waitingListMaxCount);
             AcquireTime = acquireTime;
         }
 
@@ -36,12 +41,14 @@ namespace Modbus.Net
         {
             try
             {
+                _taskCycleSema.WaitOne();
                 while (!_taskCancel)
                 {
                     if (AcquireTime > 0)
                     {
                         Thread.Sleep(AcquireTime);
                     }
+                    bool sendSuccess = false;
                     lock (WaitingMessages)
                     {
                         if (_currentSendingPos == null)
@@ -50,20 +57,28 @@ namespace Modbus.Net
                             {
                                 _currentSendingPos = WaitingMessages.First();
                                 _currentSendingPos.SendMutex.Set();
+                                sendSuccess = true;
                             }
                         }
-                        if (_currentSendingPos != null)
+                        else 
                         {
                             if (WaitingMessages.Count <= 0)
                             {
                                 _currentSendingPos = null;
+                                _taskCycleSema.Close();
+                                sendSuccess = true;
                             }
-                            if (WaitingMessages.Count > WaitingMessages.IndexOf(_currentSendingPos) + 1)
+                            else if (WaitingMessages.Count > WaitingMessages.IndexOf(_currentSendingPos) + 1)
                             {
                                 _currentSendingPos = WaitingMessages[WaitingMessages.IndexOf(_currentSendingPos) + 1];
                                 _currentSendingPos.SendMutex.Set();
+                                sendSuccess = true;
                             }
                         }
+                    }
+                    if (sendSuccess)
+                    {
+                        _taskCycleSema.WaitOne();
                     }
                 }
             }
@@ -101,6 +116,21 @@ namespace Modbus.Net
         protected override MessageWaitingDef GetMessageFromWaitingList(byte[] receiveMessage)
         {
             return WaitingMessages.FirstOrDefault();
+        }
+
+        /// <inheritdoc />
+        protected override bool AddMessageToList(MessageWaitingDef def)
+        {
+            if (WaitingMessages.Count > _waitingListMaxCount)
+            {
+                return false;
+            }
+            var success = base.AddMessageToList(def);
+            if (success)
+            {
+                _taskCycleSema.Release();
+            }
+            return success;
         }
     }
 }
