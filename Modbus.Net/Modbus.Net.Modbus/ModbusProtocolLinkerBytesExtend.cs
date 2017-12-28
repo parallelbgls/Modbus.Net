@@ -6,6 +6,14 @@ using System.Text;
 namespace Modbus.Net.Modbus
 {
     /// <summary>
+    ///     Udp字节伸缩
+    /// </summary>
+    public class ModbusUdpProtocolLinkerBytesExtend : ModbusTcpProtocolLinkerBytesExtend
+    {
+        
+    }
+
+    /// <summary>
     ///     Rtu透传字节伸缩
     /// </summary>
     public class ModbusRtuInTcpProtocolLinkerBytesExtend : ModbusRtuProtocolLinkerBytesExtend

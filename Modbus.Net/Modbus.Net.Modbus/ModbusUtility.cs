@@ -33,6 +33,10 @@ namespace Modbus.Net.Modbus
         ///     Ascii连接Tcp透传
         /// </summary>
         AsciiInTcp = 4,
+        /// <summary>
+        ///     Udp连接
+        /// </summary>
+        Udp = 5
     }
 
     /// <summary>
@@ -190,6 +194,17 @@ namespace Modbus.Net.Modbus
                             : (ConnectionStringPort == null
                                 ? new ModbusAsciiInTcpProtocol(ConnectionString, SlaveAddress, MasterAddress)
                                 : new ModbusAsciiInTcpProtocol(ConnectionStringIp, ConnectionStringPort.Value, SlaveAddress,
+                                    MasterAddress));
+                        break;
+                    }
+                    //Udp协议
+                    case ModbusType.Udp:
+                    {
+                        Wrapper = ConnectionString == null
+                            ? new ModbusUdpProtocol(SlaveAddress, MasterAddress)
+                            : (ConnectionStringPort == null
+                                ? new ModbusUdpProtocol(ConnectionString, SlaveAddress, MasterAddress)
+                                : new ModbusUdpProtocol(ConnectionStringIp, ConnectionStringPort.Value, SlaveAddress,
                                     MasterAddress));
                         break;
                     }
