@@ -103,30 +103,35 @@ RoadMap
 * New Protocol Pipeline System (Complete)
 
 ### Version 1.4.1
-* BaseController and IController (Programming)
-* New ComConnector (Programming)
-* New TcpConnector (Programming)
-* New UdpConnector (Programming)
-* Serial Port Connection with Multiple Master Station (Delay)
+* BaseController and IController (Complete)
+* New ComConnector (Complete)
+* New TcpConnector (Complete)
+* New UdpConnector (Complete)
 
 ### Version 1.4.2
-* PPI Remake (Delay)
-* Siemens MPI Support (Delay)
-* Siemens MultiStation PPI Support (Delay)
+* Serial Port Connection with Multiple Master Station (In Road)
+* PPI Remake (In Road)
+* Siemens MPI Support (In Road)
+* Siemens MultiStation PPI Support (In Road)
+
+### Version 1.4.3
+* Machine and Utility Builder (In Road)
 
 ### Version 1.5.X
 * Unite TransServer.Net into Modbus.Net (In Road)
 * Passive Connector and Controller (In Road)
-* Architechture rebuild (In Road)
+* Interfaces Architecture (In Road)
+* Dependency Injection (In Road)
 * ValueHelper remake to interface, users can add their own value translate function (In Road)
 * New Zoom (In Road)
+* New TaskManager (In Road)
 
 ### Version 1.6.X
 * English comment (In Road)
+* Comment maintainence (In Road)
 
 ### Version 2.0.0
 * Rename to Transport.Net (In Road)
 * Puzzle Builder (In Road)
-* Machine Builder (In Road)
 * Protocol Builer (In Road)
 
