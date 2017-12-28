@@ -30,8 +30,7 @@
     <Compile Remove="Properties\AssemblyInfo.cs" />
   </ItemGroup>
 
-  <ItemGroup>
-    
+  <ItemGroup> 
     <None Remove="packages.config" />
     <None Remove="package-lock.json" />
     <None Remove="project.json" />
