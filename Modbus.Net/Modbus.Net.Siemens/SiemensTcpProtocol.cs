@@ -152,10 +152,15 @@ namespace Modbus.Net.Siemens
                 //先建立连接，然后建立设备的引用
                 (await (await
                     ForceSendReceiveAsync(this[typeof(CreateReferenceSiemensProtocol)], inputStruct)).SendReceiveAsync(
-                    this[typeof(EstablishAssociationSiemensProtocol)], answer =>
+                    this[typeof(EstablishAssociationSiemensProtocol)], answer => 
+                    answer != null ?
                         new EstablishAssociationSiemensInputStruct(0x0101, _maxCalling,
                             _maxCalled,
-                            _maxPdu))).Unwrap<EstablishAssociationSiemensOutputStruct>();
+                            _maxPdu) : null)).Unwrap<EstablishAssociationSiemensOutputStruct>();
+            if (outputStruct == null && ProtocolLinker.IsConnected)
+            {
+                ProtocolLinker.Disconnect();
+            }
             return outputStruct != null;
         }
     }

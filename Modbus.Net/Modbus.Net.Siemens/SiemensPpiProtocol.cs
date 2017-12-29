@@ -18,7 +18,6 @@ namespace Modbus.Net.Siemens
         public SiemensPpiProtocol(byte slaveAddress, byte masterAddress)
             : this(ConfigurationManager.AppSettings["COM"], slaveAddress, masterAddress)
         {
-            ProtocolLinker = new SiemensPpiProtocolLinker(_com, SlaveAddress);
         }
 
         /// <summary>
@@ -31,6 +30,7 @@ namespace Modbus.Net.Siemens
             : base(slaveAddress, masterAddress)
         {
             _com = com;
+            ProtocolLinker = new SiemensPpiProtocolLinker(_com, SlaveAddress);
         }
 
         /// <summary>
@@ -79,10 +79,14 @@ namespace Modbus.Net.Siemens
                 (await (await
                     ForceSendReceiveAsync(this[typeof(ComCreateReferenceSiemensProtocol)],
                             inputStruct)).
-                        SendReceiveAsync(this[typeof(ComConfirmMessageSiemensProtocol)], answer =>
-                        
-                            new ComConfirmMessageSiemensInputStruct(SlaveAddress, MasterAddress)
-                        )).Unwrap<ComConfirmMessageSiemensOutputStruct>();
+                        SendReceiveAsync(this[typeof(ComConfirmMessageSiemensProtocol)], answer => 
+                        answer != null
+                        ? new ComConfirmMessageSiemensInputStruct(SlaveAddress, MasterAddress)
+                        : null)).Unwrap<ComConfirmMessageSiemensOutputStruct>();
+            if (outputStruct == null && ProtocolLinker.IsConnected)
+            {
+                ProtocolLinker.Disconnect();
+            }
             return outputStruct != null;
         }
     }

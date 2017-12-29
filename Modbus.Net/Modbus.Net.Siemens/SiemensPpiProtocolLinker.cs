@@ -18,7 +18,7 @@ namespace Modbus.Net.Siemens
         public SiemensPpiProtocolLinker(string com, int slaveAddress)
             : base(com, 9600, Parity.Even, StopBits.One, 8, slaveAddress)
         {
-            ((BaseConnector)BaseConnector).AddController(new MatchController(new ICollection<(int,int)>[] { new List<(int,int)> { (4,5) }, new List<(int,int)> {(5,4) }, new List<(int,int)> { (11 ,11), (12,12) } }, 0));
+            ((BaseConnector)BaseConnector).AddController(new FifoController(0));
         }
 
         /// <summary>
@@ -37,6 +37,7 @@ namespace Modbus.Net.Siemens
                         new ComConfirmMessageSiemensProtocol().Format(inputStruct2));
             }
             var receiveBytes = await SendReceiveWithoutExtAndDecAsync(extBytes);
+            if (receiveBytes == null) return null;
             if (content.Length > 6 && receiveBytes.Length == 1 && receiveBytes[0] == 0xe5)
             {
                 var inputStruct2 = new ComConfirmMessageSiemensInputStruct(content[4], content[5]);
@@ -56,7 +57,7 @@ namespace Modbus.Net.Siemens
         public override async Task<byte[]> SendReceiveWithoutExtAndDecAsync(byte[] content)
         {
             var ans = await base.SendReceiveWithoutExtAndDecAsync(content);
-            while (ans.Length == 1 && ans[0] == 0xf9)
+            while (ans?.Length == 1 && ans[0] == 0xf9)
             {
                 Thread.Sleep(500);
                 if (content.Length <= 6)

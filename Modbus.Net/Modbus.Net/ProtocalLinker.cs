@@ -66,6 +66,11 @@ namespace Modbus.Net
             return bytesExtend?.BytesDecact(content);
         }
 
+        /// <summary>
+        ///     检查接收的数据是否正确
+        /// </summary>
+        /// <param name="content">接收协议的内容</param>
+        /// <returns>协议是否是正确的</returns>
         public override bool? CheckRight(byte[] content)
         {
             if (content == null)
