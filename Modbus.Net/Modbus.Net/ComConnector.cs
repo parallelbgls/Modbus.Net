@@ -260,13 +260,9 @@ namespace Modbus.Net
                 {
                     if (Linkers.Values.Count(p => p == _com) <= 1)
                     {
-                        try
+                        if (SerialPort.IsOpen)
                         {
                             SerialPort.Close();
-                        }
-                        catch
-                        {
-                            //ignore
                         }
                         SerialPort.Dispose();
                         Log.Information("Com interface {Com} Disposed", _com);
@@ -364,6 +360,7 @@ namespace Modbus.Net
             catch (Exception e)
             {
                 Log.Error(e, "Com client {ConnectionToken} connect error", ConnectionToken);
+                Dispose();
                 return false;
             }
         }

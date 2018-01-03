@@ -96,11 +96,7 @@ namespace Modbus.Net
                 if (_socketClient != null)
                 {
                     CloseClientSocket();
-#if NET40 || NET45 || NET451 || NET452
-                    _socketClient.Close();
-#else
-                    _socketClient.Dispose();
-#endif
+                    _socketClient = null;
                     Log.Debug("Tcp client {ConnectionToken} Disposed", ConnectionToken);
                 }
                 m_disposed = true;
@@ -123,7 +119,8 @@ namespace Modbus.Net
             {
                 if (_socketClient != null)
                 {
-                    return true;
+                    if (_socketClient.Connected)
+                        return true;
                 }
                 try
                 {
@@ -133,16 +130,10 @@ namespace Modbus.Net
                         ReceiveTimeout = TimeoutTime
                     };
 
-                    try
-                    {
-                        var cts = new CancellationTokenSource();
-                        cts.CancelAfter(TimeoutTime);
-                        await _socketClient.ConnectAsync(_host, _port).WithCancellation(cts.Token);
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Error(e, "Tcp client {ConnectionToken} connect error", ConnectionToken);
-                    }
+                    var cts = new CancellationTokenSource();
+                    cts.CancelAfter(TimeoutTime);
+                    await _socketClient.ConnectAsync(_host, _port).WithCancellation(cts.Token);
+
                     if (_socketClient.Connected)
                     {
                         _taskCancel = false;
@@ -152,11 +143,13 @@ namespace Modbus.Net
                         return true;
                     }
                     Log.Error("Tcp client {ConnectionToken} connect failed.", ConnectionToken);
+                    Dispose();
                     return false;
                 }
                 catch (Exception err)
                 {
                     Log.Error(err, "Tcp client {ConnectionToken} connect exception", ConnectionToken);
+                    Dispose();
                     return false;
                 }
             }
@@ -249,9 +242,9 @@ namespace Modbus.Net
                         {
                             //主动传输事件
                         }
-                    }
 
-                    RefreshReceiveCount();
+                        RefreshReceiveCount();
+                    }
                 }
             }
             catch (ObjectDisposedException)
