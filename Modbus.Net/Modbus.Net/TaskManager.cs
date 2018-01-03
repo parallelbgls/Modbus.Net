@@ -409,16 +409,26 @@ namespace Modbus.Net
             {
                 var cts = new CancellationTokenSource();
                 cts.CancelAfter(TimeSpan.FromMilliseconds(timeoutTime));
-                var ans =
-                    await tasks.StartNew(
-                        async () => await machine.GetMachineMethods<IMachineMethodData>()
-                            .GetDatasAsync(
-                            getDataType).WithCancellation(cts.Token)).Unwrap();
-                return new DataReturnDef
+                try
                 {
-                    MachineId = machine.GetMachineIdString(),
-                    ReturnValues = ans
-                };
+                    var ans =
+                        await tasks.StartNew(
+                            async () => await machine.GetMachineMethods<IMachineMethodData>()
+                                .GetDatasAsync(
+                                    getDataType).WithCancellation(cts.Token)).Unwrap();
+                    return new DataReturnDef
+                    {
+                        MachineId = machine.GetMachineIdString(),
+                        ReturnValues = ans
+                    };
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e, "GetData task has been canceled.");
+                    machine.Disconnect();
+                }
+                return null;
+
             };
             Params = null;
             Return = returnFunc;
@@ -460,12 +470,21 @@ namespace Modbus.Net
             {
                 var cts = new CancellationTokenSource();
                 cts.CancelAfter(TimeSpan.FromMilliseconds(timeoutTime));
-                var ans =
-                    await tasks.StartNew(
-                        async () => await machine.GetMachineMethods<IMachineMethodData>().
-                            SetDatasAsync(setDataType, (Dictionary<string, double>)parameters[0]
-                            ).WithCancellation(cts.Token)).Unwrap();
-                return ans;
+                try
+                {
+                    var ans =
+                        await tasks.StartNew(
+                            async () => await machine.GetMachineMethods<IMachineMethodData>().
+                                SetDatasAsync(setDataType, (Dictionary<string, double>)parameters[0]
+                                ).WithCancellation(cts.Token)).Unwrap();
+                    return ans;
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e, "SetData task has been canceled.");
+                    machine.Disconnect();
+                }
+                return false;
             };
             Params = () => new object[] {values()};
             Return = returnFunc;

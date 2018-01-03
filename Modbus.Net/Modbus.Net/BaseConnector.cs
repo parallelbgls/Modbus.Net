@@ -38,31 +38,9 @@ namespace Modbus.Net
         /// <inheritdoc />
         public override async Task<byte[]> SendMsgAsync(byte[] message)
         {
-            var ans = await SendMsgCtrl(message);
+            var ans = await SendMsgInner(message);
             if (ans == null) return new byte[0];
             return ans.ReceiveMessage;
-        }
-
-        /// <summary>
-        ///     发送主控
-        /// </summary>
-        /// <param name="message">发送的信息</param>
-        /// <returns>等待信息的定义</returns>
-        protected async Task<MessageWaitingDef> SendMsgCtrl(byte[] message)
-        {
-            MessageWaitingDef ans;
-            if (!IsFullDuplex)
-            {
-                using (await Lock.LockAsync())
-                {
-                    ans = await SendMsgInner(message);
-                }
-            }
-            else
-            {
-                ans = await SendMsgInner(message);
-            }
-            return ans;
         }
 
         /// <summary>
@@ -72,11 +50,16 @@ namespace Modbus.Net
         /// <returns>发送信息的定义</returns>
         protected async Task<MessageWaitingDef> SendMsgInner(byte[] message)
         {
+            IDisposable asyncLock = null;
             try
-            {
+            {                
                 var messageSendingdef = Controller.AddMessage(message);
                 if (messageSendingdef != null)
                 {
+                    if (!IsFullDuplex)
+                    {
+                        asyncLock = await Lock.LockAsync();
+                    }
                     var success = messageSendingdef.SendMutex.WaitOne(TimeoutTime);
                     if (success)
                     {
@@ -89,6 +72,7 @@ namespace Modbus.Net
                     }
                     Controller.ForceRemoveWaitingMessage(messageSendingdef);
                 }
+                Log.Information("Message is waiting in {0}. Cancel!", ConnectionToken);
                 return null;
             }
             catch (Exception e)
@@ -96,7 +80,10 @@ namespace Modbus.Net
                 Log.Error(e, "Connector {0} Send Error.", ConnectionToken);
                 return null;
             }
-            
+            finally
+            {
+                asyncLock?.Dispose();
+            }
         }
     }
 
