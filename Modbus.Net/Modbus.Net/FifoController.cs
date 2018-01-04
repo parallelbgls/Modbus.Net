@@ -116,7 +116,12 @@ namespace Modbus.Net
         /// <inheritdoc />
         protected override MessageWaitingDef GetMessageFromWaitingList(byte[] receiveMessage)
         {
-            return WaitingMessages.FirstOrDefault();
+            MessageWaitingDef ans;
+            lock (WaitingMessages)
+            {
+                ans = WaitingMessages.FirstOrDefault();
+            }
+            return ans;
         }
 
         /// <inheritdoc />
