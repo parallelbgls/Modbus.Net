@@ -456,6 +456,7 @@ namespace Modbus.Net
             catch (Exception err)
             {
                 Log.Error(err, "Com client {ConnectionToken} send msg error", ConnectionToken);
+                Dispose();
             }
             RefreshSendCount();
         }

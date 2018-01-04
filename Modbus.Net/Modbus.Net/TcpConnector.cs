@@ -199,7 +199,7 @@ namespace Modbus.Net
             catch (Exception err)
             {
                 Log.Error(err, "Tcp client {ConnectionToken} send exception", ConnectionToken);
-                CloseClientSocket();
+                Dispose();
             }
         }
 
@@ -225,6 +225,7 @@ namespace Modbus.Net
             {
                 while (!_taskCancel)
                 {
+                    if (_socketClient == null) break;
                     NetworkStream stream = _socketClient.GetStream();
                     var len = await stream.ReadAsync(_receiveBuffer, 0, _receiveBuffer.Length);
                     stream.Flush();
@@ -298,11 +299,14 @@ namespace Modbus.Net
                 Controller.SendStop();
                 Controller.Clear();
                 ReceiveMsgThreadStop();
-                if (_socketClient.Connected)
+                if (_socketClient != null)
                 {
-                    _socketClient?.GetStream().Dispose();
+                    if (_socketClient.Connected)
+                    {
+                        _socketClient?.GetStream().Dispose();
+                    }
+                    _socketClient?.Close();
                 }
-                _socketClient?.Close();           
             }
             catch (Exception ex)
             {

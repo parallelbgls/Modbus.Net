@@ -180,7 +180,7 @@ namespace Modbus.Net
             catch (Exception err)
             {
                 Log.Error(err, "Udp client {ConnectionToken} send exception", ConnectionToken);
-                CloseClientSocket();
+                Dispose();
             }
         }
 
@@ -206,6 +206,7 @@ namespace Modbus.Net
             {
                 while (!_taskCancel)
                 {
+                    if (_socketClient == null) break;
                     var receive = await _socketClient.ReceiveAsync();
 
                     var len = receive.Buffer.Length;
@@ -265,19 +266,18 @@ namespace Modbus.Net
                 Controller.SendStop();
                 Controller.Clear();
                 ReceiveMsgThreadStop();
-                if (_socketClient.Client.Connected)
+                if (_socketClient != null)
                 {
-                    _socketClient?.Client.Disconnect(false);
+                    if (_socketClient.Client?.Connected == true)
+                    {
+                        _socketClient.Client.Disconnect(false);
+                    }
+                    _socketClient.Close();
                 }
-                _socketClient?.Close();
             }
             catch (Exception ex)
             {
                 Log.Error(ex, "Udp client {ConnectionToken} client close exception", ConnectionToken);
-            }
-            finally
-            {
-                _socketClient = null;
             }
         }
     }
