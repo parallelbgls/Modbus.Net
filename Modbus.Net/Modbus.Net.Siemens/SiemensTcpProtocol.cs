@@ -1,5 +1,6 @@
 ﻿using System.Configuration;
 using System.Threading.Tasks;
+using Nito.AsyncEx;
 
 namespace Modbus.Net.Siemens
 {
@@ -17,6 +18,7 @@ namespace Modbus.Net.Siemens
         private readonly byte _tdpuSize;
         private readonly ushort _tsapDst;
         private int _connectTryCount;
+        private readonly AsyncLock _lock = new AsyncLock();
 
         /// <summary>
         ///     构造函数
@@ -143,23 +145,29 @@ namespace Modbus.Net.Siemens
         /// <returns>设备是否连接成功</returns>
         public override async Task<bool> ConnectAsync()
         {
-            _connectTryCount++;
-            if (ProtocolLinker.IsConnected) return true;
-            if (!await ProtocolLinker.ConnectAsync()) return false;
-            _connectTryCount = 0;
-            var inputStruct = new CreateReferenceSiemensInputStruct(_tdpuSize, _taspSrc, _tsapDst);
-            var outputStruct =
-                //先建立连接，然后建立设备的引用
-                (await (await
-                    ForceSendReceiveAsync(this[typeof(CreateReferenceSiemensProtocol)], inputStruct)).SendReceiveAsync(
-                    this[typeof(EstablishAssociationSiemensProtocol)], answer => 
-                    answer != null ?
-                        new EstablishAssociationSiemensInputStruct(0x0101, _maxCalling,
-                            _maxCalled,
-                            _maxPdu) : null)).Unwrap<EstablishAssociationSiemensOutputStruct>();
-            if (outputStruct == null && ProtocolLinker.IsConnected)
+            IOutputStruct outputStruct;
+            using (await _lock.LockAsync())
             {
-                ProtocolLinker.Disconnect();
+                _connectTryCount++;
+                if (ProtocolLinker.IsConnected) return true;
+                if (!await ProtocolLinker.ConnectAsync()) return false;
+                _connectTryCount = 0;
+                var inputStruct = new CreateReferenceSiemensInputStruct(_tdpuSize, _taspSrc, _tsapDst);
+                outputStruct =
+                    //先建立连接，然后建立设备的引用
+                    (await (await
+                            ForceSendReceiveAsync(this[typeof(CreateReferenceSiemensProtocol)], inputStruct))
+                        .SendReceiveAsync(
+                            this[typeof(EstablishAssociationSiemensProtocol)], answer =>
+                                answer != null
+                                    ? new EstablishAssociationSiemensInputStruct(0x0101, _maxCalling,
+                                        _maxCalled,
+                                        _maxPdu)
+                                    : null)).Unwrap<EstablishAssociationSiemensOutputStruct>();
+                if (outputStruct == null && ProtocolLinker.IsConnected)
+                {
+                    ProtocolLinker.Disconnect();
+                }
             }
             return outputStruct != null;
         }

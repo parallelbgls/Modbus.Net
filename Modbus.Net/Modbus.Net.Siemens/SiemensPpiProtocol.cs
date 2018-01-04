@@ -1,5 +1,6 @@
 ﻿using System.Configuration;
 using System.Threading.Tasks;
+using Nito.AsyncEx;
 
 namespace Modbus.Net.Siemens
 {
@@ -9,6 +10,7 @@ namespace Modbus.Net.Siemens
     public class SiemensPpiProtocol : SiemensProtocol
     {
         private readonly string _com;
+        private readonly AsyncLock _lock = new AsyncLock();
 
         /// <summary>
         ///     构造函数
@@ -72,20 +74,23 @@ namespace Modbus.Net.Siemens
         /// <returns>是否连接成功</returns>
         public override async Task<bool> ConnectAsync()
         {
-            if (ProtocolLinker.IsConnected) return true;
-            if (!await ProtocolLinker.ConnectAsync()) return false;
-            var inputStruct = new ComCreateReferenceSiemensInputStruct(SlaveAddress, MasterAddress);
-            var outputStruct =
+            IOutputStruct outputStruct;
+            using (await _lock.LockAsync())
+            {
+                if (ProtocolLinker.IsConnected) return true;
+                if (!await ProtocolLinker.ConnectAsync()) return false;
+                var inputStruct = new ComCreateReferenceSiemensInputStruct(SlaveAddress, MasterAddress);
+                outputStruct =
                 (await (await
                     ForceSendReceiveAsync(this[typeof(ComCreateReferenceSiemensProtocol)],
-                            inputStruct)).
-                        SendReceiveAsync(this[typeof(ComConfirmMessageSiemensProtocol)], answer => 
-                        answer != null
+                        inputStruct)).SendReceiveAsync(this[typeof(ComConfirmMessageSiemensProtocol)], answer =>
+                    answer != null
                         ? new ComConfirmMessageSiemensInputStruct(SlaveAddress, MasterAddress)
                         : null)).Unwrap<ComConfirmMessageSiemensOutputStruct>();
-            if (outputStruct == null && ProtocolLinker.IsConnected)
-            {
-                ProtocolLinker.Disconnect();
+                if (outputStruct == null && ProtocolLinker.IsConnected)
+                {
+                    ProtocolLinker.Disconnect();
+                }
             }
             return outputStruct != null;
         }

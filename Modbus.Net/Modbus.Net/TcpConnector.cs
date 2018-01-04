@@ -303,7 +303,7 @@ namespace Modbus.Net
                 {
                     if (_socketClient.Connected)
                     {
-                        _socketClient?.GetStream().Dispose();
+                        _socketClient.GetStream().Dispose();
                     }
                     _socketClient?.Close();
                 }

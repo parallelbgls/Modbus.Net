@@ -401,9 +401,10 @@ namespace Modbus.Net
         /// <param name="returnFunc">返回值的处理函数</param>
         /// <param name="getDataType">返回值的键类型</param>
         /// <param name="timeout">任务的超时时间</param>
-        public TaskItemGetData(Action<DataReturnDef> returnFunc, MachineGetDataType getDataType, int timeout = 100000)
+        /// <param name="reName">重命名，对单个设备使用多个GetData时必须填写不同的字符串</param>
+        public TaskItemGetData(Action<DataReturnDef> returnFunc, MachineGetDataType getDataType, int timeout = 100000, string reName = null)
         {
-            Name = "GetDatas";
+            Name = reName ?? "GetDatas";
             TimeoutTime = timeout;
             Invoke = async (machine, tasks, parameters, timeoutTime) =>
             {
@@ -442,8 +443,9 @@ namespace Modbus.Net
         /// <param name="getCycle">循环间隔(毫秒)</param>
         /// <param name="sleepCycle">设备离线时的循环间隔(毫秒)</param>
         /// <param name="timeout">任务的超时时间</param>
+        /// <param name="reName">重命名，对单个设备使用多个GetData时必须填写不同的字符串</param>
         public TaskItemGetData(Action<DataReturnDef> returnFunc, MachineGetDataType getDataType, int getCycle,
-            int sleepCycle, int timeout = 100000) : this(returnFunc, getDataType, timeout)
+            int sleepCycle, int timeout = 100000, string reName = null) : this(returnFunc, getDataType, timeout, reName)
         {
             TimerDisconnectedTime = sleepCycle;
             TimerTime = getCycle;
@@ -462,9 +464,10 @@ namespace Modbus.Net
         /// <param name="setDataType">写入值的键类型</param>
         /// <param name="returnFunc">返回值的处理函数</param>
         /// <param name="timeout">任务的超时时间</param>
-        public TaskItemSetData(Func<Dictionary<string, double>> values, MachineSetDataType setDataType, int timeout = 100000, Action<bool> returnFunc = null)
+        /// <param name="reName">重命名，对单个设备使用多个GetData时必须填写不同的字符串</param>
+        public TaskItemSetData(Func<Dictionary<string, double>> values, MachineSetDataType setDataType, int timeout = 100000, Action<bool> returnFunc = null, string reName = null)
         {
-            Name = "SetDatas";
+            Name = reName ?? "SetDatas";
             TimeoutTime = timeout;
             Invoke = async (machine, tasks, parameters, timeoutTime) =>
             {
@@ -499,9 +502,10 @@ namespace Modbus.Net
         /// <param name="getCycle">循环间隔(毫秒)</param>
         /// <param name="sleepCycle">设备离线时的循环间隔(毫秒)</param>
         /// <param name="timeout">任务的超时时间</param>
+        /// <param name="reName">重命名，对单个设备使用多个GetData时必须填写不同的字符串</param>
         public TaskItemSetData(Func<Dictionary<string, double>> values, MachineSetDataType setDataType, int getCycle,
-            int sleepCycle, int timeout = 100000, Action<bool> returnFunc = null)
-            : this(values, setDataType, timeout, returnFunc)
+            int sleepCycle, int timeout = 100000, Action<bool> returnFunc = null, string reName = null)
+            : this(values, setDataType, timeout, returnFunc, reName)
         {
             TimerDisconnectedTime = sleepCycle;
             TimerTime = getCycle;
