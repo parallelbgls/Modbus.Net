@@ -47,7 +47,12 @@ namespace Modbus.Net
         protected override MessageWaitingDef GetMessageFromWaitingList(byte[] receiveMessage)
         {
             var returnKey = GetKeyFromMessage(receiveMessage);
-            return WaitingMessages.FirstOrDefault(p=>returnKey.HasValue && p.Key == returnKey.Value.Item2);
+            MessageWaitingDef ans;
+            lock (WaitingMessages)
+            {
+                ans = WaitingMessages.FirstOrDefault(p => returnKey.HasValue && p.Key == returnKey.Value.Item2);
+            }
+            return ans;
         }
     }
 }
