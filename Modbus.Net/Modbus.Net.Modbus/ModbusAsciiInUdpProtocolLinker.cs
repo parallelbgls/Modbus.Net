@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Modbus.Net.Modbus
 {
+    /// <summary>
+    ///     Modbus/Ascii码协议连接器Udp透传
+    /// </summary>
     public class ModbusAsciiInUdpProtocolLinker : UdpProtocolLinker
     {
         /// <summary>

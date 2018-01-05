@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Modbus.Net.Modbus
 {
+    /// <summary>
+    ///     Modbus/Rtu协议udp透传
+    /// </summary>
     public class ModbusRtuInUdpProtocol : ModbusProtocol
     {
         /// <summary>

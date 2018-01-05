@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Modbus.Net.Modbus
 {
+    /// <summary>
+    ///     Modbus/Rtu协议连接器Udp透传
+    /// </summary>
     public class ModbusRtuInUdpProtocolLinker : UdpProtocolLinker
     {
         /// <summary>
@@ -47,5 +50,4 @@ namespace Modbus.Net.Modbus
             return true;
         }
     }
-}
 }

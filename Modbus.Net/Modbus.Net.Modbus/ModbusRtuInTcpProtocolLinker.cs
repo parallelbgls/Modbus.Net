@@ -3,7 +3,7 @@
 namespace Modbus.Net.Modbus
 {
     /// <summary>
-    ///     Modbus/Rtu协议连接器
+    ///     Modbus/Rtu协议连接器Tcp透传
     /// </summary>
     public class ModbusRtuInTcpProtocolLinker : TcpProtocolLinker
     {

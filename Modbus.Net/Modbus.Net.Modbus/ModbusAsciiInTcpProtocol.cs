@@ -3,7 +3,7 @@
 namespace Modbus.Net.Modbus
 {
     /// <summary>
-    ///     Modbus/Ascii码协议
+    ///     Modbus/Ascii码协议Tcp透传
     /// </summary>
     public class ModbusAsciiInTcpProtocol : ModbusProtocol
     {
