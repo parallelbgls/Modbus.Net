@@ -8,6 +8,22 @@ namespace Modbus.Net.Modbus
     /// <summary>
     ///     Udp字节伸缩
     /// </summary>
+    public class ModbusRtuInUdpProtocolLinkerBytesExtend : ModbusRtuProtocolLinkerBytesExtend
+    {
+
+    }
+
+    /// <summary>
+    ///     Udp字节伸缩
+    /// </summary>
+    public class ModbusAsciiInUdpProtocolLinkerBytesExtend : ModbusAsciiProtocolLinkerBytesExtend
+    {
+
+    }
+
+    /// <summary>
+    ///     Udp字节伸缩
+    /// </summary>
     public class ModbusUdpProtocolLinkerBytesExtend : ModbusTcpProtocolLinkerBytesExtend
     {
         

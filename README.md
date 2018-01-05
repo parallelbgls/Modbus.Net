@@ -109,10 +109,9 @@ RoadMap
 * New UdpConnector (Complete)
 
 ### Version 1.4.2
-* Serial Port Connection with Multiple Master Station (In Road)
-* PPI Remake (In Road)
-* Siemens MPI Support (In Road)
-* Siemens MultiStation PPI Support (In Road)
+* PPI Remake (Coding)
+* Modbus Udp (Coding)
+* Full Async/Sync SerialPort and Ethenet Communication (Coding)
 
 ### Version 1.4.3
 * Machine and Utility Builder (In Road)
@@ -121,10 +120,13 @@ RoadMap
 * Unite TransServer.Net into Modbus.Net (In Road)
 * Passive Connector and Controller (In Road)
 * Interfaces Architecture (In Road)
-* Dependency Injection (In Road)
 * ValueHelper remake to interface, users can add their own value translate function (In Road)
 * New Zoom (In Road)
 * New TaskManager (In Road)
+* Mutiple Address fields in Machine (In Road)
+* Serial Port Connection with Multiple Master Station (In Road)
+* Siemens MPI Support (In Road)
+* Siemens MultiStation PPI Support (In Road)
 
 ### Version 1.6.X
 * English comment (In Road)
@@ -134,4 +136,4 @@ RoadMap
 * Rename to Transport.Net (In Road)
 * Puzzle Builder (In Road)
 * Protocol Builer (In Road)
-
+* Dependency Injection (In Road)

@@ -26,7 +26,7 @@ namespace Modbus.Net.Modbus
         public ModbusAsciiInTcpProtocol(string ip, byte slaveAddress, byte masterAddress)
             : base(slaveAddress, masterAddress)
         {
-            ProtocolLinker = new ModbusAsciiInTcpProtocolLinker(ip, slaveAddress);
+            ProtocolLinker = new ModbusAsciiInTcpProtocolLinker(ip);
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace Modbus.Net.Modbus
         public ModbusAsciiInTcpProtocol(string ip, int port, byte slaveAddress, byte masterAddress)
             : base(slaveAddress, masterAddress)
         {
-            ProtocolLinker = new ModbusTcpProtocolLinker(ip, port);
+            ProtocolLinker = new ModbusAsciiInTcpProtocolLinker(ip, port);
         }
     }
 }

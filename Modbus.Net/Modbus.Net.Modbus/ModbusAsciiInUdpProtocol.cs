@@ -1,19 +1,20 @@
-﻿using System.Configuration;
-
+﻿using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Modbus.Net.Modbus
 {
-    /// <summary>
-    ///     Modbus/Rtu协议tcp透传
-    /// </summary>
-    public class ModbusRtuInTcpProtocol : ModbusProtocol
+    public class ModbusAsciiInUdpProtocol : ModbusProtocol
     {
         /// <summary>
         ///     构造函数
         /// </summary>
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
-        public ModbusRtuInTcpProtocol(byte slaveAddress, byte masterAddress)
+        public ModbusAsciiInUdpProtocol(byte slaveAddress, byte masterAddress)
             : this(ConfigurationManager.AppSettings["IP"], slaveAddress, masterAddress)
         {
         }
@@ -24,23 +25,23 @@ namespace Modbus.Net.Modbus
         /// <param name="ip">ip地址</param>
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
-        public ModbusRtuInTcpProtocol(string ip, byte slaveAddress, byte masterAddress)
+        public ModbusAsciiInUdpProtocol(string ip, byte slaveAddress, byte masterAddress)
             : base(slaveAddress, masterAddress)
         {
-            ProtocolLinker = new ModbusRtuInTcpProtocolLinker(ip);
+            ProtocolLinker = new ModbusAsciiInUdpProtocolLinker(ip);
         }
 
         /// <summary>
         ///     构造函数
         /// </summary>
         /// <param name="ip">ip地址</param>
-        /// <param name="port">端口号</param>
+        /// <param name="port">端口</param>
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
-        public ModbusRtuInTcpProtocol(string ip, int port, byte slaveAddress, byte masterAddress)
+        public ModbusAsciiInUdpProtocol(string ip, int port, byte slaveAddress, byte masterAddress)
             : base(slaveAddress, masterAddress)
         {
-            ProtocolLinker = new ModbusRtuInTcpProtocolLinker(ip, port);
+            ProtocolLinker = new ModbusAsciiInUdpProtocolLinker(ip, port);
         }
     }
 }

@@ -33,10 +33,21 @@ namespace Modbus.Net.Modbus
         ///     Ascii连接Tcp透传
         /// </summary>
         AsciiInTcp = 4,
+
         /// <summary>
         ///     Udp连接
         /// </summary>
-        Udp = 5
+        Udp = 5,
+
+        /// <summary>
+        ///     Rtu连接Udp透传
+        /// </summary>
+        RtuInUdp = 6,
+
+        /// <summary>
+        ///     Ascii连接Udp透传
+        /// </summary>
+        AsciiInUdp = 7
     }
 
     /// <summary>
@@ -175,7 +186,7 @@ namespace Modbus.Net.Modbus
                             : new ModbusAsciiProtocol(ConnectionString, SlaveAddress, MasterAddress);
                         break;
                     }
-                    //Rtu协议
+                    //Rtu协议Tcp透传
                     case ModbusType.RtuInTcp:
                     {
                         Wrapper = ConnectionString == null
@@ -186,7 +197,7 @@ namespace Modbus.Net.Modbus
                                     MasterAddress));
                         break;
                     }
-                    //Ascii协议
+                    //Ascii协议Tcp透传
                     case ModbusType.AsciiInTcp:
                     {
                         Wrapper = ConnectionString == null
@@ -197,7 +208,7 @@ namespace Modbus.Net.Modbus
                                     MasterAddress));
                         break;
                     }
-                    //Udp协议
+                    //Tcp协议Udp透传
                     case ModbusType.Udp:
                     {
                         Wrapper = ConnectionString == null
@@ -205,6 +216,28 @@ namespace Modbus.Net.Modbus
                             : (ConnectionStringPort == null
                                 ? new ModbusUdpProtocol(ConnectionString, SlaveAddress, MasterAddress)
                                 : new ModbusUdpProtocol(ConnectionStringIp, ConnectionStringPort.Value, SlaveAddress,
+                                    MasterAddress));
+                        break;
+                    }
+                    //Rtu协议Udp透传
+                    case ModbusType.RtuInUdp:
+                    {
+                        Wrapper = ConnectionString == null
+                            ? new ModbusRtuInUdpProtocol(SlaveAddress, MasterAddress)
+                            : (ConnectionStringPort == null
+                                ? new ModbusRtuInUdpProtocol(ConnectionString, SlaveAddress, MasterAddress)
+                                : new ModbusRtuInUdpProtocol(ConnectionStringIp, ConnectionStringPort.Value, SlaveAddress,
+                                    MasterAddress));
+                        break;
+                    }
+                    //Rtu协议Udp透传
+                    case ModbusType.AsciiInUdp:
+                    {
+                        Wrapper = ConnectionString == null
+                            ? new ModbusAsciiInUdpProtocol(SlaveAddress, MasterAddress)
+                            : (ConnectionStringPort == null
+                                ? new ModbusAsciiInUdpProtocol(ConnectionString, SlaveAddress, MasterAddress)
+                                : new ModbusAsciiInUdpProtocol(ConnectionStringIp, ConnectionStringPort.Value, SlaveAddress,
                                     MasterAddress));
                         break;
                     }
