@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Serilog;
@@ -28,7 +29,9 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="acquireTime">间隔时间</param>
         /// <param name="activateSema">是否开启信号量</param>
-        public FifoController(int acquireTime, bool activateSema = true)
+        /// <param name="duplicateFunc">包切分函数</param>
+        public FifoController(int acquireTime, bool activateSema = true, Func<byte[], ICollection<byte[]>> duplicateFunc = null)
+            : base(duplicateFunc)
         {
             if (activateSema)
             {

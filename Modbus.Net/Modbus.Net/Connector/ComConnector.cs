@@ -489,9 +489,12 @@ namespace Modbus.Net
                             $"Com client {ConnectionToken} receive msg: {String.Concat(returnBytes.Select(p => " " + p.ToString("X2")))}");
 
                         var isMessageConfirmed = Controller.ConfirmMessage(returnBytes);
-                        if (isMessageConfirmed == false)
+                        foreach (var confirmed in isMessageConfirmed)
                         {
-                            //主动传输事件
+                            if (confirmed == false)
+                            {
+                                //主动传输事件
+                            }
                         }
 
                         RefreshReceiveCount();

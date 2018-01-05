@@ -22,11 +22,18 @@ namespace Modbus.Net
         protected Task SendingThread { get; set; }
 
         /// <summary>
+        ///     包切分位置
+        /// </summary>
+        protected Func<byte[], ICollection<byte[]>> DuplicateFunc { get; }
+
+        /// <summary>
         ///     构造器
         /// </summary>
-        protected BaseController()
+        /// <param name="duplicateFunc">包切分函数</param>
+        protected BaseController(Func<byte[], ICollection<byte[]>> duplicateFunc = null)
         {
             WaitingMessages = new List<MessageWaitingDef>();
+            DuplicateFunc = duplicateFunc;
         }
 
         /// <inheritdoc />
@@ -97,21 +104,30 @@ namespace Modbus.Net
         protected abstract (string,string)? GetKeyFromMessage(byte[] message);
 
         /// <inheritdoc />
-        public bool ConfirmMessage(byte[] receiveMessage)
+        public ICollection<bool> ConfirmMessage(byte[] receiveMessage)
         {
-            var def = GetMessageFromWaitingList(receiveMessage);
-            if (def != null)
+            var ans = new List<bool>();
+            var duplicatedMessages = DuplicateFunc?.Invoke(receiveMessage);
+            duplicatedMessages = duplicatedMessages ?? new List<byte[]> {receiveMessage};
+            foreach (var message in duplicatedMessages)
             {
-                def.ReceiveMessage = receiveMessage;
-                lock (WaitingMessages)
+                var def = GetMessageFromWaitingList(message);
+                if (def != null)
                 {
-                    WaitingMessages.Remove(def);
+                    def.ReceiveMessage = receiveMessage;
+                    lock (WaitingMessages)
+                    {
+                        WaitingMessages.Remove(def);
+                    }
+                    def.ReceiveMutex.Set();
+                    ans.Add(true);
                 }
-                def.ReceiveMutex.Set();
-                return true;
+                ans.Add(false);
             }
-            return false;
+            return ans;
         }
+
+        
 
         /// <summary>
         ///     从等待队列中匹配信息

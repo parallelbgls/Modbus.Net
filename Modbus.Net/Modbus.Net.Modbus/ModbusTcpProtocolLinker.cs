@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using System.Collections.Generic;
+using System.Configuration;
 
 namespace Modbus.Net.Modbus
 {
@@ -23,7 +24,7 @@ namespace Modbus.Net.Modbus
         /// <param name="port">端口</param>
         public ModbusTcpProtocolLinker(string ip, int port) : base(ip, port)
         {
-            ((BaseConnector)BaseConnector).AddController(new FifoController(0));
+            ((BaseConnector)BaseConnector).AddController(new FifoController(0, true, DuplicateWithCount.GetDuplcateFunc(new List<int>{4,5})));
         }
 
         /// <summary>

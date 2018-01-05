@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 
 namespace Modbus.Net.Siemens
 {
@@ -26,7 +27,7 @@ namespace Modbus.Net.Siemens
         public SiemensTcpProtocolLinker(string ip, int port)
             : base(ip, port)
         {
-            ((BaseConnector)BaseConnector).AddController(new MatchDirectlySendController(new ICollection<(int,int)>[] { new List<(int,int)> { (11,11), (12,12) } }));
+            ((BaseConnector)BaseConnector).AddController(new MatchDirectlySendController(new ICollection<(int,int)>[] { new List<(int,int)> { (11,11), (12,12) } }, DuplicateWithCount.GetDuplcateFunc(new List<int>{2, 3})));
         }
 
         /// <summary>

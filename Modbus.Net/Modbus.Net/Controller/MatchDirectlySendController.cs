@@ -12,8 +12,9 @@ namespace Modbus.Net
     public class MatchDirectlySendController : MatchController
     {
         /// <inheritdoc />
-        public MatchDirectlySendController(ICollection<(int, int)>[] keyMatches) : base(keyMatches,
-            0, false)
+        public MatchDirectlySendController(ICollection<(int, int)>[] keyMatches,
+            Func<byte[], ICollection<byte[]>> duplicateFunc = null) : base(keyMatches,
+            0, false, duplicateFunc)
         {
         }
 
