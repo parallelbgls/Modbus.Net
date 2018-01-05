@@ -491,7 +491,7 @@ namespace Modbus.Net
                         var isMessageConfirmed = Controller.ConfirmMessage(returnBytes);
                         foreach (var confirmed in isMessageConfirmed)
                         {
-                            if (confirmed == false)
+                            if (confirmed.Item2 == false)
                             {
                                 //主动传输事件
                             }

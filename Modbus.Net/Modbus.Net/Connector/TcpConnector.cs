@@ -241,9 +241,14 @@ namespace Modbus.Net
                         var isMessageConfirmed = Controller.ConfirmMessage(receiveBytes);
                         foreach (var confirmed in isMessageConfirmed)
                         {
-                            if (confirmed == false)
+                            if (confirmed.Item2 == false)
                             {
+                                var sendMessage = InvokeReturnMessage(confirmed.Item1);
                                 //主动传输事件
+                                if (sendMessage != null)
+                                {
+                                    await SendMsgWithoutConfirm(sendMessage);
+                                }
                             }
                         }
                         

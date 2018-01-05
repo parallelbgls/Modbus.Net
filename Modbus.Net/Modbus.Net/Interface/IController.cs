@@ -34,7 +34,7 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="receiveMessage">返回的信息</param>
         /// <returns>是否正常确认</returns>
-        ICollection<bool> ConfirmMessage(byte[] receiveMessage);
+        ICollection<(byte[], bool)> ConfirmMessage(byte[] receiveMessage);
 
         /// <summary>
         ///     没有任何返回时强行删除等待队列上的信息

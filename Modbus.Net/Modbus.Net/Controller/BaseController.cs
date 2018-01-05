@@ -104,9 +104,9 @@ namespace Modbus.Net
         protected abstract (string,string)? GetKeyFromMessage(byte[] message);
 
         /// <inheritdoc />
-        public ICollection<bool> ConfirmMessage(byte[] receiveMessage)
+        public ICollection<(byte[], bool)> ConfirmMessage(byte[] receiveMessage)
         {
-            var ans = new List<bool>();
+            var ans = new List<(byte[], bool)>();
             var duplicatedMessages = DuplicateFunc?.Invoke(receiveMessage);
             duplicatedMessages = duplicatedMessages ?? new List<byte[]> {receiveMessage};
             foreach (var message in duplicatedMessages)
@@ -120,9 +120,9 @@ namespace Modbus.Net
                         WaitingMessages.Remove(def);
                     }
                     def.ReceiveMutex.Set();
-                    ans.Add(true);
+                    ans.Add((message, true));
                 }
-                ans.Add(false);
+                ans.Add((message, false));
             }
             return ans;
         }

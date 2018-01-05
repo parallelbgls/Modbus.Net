@@ -90,11 +90,11 @@ namespace Modbus.Net
     /// <summary>
     ///     基础的协议连接类
     /// </summary>
-    public abstract class BaseConnector<TParamIn, TParamOut> : IConnector<TParamIn, TParamOut>
+    public abstract class BaseConnector<TParamIn, TParamOut> : IConnector<TParamIn, TParamOut> where TParamIn : class
     {
-        //protected delegate MessageReturnCallbackArgs MessageReturnDelegate(object sender, MessageReturnArgs args);
+        public delegate MessageReturnCallbackArgs<TParamIn> MessageReturnDelegate(object sender, MessageReturnArgs<TParamOut> args);
 
-        //protected event MessageReturnDelegate MessageReturn;
+        public event MessageReturnDelegate MessageReturn;
 
         /// <summary>
         ///     增加传输控制器
@@ -140,19 +140,10 @@ namespace Modbus.Net
         ///     接收消息单独线程停止
         /// </summary>
         protected abstract void ReceiveMsgThreadStop();
+
+        protected TParamIn InvokeReturnMessage(TParamOut receiveMessage)
+        {
+            return MessageReturn?.Invoke(this, new MessageReturnArgs<TParamOut>{ReturnMessage = receiveMessage})?.SendMessage;
+        }
     }
-
-    /*public class MessageReturnArgs
-    {
-        public byte[] ReturnMessage { get; set; }
-
-        public string MessageKey { get; set; }
-    }
-
-    public class MessageReturnCallbackArgs
-    {
-        public bool ShouldLockSender { get; set; } = false;
-
-        public bool ShouldReleaseSender { get; set; } = false;
-    }*/
 }
