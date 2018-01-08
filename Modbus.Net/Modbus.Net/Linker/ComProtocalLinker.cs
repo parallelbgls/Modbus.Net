@@ -30,11 +30,12 @@ namespace Modbus.Net
         /// <param name="stopBits">停止位</param>
         /// <param name="dataBits">数据位</param>
         /// <param name="slaveAddress">从站地址</param>
+        /// <param name="isFullDuplex">是否为全双工</param>
         protected ComProtocolLinker(string com, int baudRate, Parity parity, StopBits stopBits, int dataBits,
-            int slaveAddress)
+            int slaveAddress, bool isFullDuplex = false)
             : this(
                 com, baudRate, parity, stopBits, dataBits,
-                int.Parse(ConfigurationManager.AppSettings["ComConnectionTimeout"] ?? "-1"), slaveAddress)
+                int.Parse(ConfigurationManager.AppSettings["ComConnectionTimeout"] ?? "-1"), slaveAddress, isFullDuplex)
         {
         }
 
@@ -48,17 +49,18 @@ namespace Modbus.Net
         /// <param name="dataBits">数据位</param>
         /// <param name="connectionTimeout">超时时间</param>
         /// <param name="slaveAddress">从站地址</param>
+        /// <param name="isFullDuplex">是否为全双工</param>
         protected ComProtocolLinker(string com, int baudRate, Parity parity, StopBits stopBits, int dataBits,
-            int connectionTimeout, int slaveAddress)
+            int connectionTimeout, int slaveAddress, bool isFullDuplex = false)
         {
             if (connectionTimeout == -1)
             {
-                BaseConnector = new ComConnector(com + ":" + slaveAddress, baudRate, parity, stopBits, dataBits);
+                BaseConnector = new ComConnector(com + ":" + slaveAddress, baudRate, parity, stopBits, dataBits, isFullDuplex:isFullDuplex);
             }
             else
             {
                 BaseConnector = new ComConnector(com + ":" + slaveAddress, baudRate, parity, stopBits, dataBits,
-                    connectionTimeout);
+                    connectionTimeout, isFullDuplex:isFullDuplex);
             }
             
         }

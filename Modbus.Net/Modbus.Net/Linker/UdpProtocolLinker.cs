@@ -20,8 +20,9 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="ip">Ip地址</param>
         /// <param name="port">端口</param>
-        protected UdpProtocolLinker(string ip, int port)
-            : this(ip, port, int.Parse(ConfigurationManager.AppSettings["IPConnectionTimeout"] ?? "-1"))
+        /// <param name="isFullDuplex">是否为全双工</param>
+        protected UdpProtocolLinker(string ip, int port, bool isFullDuplex = true)
+            : this(ip, port, int.Parse(ConfigurationManager.AppSettings["IPConnectionTimeout"] ?? "-1"), isFullDuplex)
         {
         }
 
@@ -31,17 +32,18 @@ namespace Modbus.Net
         /// <param name="ip">Ip地址</param>
         /// <param name="port">端口</param>
         /// <param name="connectionTimeout">超时时间</param>
-        protected UdpProtocolLinker(string ip, int port, int connectionTimeout)
+        /// <param name="isFullDuplex">是否为全双工</param>
+        protected UdpProtocolLinker(string ip, int port, int connectionTimeout, bool isFullDuplex = true)
         {
             if (connectionTimeout == -1)
             {
                 //初始化连接对象
-                BaseConnector = new UdpConnector(ip, port);
+                BaseConnector = new UdpConnector(ip, port, isFullDuplex:isFullDuplex);
             }
             else
             {
                 //初始化连接对象
-                BaseConnector = new UdpConnector(ip, port, connectionTimeout);
+                BaseConnector = new UdpConnector(ip, port, connectionTimeout, isFullDuplex:isFullDuplex);
             }
         }
     }

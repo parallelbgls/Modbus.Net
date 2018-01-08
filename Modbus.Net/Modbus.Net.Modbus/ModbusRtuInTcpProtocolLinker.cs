@@ -12,7 +12,7 @@ namespace Modbus.Net.Modbus
         /// </summary>
         /// <param name="ip">IP地址</param>
         public ModbusRtuInTcpProtocolLinker(string ip)
-            : base(ip, int.Parse(ConfigurationManager.AppSettings["ModbusPort"] ?? "502"))
+            : base(ip, int.Parse(ConfigurationManager.AppSettings["ModbusPort"] ?? "502"), false)
         {
         }
 

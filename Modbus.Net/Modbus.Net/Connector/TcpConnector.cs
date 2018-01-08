@@ -42,7 +42,8 @@ namespace Modbus.Net
         /// <param name="ipaddress">Ip地址</param>
         /// <param name="port">端口</param>
         /// <param name="timeoutTime">超时时间</param>
-        public TcpConnector(string ipaddress, int port, int timeoutTime = 10000) : base(timeoutTime)
+        /// <param name="isFullDuplex">是否为全双工</param>
+        public TcpConnector(string ipaddress, int port, int timeoutTime = 10000, bool isFullDuplex = true) : base(timeoutTime, isFullDuplex)
         {
             _host = ipaddress;
             _port = port;
