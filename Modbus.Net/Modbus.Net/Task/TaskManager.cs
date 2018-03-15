@@ -245,9 +245,13 @@ namespace Modbus.Net
             task.GetMachine = () => Machine;
             task.GetTaskFactory = () => _tasks;
 
+            
             if (!TasksWithTimer.Exists(taskCon => taskCon.Name == task.Name))
             {
-                TasksWithTimer.Add(task);
+                lock (TasksWithTimer)
+                {
+                    TasksWithTimer.Add(task);
+                }
                 task.StartTimer();
                 return true;
             }
@@ -265,7 +269,10 @@ namespace Modbus.Net
             {
                 var task = TasksWithTimer.FirstOrDefault(taskCon => taskCon.Name == taskItemName);
                 task?.StopTimer();
-                TasksWithTimer.Remove(task);
+                lock (TasksWithTimer)
+                {
+                    TasksWithTimer.Remove(task);
+                }
                 return true;
             }
             return false;
@@ -278,8 +285,13 @@ namespace Modbus.Net
         public bool StopAllTimers()
         {
             var ans = true;
-            foreach (var task in TasksWithTimer)
-                ans = ans && StopTimer(task.Name);
+            lock (TasksWithTimer)
+            {
+                for (int i = 0; i < TasksWithTimer.Count; i++)
+                {
+                    ans = ans && StopTimer(TasksWithTimer[0].Name);
+                }
+            }
             return ans;
         }
 
@@ -306,8 +318,13 @@ namespace Modbus.Net
         public bool PauseAllTimers()
         {
             var ans = true;
-            foreach (var task in TasksWithTimer)
-                ans = ans && PauseTimer(task.Name);
+            lock (TasksWithTimer)
+            {
+                for (int i = 0; i < TasksWithTimer.Count; i++)
+                {
+                    ans = ans && PauseTimer(TasksWithTimer[i].Name);
+                }
+            }
             return ans;
         }
 
@@ -334,8 +351,11 @@ namespace Modbus.Net
         public bool ContinueAllTimers()
         {
             var ans = true;
-            foreach (var task in TasksWithTimer)
-                ans = ans && ContinueTimer(task.Name);
+            lock (TasksWithTimer)
+            {
+                foreach (var task in TasksWithTimer)
+                    ans = ans && ContinueTimer(task.Name);
+            }
             return ans;
         }
 
