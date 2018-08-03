@@ -79,10 +79,11 @@ namespace Modbus.Net.Siemens
         /// <param name="model">设备类型</param>
         /// <param name="slaveAddress">从站地址</param>
         /// <param name="masterAddress">主站地址</param>
-        /// <param name="src">本机模块位，0到7，仅200使用，其它型号不要填写</param>
-        /// <param name="dst">PLC模块位，0到7，仅200使用，其它型号不要填写</param>
+        /// <param name="src">本机模块位，0到7，200为本地栈号，比如10.01则填写0x01</param>
+        /// <param name="dst">PLC模块位，0到7，200为远程栈号，比如10.02则填写0x02
+        ///                   300和400为槽号机架号，机架号为1，比如槽号为3，则填写0x13</param>
         public SiemensUtility(SiemensType connectionType, string connectionString, SiemensMachineModel model,
-            byte slaveAddress, byte masterAddress, byte src = 1, byte dst = 0) : base(slaveAddress, masterAddress)
+            byte slaveAddress, byte masterAddress, byte src = 0, byte dst = 1) : base(slaveAddress, masterAddress)
         {
             ConnectionString = connectionString;
             switch (model)
@@ -102,7 +103,7 @@ namespace Modbus.Net.Siemens
                 {
                     _tdpuSize = 0x1a;
                     _taspSrc = 0x4b54;
-                    _tsapDst = 0x0302;
+                    _tsapDst = (ushort)(0x0300 + dst);
                     _maxCalling = 0x0001;
                     _maxCalled = 0x0001;
                     _maxPdu = 0x00f0;
@@ -113,8 +114,8 @@ namespace Modbus.Net.Siemens
                 {
                     _tdpuSize = 0x0a;
                     _taspSrc = 0x1011;
-                    _tsapDst = 0x0301;
-                    _maxCalling = 0x0003;
+                    _tsapDst = (ushort)(0x0300 + dst);
+                        _maxCalling = 0x0003;
                     _maxCalled = 0x0003;
                     _maxPdu = 0x0100;
                     break;
