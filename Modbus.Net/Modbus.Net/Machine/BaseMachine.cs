@@ -207,7 +207,25 @@ namespace Modbus.Net
         /// <summary>
         ///     描述需要与设备通讯的地址
         /// </summary>
-        public IEnumerable<AddressUnit<TUnitKey>> GetAddresses { get; set; }
+        private IEnumerable<AddressUnit<TUnitKey>> getAddresses;
+
+        /// <summary>
+        ///     描述需要与设备通讯的地址
+        /// </summary>
+        public IEnumerable<AddressUnit<TUnitKey>> GetAddresses
+        {
+            get
+            {
+                return getAddresses;
+            }
+            set
+            {
+                lock (getAddresses)
+                {
+                    getAddresses = value;
+                }
+            }
+        }
 
         /// <summary>
         ///     从站号
