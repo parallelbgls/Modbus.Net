@@ -2,7 +2,6 @@
 ===================
 
 * [Teambition Project](https://www.teambition.com/project/573860b0f668c69e61d38a84/tasks)
-* QQ群 438411519 Modbus.Net交流群
 
 Overview
 -------------------
