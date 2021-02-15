@@ -11,7 +11,7 @@ You can focus on the protocol itself and the platform can automatically create a
 
 Why is it called Modbus.Net
 -------------------
-Modbus.Net was open sourced two years ago when I graduated. The first target of this project was to implement a remote PLC communication with Modbus TCP. Half a year later the company decide to use a IoT hardware, then a more universal architecture was required. The main platform changed to a universal communication platform. Despite all these changes the name "Modbus.Net" stuck.
+Modbus.Net was open sourced two years ago when I graduated. The first target of this project was to implement remote PLC communication using Modbus TCP. Half a year later the company decide to use a IoT hardware, then a more universal architecture was required. The main platform changed to a universal communication platform. Despite all these changes the name "Modbus.Net" stuck.
 
 The real Modbus Implementation has been moved to [Modbus.Net.Modbus]( https://www.nuget.org/packages/Modbus.Net.Modbus). If you want a real Modbus C# implementation, please download [Modbus.Net]( https://www.nuget.org/packages/Modbus.Net) and [Modbus.Net.Modbus]( https://www.nuget.org/packages/Modbus.Net.Modbus) at the same time.
 
