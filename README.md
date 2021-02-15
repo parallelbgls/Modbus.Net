@@ -15,7 +15,7 @@ Modbus.Net was open sourced two years ago when I graduated. The first target of 
 
 The real Modbus Implementation has been moved to [Modbus.Net.Modbus]( https://www.nuget.org/packages/Modbus.Net.Modbus). If you want a real Modbus C# implementation, please download [Modbus.Net]( https://www.nuget.org/packages/Modbus.Net) and [Modbus.Net.Modbus]( https://www.nuget.org/packages/Modbus.Net.Modbus) at the same time.
 
-There is also [Modbus.Net.Siemens]( https://www.nuget.org/packages/Modbus.Net.Siemens) that can communicate with Siemens S7-200, S7-200 Smart, S7-300, S7-400, S7-1200, S7-1500 using PPI or TCP/IP.
+There is also [Modbus.Net.Siemens]( https://www.nuget.org/packages/Modbus.Net.Siemens) that can communicate with Siemens S7-200, S7-200 Smart, S7-300, S7-400, S7-1200 and S7-1500 using PPI or TCP/IP.
 
 [Modbus.Net.OPC]( https://www.nuget.org/packages/Modbus.Net.OPC) Implements OPC DA and OPC UA protocol.
 
