@@ -1,26 +1,25 @@
-﻿Modbus.Net Oveview
+﻿Modbus.Net Overview
 ===================
 
 * [Teambition Project](https://www.teambition.com/project/573860b0f668c69e61d38a84/tasks)
-* QQ群 438411519 Modbus.Net交流群
 
 Overview
 -------------------
-Modbus.Net is an open hardware communication platform written by C# 7.0.
+Modbus.Net is an open hardware communication platform written in C# 7.0.
 
-You can only focusing on the Protocol itself, and the platform can automaticaly create a full asynchronized or synchronized communication library.
+You can focus on the protocol itself and the platform can automatically create a full asynchronous or synchronous communication library.
 
-Why called Modbus.Net
+Why is it called Modbus.Net
 -------------------
-Modbus.Net was opened two years ago when I graduated. The first target of this project is to implement a remote PLC communication with Modbus TCP. But things were going changed after half a year. When the company decide to use a IoT hardware, a universary architech should be required. Then the main platform changed to a universal communication platform. But the name "Modbus.Net" holded back.
+Modbus.Net was open sourced two years ago when I graduated. The first target of this project was to implement remote PLC communication using Modbus TCP. Half a year later the company decide to use a IoT hardware, then a more universal architecture was required. The main platform changed to a universal communication platform. Despite all these changes the name "Modbus.Net" stuck.
 
-The real Modbus Implementation has been moved to Modbus.Net.Modbus. If you want a real Modbus C# implementation, please download "Modbus.Net" and "Modbus.Net.Modbus" at the same time.
+The real Modbus Implementation has been moved to [Modbus.Net.Modbus]( https://www.nuget.org/packages/Modbus.Net.Modbus). If you want a real Modbus C# implementation, please download [Modbus.Net]( https://www.nuget.org/packages/Modbus.Net) and [Modbus.Net.Modbus]( https://www.nuget.org/packages/Modbus.Net.Modbus) at the same time.
 
-There are also "Modbus.Net.Siemens" that can communicate to Siemens S7-200, S7-200 Smart, S7-300, S7-400, S7-1200, S7-1500 using PPI or TCP/IP.
+There is also [Modbus.Net.Siemens]( https://www.nuget.org/packages/Modbus.Net.Siemens) that can communicate with Siemens S7-200, S7-200 Smart, S7-300, S7-400, S7-1200 and S7-1500 using PPI or TCP/IP.
 
-"Modbus.Net.OPC" Implements OPC DA and OPC UA Protocol.
+[Modbus.Net.OPC]( https://www.nuget.org/packages/Modbus.Net.OPC) Implements OPC DA and OPC UA protocol.
 
-Platform Supported
+Supported Platforms
 -------------------
 * Visual Studio 2017
 * .NET Framework 4.5
@@ -28,7 +27,7 @@ Platform Supported
 
 Thanks
 -------------------
-Resharper -- Offers Modbus.Net team community lisence.
+Resharper -- Offers Modbus.Net team community license.
 
 RoadMap
 -------------------
@@ -61,7 +60,7 @@ RoadMap
 
 ### Version 1.3.1
 * InputStruct -> IInputStruct, OutputStruct -> IOutputStruct (Complete)
-* Generic Method For ProtocolUnit (Complete)
+* Generic Method For ProtocalUnit (Complete)
 
 ### Version 1.3.2
 * Add Interface IMachineMethod and IUtilityMethod. Utiltiy and Machine can extend function using interface (Complete)
@@ -73,7 +72,7 @@ RoadMap
 * A Serial Port now can connect to multiple machines using same protocol with different slave address (Complete)
 
 ### Version 1.3.5
-* New log system using serilog (Complete)
+* New log system using Serilog (Complete)
 
 ### Version 1.3.6
 * Add gereric Type for BaseConnector, now protocol developer can pass any type to BaseConnector not only byte[] (Complete)
@@ -86,7 +85,7 @@ RoadMap
 
 ### Version 1.3.8
 * Change Resx to appsettings.json, now you can set default params there (Complete - CORE ONLY)
-* Change ISpecialProtocolUnit to SpecialProtocolUnitAttribute (Complete)
+* Change ISpecialProtocalUnit to SpecialProtocalUnitAttribute (Complete)
 
 ### Version 1.3.9
 * Modbus Single Write for Coil and Reg (05 and 06) (Complete)
@@ -103,37 +102,26 @@ RoadMap
 * New Protocol Pipeline System (Complete)
 
 ### Version 1.4.1
-* BaseController and IController (Complete)
+* BaseController (Complete)
 * New ComConnector (Complete)
 * New TcpConnector (Complete)
 * New UdpConnector (Complete)
+* Serial Port Connection with Multiple Master Station (Complete)
 
 ### Version 1.4.2
-* PPI Remake (Coding)
-* Modbus Udp (Coding)
-* Full Async/Sync SerialPort and Ethenet Communication (Coding)
-
-### Version 1.4.3
-* Machine and Utility Builder (In Road)
+* Machine Builder (In Progress)
+* Architecture rebuild (Almost complete)
 
 ### Version 1.5.X
-* Unite TransServer.Net into Modbus.Net (In Road)
-* Passive Connector and Controller (In Road)
-* Interfaces Architecture (In Road)
-* ValueHelper remake to interface, users can add their own value translate function (In Road)
-* New Zoom (In Road)
-* New TaskManager (In Road)
-* Mutiple Address fields in Machine (In Road)
-* Serial Port Connection with Multiple Master Station (In Road)
-* Siemens MPI Support (In Road)
-* Siemens MultiStation PPI Support (In Road)
+* PPI Remake (In Progress)
+* Siemens MPI Support (In Progress)
+* Siemens MultiStation PPI Support (In Progress)
+* Passive Connector and Controller (In Progress)
 
 ### Version 1.6.X
-* English comment (In Road)
-* Comment maintainence (In Road)
+* English comment (In Progress)
+* ValueHelper remake to interface, users can add their own value translate function (In Progress)
+* New Zoom (In Progress)
 
 ### Version 2.0.0
-* Rename to Transport.Net (In Road)
-* Puzzle Builder (In Road)
-* Protocol Builer (In Road)
-* Dependency Injection (In Road)
+* Rename to Transport.Net (In Progress)
