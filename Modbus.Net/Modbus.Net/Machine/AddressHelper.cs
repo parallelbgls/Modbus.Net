@@ -23,27 +23,27 @@ namespace Modbus.Net
         /// <summary>
         ///     将协议坐标变为字节坐标
         /// </summary>
-        /// <param name="protocalAddress">协议坐标地址</param>
+        /// <param name="protocolAddress">协议坐标地址</param>
         /// <param name="startAddress">起始地址</param>
         /// <param name="byteLength">协议坐标单个地址的字节长度</param>
         /// <returns></returns>
-        public static double MapProtocolCoordinateToAbstractCoordinate(double protocalAddress, int startAddress,
+        public static double MapProtocolCoordinateToAbstractCoordinate(double protocolAddress, int startAddress,
             double byteLength)
         {
-            return (protocalAddress - startAddress) * byteLength;
+            return (protocolAddress - startAddress) * byteLength;
         }
 
         /// <summary>
         ///     将协议获取数变为字节获取数
         /// </summary>
-        /// <param name="protocalGetCount">协议坐标获取个数</param>
+        /// <param name="protocolGetCount">协议坐标获取个数</param>
         /// <param name="areaLength">协议坐标区域与字节之间的防缩倍数</param>
         /// <param name="byteLength">协议坐标单个地址的字节长度</param>
         /// <returns></returns>
-        public static double MapProtocolGetCountToAbstractByteCount(double protocalGetCount, double areaLength,
+        public static double MapProtocolGetCountToAbstractByteCount(double protocolGetCount, double areaLength,
             double byteLength)
         {
-            return protocalGetCount * areaLength + byteLength;
+            return protocolGetCount * areaLength + byteLength;
         }
 
         /// <summary>
@@ -72,14 +72,14 @@ namespace Modbus.Net
         /// <summary>
         ///     获取协议坐标下一个数据的位置
         /// </summary>
-        /// <param name="protocalAddress">协议坐标地址</param>
+        /// <param name="protocolAddress">协议坐标地址</param>
         /// <param name="nextPositionBetweenType">间隔的数据类型</param>
         /// <param name="byteLength">协议坐标单个地址的字节长度</param>
         /// <returns></returns>
-        public static double GetProtocolCoordinateNextPosition(double protocalAddress, Type nextPositionBetweenType,
+        public static double GetProtocolCoordinateNextPosition(double protocolAddress, Type nextPositionBetweenType,
             double byteLength)
         {
-            return protocalAddress +
+            return protocolAddress +
                    BigEndianValueHelper.Instance.ByteLength[nextPositionBetweenType.FullName] / byteLength;
         }
 

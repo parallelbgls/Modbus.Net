@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using Modbus.Net.Modbus;
+using Modbus.Net.Interface;
 using Serilog;
 
 namespace Modbus.Net.PersistedTests

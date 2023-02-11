@@ -5,6 +5,7 @@ Modbus.Net
 An hardware communication Library written by C#.
 
 Table of Content:
+* [License Description](#license)
 * [Features](#features)
 * [Usage](#usage)
 * [Architecture](#architecture)
@@ -13,34 +14,26 @@ Table of Content:
 * [Implement](#implement)
 * [Addition](#addition)
 
+## <a name="license"></a> License Description
+This project uses MIT license. This means you can alter any codes, use in your project without any declaration.
+
 ## <a name="features"></a> Features
-* A open platform that you can easy to extend a industrial communication protocal.
-* Modbus Tcp protocal.
-* Siemens Tcp protocal (acturally it is the same as Profinet)
-* OPC DA protocal.
+* A open platform that you can easily extend a industrial communication protocol.
+* Modbus Tcp protocol.
+* Siemens Tcp protocol (acturally it is the same as Profinet)
 * All communications could be asynchronized.
 * A task manager that you can easily manage multiple connections.
-* .NET Framework 4.5 and Visual Studio 2017 support.
-
-## <a name="usage"></a> Usage
-
-### Samples:
-
-There are four samples in the project. All sample project recommand running in Siemens 200 PLC.
-PLC Program could be opened by Siemens Portal V13 (Step 7 V13).
-
-Modbus TCP connection and Siemens Ethenet Connection are supported at the same time.
-
-* TripleAdd -- Add three numbers in PLC.
-* TaskManager -- Sample usage of TaskManager.
-* AnyType -- Get any type in registers.
-* CrossLamp -- A sample singal lamp controller.
+* .NET 6.0 support.
 
 ## <a name="architecture"></a> Architecture
 
+### Controller
+
+Controller implements the basic message control methods, like FIFO.
+
 ### Connector
 
-Connector implements the basic connecting methods, like Socket, Com and SignalR.
+Connector implements the basic connecting methods, like Socket, Com.
 
 ### ProtocolLinker
 
@@ -52,7 +45,7 @@ Some Protocol has the same head or tail in the same connection way, but differen
 
 ### ProtocolUnit
 
-Format and deformat the protocal message between the structual class and bytes array.
+Format and deformat the protocol message between the structual class and bytes array.
 
 ### ValueHelper
 
@@ -60,7 +53,7 @@ Help change the value between number and bytes, or number array to bytes array.
 
 ### Protocol
 
-Manage all protocals and implement a lazy loading method.
+Manage all protocols and implement a lazy loading method.
 
 ### Utility
 
@@ -82,71 +75,8 @@ Translate address from string to definite address.
 
 Combine duplicated addresses to organized addresses, each organized addresses communicate once to a device.
 
-### TaskManager
-
-The highest api that you can manage many PLC links and all links are async so there are no block in all connections.
-
-## <a name="quick_start"></a> Quick Start.
-
-The fastest way you can write is to use TaskManager. TaskManager Project is a good example.
-
-
-```C#
-List<AddressUnit> addressUnits = new List<AddressUnit>
-{
-    new AddressUnit() {Id = "0", Area = "V", Address = 1, CommunicationTag = "D1", DataType = typeof (ushort), Zoom = 1},
-    new AddressUnit() {Id = "1", Area = "V", Address = 3, CommunicationTag = "D2", DataType = typeof (float), Zoom = 1}
-};
-TaskManager task = new TaskManager(10, true);
-task.AddMachine(new SiemensMachine(SiemensType.Tcp, "192.168.3.11", SiemensMachineModel.S7_300, addressUnits,
-    true, 2, 0));
-task.InvokeTimerAll(new TaskItemGetData(returnValues =>
-{
-    if (returnValues.ReturnValues != null)
-    {
-        lock (values)
-        {
-            var unitValues = from val in returnValues.ReturnValues
-                select
-                new Tuple<AddressUnit, double?>(
-                    addressUnits.FirstOrDefault(p => p.CommunicationTag == val.Key), val.Value.PlcValue);
-            values = from unitValue in unitValues
-                select
-                new TaskViewModel()
-                {
-                    Id = unitValue.Item1.Id,
-                    Name = unitValue.Item1.Name,
-                    Address = unitValue.Item1.Address.ToString(),
-                    Value = unitValue.Item2 ?? 0,
-                    Type = unitValue.Item1.DataType.Name
-                };
-        }
-    }
-    else
-    {
-        Console.WriteLine($"ip {returnValues.MachineId} not return value");
-    }
-}, MachineGetDataType.CommunicationTag, 5000, 60000));
-```
-
-
-Here are the details to use the TaskManager.
-
-1. Initialize the task manager.
-Three arguments are: the max tasks you can run in a same time; How long did the next send message call happens(milliseconds); and you should keep the connection when a single message called complete.
-
-2. Add the addresses that you want to communicate to PLC. Area are defined in AddressTranslator in each type of communiction.
-Basically you can write only Id, Area, Address, CommunicationTag, DataType and Zoom, and it should work. And there are other fields that you can use.
-More important, you can extend and implement your own field in UnitExtend in every AddressUnit, and it will return in return event.
-
-3. Add a machine to TaskManager.
-Add a machine like siemens machine to the task manager.
-
-4. Add a TaskItem for one machine or all Machines.
-   Modbus.Net implement TaskItemGetDatas and TaskItemSetDatas as the default.
-
 ##<a name="tutorial"></a> Tutorial
-This platform has three level APIs that you could use: Low level API called "BaseUtility"; Middle level API called "BaseMachine"; High level API called "TaskManager".
+This platform has three level APIs that you could use: Low level API called "BaseUtility"; Middle level API called "BaseMachine"
 
 ### Utility
 IUtilityProperty is a low level api, in this level you can get or set data only by byte array or object array. Here is an example.
@@ -292,107 +222,14 @@ machine.SetDatas has four types. It is referenced as the first parameter.
 3. MachineSetDataType.Id: the key of the dictionary of the second paramenter is ID.
 4. MachineSetDataType.Name: the key of the dictionary of the second paramenter is name.
 
-### TaskManager
-TaskManager is a high level api that you can manage and control many machines together. Remenber if you want to use this class, all communications must be asyncronized.
-Sample of TaskManager calls like this.
-```C#
-TaskManager task = new TaskManager(10, 2000, true);
-List<AddressUnit> addressUnits = new List<AddressUnit>
-{
-    new AddressUnit() {Id = 0, Area = "V", Address = 1, CommunicationTag = "D1", DataType = typeof (ushort), Zoom = 1},
-    new AddressUnit() {Id = 1, Area = "V", Address = 3, CommunicationTag = "D2", DataType = typeof (float), Zoom = 1}
-};
-task.AddMachine(new SiemensMachine(SiemensType.Tcp, "192.168.3.11",SiemensMachineModel.S7_300, addressUnits, true));
-task.InvokeTimerAll(new TaskItemGetData(returnValues =>
-{
-    if (returnValues.ReturnValues != null)
-    {
-        lock (values)
-        {
-            var unitValues = from val in returnValues.ReturnValues
-                select
-                new Tuple<AddressUnit, double?>(
-                    addressUnits.FirstOrDefault(p => p.CommunicationTag == val.Key), val.Value.PlcValue);
-            values = from unitValue in unitValues
-                select
-                new TaskViewModel()
-                {
-                    Id = unitValue.Item1.Id,
-                    Name = unitValue.Item1.Name,
-                    Address = unitValue.Item1.Address.ToString(),
-                    Value = unitValue.Item2 ?? 0,
-                    Type = unitValue.Item1.DataType.Name
-                };
-        }
-    }
-    else
-    {
-        Console.WriteLine($"ip {returnValues.MachineId} not return value");
-    }
-}, MachineGetDataType.CommunicationTag, 5000, 60000));
-```
-
-To use the TaskManager, use following steps.
-
-1.New A TaskManager instance.
-```C#
-TaskManager task = new TaskManager(10, 2000, true);
-```
-
-2.Add a machine to TaskManager.
-```C#
-List<AddressUnit> addressUnits = new List<AddressUnit>
-{
-    new AddressUnit() {Id = 0, Area = "V", Address = 1, CommunicationTag = "D1", DataType = typeof (ushort), Zoom = 1},
-    new AddressUnit() {Id = 1, Area = "V", Address = 3, CommunicationTag = "D2", DataType = typeof (float), Zoom = 1}
-};
-task.AddMachine(new SiemensMachine(SiemensType.Tcp, "192.168.3.11", SiemensMachineModel.S7_300, addressUnits, true));
-```
-
-3.Add a get value cycling task. You can handle return values with your own code (ReturnValue event before 1.3.2).
-```C#
-task.InvokeTimerAll(new TaskItemGetData(returnValues =>
-{
-    if (returnValues.ReturnValues != null)
-    {
-        lock (values)
-        {
-            var unitValues = from val in returnValues.ReturnValues
-                select
-                new Tuple<AddressUnit, double?>(
-                    addressUnits.FirstOrDefault(p => p.CommunicationTag == val.Key), val.Value.PlcValue);
-            values = from unitValue in unitValues
-                select
-                new TaskViewModel()
-                {
-                    Id = unitValue.Item1.Id,
-                    Name = unitValue.Item1.Name,
-                    Address = unitValue.Item1.Address.ToString(),
-                    Value = unitValue.Item2 ?? 0,
-                    Type = unitValue.Item1.DataType.Name
-                };
-        }
-    }
-    else
-    {
-        Console.WriteLine($"ip {returnValues.MachineId} not return value");
-    }
-}, MachineGetDataType.CommunicationTag, 5000, 60000));
-```
-
-5.And don't forget that there is also a SetDatasAsync Api in the TaskManager.
-```C#
-public async Task<bool> SetDatasAsync(string connectionToken, MachineSetDataType setDataType, Dictionary<string, double> values)
-```
-
 ##<a name="implement"></a> Implementing Your Own Protocol
-The main target of Modbus.Net is building a high extensable hardware communication protocal, so we allow everyone to extend the protocal.
+The main target of Modbus.Net is building a high extensable hardware communication protocol, so we allow everyone to extend the protocol.
 
 To extend Modbus.Net, first of all ValueHelper.cs in Modbus.Net is a really powerful tool that you can use to modify values in byte array.There are two ValueHelpers: ValueHelper(Little Endian) and BigEndianValueHelper(Big Endian). Remember using the correct one.
 
-In this tutorial I will use Modbus.Net.Modbus to tell you how to implement your own protocal.
+In this tutorial I will use Modbus.Net.Modbus to tell you how to implement your own protocol.
 
-You should follow the following steps to implement your own protocal.
+You should follow the following steps to implement your own protocol.
 
 1.Implement Protocol. (ModbusProtocol.cs, ModbusTcpProtocol.cs)
 First: Extend BaseProtocol to ModbusProtocol.
@@ -400,7 +237,7 @@ First: Extend BaseProtocol to ModbusProtocol.
 public abstract class ModbusProtocol : BaseProtocol
 public class ModbusTcpProtocol : ModbusProtocol
 ```
-"abstract" keyword is optional because if user can use this protocal don't write abstract.
+"abstract" keyword is optional because if user can use this protocol don't write abstract.
 
 Second: Extend ProtocolUnit, IInputStruct and IOutputStruct.
 ```C#
@@ -424,7 +261,7 @@ public class ReadDataModbusProtocol : ProtocolUnit
 }
 ```
 There is another attribute called SpecialProtocolUnitAttribute.
-If you add SpecialProtocolUnitAttribute to ProtocolUnit, then the protocal will not run BytesExtend and BytesDecact.
+If you add SpecialProtocolUnitAttribute to ProtocolUnit, then the protocol will not run BytesExtend and BytesDecact.
 ```C#
 [SpecialProtocolUnit]
 internal class CreateReferenceSiemensProtocol : ProtocolUnit
@@ -548,9 +385,9 @@ First of all, there are two types of coordinates in Modbus.Net Address System - 
 
 Here is an example of the differences between them:
 
-In Register of Modbus, the minimum type is short, but Modbus.Net use type of byte to show the result. If you want to get value from 400003 in protocal coordinate, you actually get 5th and 6th byte value in abstract coordinate.
+In Register of Modbus, the minimum type is short, but Modbus.Net use type of byte to show the result. If you want to get value from 400003 in protocol coordinate, you actually get 5th and 6th byte value in abstract coordinate.
 
-Version 1.0 and 1.1 used abstract coordinate so you need to convert the address. But fortunatly after 1.2, AddressUnit uses Protocol Coordinate so that you donnot need the convert the address descripted by modbus protocal itself, but this means if you want to get a bit or byte value in modbus, you need to use the subpos system.
+Version 1.0 and 1.1 used abstract coordinate so you need to convert the address. But fortunatly after 1.2, AddressUnit uses Protocol Coordinate so that you donnot need the convert the address descripted by modbus protocol itself, but this means if you want to get a bit or byte value in modbus, you need to use the subpos system.
 
 For example if you want the get a value from the 6th byte in Hold Register. In traditional modbus you can only get 400003 of 2 bytes and get the 2nd byte from it. But in Modbus.Net there is an easy way to get it.
 ```

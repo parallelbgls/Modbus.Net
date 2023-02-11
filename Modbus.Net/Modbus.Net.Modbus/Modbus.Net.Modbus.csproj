@@ -7,14 +7,14 @@
     <PackageId>Modbus.Net.Modbus</PackageId>
     <Version>1.4.1</Version>
     <Authors>Chris L.(Luo Sheng)</Authors>
-    <Company>Hangzhou Delian IoT Science Technology Co.,Ltd.</Company>
+    <Company>Hangzhou Delian Science Technology Co.,Ltd.</Company>
     <Product>Modbus.Net.Modbus</Product>
     <Description>Modbus.Net Modbus Implementation</Description>
-    <Copyright>Copyright 2017 Hangzhou Delian IoT Science Technology Co.,Ltd.</Copyright>
+    <Copyright>Copyright 2023 Hangzhou Delian Science Technology Co.,Ltd.</Copyright>
     <PackageProjectUrl>https://github.com/parallelbgls/Modbus.Net/tree/master/Modbus.Net/Modbus.Net.Modbus</PackageProjectUrl>
     <RepositoryUrl>https://github.com/parallelbgls/Modbus.Net</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>hardware communicate protocal modbus Delian</PackageTags>
+    <PackageTags>hardware communicate protocol modbus Delian</PackageTags>
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <IncludeSymbols>True</IncludeSymbols>

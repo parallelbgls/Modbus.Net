@@ -13,8 +13,8 @@ namespace Modbus.Net
         /// <summary>
         ///     构造函数
         /// </summary>
-        /// <param name="protocalLinker">连接器</param>
-        public PipeUnit(IProtocolLinker<byte[], byte[]> protocalLinker) : base(protocalLinker)
+        /// <param name="protocolLinker">连接器</param>
+        public PipeUnit(IProtocolLinker<byte[], byte[]> protocolLinker) : base(protocolLinker)
         {
 
         }
@@ -22,12 +22,12 @@ namespace Modbus.Net
         /// <summary>
         ///     构造函数
         /// </summary>
-        /// <param name="protocalLinker">连接器</param>
-        /// <param name="protocalUnit">协议单元</param>
+        /// <param name="protocolLinker">连接器</param>
+        /// <param name="protocolUnit">协议单元</param>
         /// <param name="parameters">传递给输入结构的参数</param>
         /// <param name="success">上次的管道是否成功执行</param>
-        protected PipeUnit(IProtocolLinker<byte[], byte[]> protocalLinker, ProtocolUnit protocalUnit, byte[] parameters,
-            bool success) : base(protocalLinker, protocalUnit, parameters, success)
+        protected PipeUnit(IProtocolLinker<byte[], byte[]> protocolLinker, ProtocolUnit protocolUnit, byte[] parameters,
+            bool success) : base(protocolLinker, protocolUnit, parameters, success)
         {
         }
 
@@ -93,8 +93,8 @@ namespace Modbus.Net
         /// <summary>
         ///     构造函数
         /// </summary>
-        /// <param name="protocalLinker">连接器</param>
-        public PipeUnit(TProtocolLinker protocalLinker) : this(protocalLinker, null, null, true)
+        /// <param name="protocolLinker">连接器</param>
+        public PipeUnit(TProtocolLinker protocolLinker) : this(protocolLinker, null, null, true)
         {
             
         }
@@ -102,14 +102,14 @@ namespace Modbus.Net
         /// <summary>
         ///     构造函数
         /// </summary>
-        /// <param name="protocalLinker">连接器</param>
-        /// <param name="protocalUnit">协议单元</param>
+        /// <param name="protocolLinker">连接器</param>
+        /// <param name="protocolUnit">协议单元</param>
         /// <param name="parameters">输入参数</param>
         /// <param name="success">上一次管道结果是否成功</param>
-        protected PipeUnit(TProtocolLinker protocalLinker, TProtocolUnit protocalUnit, TParamOut parameters, bool success)
+        protected PipeUnit(TProtocolLinker protocolLinker, TProtocolUnit protocolUnit, TParamOut parameters, bool success)
         {
-            ProtocolLinker = protocalLinker;
-            ProtocolUnit = protocalUnit;
+            ProtocolLinker = protocolLinker;
+            ProtocolUnit = protocolUnit;
             ReturnParams = parameters;
             Success = success;
         }

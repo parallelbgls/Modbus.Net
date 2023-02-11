@@ -103,25 +103,25 @@ namespace Modbus.Net
         {
             get
             {
-                var protocalName = type.FullName;
-                TProtocolUnit protocalUnitReturn = null;
+                var protocolName = type.FullName;
+                TProtocolUnit protocolUnitReturn = null;
                 lock (Protocols)
                 {
-                    if (Protocols.ContainsKey(protocalName))
+                    if (Protocols.ContainsKey(protocolName))
                     {
-                        protocalUnitReturn = Protocols[protocalName];
+                        protocolUnitReturn = Protocols[protocolName];
                     }
                     else
                     {
                         //自动寻找存在的协议并将其加载
                         if (!(Activator.CreateInstance(type.GetTypeInfo().Assembly
-                            .GetType(protocalName)) is TProtocolUnit protocalUnit))
+                            .GetType(protocolName)) is TProtocolUnit protocolUnit))
                             throw new InvalidCastException($"No ProtocolUnit {nameof(TProtocolUnit)} implemented");
-                        protocalUnit.Endian = Endian;
-                        Register(protocalUnit);
+                        protocolUnit.Endian = Endian;
+                        Register(protocolUnit);
                     }
                 }
-                return protocalUnitReturn ?? Protocols[protocalName];
+                return protocolUnitReturn ?? Protocols[protocolName];
             }
         }
 
