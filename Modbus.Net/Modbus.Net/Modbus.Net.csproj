@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net6.0</TargetFrameworks>
     <AssemblyName>Modbus.Net</AssemblyName>
     <RootNamespace>Modbus.Net</RootNamespace>
     <PackageId>Modbus.Net</PackageId>
@@ -9,7 +9,6 @@
     <Product>Modbus.Net</Product>
     <Authors>Chris L.(Luo Sheng)</Authors>
     <Company>Hangzhou Delian IoT Science Technology Co.,Ltd.</Company>
-    <PackageLicenseUrl>https://github.com/parallelbgls/Modbus.Net/blob/master/LICENSE.md</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/parallelbgls/Modbus.Net/tree/master/Modbus.Net</PackageProjectUrl>
     <RepositoryUrl>https://github.com/parallelbgls/Modbus.Net/</RepositoryUrl>
     <Description>High extensible hardware communication implementation platform.</Description>
@@ -20,6 +19,7 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <IncludeSymbols>True</IncludeSymbols>
     <IncludeSource>True</IncludeSource>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -27,39 +27,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-
-  <ItemGroup> 
-    <None Remove="packages.config" />
-    <None Remove="package-lock.json" />
-    <None Remove="project.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Serilog" Version="2.5.0" />
-    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
-  </ItemGroup>
-  
-  <ItemGroup Condition="'$(TargetFramework)' == 'net45' ">
-    <PackageReference Include="Nito.AsyncEx" Version="4.0.1" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net45' ">
-    <Reference Include="System.Configuration" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' ">
-    <PackageReference Include="Nito.AsyncEx.Tasks" Version="1.1.0" />
-    <PackageReference Include="Nito.AsyncEx.Coordination" Version="1.0.2" />
-    <PackageReference Include="System.Collections.NonGeneric" Version="4.3.0" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.4.0" />
-    <PackageReference Include="System.Threading.ThreadPool" Version="4.3.0" />
-    <PackageReference Include="System.IO.Ports" Version="4.4.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Properties\" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
+    <PackageReference Include="Nito.AsyncEx" Version="5.1.2" />
+    <PackageReference Include="Serilog" Version="2.12.0" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
+    <PackageReference Include="System.IO.Ports" Version="7.0.0" />
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
   
 </Project>

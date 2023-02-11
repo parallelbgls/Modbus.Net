@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Modbus.Net", "Modbus.Net\Modbus.Net.csproj", "{124EBEF2-8960-4447-84CF-1D683B1EF7CC}"
 EndProject
@@ -14,23 +14,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Modbus.Net.Modbus", "Modbus
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Modbus.Net.Siemens", "Modbus.Net.Siemens\Modbus.Net.Siemens.csproj", "{6258F9D9-0DF4-497F-9F3B-6D2F6F752A21}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Modbus.Net.OPC", "Modbus.Net.OPC\Modbus.Net.OPC.csproj", "{97F5A329-357A-4813-BAAE-58E71CC6FA87}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{145DA93A-6768-4D98-8512-AB22339933F7}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D8DD32FC-CF39-4A1A-8FBF-9E82C5278C34}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TripleAdd", "..\Samples\TripleAdd\TripleAdd.csproj", "{01E58447-6833-4C10-8ED8-F9DFC3F8E668}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modbus.Net.Tests", "..\Tests\Modbus.Net.Tests\Modbus.Net.Tests.csproj", "{3BB01E98-3D45-454A-A1BD-49D7B2C83B74}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskManager", "..\Samples\TaskManager\TaskManager.csproj", "{2D939825-8459-438A-AC82-4C67A73E373E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossLamp", "..\Samples\CrossLamp\CrossLamp.csproj", "{41F40C27-AB1A-4153-BBAD-BFC7BD57B380}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnyType", "..\Samples\AnyType\AnyType.csproj", "{25FABD48-D82E-4E08-91A4-46F7057EC954}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Modbus.Net.Tests", "..\Tests\Modbus.Net.Tests\Modbus.Net.Tests.csproj", "{3BB01E98-3D45-454A-A1BD-49D7B2C83B74}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Modbus.Net.PersistedTests", "..\Tests\Modbus.Net.PersistedTests\Modbus.Net.PersistedTests.csproj", "{EC184EF4-81C4-4A4B-8763-79AC4150E613}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{3597B5C5-45B9-4ECB-92A3-D0FFBE47920A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modbus.Net.Modbus.Test", "Modbus.Net.Modbus.Test\Modbus.Net.Modbus.Test.csproj", "{3615E574-1A98-4BBC-8C08-01FE95AD40AF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -50,45 +42,26 @@ Global
 		{6258F9D9-0DF4-497F-9F3B-6D2F6F752A21}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6258F9D9-0DF4-497F-9F3B-6D2F6F752A21}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6258F9D9-0DF4-497F-9F3B-6D2F6F752A21}.Release|Any CPU.Build.0 = Release|Any CPU
-		{97F5A329-357A-4813-BAAE-58E71CC6FA87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{97F5A329-357A-4813-BAAE-58E71CC6FA87}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{97F5A329-357A-4813-BAAE-58E71CC6FA87}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{97F5A329-357A-4813-BAAE-58E71CC6FA87}.Release|Any CPU.Build.0 = Release|Any CPU
-		{01E58447-6833-4C10-8ED8-F9DFC3F8E668}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{01E58447-6833-4C10-8ED8-F9DFC3F8E668}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{01E58447-6833-4C10-8ED8-F9DFC3F8E668}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{01E58447-6833-4C10-8ED8-F9DFC3F8E668}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3BB01E98-3D45-454A-A1BD-49D7B2C83B74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3BB01E98-3D45-454A-A1BD-49D7B2C83B74}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3BB01E98-3D45-454A-A1BD-49D7B2C83B74}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3BB01E98-3D45-454A-A1BD-49D7B2C83B74}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2D939825-8459-438A-AC82-4C67A73E373E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2D939825-8459-438A-AC82-4C67A73E373E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2D939825-8459-438A-AC82-4C67A73E373E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2D939825-8459-438A-AC82-4C67A73E373E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{41F40C27-AB1A-4153-BBAD-BFC7BD57B380}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{41F40C27-AB1A-4153-BBAD-BFC7BD57B380}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{41F40C27-AB1A-4153-BBAD-BFC7BD57B380}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{41F40C27-AB1A-4153-BBAD-BFC7BD57B380}.Release|Any CPU.Build.0 = Release|Any CPU
-		{25FABD48-D82E-4E08-91A4-46F7057EC954}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{25FABD48-D82E-4E08-91A4-46F7057EC954}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{25FABD48-D82E-4E08-91A4-46F7057EC954}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{25FABD48-D82E-4E08-91A4-46F7057EC954}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EC184EF4-81C4-4A4B-8763-79AC4150E613}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EC184EF4-81C4-4A4B-8763-79AC4150E613}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC184EF4-81C4-4A4B-8763-79AC4150E613}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC184EF4-81C4-4A4B-8763-79AC4150E613}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3615E574-1A98-4BBC-8C08-01FE95AD40AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3615E574-1A98-4BBC-8C08-01FE95AD40AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3615E574-1A98-4BBC-8C08-01FE95AD40AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3615E574-1A98-4BBC-8C08-01FE95AD40AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{01E58447-6833-4C10-8ED8-F9DFC3F8E668} = {145DA93A-6768-4D98-8512-AB22339933F7}
 		{3BB01E98-3D45-454A-A1BD-49D7B2C83B74} = {D8DD32FC-CF39-4A1A-8FBF-9E82C5278C34}
-		{2D939825-8459-438A-AC82-4C67A73E373E} = {145DA93A-6768-4D98-8512-AB22339933F7}
-		{41F40C27-AB1A-4153-BBAD-BFC7BD57B380} = {145DA93A-6768-4D98-8512-AB22339933F7}
-		{25FABD48-D82E-4E08-91A4-46F7057EC954} = {145DA93A-6768-4D98-8512-AB22339933F7}
 		{EC184EF4-81C4-4A4B-8763-79AC4150E613} = {D8DD32FC-CF39-4A1A-8FBF-9E82C5278C34}
+		{3615E574-1A98-4BBC-8C08-01FE95AD40AF} = {3597B5C5-45B9-4ECB-92A3-D0FFBE47920A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AF00D64E-3C70-474A-8A81-E9E48017C4B5}

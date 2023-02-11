@@ -92,8 +92,17 @@ namespace Modbus.Net
     /// </summary>
     public abstract class BaseConnector<TParamIn, TParamOut> : IConnector<TParamIn, TParamOut> where TParamIn : class
     {
+        /// <summary>
+        ///     数据返回代理参数
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public delegate MessageReturnCallbackArgs<TParamIn> MessageReturnDelegate(object sender, MessageReturnArgs<TParamOut> args);
 
+        /// <summary>
+        ///     数据返回代理
+        /// </summary>
         public event MessageReturnDelegate MessageReturn;
 
         /// <summary>
@@ -141,6 +150,11 @@ namespace Modbus.Net
         /// </summary>
         protected abstract void ReceiveMsgThreadStop();
 
+         /// <summary>
+         ///     数据返回代理函数
+         /// </summary>
+         /// <param name="receiveMessage"></param>
+         /// <returns></returns>
         protected TParamIn InvokeReturnMessage(TParamOut receiveMessage)
         {
             return MessageReturn?.Invoke(this, new MessageReturnArgs<TParamOut>{ReturnMessage = receiveMessage})?.SendMessage;
