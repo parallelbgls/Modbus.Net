@@ -12,10 +12,6 @@ namespace Modbus.Net.Tests
     {
         private List<AddressUnit<int>> _addressUnits;
 
-        private TaskManager<int> _taskManager;
-
-        private BaseMachine<int, int> _baseMachine;
-
         private BaseMachine<int, int> _baseMachine2;
 
         [TestInitialize]
@@ -129,11 +125,6 @@ namespace Modbus.Net.Tests
                 },
             };
 
-            _baseMachine = new ModbusMachine<int, int>(1, ModbusType.Tcp, "192.168.1.1", _addressUnits, true, 2, 0)
-            {
-                ProjectName = "Project 1",
-                MachineName = "Test 1"
-            };
             _baseMachine2 = new SiemensMachine<int, int>(2, SiemensType.Tcp, "192.168.3.10", SiemensMachineModel.S7_1200, _addressUnits, true, 2, 0)
             {
                 ProjectName = "Project 1",
@@ -141,11 +132,6 @@ namespace Modbus.Net.Tests
             };
 
             _baseMachine2.ConnectAsync().Wait();
-
-            _taskManager = new TaskManager<int>(10, true);
-
-            _taskManager.AddMachine(_baseMachine);
-            _taskManager.AddMachine(_baseMachine2);
         }
 
         [TestMethod]
@@ -305,24 +291,6 @@ namespace Modbus.Net.Tests
             Assert.AreEqual(combinedAddresses[4].Area, "4X");
             Assert.AreEqual(combinedAddresses[4].Address, 1);
             Assert.AreEqual(combinedAddresses[4].GetCount, 8);
-        }
-
-        [TestMethod]
-        public void TaskManagerGetMachineTest()
-        {
-            var machine = _taskManager.GetMachineById(1);
-            Assert.AreEqual(machine.MachineName, "Test 1");
-
-            var machine2 = _taskManager.GetMachineByConnectionToken("192.168.3.10");
-            Assert.AreEqual(machine2.MachineName, "Test 2");
-        }
-
-        [TestMethod]
-        public void BaseMachineGetAddressTest()
-        {
-            var addressUnit = _baseMachine.GetAddressUnitById(1);
-            Assert.AreEqual(addressUnit.Area, "3X");
-            Assert.AreEqual(addressUnit.Address, 1);
         }
 
         [TestCleanup]
