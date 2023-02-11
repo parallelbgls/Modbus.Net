@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Configuration;
 using System.IO.Ports;
 
 namespace Modbus.Net.Modbus
@@ -16,7 +17,7 @@ namespace Modbus.Net.Modbus
         public ModbusRtuProtocolLinker(string com, int slaveAddress)
             : base(com, 9600, Parity.None, StopBits.One, 8, slaveAddress)
         {
-            ((BaseConnector)BaseConnector).AddController(new MatchController(new ICollection<(int,int)>[]{new List<(int,int)>{(0,0)}, new List<(int, int)>{(1,1)}}, 0));
+            ((BaseConnector)BaseConnector).AddController(new MatchController(new ICollection<(int,int)>[]{new List<(int,int)>{(0,0)}, new List<(int, int)>{(1,1)}}, int.Parse(ConfigurationManager.AppSettings["FetchSleepTime"] ?? "0")));
         }
 
         /// <summary>

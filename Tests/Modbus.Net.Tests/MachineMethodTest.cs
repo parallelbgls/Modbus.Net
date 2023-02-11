@@ -49,7 +49,7 @@ namespace Modbus.Net.Tests
                 }
             }, true, 2, 0);
             var success = await baseMachine.GetMachineMethods<IMachineMethodData>().SetDatasAsync(
-                MachineSetDataType.Address,
+                MachineDataType.Address,
                 new Dictionary<string, double>
                 {
                     {
@@ -57,10 +57,10 @@ namespace Modbus.Net.Tests
                     }
                 });
             Assert.AreEqual(success, true);
-            var datas = await baseMachine.GetMachineMethods<IMachineMethodData>().GetDatasAsync(MachineGetDataType.Address);
-            Assert.AreEqual(datas["0X 1.0"].PlcValue, 1);
+            var datas = await baseMachine.GetMachineMethods<IMachineMethodData>().GetDatasAsync(MachineDataType.Address);
+            Assert.AreEqual(datas["0X 1.0"].DeviceValue, 1);
             success = await baseMachine.GetMachineMethods<IMachineMethodData>().SetDatasAsync(
-                MachineSetDataType.Address,
+                MachineDataType.Address,
                 new Dictionary<string, double>
                 {
                     {

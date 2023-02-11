@@ -17,7 +17,7 @@ namespace Modbus.Net
         /// <param name="receiveMessage">收到的报文信息</param>
         /// <param name="packageCountPositions">收到的断包长度查询位置</param>
         /// <returns>切分后的报文信息</returns>
-        private static ICollection<byte[]> DuplicateMessages(byte[] receiveMessage, ICollection<int> packageCountPositions)
+        private static ICollection<byte[]> DuplicateMessages(byte[] receiveMessage, ICollection<int> packageCountPositions, int otherCount)
         {
             if (packageCountPositions == null)
                 return new List<byte[]> { receiveMessage };
@@ -32,6 +32,7 @@ namespace Modbus.Net
                     {
                         length = length * 256 + receiveMessage[pos + countPos];
                     }
+                    length += otherCount;
                     if (pos + length > receiveMessage.Length) break;
                     byte[] currentPackage = new byte[length];
                     Array.Copy(receiveMessage, pos, currentPackage, 0, length);
@@ -51,9 +52,9 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="packageCountPositions">断包长度的位置信息</param>
         /// <returns>断包函数</returns>
-        public static Func<byte[], ICollection<byte[]>> GetDuplcateFunc(ICollection<int> packageCountPositions)
+        public static Func<byte[], ICollection<byte[]>> GetDuplcateFunc(ICollection<int> packageCountPositions, int otherCount)
         {
-            return receiveMessage => DuplicateMessages(receiveMessage, packageCountPositions);
+            return receiveMessage => DuplicateMessages(receiveMessage, packageCountPositions, otherCount);
         }
     }
 }

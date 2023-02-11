@@ -2,8 +2,7 @@
 using Modbus.Net;
 using Modbus.Net.Modbus;
 using Modbus.Net.Interface;
-using Quartz;
-using Quartz.Impl;
+using Modbus.Net.Job;
 
 List<AddressUnit> _addresses = new List<AddressUnit>
 {
@@ -19,63 +18,21 @@ List<AddressUnit> _addresses = new List<AddressUnit>
     new AddressUnit() { Area = "4X", Address = 10, DataType = typeof(short), Id = "10", Name = "Test10" }
 };
 
-IMachine<string> machine = new ModbusMachine<string, string>("ModbusMachine1", ModbusType.Tcp, "192.168.0.172:502", _addresses, true, 2, 1, Endian.BigEndianLsb);
+IMachine<string> machine = new ModbusMachine<string, string>("ModbusMachine1", ModbusType.Tcp, "192.168.0.172:502", _addresses, true, 1, 2, Endian.BigEndianLsb);
 
-
-//1.首先创建一个作业调度池
-ISchedulerFactory schedf = new StdSchedulerFactory();
-//2.实例化调度器工厂
-ISchedulerFactory schedulefactory = new StdSchedulerFactory();
-//3.实例化调度器
-IScheduler scheduler = await schedulefactory.GetScheduler();
-
-//4.创建一个作业
-IJobDetail job1 = JobBuilder.Create<Class1>()
-    .WithIdentity("demojob1", "groupa")
-    .Build();
-
-//5.1:第一种方法直接写死多少秒执行一次
-//ITrigger trigger1 = TriggerBuilder.Create()//创建一个触发器
-//    .WithIdentity("demotrigger1", "groupa")
-//    .StartNow()
-//    .WithSimpleSchedule(b => b.WithIntervalInSeconds(5)//5秒执行一次
-//    .RepeatForever())//无限循环执行
-//    .Build();
-
-//5.2推荐：第二种使用cron表达式
-//在线生成cron表达式： http://cron.qqe2.com/
-string corn = "*/5 * * * * ?";
-ITrigger trigger1 = TriggerBuilder.Create()
-    .WithIdentity("demotrigger1", "groupa")
-    .WithCronSchedule(corn)//每一小时执行一次
-    .Build();
-
-//6.添加参数（键值对），如果不需要传参则忽略这一步
-//方法内获取你传的参数： string Name = context.Trigger.JobDataMap.GetString("Name");
-trigger1.JobDataMap.Add("Machine", machine);
-
-//7.把作业，触发器加入调度器
-await scheduler.ScheduleJob(job1, trigger1);
-//8.开始运行
-await scheduler.Start();
+await MachineJobSchedulerCreator.CreateScheduler(-1, 5).Result.From(machine.Id, machine, MachineDataType.Name).Result.Query("ConsoleQuery", QueryConsole).Result.To(machine.Id + ".To", machine).Result.Run();
 
 Console.ReadLine();
 
-public class Class1 : IJob
+Dictionary<string, ReturnUnit> QueryConsole(Dictionary<string, ReturnUnit> values)
 {
-    public async Task Execute(IJobExecutionContext context)
+    foreach (var value in values)
     {
-        object machine;
-        context.Trigger.JobDataMap.TryGetValue("Machine", out machine);
-        var values = await (machine as IMachine<string>)!.GetDatasAsync(MachineGetDataType.Name);
-        if (values != null)
-        {
-            foreach (var value in values)
-            {
-                Console.WriteLine(value.Key + " " + value.Value.PlcValue);
-            }
-        }
+        Console.WriteLine(value.Key + " " + value.Value.DeviceValue);
+        value.Value.DeviceValue = new Random().Next(65536) - 32768;
     }
+
+    return values;
 }
 
 

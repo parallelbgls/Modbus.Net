@@ -18,8 +18,8 @@ namespace Modbus.Net
         {
             if (getValues == null) return null;
             return (from getValue in getValues
-                where getValue.Value.PlcValue != null
-                select new KeyValuePair<string, double>(getValue.Key, getValue.Value.PlcValue.Value)).ToDictionary(
+                where getValue.Value.DeviceValue != null
+                select new KeyValuePair<string, double>(getValue.Key, getValue.Value.DeviceValue.Value)).ToDictionary(
                 p => p.Key, p => p.Value);
         }
     }

@@ -130,27 +130,27 @@ namespace Modbus.Net.Tests
                 },
             };
 
-            await _modbusRtuMachine1.SetDatasAsync(MachineSetDataType.CommunicationTag, dic1);
-            await _modbusRtuMachine2.SetDatasAsync(MachineSetDataType.CommunicationTag, dic2);
+            await _modbusRtuMachine1.SetDatasAsync(MachineDataType.CommunicationTag, dic1);
+            await _modbusRtuMachine2.SetDatasAsync(MachineDataType.CommunicationTag, dic2);
 
-            var ans = await _modbusRtuMachine1.GetDatasAsync(MachineGetDataType.CommunicationTag);
-            var ans2 = await _modbusRtuMachine2.GetDatasAsync(MachineGetDataType.CommunicationTag);
+            var ans = await _modbusRtuMachine1.GetDatasAsync(MachineDataType.CommunicationTag);
+            var ans2 = await _modbusRtuMachine2.GetDatasAsync(MachineDataType.CommunicationTag);
 
             _modbusRtuMachine1.Disconnect();
             _modbusRtuMachine2.Disconnect();
 
-            Assert.AreEqual(ans["A1"].PlcValue, dic1["A1"]);
-            Assert.AreEqual(ans2["A1"].PlcValue, dic2["A1"]);
-            Assert.AreEqual(ans["A2"].PlcValue, dic1["A2"]);
-            Assert.AreEqual(ans2["A2"].PlcValue, dic2["A2"]);
-            Assert.AreEqual(ans["A3"].PlcValue, dic1["A3"]);
-            Assert.AreEqual(ans2["A3"].PlcValue, dic2["A3"]);
-            Assert.AreEqual(ans["A4"].PlcValue, dic1["A4"]);
-            Assert.AreEqual(ans2["A4"].PlcValue, dic2["A4"]);
-            Assert.AreEqual(ans["A5"].PlcValue, dic1["A5"]);
-            Assert.AreEqual(ans2["A5"].PlcValue, dic2["A5"]);
-            Assert.AreEqual(ans["A6"].PlcValue, dic1["A6"]);
-            Assert.AreEqual(ans2["A6"].PlcValue, dic2["A6"]);
+            Assert.AreEqual(ans["A1"].DeviceValue, dic1["A1"]);
+            Assert.AreEqual(ans2["A1"].DeviceValue, dic2["A1"]);
+            Assert.AreEqual(ans["A2"].DeviceValue, dic1["A2"]);
+            Assert.AreEqual(ans2["A2"].DeviceValue, dic2["A2"]);
+            Assert.AreEqual(ans["A3"].DeviceValue, dic1["A3"]);
+            Assert.AreEqual(ans2["A3"].DeviceValue, dic2["A3"]);
+            Assert.AreEqual(ans["A4"].DeviceValue, dic1["A4"]);
+            Assert.AreEqual(ans2["A4"].DeviceValue, dic2["A4"]);
+            Assert.AreEqual(ans["A5"].DeviceValue, dic1["A5"]);
+            Assert.AreEqual(ans2["A5"].DeviceValue, dic2["A5"]);
+            Assert.AreEqual(ans["A6"].DeviceValue, dic1["A6"]);
+            Assert.AreEqual(ans2["A6"].DeviceValue, dic2["A6"]);
         }
     }
 }

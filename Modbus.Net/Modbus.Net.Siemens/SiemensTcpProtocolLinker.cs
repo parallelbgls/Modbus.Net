@@ -27,7 +27,7 @@ namespace Modbus.Net.Siemens
         public SiemensTcpProtocolLinker(string ip, int port)
             : base(ip, port)
         {
-            ((BaseConnector)BaseConnector).AddController(new MatchDirectlySendController(new ICollection<(int,int)>[] { new List<(int,int)> { (11,11), (12,12) } }, DuplicateWithCount.GetDuplcateFunc(new List<int>{2, 3})));
+            ((BaseConnector)BaseConnector).AddController(new MatchDirectlySendController(new ICollection<(int,int)>[] { new List<(int,int)> { (11,11), (12,12) } }, int.Parse(ConfigurationManager.AppSettings["FetchSleepTime"] ?? "0"), DuplicateWithCount.GetDuplcateFunc(new List<int>{2, 3}, 0)));
         }
 
         /// <summary>

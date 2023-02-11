@@ -34,58 +34,6 @@ namespace Modbus.Net
     }
 
     /// <summary>
-    ///     获取设备值的方式
-    /// </summary>
-    public enum MachineGetDataType
-    {
-        /// <summary>
-        ///     地址
-        /// </summary>
-        Address,
-
-        /// <summary>
-        ///     通讯标识
-        /// </summary>
-        CommunicationTag,
-
-        /// <summary>
-        ///     名称
-        /// </summary>
-        Name,
-
-        /// <summary>
-        ///     Id
-        /// </summary>
-        Id
-    }
-
-    /// <summary>
-    ///     向设备设置值的方式
-    /// </summary>
-    public enum MachineSetDataType
-    {
-        /// <summary>
-        ///     地址
-        /// </summary>
-        Address,
-
-        /// <summary>
-        ///     通讯标识
-        /// </summary>
-        CommunicationTag,
-
-        /// <summary>
-        ///     名称
-        /// </summary>
-        Name,
-
-        /// <summary>
-        ///     Id
-        /// </summary>
-        Id
-    }
-
-    /// <summary>
     ///     设备
     /// </summary>
     public abstract class BaseMachine : BaseMachine<string, string>
@@ -244,7 +192,7 @@ namespace Modbus.Net
         ///     读取数据
         /// </summary>
         /// <returns>从设备读取的数据</returns>
-        public Dictionary<string, ReturnUnit> GetDatas(MachineGetDataType getDataType)
+        public Dictionary<string, ReturnUnit> GetDatas(MachineDataType getDataType)
         {
             return AsyncHelper.RunSync(() => GetDatasAsync(getDataType));
         }
@@ -254,7 +202,7 @@ namespace Modbus.Net
         ///     读取数据
         /// </summary>
         /// <returns>从设备读取的数据</returns>
-        public async Task<Dictionary<string, ReturnUnit>> GetDatasAsync(MachineGetDataType getDataType)
+        public async Task<Dictionary<string, ReturnUnit>> GetDatasAsync(MachineDataType getDataType)
         {
             try
             {
@@ -304,22 +252,22 @@ namespace Modbus.Net
                         string key;
                         switch (getDataType)
                         {
-                            case MachineGetDataType.CommunicationTag:
+                            case MachineDataType.CommunicationTag:
                             {
                                 key = address.CommunicationTag;
                                 break;
                             }
-                            case MachineGetDataType.Address:
+                            case MachineDataType.Address:
                             {
                                 key = AddressFormater.FormatAddress(address.Area, address.Address, address.SubAddress);
                                 break;
                             }
-                            case MachineGetDataType.Name:
+                            case MachineDataType.Name:
                             {
                                 key = address.Name;
                                 break;
                             }
-                            case MachineGetDataType.Id:
+                            case MachineDataType.Id:
                             {
                                 key = address.Id.ToString();
                                 break;
@@ -337,14 +285,14 @@ namespace Modbus.Net
                             if (datas.Length == 0)
                                 ans.Add(key, new ReturnUnit
                                 {
-                                    PlcValue = null,
+                                    DeviceValue = null,
                                     UnitExtend = address.UnitExtend
                                 });
                             else
                                 ans.Add(key,
                                     new ReturnUnit
                                     {
-                                        PlcValue =
+                                        DeviceValue =
                                             Convert.ToDouble(
                                                 ValueHelper.GetInstance(BaseUtility.Endian)
                                                     .GetValue(datas, ref localMainPos, ref localSubPos,
@@ -367,7 +315,7 @@ namespace Modbus.Net
                 if (!KeepConnect)
                     BaseUtility.Disconnect();
                 //返回数据
-                if (ans.All(p => p.Value.PlcValue == null)) ans = null;
+                if (ans.All(p => p.Value.DeviceValue == null)) ans = null;
                 ErrorCount = 0;
                 return ans;
             }
@@ -388,7 +336,7 @@ namespace Modbus.Net
         /// <param name="setDataType">写入类型</param>
         /// <param name="values">需要写入的数据字典，当写入类型为Address时，键为需要写入的地址，当写入类型为CommunicationTag时，键为需要写入的单元的描述</param>
         /// <returns>是否写入成功</returns>
-        public bool SetDatas(MachineSetDataType setDataType, Dictionary<string, double> values)
+        public bool SetDatas(MachineDataType setDataType, Dictionary<string, double> values)
         {
             return AsyncHelper.RunSync(() => SetDatasAsync(setDataType, values));
         }
@@ -399,7 +347,7 @@ namespace Modbus.Net
         /// <param name="setDataType">写入类型</param>
         /// <param name="values">需要写入的数据字典，当写入类型为Address时，键为需要写入的地址，当写入类型为CommunicationTag时，键为需要写入的单元的描述</param>
         /// <returns>是否写入成功</returns>
-        public async Task<bool> SetDatasAsync(MachineSetDataType setDataType, Dictionary<string, double> values)
+        public async Task<bool> SetDatasAsync(MachineDataType setDataType, Dictionary<string, double> values)
         {
             try
             {
@@ -416,7 +364,7 @@ namespace Modbus.Net
                     AddressUnit<TUnitKey> address = null;
                     switch (setDataType)
                     {
-                        case MachineSetDataType.Address:
+                        case MachineDataType.Address:
                         {
                             address =
                                 GetAddresses.SingleOrDefault(
@@ -426,18 +374,18 @@ namespace Modbus.Net
                                         AddressFormater.FormatAddress(p.Area, p.Address) == value.Key);
                             break;
                         }
-                        case MachineSetDataType.CommunicationTag:
+                        case MachineDataType.CommunicationTag:
                         {
                             address =
                                 GetAddresses.SingleOrDefault(p => p.CommunicationTag == value.Key);
                             break;
                         }
-                        case MachineSetDataType.Name:
+                        case MachineDataType.Name:
                         {
                             address = GetAddresses.SingleOrDefault(p => p.Name == value.Key);
                             break;
                         }
-                        case MachineSetDataType.Id:
+                        case MachineDataType.Id:
                         {
                             address = GetAddresses.SingleOrDefault(p => p.Id.ToString() == value.Key);
                             break;
@@ -526,7 +474,7 @@ namespace Modbus.Net
                         KeyValuePair<string, double> value;
                         switch (setDataType)
                         {
-                            case MachineSetDataType.Address:
+                            case MachineDataType.Address:
                             {
                                 //获取要写入的值
                                 value =
@@ -534,17 +482,17 @@ namespace Modbus.Net
                                         p => p.Key == address || address2 != null && p.Key == address2);
                                 break;
                             }
-                            case MachineSetDataType.CommunicationTag:
+                            case MachineDataType.CommunicationTag:
                             {
                                 value = values.SingleOrDefault(p => p.Key == addressUnit.CommunicationTag);
                                 break;
                             }
-                            case MachineSetDataType.Name:
+                            case MachineDataType.Name:
                             {
                                 value = values.SingleOrDefault(p => p.Key == addressUnit.Name);
                                 break;
                             }
-                            case MachineSetDataType.Id:
+                            case MachineDataType.Id:
                             {
                                 value = values.SingleOrDefault(p => p.Key == addressUnit.Id.ToString());
                                 break;
@@ -760,7 +708,7 @@ namespace Modbus.Net
         /// <summary>
         ///     返回的数据
         /// </summary>
-        public double? PlcValue { get; set; }
+        public double? DeviceValue { get; set; }
 
         /// <summary>
         ///     数据的扩展

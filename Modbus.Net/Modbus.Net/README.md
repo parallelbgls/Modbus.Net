@@ -156,10 +156,10 @@ machine = new ModbusMachine(ModbusType.Rtu, "COM3", new List<AddressUnit>()
 machine.AddressCombiner = new AddressCombinerContinus(machine.AddressTranslator);
 machine.AddressCombinerSet = new AddressCombinerContinus(machine.AddressTranslator);
 machine.AddressCombiner = new AddressCombinerPercentageJump(20.0);
-var result = machine.InvokeMachineMethods<IMachineMethodData>?.GetDatas(MachineGetDataType.CommunicationTag);
-var add1 = result["Add1"].PlcValue;
+var result = machine.InvokeMachineMethods<IMachineMethodData>?.GetDatas(MachineDataType.CommunicationTag);
+var add1 = result["Add1"].DeviceValue;
 var resultFormat = result.MapGetValuesToSetValues();
-machine.InvokeMachineMethods<IMachineMethodData>?.SetDatas(MachineSetDataType.CommunicationTag, resultFormat);
+machine.InvokeMachineMethods<IMachineMethodData>?.SetDatas(MachineDataType.CommunicationTag, resultFormat);
 ```
 
 To use BaseMachine, follow these steps.
@@ -196,13 +196,13 @@ There are 4 AddressCombiners implemented in the platform.
 
 3.Use GetDatas Api.
 ```C#
-var result = machine.InvokeMachineMethods<IMachineMethodData>?.GetDatas(MachineGetDataType.CommunicationTag);
-//var result = await machine.InvokeMachineMethods<IMachineMethodData>?.GetDatasAsync(MachineGetDataType.CommunicationTag);
+var result = machine.InvokeMachineMethods<IMachineMethodData>?.GetDatas(MachineDataType.CommunicationTag);
+//var result = await machine.InvokeMachineMethods<IMachineMethodData>?.GetDatasAsync(MachineDataType.CommunicationTag);
 ```
 
 4.Retrive data from result.
 ```C#
-var add1 = result["Add1"].PlcValue;
+var add1 = result["Add1"].DeviceValue;
 ```
 
 5.Format result to SetData parameter.
@@ -212,15 +212,15 @@ var resultFormat = result.MapGetValuesToSetValues();
 
 6.SetData to machine or another machine.
 ```C#
-machine.InvokeMachineMethods<IMachineMethodData>?.SetDatas(MachineSetDataType.CommunicationTag, resultFormat);
+machine.InvokeMachineMethods<IMachineMethodData>?.SetDatas(MachineDataType.CommunicationTag, resultFormat);
 ```
 There is also a SetDatasAsync Api.
 machine.SetDatas has four types. It is referenced as the first parameter.
 
-1. MachineSetDataType.Address: the key of the dictionary of the second parameter is address.
-2. MachineSetDataType.CommunicationTag: the key of the dictionary of the second parameter is communication tag.
-3. MachineSetDataType.Id: the key of the dictionary of the second paramenter is ID.
-4. MachineSetDataType.Name: the key of the dictionary of the second paramenter is name.
+1. MachineDataType.Address: the key of the dictionary of the second parameter is address.
+2. MachineDataType.CommunicationTag: the key of the dictionary of the second parameter is communication tag.
+3. MachineDataType.Id: the key of the dictionary of the second paramenter is ID.
+4. MachineDataType.Name: the key of the dictionary of the second paramenter is name.
 
 ##<a name="implement"></a> Implementing Your Own Protocol
 The main target of Modbus.Net is building a high extensable hardware communication protocol, so we allow everyone to extend the protocol.
