@@ -227,7 +227,8 @@ machine.SetDatas has four types. It is referenced as the first parameter.
 3. MachineDataType.Id: the key of the dictionary of the second paramenter is ID.
 4. MachineDataType.Name: the key of the dictionary of the second paramenter is name.
 
-##<a name="implement"></a> Implementing Your Own Protocol
+## <a name="implement"></a> Implementing Your Own Protocol
+
 The main target of Modbus.Net is building a high extensable hardware communication protocol, so we allow everyone to extend the protocol.
 
 To extend Modbus.Net, first of all ValueHelper.cs in Modbus.Net is a really powerful tool that you can use to modify values in byte array.There are two ValueHelpers: ValueHelper(Little Endian) and BigEndianValueHelper(Big Endian). Remember using the correct one.
