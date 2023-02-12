@@ -23,5 +23,5 @@ Supported Platforms
 
 Thanks
 -------------------
-Quartz - Job Scheduler
-Serilog - Logging
+* Quartz - Job Scheduler
+* Serilog - Logging
