@@ -191,7 +191,7 @@ namespace Modbus.Net.Job
             context.MergedJobDataMap.TryGetValue("Value", out values);
             Dictionary<string, double> valuesSet = ((Dictionary<string, ReturnUnit>)values).MapGetValuesToSetValues();
 
-            var success = await (machine as IMachine<string>)!.SetDatasAsync((MachineDataType)machineDataType, valuesSet);
+            var success = await (machine as IMachineMethodData)!.SetDatasAsync((MachineDataType)machineDataType, valuesSet);
         }
     }
 }
