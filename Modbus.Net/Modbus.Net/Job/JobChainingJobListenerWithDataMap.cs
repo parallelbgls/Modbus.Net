@@ -54,12 +54,12 @@ namespace Modbus.Net.Job
                 var sjJobDetail = await context.Scheduler.GetJobDetail(sj);
                 foreach (var entry in context.JobDetail.JobDataMap)
                 {
-                    if (!OverWrite && !sjJobDetail.JobDataMap.ContainsKey(entry.Key))
+                    if (!OverWrite && !sjJobDetail.JobDataMap.ContainsKey(entry.Key) || OverWrite)
                     {
-                        sjJobDetail.JobDataMap.Put(entry.Key, entry.Value);
-                        await context.Scheduler.AddJob(sjJobDetail, true, false);
+                        sjJobDetail.JobDataMap.Put(entry.Key, entry.Value);                       
                     }
                 }
+                await context.Scheduler.AddJob(sjJobDetail, true, false);
                 await context.Scheduler.TriggerJob(sj, cancellationToken).ConfigureAwait(false);
             }
             catch (SchedulerException se)
