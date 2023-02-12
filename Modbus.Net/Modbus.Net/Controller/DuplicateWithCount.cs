@@ -32,6 +32,7 @@ namespace Modbus.Net
                     {
                         length = length * 256 + receiveMessage[pos + countPos];
                     }
+                    if (length == 0) { break; }
                     length += otherCount;
                     if (pos + length > receiveMessage.Length) break;
                     byte[] currentPackage = new byte[length];
