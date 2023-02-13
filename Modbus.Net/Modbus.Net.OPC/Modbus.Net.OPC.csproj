@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net6.0</TargetFrameworks>
+    <AssemblyName>Modbus.Net.OPC</AssemblyName>
+    <RootNamespace>Modbus.Net.OPC</RootNamespace>
+    <PackageId>Modbus.Net.OPC</PackageId>
+    <Version>1.4.1</Version>
+    <Authors>Chris L.(Luo Sheng)</Authors>
+    <Company>Hangzhou Delian Science Technology Co.,Ltd.</Company>
+    <Product>Modbus.Net.OPC</Product>
+    <Description>Modbus.Net OPC Implementation</Description>
+    <Copyright>Copyright 2023 Hangzhou Delian Science Technology Co.,Ltd.</Copyright>
+    <PackageProjectUrl>https://github.com/parallelbgls/Modbus.Net/tree/master/Modbus.Net/Modbus.Net.OPC</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/parallelbgls/Modbus.Net</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>hardware communicate protocol modbus Delian</PackageTags>
+    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <IncludeSymbols>True</IncludeSymbols>
+    <IncludeSource>True</IncludeSource>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\Modbus.Net.OPC.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Opc.UaFx.Client" Version="2.30.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Libraries\h-opc\h-opc.csproj" />
+    <ProjectReference Include="..\Modbus.Net\Modbus.Net.csproj" />
+  </ItemGroup>
+</Project>

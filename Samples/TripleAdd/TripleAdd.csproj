@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Modbus.Net\Modbus.Net.Modbus.NA200H\Modbus.Net.Modbus.NA200H.csproj" />
+    <ProjectReference Include="..\..\Modbus.Net\Modbus.Net.Modbus\Modbus.Net.Modbus.csproj" />
+    <ProjectReference Include="..\..\Modbus.Net\Modbus.Net\Modbus.Net.csproj" />
+  </ItemGroup>
+
+</Project>

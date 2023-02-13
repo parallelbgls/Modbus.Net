@@ -20,13 +20,21 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Modbus.Net.Tests", "..\Test
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{3597B5C5-45B9-4ECB-92A3-D0FFBE47920A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Modbus.Net.Modbus.Test", "..\Samples\Modbus.Net.Modbus.Test\Modbus.Net.Modbus.Test.csproj", "{22A35CA8-CDCF-416D-BA84-08C933B4A3DE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MachineJob", "..\Samples\MachineJob\MachineJob.csproj", "{22A35CA8-CDCF-416D-BA84-08C933B4A3DE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Modbus.Net.Modbus.NA200H", "Modbus.Net.Modbus.NA200H\Modbus.Net.Modbus.NA200H.csproj", "{D4AF0E1E-676E-43B6-BAA3-BFC329D68C80}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Modbus.Net.PersistedTests", "..\Tests\Modbus.Net.PersistedTests\Modbus.Net.PersistedTests.csproj", "{4B946C56-D09F-4EEB-BE88-4A2C97815A77}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnyType", "..\Samples\AnyType\AnyType.csproj", "{1857DA63-3335-428F-84D8-1FA4F8178643}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnyType", "..\Samples\AnyType\AnyType.csproj", "{1857DA63-3335-428F-84D8-1FA4F8178643}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Modbus.Net.OPC", "Modbus.Net.OPC\Modbus.Net.OPC.csproj", "{C854A379-C5EA-4CAC-9C5F-7291372D1D3F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "h-opc", "..\Libraries\h-opc\h-opc.csproj", "{347D0027-45F6-48C9-A917-1B1DF6C66DC5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossLamp", "..\Samples\CrossLamp\CrossLamp.csproj", "{AA3A42D2-0502-41D3-929A-BAB729DF07D6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TripleAdd", "..\Samples\TripleAdd\TripleAdd.csproj", "{414956B8-DBD4-414C-ABD3-565580739646}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -66,6 +74,22 @@ Global
 		{1857DA63-3335-428F-84D8-1FA4F8178643}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1857DA63-3335-428F-84D8-1FA4F8178643}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1857DA63-3335-428F-84D8-1FA4F8178643}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C854A379-C5EA-4CAC-9C5F-7291372D1D3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C854A379-C5EA-4CAC-9C5F-7291372D1D3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C854A379-C5EA-4CAC-9C5F-7291372D1D3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C854A379-C5EA-4CAC-9C5F-7291372D1D3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{347D0027-45F6-48C9-A917-1B1DF6C66DC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{347D0027-45F6-48C9-A917-1B1DF6C66DC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{347D0027-45F6-48C9-A917-1B1DF6C66DC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{347D0027-45F6-48C9-A917-1B1DF6C66DC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA3A42D2-0502-41D3-929A-BAB729DF07D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA3A42D2-0502-41D3-929A-BAB729DF07D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA3A42D2-0502-41D3-929A-BAB729DF07D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA3A42D2-0502-41D3-929A-BAB729DF07D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{414956B8-DBD4-414C-ABD3-565580739646}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{414956B8-DBD4-414C-ABD3-565580739646}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{414956B8-DBD4-414C-ABD3-565580739646}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{414956B8-DBD4-414C-ABD3-565580739646}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -75,6 +99,8 @@ Global
 		{22A35CA8-CDCF-416D-BA84-08C933B4A3DE} = {3597B5C5-45B9-4ECB-92A3-D0FFBE47920A}
 		{4B946C56-D09F-4EEB-BE88-4A2C97815A77} = {D8DD32FC-CF39-4A1A-8FBF-9E82C5278C34}
 		{1857DA63-3335-428F-84D8-1FA4F8178643} = {3597B5C5-45B9-4ECB-92A3-D0FFBE47920A}
+		{AA3A42D2-0502-41D3-929A-BAB729DF07D6} = {3597B5C5-45B9-4ECB-92A3-D0FFBE47920A}
+		{414956B8-DBD4-414C-ABD3-565580739646} = {3597B5C5-45B9-4ECB-92A3-D0FFBE47920A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AF00D64E-3C70-474A-8A81-E9E48017C4B5}

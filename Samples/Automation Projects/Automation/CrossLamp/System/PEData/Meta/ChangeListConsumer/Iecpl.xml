@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClMetaConsumer xmlns="http://www.siemens.com/Automation/2004/04/ObjectFrame/ClMetaConsumer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.siemens.com/Automation/2004/04/ObjectFrame/ClMetaConsumer Automation-ObjectFrame-ChangeList-Consumer-v1.0.xsd">
+    <Package name="HmiBase" version="2.0.0.0">
+        <TargetCompiler name="Siemens.Simatic.Hmi.Es2rt" version="2.0.0.0">
+            <ConsumedObject name="Siemens.Automation.DomainModel.SystemTextRangeListData" filter="False" resolveTextualReference="False" />
+            <ConsumedObject name="Siemens.Automation.DomainModel.UserTextRangeListData" filter="False" resolveTextualReference="False" />
+            <ConsumedObject name="Siemens.Simatic.AlarmServices.ObjectFrame.Private.SimpleControllerAlarmData" filter="False" resolveTextualReference="False" />
+            <ConsumedObject name="Siemens.Simatic.Hmi.Utah.Common.Base.HmiBaseBL" filter="False" resolveTextualReference="False">
+                <Interface name="Siemens.Automation.ObjectFrame.ICoreAttributes">
+                    <IncludeProperty name="Author" />
+                    <IncludeProperty name="Comment" />
+                    <IncludeProperty name="Name" />
+                </Interface>
+            </ConsumedObject>
+            <ConsumedObject name="Siemens.Simatic.Hmi.Utah.Globalization.HmiTextData" filter="False" resolveTextualReference="False">
+                <Interface name="Siemens.Automation.ObjectFrame.ICoreAttributes">
+                    <IncludeProperty name="Author" />
+                    <IncludeProperty name="Comment" />
+                    <IncludeProperty name="Name" />
+                </Interface>
+            </ConsumedObject>
+            <ConsumedObject name="Siemens.Simatic.SystemDiagnosis.Model.ComponentTextlistData" filter="False" resolveTextualReference="False" />
+            <ConsumedObject name="Siemens.Simatic.SystemDiagnosis.Model.ErrorTextlistProxyData" filter="False" resolveTextualReference="False" />
+        </TargetCompiler>
+    </Package>
+</ClMetaConsumer>
