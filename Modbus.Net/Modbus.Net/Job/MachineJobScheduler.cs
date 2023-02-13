@@ -59,24 +59,21 @@ namespace Modbus.Net
             return new MachineQueryJobScheduler(_scheduler, _trigger, jobKey);
         }
 
-        public async Task<MachineSetJobScheduler> To(string queryId, Dictionary<string, ReturnUnit> values, IMachineMethodData machine, MachineDataType machineDataType)
+        public async Task<MachineQueryJobScheduler> Apply(string queryId, Dictionary<string, ReturnUnit> values, MachineDataType machineDataType)
         {
             JobKey jobKey = JobKey.Create("Modbus.Net.DataQuery.Job." + queryId, "Modbus.Net.DataQuery.Group");
 
-            IJobDetail job = JobBuilder.Create<MachineSetDataJob>()
+            IJobDetail job = JobBuilder.Create<MachineQueryDataJob>()
                 .WithIdentity(jobKey)
                 .Build();
 
             job.JobDataMap.Put("DataType", machineDataType);
-            job.JobDataMap.Put("Machine", machine);
             job.JobDataMap.Put("Value", values);
+            job.JobDataMap.Put("QueryMethod", null);
 
             await _scheduler.ScheduleJob(job, _trigger);
 
-            JobChainingJobListenerWithDataMap listener = new JobChainingJobListenerWithDataMap("Modbus.Net.DataQuery.Chain", false);
-            _scheduler.ListenerManager.AddJobListener(listener, GroupMatcher<JobKey>.GroupEquals("Modbus.Net.DataQuery.Group"));
-
-            return new MachineSetJobScheduler(_scheduler, _trigger, listener, jobKey);
+            return new MachineQueryJobScheduler(_scheduler, _trigger, jobKey);
         }
     }
 
@@ -97,8 +94,12 @@ namespace Modbus.Net
 
         public async Task<MachineSetJobScheduler> Query(string queryId = null, Func<Dictionary<string, ReturnUnit>, Dictionary<string, ReturnUnit>> QueryDataFunc = null)
         {
-            JobChainingJobListenerWithDataMap listener = new JobChainingJobListenerWithDataMap("Modbus.Net.DataQuery.Chain", false);
-            _scheduler.ListenerManager.AddJobListener(listener, GroupMatcher<JobKey>.GroupEquals("Modbus.Net.DataQuery.Group"));
+            JobChainingJobListenerWithDataMap listener = _scheduler.ListenerManager.GetJobListener("Modbus.Net.DataQuery.Chain") as JobChainingJobListenerWithDataMap;
+            if (listener == null)
+            {
+                listener = new JobChainingJobListenerWithDataMap("Modbus.Net.DataQuery.Chain", false);
+                _scheduler.ListenerManager.AddJobListener(listener, GroupMatcher<JobKey>.GroupEquals("Modbus.Net.DataQuery.Group"));
+            }
 
             if (queryId == null) return new MachineSetJobScheduler(_scheduler, _trigger, listener, _parentJobKey);
 
