@@ -94,8 +94,12 @@ namespace Modbus.Net
 
         public async Task<MachineSetJobScheduler> Query(string queryId = null, Func<Dictionary<string, ReturnUnit>, Dictionary<string, ReturnUnit>> QueryDataFunc = null)
         {
-            JobChainingJobListenerWithDataMap listener = _scheduler.ListenerManager.GetJobListener("Modbus.Net.DataQuery.Chain") as JobChainingJobListenerWithDataMap;
-            if (listener == null)
+            JobChainingJobListenerWithDataMap listener;
+            try
+            {
+                listener = _scheduler.ListenerManager.GetJobListener("Modbus.Net.DataQuery.Chain") as JobChainingJobListenerWithDataMap;
+            }
+            catch
             {
                 listener = new JobChainingJobListenerWithDataMap("Modbus.Net.DataQuery.Chain", false);
                 _scheduler.ListenerManager.AddJobListener(listener, GroupMatcher<JobKey>.GroupEquals("Modbus.Net.DataQuery.Group"));
