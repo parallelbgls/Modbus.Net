@@ -16,13 +16,13 @@ namespace Modbus.Net
             ITrigger trigger;
             if (count >= 0)
                 trigger = TriggerBuilder.Create()
-                    .WithIdentity("Modbus.Net.DataQuery.Trigger."+ triggerKey, "Modbus.Net.DataQuery.Group")
+                    .WithIdentity("Modbus.Net.DataQuery.Trigger." + triggerKey, "Modbus.Net.DataQuery.Group")
                     .StartNow()
                     .WithSimpleSchedule(b => b.WithIntervalInSeconds(interval).WithRepeatCount(count))
                     .Build();
             else
                 trigger = TriggerBuilder.Create()
-                    .WithIdentity("Modbus.Net.DataQuery.Trigger."+ triggerKey, "Modbus.Net.DataQuery.Group")
+                    .WithIdentity("Modbus.Net.DataQuery.Trigger." + triggerKey, "Modbus.Net.DataQuery.Group")
                     .StartNow()
                     .WithSimpleSchedule(b => b.WithIntervalInSeconds(interval).RepeatForever())
                     .Build();
