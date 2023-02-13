@@ -156,3 +156,4 @@ $RECYCLE.BIN/
 .DS_Store
 /Modbus.Net/packages
 /Modbus.Net/.vs
+/Samples/Modbus.Net.Modbus.Test/appsettings.json
