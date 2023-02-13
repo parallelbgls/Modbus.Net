@@ -80,7 +80,7 @@ namespace Modbus.Net
         }
     }
 
-    public class MachineQueryJobScheduler
+    public sealed class MachineQueryJobScheduler
     {
         IScheduler _scheduler;
 
@@ -119,7 +119,7 @@ namespace Modbus.Net
         }
     }
 
-    public class MachineSetJobScheduler
+    public sealed class MachineSetJobScheduler
     {
         IScheduler _scheduler;
 
