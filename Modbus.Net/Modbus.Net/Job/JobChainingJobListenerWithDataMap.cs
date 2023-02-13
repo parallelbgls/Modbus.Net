@@ -4,15 +4,16 @@ using Serilog;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Modbus.Net
 {
     public class JobChainingJobListenerWithDataMap : JobListenerSupport
     {
-        public JobChainingJobListenerWithDataMap(string name, bool overwrite)
+        public JobChainingJobListenerWithDataMap(string name, string[] overwriteKeys)
         {
             Name = name;
-            OverWrite = overwrite;
+            OverWriteKeys = overwriteKeys;
             chainLinks = new Dictionary<JobKey, JobKey>();
         }
 
@@ -20,7 +21,7 @@ namespace Modbus.Net
 
         public override string Name { get; }
 
-        public bool OverWrite { get; }
+        public string[] OverWriteKeys { get; }
 
         /// <summary>
         /// Add a chain mapping - when the Job identified by the first key completes
@@ -51,7 +52,7 @@ namespace Modbus.Net
                 var sjJobDetail = await context.Scheduler.GetJobDetail(sj);
                 foreach (var entry in context.JobDetail.JobDataMap)
                 {
-                    if (!OverWrite && !sjJobDetail.JobDataMap.ContainsKey(entry.Key) || OverWrite)
+                    if (!sjJobDetail.JobDataMap.ContainsKey(entry.Key) || sjJobDetail.JobDataMap.ContainsKey(entry.Key) && OverWriteKeys != null && OverWriteKeys.Contains(entry.Key))
                     {
                         sjJobDetail.JobDataMap.Put(entry.Key, entry.Value);                       
                     }

@@ -23,11 +23,12 @@ await MachineJobSchedulerCreator.CreateScheduler("Trigger1", -1, 5).Result.From(
 
 Console.ReadLine();
 
-Dictionary<string, ReturnUnit> QueryConsole(Dictionary<string, ReturnUnit> values)
+Dictionary<string, ReturnUnit> QueryConsole(DataReturnDef dataReturnDef)
 {
+    var values = dataReturnDef.ReturnValues;
     foreach (var value in values)
     {
-        Console.WriteLine(value.Key + " " + value.Value.DeviceValue);
+        Console.WriteLine(dataReturnDef.MachineId + " " + value.Key + " " + value.Value.DeviceValue);
     }
 
     using (var context = new DatabaseWriteContext())

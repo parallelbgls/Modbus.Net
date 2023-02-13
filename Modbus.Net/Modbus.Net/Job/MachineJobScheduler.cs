@@ -7,9 +7,32 @@ using System.Threading.Tasks;
 
 namespace Modbus.Net
 {
+    /// <summary>
+    ///     返回结果的定义类
+    /// </summary>
+    public class DataReturnDef : DataReturnDef<string>
+    {
+    }
+
+    /// <summary>
+    ///     返回结果的定义类
+    /// </summary>
+    public class DataReturnDef<TMachineKey> where TMachineKey : IEquatable<TMachineKey>
+    {
+        /// <summary>
+        ///     设备的Id
+        /// </summary>
+        public TMachineKey MachineId { get; set; }
+
+        /// <summary>
+        ///     返回的数据值
+        /// </summary>
+        public Dictionary<string, ReturnUnit> ReturnValues { get; set; }
+    }
+
     public sealed class MachineJobSchedulerCreator
     {
-        public static async Task<MachineGetJobScheduler> CreateScheduler(string triggerKey, int count, int interval)
+        public static async Task<MachineGetJobScheduler> CreateScheduler(string triggerKey, int count, double interval)
         {
             IScheduler scheduler = await StdSchedulerFactory.GetDefaultScheduler();
 
@@ -18,13 +41,13 @@ namespace Modbus.Net
                 trigger = TriggerBuilder.Create()
                     .WithIdentity("Modbus.Net.DataQuery.Trigger." + triggerKey, "Modbus.Net.DataQuery.Group")
                     .StartNow()
-                    .WithSimpleSchedule(b => b.WithIntervalInSeconds(interval).WithRepeatCount(count))
+                    .WithSimpleSchedule(b => b.WithInterval(TimeSpan.FromSeconds(interval)).WithRepeatCount(count))
                     .Build();
             else
                 trigger = TriggerBuilder.Create()
                     .WithIdentity("Modbus.Net.DataQuery.Trigger." + triggerKey, "Modbus.Net.DataQuery.Group")
                     .StartNow()
-                    .WithSimpleSchedule(b => b.WithIntervalInSeconds(interval).RepeatForever())
+                    .WithSimpleSchedule(b => b.WithInterval(TimeSpan.FromSeconds(interval)).RepeatForever())
                     .Build();
 
             return new MachineGetJobScheduler(scheduler, trigger);
@@ -59,11 +82,16 @@ namespace Modbus.Net
             return new MachineQueryJobScheduler(_scheduler, _trigger, jobKey);
         }
 
-        public async Task<MachineQueryJobScheduler> Apply(string queryId, Dictionary<string, ReturnUnit> values, MachineDataType machineDataType)
+        public Task<MachineQueryJobScheduler> Apply(string queryId, Dictionary<string, ReturnUnit> values, MachineDataType machineDataType)
+        {
+            return Apply<string>(queryId, values, machineDataType);
+        }
+
+        public async Task<MachineQueryJobScheduler> Apply<TMachineKey>(string queryId, Dictionary<string, ReturnUnit> values, MachineDataType machineDataType) where TMachineKey : IEquatable<TMachineKey>
         {
             JobKey jobKey = JobKey.Create("Modbus.Net.DataQuery.Job." + queryId, "Modbus.Net.DataQuery.Group");
 
-            IJobDetail job = JobBuilder.Create<MachineQueryDataJob>()
+            IJobDetail job = JobBuilder.Create<MachineQueryDataJob<TMachineKey>>()
                 .WithIdentity(jobKey)
                 .Build();
 
@@ -92,7 +120,12 @@ namespace Modbus.Net
             _parentJobKey = parentJobKey;
         }
 
-        public async Task<MachineSetJobScheduler> Query(string queryId = null, Func<Dictionary<string, ReturnUnit>, Dictionary<string, ReturnUnit>> QueryDataFunc = null)
+        public Task<MachineSetJobScheduler> Query(string queryId = null, Func<DataReturnDef, Dictionary<string, ReturnUnit>> QueryDataFunc = null)
+        {
+            return Query<string>(queryId, QueryDataFunc);
+        }
+
+        public async Task<MachineSetJobScheduler> Query<TMachineKey>(string queryId = null, Func<DataReturnDef, Dictionary<string, ReturnUnit>> QueryDataFunc = null) where TMachineKey : IEquatable<TMachineKey>
         {
             JobChainingJobListenerWithDataMap listener;
             try
@@ -101,7 +134,7 @@ namespace Modbus.Net
             }
             catch
             {
-                listener = new JobChainingJobListenerWithDataMap("Modbus.Net.DataQuery.Chain", false);
+                listener = new JobChainingJobListenerWithDataMap("Modbus.Net.DataQuery.Chain", new string[1]{ "Value" });
                 _scheduler.ListenerManager.AddJobListener(listener, GroupMatcher<JobKey>.GroupEquals("Modbus.Net.DataQuery.Group"));
             }
 
@@ -109,7 +142,7 @@ namespace Modbus.Net
 
             JobKey jobKey = JobKey.Create("Modbus.Net.DataQuery.Job." + queryId, "Modbus.Net.DataQuery.Group");
 
-            IJobDetail job = JobBuilder.Create<MachineQueryDataJob>()
+            IJobDetail job = JobBuilder.Create<MachineQueryDataJob<TMachineKey>>()
                 .WithIdentity(jobKey)
                 .StoreDurably(true)
                 .Build();
@@ -184,20 +217,21 @@ namespace Modbus.Net
         }
     }
 
-    public class MachineQueryDataJob : IJob
+    public class MachineQueryDataJob<TMachineKey> : IJob where TMachineKey : IEquatable<TMachineKey>
     {
         public async Task Execute(IJobExecutionContext context)
         {
+            object machine;
             object values;
             object QueryMethod;
-
+            context.MergedJobDataMap.TryGetValue("Machine", out machine);
             context.MergedJobDataMap.TryGetValue("Value", out values);
             context.MergedJobDataMap.TryGetValue("QueryMethod", out QueryMethod);
-            Func<Dictionary<string, ReturnUnit>, Dictionary<string, ReturnUnit>> QueryMethodDispatch = (Func<Dictionary<string, ReturnUnit>, Dictionary<string, ReturnUnit>>)QueryMethod;
+            Func<DataReturnDef, Dictionary<string, ReturnUnit>> QueryMethodDispatch = (Func<DataReturnDef, Dictionary<string, ReturnUnit>>)QueryMethod;
 
             if (QueryMethod != null)
             {
-                context.JobDetail.JobDataMap.Put("Value", QueryMethodDispatch((Dictionary<string, ReturnUnit>)values));
+                context.JobDetail.JobDataMap.Put("Value", QueryMethodDispatch(new DataReturnDef() { MachineId = ((IMachineProperty<TMachineKey>)machine).GetMachineIdString(), ReturnValues = (Dictionary<string, ReturnUnit>)values }));
                 await context.Scheduler.AddJob(context.JobDetail, true, false);
             }
         }
