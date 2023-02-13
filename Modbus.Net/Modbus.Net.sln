@@ -22,6 +22,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{3597
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Modbus.Net.Modbus.Test", "..\Samples\Modbus.Net.Modbus.Test\Modbus.Net.Modbus.Test.csproj", "{22A35CA8-CDCF-416D-BA84-08C933B4A3DE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modbus.Net.Modbus.NA200H", "Modbus.Net.Modbus.NA200H\Modbus.Net.Modbus.NA200H.csproj", "{D4AF0E1E-676E-43B6-BAA3-BFC329D68C80}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,6 +50,10 @@ Global
 		{22A35CA8-CDCF-416D-BA84-08C933B4A3DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22A35CA8-CDCF-416D-BA84-08C933B4A3DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22A35CA8-CDCF-416D-BA84-08C933B4A3DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4AF0E1E-676E-43B6-BAA3-BFC329D68C80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4AF0E1E-676E-43B6-BAA3-BFC329D68C80}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4AF0E1E-676E-43B6-BAA3-BFC329D68C80}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4AF0E1E-676E-43B6-BAA3-BFC329D68C80}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,7 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
 
 namespace Modbus.Net.Siemens
 {
@@ -15,7 +14,7 @@ namespace Modbus.Net.Siemens
         /// </summary>
         /// <param name="ip">IP地址</param>
         public SiemensTcpProtocolLinker(string ip)
-            : this(ip, int.Parse(ConfigurationManager.AppSettings["SiemensPort"] ?? "102"))
+            : this(ip, int.Parse(new ConfigurationBuilder().AddJsonFile($"appsettings.json").Build().GetSection("Config")["SiemensPort"] ?? "102"))
         {
         }
 
@@ -27,7 +26,7 @@ namespace Modbus.Net.Siemens
         public SiemensTcpProtocolLinker(string ip, int port)
             : base(ip, port)
         {
-            ((BaseConnector)BaseConnector).AddController(new MatchDirectlySendController(new ICollection<(int,int)>[] { new List<(int,int)> { (11,11), (12,12) } }, int.Parse(ConfigurationManager.AppSettings["FetchSleepTime"] ?? "0"), DuplicateWithCount.GetDuplcateFunc(new List<int>{2, 3}, 0)));
+            ((BaseConnector)BaseConnector).AddController(new MatchDirectlySendController(new ICollection<(int,int)>[] { new List<(int,int)> { (11,11), (12,12) } }, DuplicateWithCount.GetDuplcateFunc(new List<int>{2, 3}, 0)));
         }
 
         /// <summary>

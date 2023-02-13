@@ -1,29 +1,28 @@
-﻿using Modbus.Net.Interface;
-using Quartz;
+﻿using Quartz;
 using Quartz.Impl;
 using Quartz.Impl.Matchers;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Modbus.Net.Job
+namespace Modbus.Net
 {
     public sealed class MachineJobSchedulerCreator
     {
-        public static async Task<MachineGetJobScheduler> CreateScheduler(int count, int interval)
+        public static async Task<MachineGetJobScheduler> CreateScheduler(string triggerKey, int count, int interval)
         {
             IScheduler scheduler = await StdSchedulerFactory.GetDefaultScheduler();
 
             ITrigger trigger;
             if (count >= 0)
                 trigger = TriggerBuilder.Create()
-                    .WithIdentity("Modbus.Net.DataQuery.Trigger", "Modbus.Net.DataQuery.Group")
+                    .WithIdentity("Modbus.Net.DataQuery.Trigger."+ triggerKey, "Modbus.Net.DataQuery.Group")
                     .StartNow()
                     .WithSimpleSchedule(b => b.WithIntervalInSeconds(interval).WithRepeatCount(count))
                     .Build();
             else
                 trigger = TriggerBuilder.Create()
-                    .WithIdentity("Modbus.Net.DataQuery.Trigger", "Modbus.Net.DataQuery.Group")
+                    .WithIdentity("Modbus.Net.DataQuery.Trigger."+ triggerKey, "Modbus.Net.DataQuery.Group")
                     .StartNow()
                     .WithSimpleSchedule(b => b.WithIntervalInSeconds(interval).RepeatForever())
                     .Build();
@@ -58,6 +57,26 @@ namespace Modbus.Net.Job
             await _scheduler.ScheduleJob(job, _trigger);
 
             return new MachineQueryJobScheduler(_scheduler, _trigger, jobKey);
+        }
+
+        public async Task<MachineSetJobScheduler> To(string queryId, Dictionary<string, ReturnUnit> values, IMachineMethodData machine, MachineDataType machineDataType)
+        {
+            JobKey jobKey = JobKey.Create("Modbus.Net.DataQuery.Job." + queryId, "Modbus.Net.DataQuery.Group");
+
+            IJobDetail job = JobBuilder.Create<MachineSetDataJob>()
+                .WithIdentity(jobKey)
+                .Build();
+
+            job.JobDataMap.Put("DataType", machineDataType);
+            job.JobDataMap.Put("Machine", machine);
+            job.JobDataMap.Put("Value", values);
+
+            await _scheduler.ScheduleJob(job, _trigger);
+
+            JobChainingJobListenerWithDataMap listener = new JobChainingJobListenerWithDataMap("Modbus.Net.DataQuery.Chain", false);
+            _scheduler.ListenerManager.AddJobListener(listener, GroupMatcher<JobKey>.GroupEquals("Modbus.Net.DataQuery.Group"));
+
+            return new MachineSetJobScheduler(_scheduler, _trigger, listener, jobKey);
         }
     }
 

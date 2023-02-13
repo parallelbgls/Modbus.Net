@@ -1,4 +1,4 @@
-﻿using System.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 
 namespace Modbus.Net.Modbus
 {
@@ -12,7 +12,7 @@ namespace Modbus.Net.Modbus
         /// </summary>
         /// <param name="ip">IP地址</param>
         public ModbusRtuInTcpProtocolLinker(string ip)
-            : base(ip, int.Parse(ConfigurationManager.AppSettings["ModbusPort"] ?? "502"), false)
+            : base(ip, int.Parse(new ConfigurationBuilder().AddJsonFile($"appsettings.json").Build().GetSection("Config")["ModbusPort"] ?? "502"), false)
         {
         }
 
@@ -24,7 +24,7 @@ namespace Modbus.Net.Modbus
         public ModbusRtuInTcpProtocolLinker(string ip, int port)
             : base(ip, port)
         {
-            ((BaseConnector)BaseConnector).AddController(new FifoController(int.Parse(ConfigurationManager.AppSettings["FetchSleepTime"] ?? "0")));
+            ((BaseConnector)BaseConnector).AddController(new FifoController(int.Parse(new ConfigurationBuilder().AddJsonFile($"appsettings.json").Build().GetSection("Config")["FetchSleepTime"] ?? "0")));
         }
 
         /// <summary>

@@ -1,5 +1,5 @@
-﻿using System.Configuration;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Nito.AsyncEx;
 
 namespace Modbus.Net.Siemens
@@ -31,7 +31,7 @@ namespace Modbus.Net.Siemens
         /// <param name="maxPdu"></param>
         public SiemensTcpProtocol(byte tdpuSize, ushort tsapSrc, ushort tsapDst, ushort maxCalling, ushort maxCalled,
             ushort maxPdu)
-            : this(tdpuSize, tsapSrc, tsapDst, maxCalling, maxCalled, maxPdu, ConfigurationManager.AppSettings["IP"])
+            : this(tdpuSize, tsapSrc, tsapDst, maxCalling, maxCalled, maxPdu, new ConfigurationBuilder().AddJsonFile($"appsettings.json").Build().GetSection("Config")["IP"])
         {
         }
 
@@ -49,7 +49,7 @@ namespace Modbus.Net.Siemens
             ushort maxPdu, string ip)
             : this(
                 tdpuSize, tsapSrc, tsapDst, maxCalling, maxCalled, maxPdu, ip,
-                int.Parse(ConfigurationManager.AppSettings["SiemensPort"] ?? "102"))
+                int.Parse(new ConfigurationBuilder().AddJsonFile($"appsettings.json").Build().GetSection("Config")["SiemensPort"] ?? "102"))
         {
         }
 

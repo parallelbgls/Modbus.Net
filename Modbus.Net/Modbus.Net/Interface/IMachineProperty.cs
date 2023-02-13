@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Modbus.Net.Interface
+namespace Modbus.Net
 {
     /// <summary>
     ///     没有Id的设备属性

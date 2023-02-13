@@ -1,14 +1,11 @@
 ﻿using Quartz.Listener;
 using Quartz;
 using Serilog;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Modbus.Net.Job
+namespace Modbus.Net
 {
     public class JobChainingJobListenerWithDataMap : JobListenerSupport
     {
@@ -31,7 +28,7 @@ namespace Modbus.Net.Job
         /// </summary>
         /// <param name="firstJob">a JobKey with the name and group of the first job</param>
         /// <param name="secondJob">a JobKey with the name and group of the follow-up job</param>
-        public new void AddJobChainLink(JobKey firstJob, JobKey secondJob)
+        public void AddJobChainLink(JobKey firstJob, JobKey secondJob)
         {
             chainLinks.Add(firstJob, secondJob);
         }

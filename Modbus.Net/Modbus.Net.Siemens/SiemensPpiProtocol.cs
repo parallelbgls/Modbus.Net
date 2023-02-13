@@ -1,5 +1,5 @@
-﻿using System.Configuration;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Nito.AsyncEx;
 
 namespace Modbus.Net.Siemens
@@ -18,7 +18,7 @@ namespace Modbus.Net.Siemens
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
         public SiemensPpiProtocol(byte slaveAddress, byte masterAddress)
-            : this(ConfigurationManager.AppSettings["COM"], slaveAddress, masterAddress)
+            : this(new ConfigurationBuilder().AddJsonFile($"appsettings.json").Build().GetSection("Config")["COM"], slaveAddress, masterAddress)
         {
         }
 

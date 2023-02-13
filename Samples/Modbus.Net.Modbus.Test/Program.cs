@@ -1,8 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using Modbus.Net;
 using Modbus.Net.Modbus;
-using Modbus.Net.Interface;
-using Modbus.Net.Job;
+using Modbus.Net.Modbus.Test;
 
 List<AddressUnit> _addresses = new List<AddressUnit>
 {
@@ -20,7 +19,7 @@ List<AddressUnit> _addresses = new List<AddressUnit>
 
 IMachine<string> machine = new ModbusMachine<string, string>("ModbusMachine1", ModbusType.Tcp, "192.168.0.172:502", _addresses, true, 1, 2, Endian.BigEndianLsb);
 
-await MachineJobSchedulerCreator.CreateScheduler(-1, 5).Result.From(machine.Id, machine, MachineDataType.Name).Result.Query("ConsoleQuery", QueryConsole).Result.To(machine.Id + ".To", machine).Result.Run();
+await MachineJobSchedulerCreator.CreateScheduler("Trigger1", -1, 5).Result.From(machine.Id, machine, MachineDataType.Name).Result.Query("ConsoleQuery", QueryConsole).Result.To(machine.Id + ".To", machine).Result.Run();
 
 Console.ReadLine();
 
@@ -29,6 +28,29 @@ Dictionary<string, ReturnUnit> QueryConsole(Dictionary<string, ReturnUnit> value
     foreach (var value in values)
     {
         Console.WriteLine(value.Key + " " + value.Value.DeviceValue);
+    }
+
+    using (var context = new DatabaseWriteContext())
+    {
+        context.DatabaseWrites.Add(new DatabaseWriteEntity
+        {
+            Value1 = values["Test1"].DeviceValue,
+            Value2 = values["Test2"].DeviceValue,
+            Value3 = values["Test3"].DeviceValue,
+            Value4 = values["Test4"].DeviceValue,
+            Value5 = values["Test5"].DeviceValue,
+            Value6 = values["Test6"].DeviceValue,
+            Value7 = values["Test7"].DeviceValue,
+            Value8 = values["Test8"].DeviceValue,
+            Value9 = values["Test9"].DeviceValue,
+            Value10 = values["Test10"].DeviceValue,
+            UpdateTime = DateTime.Now,
+        });
+        context.SaveChanges();
+    }
+
+    foreach (var value in values)
+    {
         value.Value.DeviceValue = new Random().Next(65536) - 32768;
     }
 

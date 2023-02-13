@@ -1,9 +1,9 @@
-﻿namespace Modbus.Net.Modbus
+﻿namespace Modbus.Net.Modbus.NA200H
 {
     /// <summary>
-    ///     Modbus标准AddressFormater
+    ///     南大奥拓NA200H专用AddressFormater
     /// </summary>
-    public class AddressFormaterModbus : AddressFormater
+    public class AddressFormaterNA200H : AddressFormater
     {
         /// <summary>
         ///     格式化地址

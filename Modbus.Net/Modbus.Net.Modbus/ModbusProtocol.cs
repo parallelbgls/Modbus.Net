@@ -65,7 +65,7 @@ namespace Modbus.Net.Modbus
     /// <summary>
     ///     跟写数据有关的功能码
     /// </summary>
-    internal enum ModbusProtocolWriteDataFunctionCode : byte
+    public enum ModbusProtocolWriteDataFunctionCode : byte
     {
         /// <summary>
         ///     写单个线圈

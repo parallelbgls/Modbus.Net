@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Serilog;
-using Modbus.Net.Interface;
 
 /// <summary>
 ///     端格式

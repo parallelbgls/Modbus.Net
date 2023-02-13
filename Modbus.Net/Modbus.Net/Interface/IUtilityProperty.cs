@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
-namespace Modbus.Net.Interface
+namespace Modbus.Net
 {
     /// <summary>
     ///     Api入口的抽象

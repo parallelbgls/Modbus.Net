@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Modbus.Net
 {
@@ -12,9 +9,9 @@ namespace Modbus.Net
     public class MatchDirectlySendController : MatchController
     {
         /// <inheritdoc />
-        public MatchDirectlySendController(ICollection<(int, int)>[] keyMatches, int acquireTime,
+        public MatchDirectlySendController(ICollection<(int, int)>[] keyMatches,
             Func<byte[], ICollection<byte[]>> duplicateFunc = null) : base(keyMatches,
-            acquireTime, false, duplicateFunc)
+            0, false, duplicateFunc)
         {
         }
 

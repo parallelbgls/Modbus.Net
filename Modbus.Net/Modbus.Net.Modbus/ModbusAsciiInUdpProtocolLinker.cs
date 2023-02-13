@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
+﻿using Microsoft.Extensions.Configuration;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Modbus.Net.Modbus
 {
@@ -17,7 +13,7 @@ namespace Modbus.Net.Modbus
         /// </summary>
         /// <param name="ip">IP地址</param>
         public ModbusAsciiInUdpProtocolLinker(string ip)
-            : base(ip, int.Parse(ConfigurationManager.AppSettings["ModbusPort"] ?? "502"), false)
+            : base(ip, int.Parse(new ConfigurationBuilder().AddJsonFile($"appsettings.json").Build().GetSection("Config")["ModbusPort"] ?? "502"), false)
         {
         }
 
@@ -29,7 +25,7 @@ namespace Modbus.Net.Modbus
         public ModbusAsciiInUdpProtocolLinker(string ip, int port)
             : base(ip, port)
         {
-            ((BaseConnector)BaseConnector).AddController(new FifoController(int.Parse(ConfigurationManager.AppSettings["FetchSleepTime"] ?? "0")));
+            ((BaseConnector)BaseConnector).AddController(new FifoController(int.Parse(new ConfigurationBuilder().AddJsonFile($"appsettings.json").Build().GetSection("Config")["FetchSleepTime"] ?? "0")));
         }
 
         /// <summary>

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Configuration;
 
 namespace Modbus.Net.Modbus
 {
@@ -18,7 +13,7 @@ namespace Modbus.Net.Modbus
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
         public ModbusAsciiInUdpProtocol(byte slaveAddress, byte masterAddress)
-            : this(ConfigurationManager.AppSettings["IP"], slaveAddress, masterAddress)
+            : this(new ConfigurationBuilder().AddJsonFile($"appsettings.json").Build().GetSection("Config")["IP"], slaveAddress, masterAddress)
         {
         }
 

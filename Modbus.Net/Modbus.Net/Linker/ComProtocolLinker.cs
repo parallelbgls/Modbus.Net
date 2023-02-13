@@ -1,4 +1,4 @@
-﻿using System.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using System.IO.Ports;
 
 namespace Modbus.Net
@@ -17,7 +17,7 @@ namespace Modbus.Net
         /// <param name="dataBits">数据位</param>
         /// <param name="slaveAddress">从站地址</param>
         protected ComProtocolLinker(int baudRate, Parity parity, StopBits stopBits, int dataBits, int slaveAddress)
-            : this(ConfigurationManager.AppSettings["COM"], baudRate, parity, stopBits, dataBits, slaveAddress)
+            : this(new ConfigurationBuilder().AddJsonFile($"appsettings.json").Build().GetSection("Config")["COM"], baudRate, parity, stopBits, dataBits, slaveAddress)
         {
         }
 
@@ -35,7 +35,7 @@ namespace Modbus.Net
             int slaveAddress, bool isFullDuplex = false)
             : this(
                 com, baudRate, parity, stopBits, dataBits,
-                int.Parse(ConfigurationManager.AppSettings["ComConnectionTimeout"] ?? "-1"), slaveAddress, isFullDuplex)
+                int.Parse(new ConfigurationBuilder().AddJsonFile($"appsettings.json").Build().GetSection("Config")["ComConnectionTimeout"] ?? "-1"), slaveAddress, isFullDuplex)
         {
         }
 

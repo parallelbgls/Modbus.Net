@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Modbus.Net
 {
@@ -16,6 +13,8 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="receiveMessage">收到的报文信息</param>
         /// <param name="packageCountPositions">收到的断包长度查询位置</param>
+        /// <param name="otherCount">除掉长度查询信息外其它报文的长度
+        ///                          注意：该长度不包含CRC校验</param>
         /// <returns>切分后的报文信息</returns>
         private static ICollection<byte[]> DuplicateMessages(byte[] receiveMessage, ICollection<int> packageCountPositions, int otherCount)
         {
@@ -52,6 +51,8 @@ namespace Modbus.Net
         ///     获取按照长度断包的函数
         /// </summary>
         /// <param name="packageCountPositions">断包长度的位置信息</param>
+        /// <param name="otherCount">除掉长度查询信息外其它报文的长度
+        ///                          注意：该长度不包含CRC校验</param>
         /// <returns>断包函数</returns>
         public static Func<byte[], ICollection<byte[]>> GetDuplcateFunc(ICollection<int> packageCountPositions, int otherCount)
         {
