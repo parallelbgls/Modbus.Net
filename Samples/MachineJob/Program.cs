@@ -17,9 +17,11 @@ List<AddressUnit> _addresses = new List<AddressUnit>
     new AddressUnit() { Area = "4X", Address = 10, DataType = typeof(short), Id = "10", Name = "Test10" }
 };
 
-IMachine<string> machine = new ModbusMachine<string, string>("ModbusMachine1", ModbusType.Tcp, "192.168.0.172:502", _addresses, true, 1, 2, Endian.BigEndianLsb);
+IMachine<string> machine = new ModbusMachine<string, string>("ModbusMachine1", ModbusType.Tcp, "192.168.0.172", _addresses, true, 1, 2, Endian.BigEndianLsb);
+IMachine<string> machine2 = new ModbusMachine<string, string>("ModbusMachine2", ModbusType.Tcp, "192.168.0.172:503", _addresses, true, 3, 2, Endian.BigEndianLsb);
 
-await MachineJobSchedulerCreator.CreateScheduler("Trigger1", -1, 5).Result.From(machine.Id, machine, MachineDataType.Name).Result.Query("ConsoleQuery", QueryConsole).Result.To(machine.Id + ".To", machine).Result.Run();
+await MachineJobSchedulerCreator.CreateScheduler("Trigger1", -1, 5).Result.From(machine.Id, machine, MachineDataType.Name).Result.Query(machine.Id + ".ConsoleQuery", QueryConsole).Result.To(machine.Id + ".To", machine).Result.To(machine2.Id + ".To", machine2).Result.Run();
+//await MachineJobSchedulerCreator.CreateScheduler("Trigger2", -1, 5).Result.Apply(machine2.Id + ".Apply", null, MachineDataType.Name).Result.Query(machine.Id + ".ConsoleQuery2", QueryConsole2).Result.To(machine2.Id + ".To2", machine2).Result.From(machine2.Id, machine2, MachineDataType.Name).Result.Query(machine.Id + ".ConsoleQuery", QueryConsole).Result.Run();
 
 Console.ReadLine();
 
@@ -31,31 +33,77 @@ Dictionary<string, ReturnUnit> QueryConsole(DataReturnDef dataReturnDef)
         Console.WriteLine(dataReturnDef.MachineId + " " + value.Key + " " + value.Value.DeviceValue);
     }
 
-    using (var context = new DatabaseWriteContext())
+    try
     {
-        context.DatabaseWrites.Add(new DatabaseWriteEntity
+        using (var context = new DatabaseWriteContext())
         {
-            Value1 = values["Test1"].DeviceValue,
-            Value2 = values["Test2"].DeviceValue,
-            Value3 = values["Test3"].DeviceValue,
-            Value4 = values["Test4"].DeviceValue,
-            Value5 = values["Test5"].DeviceValue,
-            Value6 = values["Test6"].DeviceValue,
-            Value7 = values["Test7"].DeviceValue,
-            Value8 = values["Test8"].DeviceValue,
-            Value9 = values["Test9"].DeviceValue,
-            Value10 = values["Test10"].DeviceValue,
-            UpdateTime = DateTime.Now,
-        });
-        context.SaveChanges();
+            context.DatabaseWrites.Add(new DatabaseWriteEntity
+            {
+                Value1 = values["Test1"].DeviceValue,
+                Value2 = values["Test2"].DeviceValue,
+                Value3 = values["Test3"].DeviceValue,
+                Value4 = values["Test4"].DeviceValue,
+                Value5 = values["Test5"].DeviceValue,
+                Value6 = values["Test6"].DeviceValue,
+                Value7 = values["Test7"].DeviceValue,
+                Value8 = values["Test8"].DeviceValue,
+                Value9 = values["Test9"].DeviceValue,
+                Value10 = values["Test10"].DeviceValue,
+                UpdateTime = DateTime.Now,
+            });
+            context.SaveChanges();
+        }
+    }
+    catch
+    {
+        //ignore
     }
 
+    Random r = new Random();
     foreach (var value in values)
     {
-        value.Value.DeviceValue = new Random().Next(65536) - 32768;
+        value.Value.DeviceValue = r.Next(65536) - 32768;
     }
 
     return values;
 }
 
+Dictionary<string, ReturnUnit> QueryConsole2(DataReturnDef dataReturnDef)
+{
+    Random r = new Random();
+    var datas = new Dictionary<string, ReturnUnit>()
+    {
+        {
+            "Test1", new ReturnUnit(){DeviceValue = r.Next(65536) - 32768 }
+        },
+        {
+            "Test2", new ReturnUnit(){DeviceValue = r.Next(65536) - 32768 }
+        },
+        {
+            "Test3", new ReturnUnit(){DeviceValue = r.Next(65536) - 32768 }
+        },
+        {
+            "Test4", new ReturnUnit(){DeviceValue = r.Next(65536) - 32768 }
+        },
+        {
+            "Test5", new ReturnUnit(){DeviceValue = r.Next(65536) - 32768 }
+        },
+        {
+            "Test6", new ReturnUnit(){DeviceValue = r.Next(65536) - 32768 }
+        },
+        {
+            "Test7", new ReturnUnit(){DeviceValue = r.Next(65536) - 32768 }
+        },
+        {
+            "Test8", new ReturnUnit(){DeviceValue = r.Next(65536) - 32768 }
+        },
+        {
+            "Test9", new ReturnUnit(){DeviceValue = r.Next(65536) - 32768 }
+        },
+        {
+            "Test10", new ReturnUnit(){DeviceValue = r.Next(65536) - 32768 }
+        }
+    };
+    return datas;
+}
 

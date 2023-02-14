@@ -102,7 +102,7 @@ await MachineJobSchedulerCreator.CreateScheduler("Trigger1", -1, 10).Result.Appl
         "4X 3.0",  new ReturnUnit(){DeviceValue = r.Next() % 65536 }
     } 
 }, MachineDataType.Address).Result.Query().Result.To(machine.Id + ".To", machine).Result.Run();
-await MachineJobSchedulerCreator.CreateScheduler("Trigger1", -1, 10).Result.Apply(machine2.Id + ".Apply", new Dictionary<string, ReturnUnit>() {{
+await MachineJobSchedulerCreator.CreateScheduler("Trigger2", -1, 10).Result.Apply(machine2.Id + ".Apply", new Dictionary<string, ReturnUnit>() {{
         "4X 1.0", new ReturnUnit(){DeviceValue = r.Next() % 65536 }
     },
     {
@@ -112,7 +112,7 @@ await MachineJobSchedulerCreator.CreateScheduler("Trigger1", -1, 10).Result.Appl
         "4X 3.0",  new ReturnUnit(){DeviceValue = r.Next() % 65536 }
     }
 }, MachineDataType.Address).Result.Query().Result.To(machine2.Id + ".To", machine2).Result.Run();
-await MachineJobSchedulerCreator.CreateScheduler("Trigger1", -1, 10).Result.Apply(machine3.Id + ".Apply", new Dictionary<string, ReturnUnit>() {{
+await MachineJobSchedulerCreator.CreateScheduler("Trigger3", -1, 10).Result.Apply(machine3.Id + ".Apply", new Dictionary<string, ReturnUnit>() {{
         "4X 1.0", new ReturnUnit(){DeviceValue = r.Next() % 65536 }
     },
     {
