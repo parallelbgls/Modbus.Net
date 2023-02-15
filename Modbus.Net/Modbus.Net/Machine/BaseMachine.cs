@@ -285,7 +285,7 @@ namespace Modbus.Net
                                 ans.Add(key, new ReturnUnit
                                 {
                                     DeviceValue = null,
-                                    UnitExtend = address.UnitExtend
+                                    AddressUnit = address.MapAddressUnitTUnitKeyToAddressUnit(),
                                 });
                             else
                                 ans.Add(key,
@@ -296,7 +296,7 @@ namespace Modbus.Net
                                                 ValueHelper.GetInstance(BaseUtility.Endian)
                                                     .GetValue(datas, ref localMainPos, ref localSubPos,
                                                         address.DataType)) * address.Zoom,
-                                        UnitExtend = address.UnitExtend
+                                        AddressUnit = address.MapAddressUnitTUnitKeyToAddressUnit(),
                                     });
                         }
                         catch (Exception e)
@@ -710,9 +710,9 @@ namespace Modbus.Net
         public double? DeviceValue { get; set; }
 
         /// <summary>
-        ///     数据的扩展
+        ///     数据定义
         /// </summary>
-        public UnitExtend UnitExtend { get; set; }
+        public AddressUnit AddressUnit { get; set; }
     }
 
     /// <summary>
@@ -795,6 +795,36 @@ namespace Modbus.Net
         public bool Equals(AddressUnit<TKey> other)
         {
             return Area.ToUpper() == other.Area.ToUpper() && Address == other.Address || Id.Equals(other.Id);
+        }
+    }
+
+    /// <summary>
+    ///     AddressUnit扩展
+    /// </summary>
+    public static class AddressUnitExtend
+    {
+        /// <summary>
+        ///     映射泛型AddressUnit到字符串型AddressUnit
+        /// </summary>
+        /// <param name="addressUnit"></param>
+        /// <returns></returns>
+        public static AddressUnit MapAddressUnitTUnitKeyToAddressUnit<TUnitKey>(this AddressUnit<TUnitKey> addressUnit) where TUnitKey : IEquatable<TUnitKey>
+        {
+            return new AddressUnit()
+            {
+                Id = addressUnit.ToString(),
+                Area = addressUnit.Area,
+                Address = addressUnit.Address,
+                SubAddress = addressUnit.SubAddress,
+                DataType = addressUnit.DataType,
+                Zoom = addressUnit.Zoom,
+                DecimalPos = addressUnit.DecimalPos,
+                CommunicationTag = addressUnit.CommunicationTag,
+                Name = addressUnit.Name,
+                Unit = addressUnit.Unit,
+                CanWrite = addressUnit.CanWrite,
+                UnitExtend = addressUnit.UnitExtend
+            };
         }
     }
 }

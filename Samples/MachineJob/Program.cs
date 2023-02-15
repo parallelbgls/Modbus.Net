@@ -25,14 +25,14 @@ await MachineJobSchedulerCreator.CreateScheduler("Trigger1", -1, 5).Result.From(
 
 Console.ReadLine();
 
-Dictionary<string, ReturnUnit> QueryConsole(DataReturnDef dataReturnDef)
+Dictionary<string, double> QueryConsole(DataReturnDef dataReturnDef)
 {
     var values = dataReturnDef.ReturnValues;
     foreach (var value in values)
     {
         Console.WriteLine(dataReturnDef.MachineId + " " + value.Key + " " + value.Value.DeviceValue);
     }
-
+    
     try
     {
         using (var context = new DatabaseWriteContext())
@@ -58,50 +58,50 @@ Dictionary<string, ReturnUnit> QueryConsole(DataReturnDef dataReturnDef)
     {
         //ignore
     }
-
+    
     Random r = new Random();
     foreach (var value in values)
     {
         value.Value.DeviceValue = r.Next(65536) - 32768;
     }
 
-    return values;
+    return values.MapGetValuesToSetValues();
 }
 
-Dictionary<string, ReturnUnit> QueryConsole2(DataReturnDef dataReturnDef)
+Dictionary<string, double> QueryConsole2(DataReturnDef dataReturnDef)
 {
     Random r = new Random();
-    var datas = new Dictionary<string, ReturnUnit>()
+    var datas = new Dictionary<string, double>()
     {
         {
-            "Test1", new ReturnUnit(){DeviceValue = r.Next(65536) - 32768 }
+            "Test1", r.Next(65536) - 32768
         },
         {
-            "Test2", new ReturnUnit(){DeviceValue = r.Next(65536) - 32768 }
+            "Test2", r.Next(65536) - 32768 
         },
         {
-            "Test3", new ReturnUnit(){DeviceValue = r.Next(65536) - 32768 }
+            "Test3", r.Next(65536) - 32768
         },
         {
-            "Test4", new ReturnUnit(){DeviceValue = r.Next(65536) - 32768 }
+            "Test4", r.Next(65536) - 32768
         },
         {
-            "Test5", new ReturnUnit(){DeviceValue = r.Next(65536) - 32768 }
+            "Test5", r.Next(65536) - 32768
         },
         {
-            "Test6", new ReturnUnit(){DeviceValue = r.Next(65536) - 32768 }
+            "Test6", r.Next(65536) - 32768
         },
         {
-            "Test7", new ReturnUnit(){DeviceValue = r.Next(65536) - 32768 }
+            "Test7", r.Next(65536) - 32768
         },
         {
-            "Test8", new ReturnUnit(){DeviceValue = r.Next(65536) - 32768 }
+            "Test8", r.Next(65536) - 32768
         },
         {
-            "Test9", new ReturnUnit(){DeviceValue = r.Next(65536) - 32768 }
+            "Test9", r.Next(65536) - 32768
         },
         {
-            "Test10", new ReturnUnit(){DeviceValue = r.Next(65536) - 32768 }
+            "Test10", r.Next(65536) - 32768
         }
     };
     return datas;

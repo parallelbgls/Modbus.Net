@@ -92,34 +92,34 @@ ModbusMachine<int, string> machine3 = new ModbusMachine<int, string>(3, ModbusTy
         },
     }, true, 4, 1);
 Random r = new Random();
-await MachineJobSchedulerCreator.CreateScheduler("Trigger1", -1, 10).Result.Apply(machine.Id+".Apply", new Dictionary<string, ReturnUnit>() {{
-        "4X 1.0", new ReturnUnit(){DeviceValue = r.Next() % 65536 }
+await MachineJobSchedulerCreator.CreateScheduler("Trigger1", -1, 10).Result.ApplyTo(machine.Id+".Apply", new Dictionary<string, double>() {{
+        "4X 1.0", r.Next() % 65536 
     },
     {
-        "4X 2.0",  new ReturnUnit(){DeviceValue = r.Next() % 65536 }
+        "4X 2.0",  r.Next() % 65536 
     },
     {
-        "4X 3.0",  new ReturnUnit(){DeviceValue = r.Next() % 65536 }
+        "4X 3.0",  r.Next() % 65536 
     } 
-}, MachineDataType.Address).Result.Query().Result.To(machine.Id + ".To", machine).Result.Run();
-await MachineJobSchedulerCreator.CreateScheduler("Trigger2", -1, 10).Result.Apply(machine2.Id + ".Apply", new Dictionary<string, ReturnUnit>() {{
-        "4X 1.0", new ReturnUnit(){DeviceValue = r.Next() % 65536 }
+}, MachineDataType.Address).Result.To(machine.Id + ".To", machine).Result.Run();
+await MachineJobSchedulerCreator.CreateScheduler("Trigger2", -1, 10).Result.ApplyTo(machine2.Id + ".Apply", new Dictionary<string, double>() {{
+        "4X 1.0", r.Next() % 65536 
     },
     {
-        "4X 2.0",  new ReturnUnit(){DeviceValue = r.Next() % 65536 }
+        "4X 2.0",  r.Next() % 65536 
     },
     {
-        "4X 3.0",  new ReturnUnit(){DeviceValue = r.Next() % 65536 }
+        "4X 3.0",  r.Next() % 65536 
     }
-}, MachineDataType.Address).Result.Query().Result.To(machine2.Id + ".To", machine2).Result.Run();
-await MachineJobSchedulerCreator.CreateScheduler("Trigger3", -1, 10).Result.Apply(machine3.Id + ".Apply", new Dictionary<string, ReturnUnit>() {{
-        "4X 1.0", new ReturnUnit(){DeviceValue = r.Next() % 65536 }
+}, MachineDataType.Address).Result.To(machine2.Id + ".To", machine2).Result.Run();
+await MachineJobSchedulerCreator.CreateScheduler("Trigger3", -1, 10).Result.ApplyTo(machine3.Id + ".Apply", new Dictionary<string, double>() {{
+        "4X 1.0", r.Next() % 65536 
     },
     {
-        "4X 2.0",  new ReturnUnit(){DeviceValue = r.Next() % 65536 }
+        "4X 2.0",  r.Next() % 65536 
     },
     {
-        "4X 3.0",  new ReturnUnit(){DeviceValue = r.Next() % 65536 }
+        "4X 3.0",  r.Next() % 65536 
     }
-}, MachineDataType.Address).Result.Query().Result.To(machine3.Id + ".To", machine3).Result.Run();
+}, MachineDataType.Address).Result.To(machine3.Id + ".To", machine3).Result.Run();
 Console.ReadLine();

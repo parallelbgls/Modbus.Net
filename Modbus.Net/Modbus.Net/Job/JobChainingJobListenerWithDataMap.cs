@@ -10,7 +10,7 @@ namespace Modbus.Net
 {
     public class JobChainingJobListenerWithDataMap : JobListenerSupport
     {
-        public JobChainingJobListenerWithDataMap(string name, string[] overwriteKeys)
+        public JobChainingJobListenerWithDataMap(string name, ICollection<string> overwriteKeys)
         {
             Name = name;
             OverWriteKeys = overwriteKeys;
@@ -21,7 +21,7 @@ namespace Modbus.Net
 
         public override string Name { get; }
 
-        public string[] OverWriteKeys { get; }
+        public ICollection<string> OverWriteKeys { get; }
 
         /// <summary>
         /// Add a chain mapping - when the Job identified by the first key completes

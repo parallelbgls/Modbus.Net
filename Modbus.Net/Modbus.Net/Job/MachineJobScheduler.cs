@@ -50,7 +50,7 @@ namespace Modbus.Net
                     .WithSimpleSchedule(b => b.WithInterval(TimeSpan.FromSeconds(interval)).RepeatForever())
                     .Build();
 
-            var listener = new JobChainingJobListenerWithDataMap("Modbus.Net.DataQuery.Chain." + triggerKey, new string[1] { "Value" });
+            var listener = new JobChainingJobListenerWithDataMap("Modbus.Net.DataQuery.Chain." + triggerKey, new string[2] { "Value", "SetValue" });
             scheduler.ListenerManager.AddJobListener(listener, GroupMatcher<JobKey>.GroupEquals("Modbus.Net.DataQuery.Group." + triggerKey));
 
             if (await scheduler.GetTrigger(new TriggerKey(triggerKey)) != null)
@@ -120,12 +120,12 @@ namespace Modbus.Net
             return new MachineQueryJobScheduler(_scheduler, _trigger, jobKey);
         }
 
-        public Task<MachineQueryJobScheduler> Apply(string queryId, Dictionary<string, ReturnUnit> values, MachineDataType machineDataType)
+        public Task<MachineQueryJobScheduler> Apply(string queryId, Dictionary<string, double> values, MachineDataType machineDataType)
         {
             return Apply<string>(queryId, values, machineDataType);
         }
 
-        public async Task<MachineQueryJobScheduler> Apply<TMachineKey>(string queryId, Dictionary<string, ReturnUnit> values, MachineDataType machineDataType) where TMachineKey : IEquatable<TMachineKey>
+        public async Task<MachineQueryJobScheduler> Apply<TMachineKey>(string queryId, Dictionary<string, double> values, MachineDataType machineDataType) where TMachineKey : IEquatable<TMachineKey>
         {
             JobKey jobKey = JobKey.Create("Modbus.Net.DataQuery.Job." + queryId, "Modbus.Net.DataQuery.Group." + _trigger.Key.Name);
 
@@ -135,7 +135,7 @@ namespace Modbus.Net
                 .Build();
 
             job.JobDataMap.Put("DataType", machineDataType);
-            job.JobDataMap.Put("Value", values);
+            job.JobDataMap.Put("SetValue", values);
             job.JobDataMap.Put("QueryMethod", null);
 
             if (_parentJobKey != null)
@@ -153,12 +153,12 @@ namespace Modbus.Net
             return new MachineQueryJobScheduler(_scheduler, _trigger, jobKey);
         }
 
-        public Task<MachineSetJobScheduler> ApplyTo(string queryId, Dictionary<string, ReturnUnit> values, MachineDataType machineDataType)
+        public Task<MachineSetJobScheduler> ApplyTo(string queryId, Dictionary<string, double> values, MachineDataType machineDataType)
         {
             return ApplyTo<string>(queryId, values, machineDataType);
         }
 
-        public async Task<MachineSetJobScheduler> ApplyTo<TMachineKey>(string queryId, Dictionary<string, ReturnUnit> values, MachineDataType machineDataType) where TMachineKey : IEquatable<TMachineKey>
+        public async Task<MachineSetJobScheduler> ApplyTo<TMachineKey>(string queryId, Dictionary<string, double> values, MachineDataType machineDataType) where TMachineKey : IEquatable<TMachineKey>
         {
             var applyJobScheduler = await Apply<TMachineKey>(queryId, values, machineDataType);
             return await applyJobScheduler.Query();
@@ -180,12 +180,12 @@ namespace Modbus.Net
             _parentJobKey = parentJobKey;
         }
 
-        public Task<MachineSetJobScheduler> Query(string queryId = null, Func<DataReturnDef, Dictionary<string, ReturnUnit>> QueryDataFunc = null)
+        public Task<MachineSetJobScheduler> Query(string queryId = null, Func<DataReturnDef, Dictionary<string, double>> QueryDataFunc = null)
         {
             return Query<string>(queryId, QueryDataFunc);
         }
 
-        public async Task<MachineSetJobScheduler> Query<TMachineKey>(string queryId = null, Func<DataReturnDef, Dictionary<string, ReturnUnit>> QueryDataFunc = null) where TMachineKey : IEquatable<TMachineKey>
+        public async Task<MachineSetJobScheduler> Query<TMachineKey>(string queryId = null, Func<DataReturnDef, Dictionary<string, double>> QueryDataFunc = null) where TMachineKey : IEquatable<TMachineKey>
         {
             if (queryId == null) return new MachineSetJobScheduler(_scheduler, _trigger, _parentJobKey);
 
@@ -279,11 +279,11 @@ namespace Modbus.Net
             context.JobDetail.JobDataMap.TryGetValue("Machine", out machine);
             context.JobDetail.JobDataMap.TryGetValue("Value", out values);
             context.JobDetail.JobDataMap.TryGetValue("QueryMethod", out QueryMethod);
-            Func<DataReturnDef, Dictionary<string, ReturnUnit>> QueryMethodDispatch = (Func<DataReturnDef, Dictionary<string, ReturnUnit>>)QueryMethod;
+            Func<DataReturnDef, Dictionary<string, double>> QueryMethodDispatch = (Func<DataReturnDef, Dictionary<string, double>>)QueryMethod;
 
-            if (QueryMethod != null)
+            if (QueryMethod != null && values != null)
             {
-                context.JobDetail.JobDataMap.Put("Value", QueryMethodDispatch(new DataReturnDef() { MachineId = machine == null ? null : ((IMachineProperty<TMachineKey>)machine).GetMachineIdString(), ReturnValues = (Dictionary<string, ReturnUnit>)values }));
+                context.JobDetail.JobDataMap.Put("SetValue", QueryMethodDispatch(new DataReturnDef() { MachineId = machine == null ? null : ((IMachineProperty<TMachineKey>)machine).GetMachineIdString(), ReturnValues = (Dictionary<string, ReturnUnit>)values }));
                 await context.Scheduler.AddJob(context.JobDetail, true, false);
             }
         }
@@ -296,12 +296,15 @@ namespace Modbus.Net
             object machine;
             object machineDataType;
             object values;
+            object valuesSet;
             context.JobDetail.JobDataMap.TryGetValue("Machine", out machine);
             context.JobDetail.JobDataMap.TryGetValue("DataType", out machineDataType);
             context.JobDetail.JobDataMap.TryGetValue("Value", out values);
-            Dictionary<string, double> valuesSet = ((Dictionary<string, ReturnUnit>)values).MapGetValuesToSetValues();
+            context.JobDetail.JobDataMap.TryGetValue("SetValue", out valuesSet);
+            if (valuesSet == null && values != null)
+                valuesSet = ((Dictionary<string, ReturnUnit>)values).MapGetValuesToSetValues();
 
-            var success = await (machine as IMachineMethodData)!.SetDatasAsync((MachineDataType)machineDataType, valuesSet);
+            var success = await (machine as IMachineMethodData)!.SetDatasAsync((MachineDataType)machineDataType, (Dictionary<string, double>)valuesSet);
         }
     }
 }
