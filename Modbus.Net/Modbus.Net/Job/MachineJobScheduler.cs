@@ -160,29 +160,8 @@ namespace Modbus.Net
 
         public async Task<MachineSetJobScheduler> ApplyTo<TMachineKey>(string queryId, Dictionary<string, ReturnUnit> values, MachineDataType machineDataType) where TMachineKey : IEquatable<TMachineKey>
         {
-            JobKey jobKey = JobKey.Create("Modbus.Net.DataQuery.Job." + queryId, "Modbus.Net.DataQuery.Group." + _trigger.Key.Name);
-
-            IJobDetail job = JobBuilder.Create<MachineQueryDataJob<TMachineKey>>()
-                .WithIdentity(jobKey)
-                .StoreDurably(true)
-                .Build();
-
-            job.JobDataMap.Put("DataType", machineDataType);
-            job.JobDataMap.Put("Value", values);
-
-            if (_parentJobKey != null)
-            {
-                var listener = _scheduler.ListenerManager.GetJobListener("Modbus.Net.DataQuery.Chain." + _trigger.Key.Name) as JobChainingJobListenerWithDataMap;
-                listener.AddJobChainLink(_parentJobKey, jobKey);
-
-                await _scheduler.AddJob(job, true);
-            }
-            else
-            {
-                await _scheduler.ScheduleJob(job, _trigger);
-            }
-
-            return new MachineSetJobScheduler(_scheduler, _trigger, jobKey);
+            var applyJobScheduler = await Apply<TMachineKey>(queryId, values, machineDataType);
+            return await applyJobScheduler.Query();
         }
     }
 
