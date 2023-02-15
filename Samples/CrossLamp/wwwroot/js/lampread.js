@@ -18,7 +18,7 @@ function readLamp() {
             [].forEach.call(liNodes, function (v) {
                 v.style.backgroundColor = "lightgray";
             });
-            switch (datas.MainLamp) {
+            switch (datas.mainLamp) {
             case "Red":
             {
                 liNodes[index].style.backgroundColor = colorArr[index];
@@ -35,7 +35,7 @@ function readLamp() {
                 break;
             }
             }
-            switch (datas.SubLamp) {
+            switch (datas.subLamp) {
             case "Red":
             {
                 liNodes[index2].style.backgroundColor = colorArr[index];

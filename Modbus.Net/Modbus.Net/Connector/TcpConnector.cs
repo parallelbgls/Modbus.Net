@@ -87,20 +87,16 @@ namespace Modbus.Net
         /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!m_disposed)
+            if (disposing)
             {
-                if (disposing)
-                {
-                    // Release managed resources
-                }
-                // Release unmanaged resources
-                if (_socketClient != null)
-                {
-                    CloseClientSocket();
-                    _socketClient = null;
-                    Log.Debug("Tcp client {ConnectionToken} Disposed", ConnectionToken);
-                }
-                m_disposed = true;
+                // Release managed resources
+            }
+            // Release unmanaged resources
+            if (_socketClient != null)
+            {
+                CloseClientSocket();
+                _socketClient = null;
+                Log.Debug("Tcp client {ConnectionToken} Disposed", ConnectionToken);
             }
         }
 
@@ -312,9 +308,8 @@ namespace Modbus.Net
                 {
                     if (_socketClient.Connected)
                     {
-                        _socketClient.GetStream().Dispose();
-                    }
-                    _socketClient?.Close();
+                        _socketClient.Close();
+                    }                 
                 }
             }
             catch (Exception ex)

@@ -4,9 +4,7 @@
 }
 
 
-<form asp-controller="Home" asp-action="@ViewBag.Method"
-      data-ajax-failure="DisplayError(data)" data-ajax-success="Reload(data)"
-      data-ajax-mode="replace" data-ajax="true" data-ajax-method="POST">
+<form asp-controller="Home" asp-action="@ViewBag.Method">
     <div class="col-md-12 form-inline form-group" style="margin-top: 20px; padding-top: 5px; background-color: #E5E1DB">
         <label>
             @Html.TextBoxFor(p => p.Add1, new {@id="add1", Class = "form-control input-lg" })
@@ -31,7 +29,3 @@
     </div>
 </form>
 <br/>
-
-@section scripts {
-<script src="~/js/refresh.js"></script>
-}

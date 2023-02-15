@@ -44,7 +44,7 @@ namespace Modbus.Net.Modbus
         public ModbusMachine(TKey id, ModbusType connectionType, string connectionString,
             IEnumerable<AddressUnit<TUnitKey>> getAddresses, byte slaveAddress, byte masterAddress,
             Endian endian = Endian.BigEndianLsb)
-            : this(id, connectionType, connectionString, getAddresses, false, slaveAddress, masterAddress, endian)
+            : this(id, connectionType, connectionString, getAddresses, true, slaveAddress, masterAddress, endian)
         {
         }
     }
@@ -89,7 +89,7 @@ namespace Modbus.Net.Modbus
         public ModbusMachine(string id, ModbusType connectionType, string connectionString,
             IEnumerable<AddressUnit> getAddresses, byte slaveAddress, byte masterAddress,
             Endian endian = Endian.BigEndianLsb)
-            : this(id, connectionType, connectionString, getAddresses, false, slaveAddress, masterAddress, endian)
+            : this(id, connectionType, connectionString, getAddresses, true, slaveAddress, masterAddress, endian)
         {
         }
     }
