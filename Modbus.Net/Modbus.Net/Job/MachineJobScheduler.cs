@@ -67,8 +67,8 @@ namespace Modbus.Net
         {
             IScheduler scheduler = await StdSchedulerFactory.GetDefaultScheduler();
             var jobKeys = await scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals("Modbus.Net.DataQuery.Group." + triggerKey));
-            await scheduler.DeleteJobs(jobKeys);
             await scheduler.UnscheduleJob(new TriggerKey(triggerKey, "Modbus.Net.DataQuery.Group." + triggerKey));
+            await scheduler.DeleteJobs(jobKeys);         
         }
     }
 
