@@ -35,6 +35,11 @@ namespace MachineJob.Service
             //await MachineJobSchedulerCreator.CreateScheduler("Trigger2", -1, 5).Result.Apply(machine2.Id + ".Apply", null, MachineDataType.Name).Result.Query(machine2.Id + ".ConsoleQuery", QueryConsole2).Result.To(machine2.Id + ".To2", machine2).Result.From(machine2.Id, machine2, MachineDataType.Name).Result.Query(machine2.Id + ".ConsoleQuery2", QueryConsole).Result.Run();
         }
 
+        public override async Task StopAsync(CancellationToken cancellationToken)
+        {
+            await MachineJobSchedulerCreator.CancelJob("Trigger1");
+        }
+
         private Dictionary<string, double> QueryConsole(DataReturnDef dataReturnDef)
         {
             var values = dataReturnDef.ReturnValues;
