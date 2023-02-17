@@ -1,10 +1,25 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <RootNamespace>h_opc</RootNamespace>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <TargetFrameworks>net6.0</TargetFrameworks>
+    <AssemblyName>h-opc-ua</AssemblyName>
+    <RootNamespace>Hylasoft.Opc</RootNamespace>
+    <PackageId>h-opc-ua</PackageId>
+    <Version>0.9.3</Version>
+    <Product>Modbus.Net</Product>
+    <Authors>Chris L.(Luo Sheng)</Authors>
+    <Company>Hangzhou Delian Science Technology Co.,Ltd.</Company>
+    <PackageProjectUrl>https://github.com/parallelbgls/Modbus.Net/tree/master/Modbus.Net</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/parallelbgls/Modbus.Net/</RepositoryUrl>
+    <Description>High extensible hardware communication implementation platform.</Description>
+    <Copyright>Copyright 2023 Hangzhou Delian Science Technology Co.,Ltd.</Copyright>
+    <PackageTags>hardware communicate protocol Delian</PackageTags>
+    <RepositoryType>git</RepositoryType>
+    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <IncludeSymbols>True</IncludeSymbols>
+    <IncludeSource>True</IncludeSource>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,3 +27,4 @@
   </ItemGroup>
 
 </Project>
+
