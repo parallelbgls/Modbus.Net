@@ -43,6 +43,7 @@ namespace TripleAdd.Controllers
             {
                 utility = new ModbusUtility(ModbusType.Tcp, "192.168.0.161", 2, 0);
                 utility.AddressTranslator = new AddressTranslatorModbus();
+                await utility.ConnectAsync();
             }
             object[] getNum = await utility.GetDatasAsync("4X 1", new KeyValuePair<Type, int>(typeof(ushort), 4));
             ushort[] getNumUshorts = BigEndianValueHelper.Instance.ObjectArrayToDestinationArray<ushort>(getNum);
