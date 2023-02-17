@@ -63,7 +63,7 @@ namespace Modbus.Net
             return new MachineGetJobScheduler(scheduler, trigger);
         }
 
-        public static async void CancelJob(string triggerKey)
+        public static async Task CancelJob(string triggerKey)
         {
             IScheduler scheduler = await StdSchedulerFactory.GetDefaultScheduler();
             var jobKeys = await scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals("Modbus.Net.DataQuery.Group." + triggerKey));
