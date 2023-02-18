@@ -4,12 +4,19 @@ using Serilog;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Linq;
 
 namespace Modbus.Net
 {
+    /// <summary>
+    ///     JobChaningJobListener with DataMap passing from parent job to next job
+    /// </summary>
     public class JobChainingJobListenerWithDataMap : JobListenerSupport
     {
+        /// <summary>
+        /// JobChaningJobListener with DataMap passing from parent job to next job
+        /// </summary>
+        /// <param name="name">Job name</param>
+        /// <param name="overwriteKeys">If key is overwritable, parent job will pass the value to next job event next job contains that key</param>
         public JobChainingJobListenerWithDataMap(string name, ICollection<string> overwriteKeys)
         {
             Name = name;
@@ -19,8 +26,12 @@ namespace Modbus.Net
 
         private readonly Dictionary<JobKey, JobKey> chainLinks;
 
+        /// <inheritdoc />
         public override string Name { get; }
 
+        /// <summary>
+        /// Keys that should overwritable
+        /// </summary>
         public ICollection<string> OverWriteKeys { get; }
 
         /// <summary>
@@ -34,6 +45,8 @@ namespace Modbus.Net
             chainLinks.Add(firstJob, secondJob);
         }
 
+#nullable enable
+        /// <inheritdoc />
         public override async Task JobWasExecuted(IJobExecutionContext context,
             JobExecutionException? jobException,
             CancellationToken cancellationToken = default)
@@ -50,20 +63,24 @@ namespace Modbus.Net
             try
             {
                 var sjJobDetail = await context.Scheduler.GetJobDetail(sj);
-                foreach (var entry in context.JobDetail.JobDataMap)
+                if (sjJobDetail != null)
                 {
-                    if (!sjJobDetail.JobDataMap.ContainsKey(entry.Key) || sjJobDetail.JobDataMap.ContainsKey(entry.Key) && OverWriteKeys != null && OverWriteKeys.Contains(entry.Key))
+                    foreach (var entry in context.JobDetail.JobDataMap)
                     {
-                        sjJobDetail.JobDataMap.Put(entry.Key, entry.Value);                       
+                        if (!sjJobDetail.JobDataMap.ContainsKey(entry.Key) || sjJobDetail.JobDataMap.ContainsKey(entry.Key) && OverWriteKeys != null && OverWriteKeys.Contains(entry.Key))
+                        {
+                            sjJobDetail.JobDataMap.Put(entry.Key, entry.Value);
+                        }
                     }
+                    await context.Scheduler.AddJob(sjJobDetail, true, false);
+                    await context.Scheduler.TriggerJob(sj, cancellationToken).ConfigureAwait(false);
                 }
-                await context.Scheduler.AddJob(sjJobDetail, true, false);
-                await context.Scheduler.TriggerJob(sj, cancellationToken).ConfigureAwait(false);
             }
             catch (SchedulerException se)
             {
                 Log.Error(se, "Error encountered during chaining to Job '{Job}'", sj);
             }
         }
+#nullable disable
     }
 }

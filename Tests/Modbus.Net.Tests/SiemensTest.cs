@@ -10,7 +10,7 @@ namespace Modbus.Net.Tests
     [TestClass]
     public class SiemensTest
     {
-        private BaseMachine _siemensTcpMachine;
+        private BaseMachine? _siemensTcpMachine;
 
         [TestInitialize]
         public void Init()
@@ -43,7 +43,7 @@ namespace Modbus.Net.Tests
                 }
             };
 
-            _siemensTcpMachine.GetAddresses = addresses;
+            _siemensTcpMachine!.GetAddresses = addresses;
             await _siemensTcpMachine.SetDatasAsync(MachineDataType.Address, dic1);
 
             var ans = await _siemensTcpMachine.GetDatasAsync(MachineDataType.Address);
@@ -66,7 +66,7 @@ namespace Modbus.Net.Tests
                 }
             };
 
-            _siemensTcpMachine.GetAddresses = addresses;
+            _siemensTcpMachine!.GetAddresses = addresses;
             var ans = await _siemensTcpMachine.GetDatasAsync(MachineDataType.Address);
             Assert.AreEqual(ans["I 0.0"].DeviceValue, 0);
         }
@@ -89,7 +89,7 @@ namespace Modbus.Net.Tests
                 }
             };
 
-            _siemensTcpMachine.GetAddresses = addresses;
+            _siemensTcpMachine!.GetAddresses = addresses;
 
             var dic1 = new Dictionary<string, double>()
             {
@@ -121,7 +121,7 @@ namespace Modbus.Net.Tests
                 }
             };
 
-            _siemensTcpMachine.GetAddresses = addresses;
+            _siemensTcpMachine!.GetAddresses = addresses;
 
             var dic1 = new Dictionary<string, double>()
             {
@@ -161,7 +161,7 @@ namespace Modbus.Net.Tests
                 }
             };
 
-            _siemensTcpMachine.GetAddresses = addresses;
+            _siemensTcpMachine!.GetAddresses = addresses;
             await _siemensTcpMachine.SetDatasAsync(MachineDataType.Address, dic1);
 
             var ans = await _siemensTcpMachine.GetDatasAsync(MachineDataType.Address);
@@ -253,7 +253,7 @@ namespace Modbus.Net.Tests
                 },
             };
 
-            _siemensTcpMachine.GetAddresses = addresses;
+            _siemensTcpMachine!.GetAddresses = addresses;
             await _siemensTcpMachine.SetDatasAsync(MachineDataType.CommunicationTag, dic1);
             var ans = await _siemensTcpMachine.GetDatasAsync(MachineDataType.CommunicationTag);
             Assert.AreEqual(ans["A1"].DeviceValue, dic1["A1"]);
@@ -267,7 +267,7 @@ namespace Modbus.Net.Tests
         [TestCleanup]
         public void MachineClean()
         {
-            _siemensTcpMachine.Disconnect();
+            _siemensTcpMachine!.Disconnect();
         }
     }
 }

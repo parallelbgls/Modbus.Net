@@ -16,7 +16,7 @@ namespace CrossLamp.Controllers
             _logger = logger;
         }
 
-        private static BaseUtility _utility;
+        private static BaseUtility? _utility = null;
 
         public ActionResult Index()
         {
@@ -24,7 +24,7 @@ namespace CrossLamp.Controllers
         }
 
         [HttpGet]
-        public async Task<JsonResult> GetLamp()
+        public async Task<JsonResult?> GetLamp()
         {
             try
             {

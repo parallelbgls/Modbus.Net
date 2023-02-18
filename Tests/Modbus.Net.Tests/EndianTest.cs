@@ -11,9 +11,9 @@ namespace Modbus.Net.Tests
     [TestClass]
     public class EndianTest
     {
-        private BaseMachine _modbusTcpMachine;
+        private BaseMachine? _modbusTcpMachine;
 
-        private BaseMachine _modbusTcpMachine2;
+        private BaseMachine? _modbusTcpMachine2;
 
         [TestInitialize]
         public void Init()
@@ -48,8 +48,8 @@ namespace Modbus.Net.Tests
                 }
             };
 
-            _modbusTcpMachine.GetAddresses = addresses;
-            _modbusTcpMachine2.GetAddresses = addresses;
+            _modbusTcpMachine!.GetAddresses = addresses;
+            _modbusTcpMachine2!.GetAddresses = addresses;
             await _modbusTcpMachine.SetDatasAsync(MachineDataType.Address, dic1);
             var ans = await _modbusTcpMachine.GetDatasAsync(MachineDataType.Address);
             var ans2 = await _modbusTcpMachine2.GetDatasAsync(MachineDataType.Address);

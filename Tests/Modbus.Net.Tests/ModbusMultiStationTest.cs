@@ -10,9 +10,9 @@ namespace Modbus.Net.Tests
     [TestClass]
     public class ModbusMultiStationTest
     {
-        private BaseMachine _modbusRtuMachine1;
+        private BaseMachine? _modbusRtuMachine1;
 
-        private BaseMachine _modbusRtuMachine2;
+        private BaseMachine? _modbusRtuMachine2;
 
         [TestInitialize]
         public void Init()
@@ -82,8 +82,8 @@ namespace Modbus.Net.Tests
                 }
             };
 
-            _modbusRtuMachine1.GetAddresses = addresses.ToList();
-            _modbusRtuMachine2.GetAddresses = addresses.ToList();
+            _modbusRtuMachine1!.GetAddresses = addresses.ToList();
+            _modbusRtuMachine2!.GetAddresses = addresses.ToList();
 
             Random r = new Random();
             var dic1 = new Dictionary<string, double>()

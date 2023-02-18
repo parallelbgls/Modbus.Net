@@ -9,11 +9,11 @@ namespace Modbus.Net.Tests
     [TestClass]
     public class ModbusTest
     {
-        private BaseMachine _modbusTcpMachine;
+        private BaseMachine? _modbusTcpMachine;
 
-        private BaseMachine _modbusRtuMachine;
+        private BaseMachine? _modbusRtuMachine;
 
-        private BaseMachine _modbusAsciiMachine;
+        private BaseMachine? _modbusAsciiMachine;
 
         [TestInitialize]
         public void Init()
@@ -50,9 +50,9 @@ namespace Modbus.Net.Tests
                 }
             };
 
-            _modbusTcpMachine.GetAddresses = addresses;
-            _modbusAsciiMachine.GetAddresses = addresses;
-            _modbusRtuMachine.GetAddresses = addresses;
+            _modbusTcpMachine!.GetAddresses = addresses;
+            _modbusAsciiMachine!.GetAddresses = addresses;
+            _modbusRtuMachine!.GetAddresses = addresses;
             await _modbusTcpMachine.SetDatasAsync(MachineDataType.Address, dic1);
             await _modbusAsciiMachine.SetDatasAsync(MachineDataType.Address, dic1);
             await _modbusRtuMachine.SetDatasAsync(MachineDataType.Address, dic1);
@@ -80,9 +80,9 @@ namespace Modbus.Net.Tests
                 }
             };
 
-            _modbusTcpMachine.GetAddresses = addresses;
-            _modbusRtuMachine.GetAddresses = addresses;
-            _modbusAsciiMachine.GetAddresses = addresses;
+            _modbusTcpMachine!.GetAddresses = addresses;
+            _modbusRtuMachine!.GetAddresses = addresses;
+            _modbusAsciiMachine!.GetAddresses = addresses;
             var ans = await _modbusTcpMachine.GetDatasAsync(MachineDataType.Address);
             var ans2 = await _modbusRtuMachine.GetDatasAsync(MachineDataType.Address);
             var ans3 = await _modbusAsciiMachine.GetDatasAsync(MachineDataType.Address);
@@ -107,9 +107,9 @@ namespace Modbus.Net.Tests
                 }
             };
 
-            _modbusTcpMachine.GetAddresses = addresses;
-            _modbusRtuMachine.GetAddresses = addresses;
-            _modbusAsciiMachine.GetAddresses = addresses;
+            _modbusTcpMachine!.GetAddresses = addresses;
+            _modbusRtuMachine!.GetAddresses = addresses;
+            _modbusAsciiMachine!.GetAddresses = addresses;
             var ans = await _modbusTcpMachine.GetDatasAsync(MachineDataType.Address);
             var ans2 = await _modbusRtuMachine.GetDatasAsync(MachineDataType.Address);
             var ans3 = await _modbusAsciiMachine.GetDatasAsync(MachineDataType.Address);
@@ -143,9 +143,9 @@ namespace Modbus.Net.Tests
                 }
             };
 
-            _modbusTcpMachine.GetAddresses = addresses;
-            _modbusAsciiMachine.GetAddresses = addresses;
-            _modbusRtuMachine.GetAddresses = addresses;
+            _modbusTcpMachine!.GetAddresses = addresses;
+            _modbusAsciiMachine!.GetAddresses = addresses;
+            _modbusRtuMachine!.GetAddresses = addresses;
             await _modbusTcpMachine.SetDatasAsync(MachineDataType.Address, dic1);
             await _modbusAsciiMachine.SetDatasAsync(MachineDataType.Address, dic1);
             await _modbusRtuMachine.SetDatasAsync(MachineDataType.Address, dic1);
@@ -242,9 +242,9 @@ namespace Modbus.Net.Tests
                 },
             };
 
-            _modbusTcpMachine.GetAddresses = addresses;
-            _modbusRtuMachine.GetAddresses = addresses;
-            _modbusAsciiMachine.GetAddresses = addresses;
+            _modbusTcpMachine!.GetAddresses = addresses;
+            _modbusRtuMachine!.GetAddresses = addresses;
+            _modbusAsciiMachine!.GetAddresses = addresses;
             await _modbusTcpMachine.SetDatasAsync(MachineDataType.CommunicationTag, dic1);
             await _modbusRtuMachine.SetDatasAsync(MachineDataType.CommunicationTag, dic1);
             await _modbusAsciiMachine.SetDatasAsync(MachineDataType.CommunicationTag, dic1);
@@ -292,9 +292,9 @@ namespace Modbus.Net.Tests
                 }
             };
 
-            await _modbusTcpMachine.BaseUtility.GetUtilityMethods<IUtilityMethodWriteSingle>().SetSingleDataAsync("4X 1", dic1["4X 1"]);
-            await _modbusAsciiMachine.BaseUtility.GetUtilityMethods<IUtilityMethodWriteSingle>().SetSingleDataAsync("4X 1", dic1["4X 1"]);
-            await _modbusRtuMachine.BaseUtility.GetUtilityMethods<IUtilityMethodWriteSingle>().SetSingleDataAsync("4X 1", dic1["4X 1"]);
+            await _modbusTcpMachine!.BaseUtility.GetUtilityMethods<IUtilityMethodWriteSingle>().SetSingleDataAsync("4X 1", dic1["4X 1"]);
+            await _modbusAsciiMachine!.BaseUtility.GetUtilityMethods<IUtilityMethodWriteSingle>().SetSingleDataAsync("4X 1", dic1["4X 1"]);
+            await _modbusRtuMachine!.BaseUtility.GetUtilityMethods<IUtilityMethodWriteSingle>().SetSingleDataAsync("4X 1", dic1["4X 1"]);
             var ans = await _modbusTcpMachine.BaseUtility.GetUtilityMethods<IUtilityMethodData>().GetDatasAsync<ushort>("4X 1", 1);
             var ans2 = await _modbusRtuMachine.BaseUtility.GetUtilityMethods<IUtilityMethodData>().GetDatasAsync<ushort>("4X 1", 1);
             var ans3 = await _modbusAsciiMachine.BaseUtility.GetUtilityMethods<IUtilityMethodData>().GetDatasAsync<ushort>("4X 1", 1);
@@ -316,9 +316,9 @@ namespace Modbus.Net.Tests
         [TestCleanup]
         public void MachineClean()
         {
-            _modbusAsciiMachine.Disconnect();
-            _modbusRtuMachine.Disconnect();
-            _modbusTcpMachine.Disconnect();
+            _modbusAsciiMachine!.Disconnect();
+            _modbusRtuMachine!.Disconnect();
+            _modbusTcpMachine!.Disconnect();
         }
     }
 }

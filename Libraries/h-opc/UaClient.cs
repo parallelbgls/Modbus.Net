@@ -126,7 +126,7 @@ namespace Hylasoft.Opc.Ua
       }
     }
 
-    private void SessionClosing(object? sender, EventArgs e)
+    private void SessionClosing(object sender, EventArgs e)
     {
       Status = OpcStatus.NotConnected;
       NotifyServerConnectionLost();

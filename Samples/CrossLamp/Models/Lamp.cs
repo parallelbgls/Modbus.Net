@@ -8,9 +8,9 @@ namespace CrossLampControl.WebApi.Models
 {
     public class Lamp
     {
-        public string MainLamp { get; set; }
-        public string SubLamp { get; set; }
-        public string StartPause { get; set; }
+        public string? MainLamp { get; set; }
+        public string? SubLamp { get; set; }
+        public string? StartPause { get; set; }
 
         public Lamp()
         {

@@ -72,16 +72,19 @@ namespace Modbus.Net.OPC
             }
         }
 
+        /// <inheritdoc />
         protected override void ReceiveMsgThreadStart()
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         protected override void ReceiveMsgThreadStop()
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         protected override Task SendMsgWithoutConfirm(OpcParamIn message)
         {
             throw new NotImplementedException();

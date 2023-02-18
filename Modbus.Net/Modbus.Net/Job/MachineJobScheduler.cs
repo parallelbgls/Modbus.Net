@@ -30,13 +30,30 @@ namespace Modbus.Net
         public Dictionary<string, ReturnUnit> ReturnValues { get; set; }
     }
 
+    /// <summary>
+    ///     设备调度器创建类
+    /// </summary>
     public sealed class MachineJobSchedulerCreator
     {
+        /// <summary>
+        ///     创建设备调度器
+        /// </summary>
+        /// <param name="triggerKey">键，全局唯一不能重复，重复会终止并删除已存在的调度器</param>
+        /// <param name="count">重复次数，负数为无限循环，0为执行一次</param>
+        /// <param name="intervalSecond">间隔秒数</param>
+        /// <returns></returns>
         public static async Task<MachineGetJobScheduler> CreateScheduler(string triggerKey, int count = 0, int intervalSecond = 1)
         {
             return await CreateScheduler(triggerKey, count, intervalSecond);
         }
 
+        /// <summary>
+        ///     创建设备调度器
+        /// </summary>
+        /// <param name="triggerKey">调度器键名，全局唯一不能重复，重复会终止并删除已存在的调度器</param>
+        /// <param name="count">重复次数，负数为无限循环，0为执行一次</param>
+        /// <param name="intervalMilliSecond">间隔毫秒数</param>
+        /// <returns></returns>
         public static async Task<MachineGetJobScheduler> CreateSchedulerMillisecond(string triggerKey, int count = 0, int intervalMilliSecond = 1000)
         {
             return await CreateScheduler(triggerKey, count, intervalMilliSecond / 1000.0);
@@ -73,6 +90,11 @@ namespace Modbus.Net
             return new MachineGetJobScheduler(scheduler, trigger);
         }
 
+        /// <summary>
+        ///     取消并删除任务调度器
+        /// </summary>
+        /// <param name="triggerKey">调度器键名</param>
+        /// <returns></returns>
         public static async Task CancelJob(string triggerKey)
         {
             IScheduler scheduler = await StdSchedulerFactory.GetDefaultScheduler();
@@ -82,20 +104,34 @@ namespace Modbus.Net
         }
     }
 
+    /// <summary>
+    ///     获取数据任务
+    /// </summary>
     public sealed class MachineGetJobScheduler
     {
-        IScheduler _scheduler;
+        private IScheduler _scheduler;
 
-        ITrigger _trigger;
+        private ITrigger _trigger;
 
-        JobKey _parentJobKey = null;
+        private JobKey _parentJobKey = null;
 
+        /// <summary>
+        ///     获取数据任务
+        /// </summary>
+        /// <param name="scheduler">调度器</param>
+        /// <param name="trigger">触发器</param>
         public MachineGetJobScheduler(IScheduler scheduler, ITrigger trigger)
         {
             _scheduler = scheduler;
             _trigger = trigger;
         }
 
+        /// <summary>
+        ///     获取数据任务
+        /// </summary>
+        /// <param name="scheduler">调度器</param>
+        /// <param name="trigger">触发器</param>
+        /// <param name="parentJobKey">父任务的键</param>
         public MachineGetJobScheduler(IScheduler scheduler, ITrigger trigger, JobKey parentJobKey)
         {
             _scheduler = scheduler;
@@ -103,6 +139,14 @@ namespace Modbus.Net
             _parentJobKey = parentJobKey;
         }
 
+        /// <summary>
+        ///     从设备获取数据
+        /// </summary>
+        /// <param name="queryId">任务ID，每个触发器唯一</param>
+        /// <param name="machine">要获取数据的设备实例</param>
+        /// <param name="machineDataType">获取数据的方式</param>
+        /// <returns></returns>
+        /// <exception cref="NullReferenceException"></exception>
         public async Task<MachineQueryJobScheduler> From(string queryId, IMachineMethodData machine, MachineDataType machineDataType)
         {
             JobKey jobKey = JobKey.Create("Modbus.Net.DataQuery.Job." + queryId, "Modbus.Net.DataQuery.Group." + _trigger.Key.Name);
@@ -118,6 +162,7 @@ namespace Modbus.Net
             if (_parentJobKey != null)
             {
                 var listener = _scheduler.ListenerManager.GetJobListener("Modbus.Net.DataQuery.Chain." + _trigger.Key.Name) as JobChainingJobListenerWithDataMap;
+                if (listener == null) throw new NullReferenceException("Listener " + "Modbus.Net.DataQuery.Chain." + _trigger.Key.Name + " is null");
                 listener.AddJobChainLink(_parentJobKey, jobKey);
 
                 await _scheduler.AddJob(job, true);
@@ -130,11 +175,27 @@ namespace Modbus.Net
             return new MachineQueryJobScheduler(_scheduler, _trigger, jobKey);
         }
 
+        /// <summary>
+        ///     直接向任务队列中写一个数据模板
+        /// </summary>
+        /// <param name="queryId">任务ID，每个触发器唯一</param>
+        /// <param name="values">要写入的数据模板</param>
+        /// <param name="machineDataType">获取数据的方式</param>
+        /// <returns></returns>
         public Task<MachineQueryJobScheduler> Apply(string queryId, Dictionary<string, double> values, MachineDataType machineDataType)
         {
             return Apply<string>(queryId, values, machineDataType);
         }
 
+        /// <summary>
+        ///     直接向任务队列中写一个数据模板
+        /// </summary>
+        /// <typeparam name="TMachineKey">设备的ID类型</typeparam>
+        /// <param name="queryId">任务ID，每个触发器唯一</param>
+        /// <param name="values">要写入的数据模板</param>
+        /// <param name="machineDataType">获取数据的方式</param>
+        /// <returns></returns>
+        /// <exception cref="NullReferenceException"></exception>
         public async Task<MachineQueryJobScheduler> Apply<TMachineKey>(string queryId, Dictionary<string, double> values, MachineDataType machineDataType) where TMachineKey : IEquatable<TMachineKey>
         {
             JobKey jobKey = JobKey.Create("Modbus.Net.DataQuery.Job." + queryId, "Modbus.Net.DataQuery.Group." + _trigger.Key.Name);
@@ -151,6 +212,7 @@ namespace Modbus.Net
             if (_parentJobKey != null)
             {
                 var listener = _scheduler.ListenerManager.GetJobListener("Modbus.Net.DataQuery.Chain." + _trigger.Key.Name) as JobChainingJobListenerWithDataMap;
+                if (listener == null) throw new NullReferenceException("Listener " + "Modbus.Net.DataQuery.Chain." + _trigger.Key.Name + " is null");
                 listener.AddJobChainLink(_parentJobKey, jobKey);
 
                 await _scheduler.AddJob(job, true);
@@ -163,11 +225,27 @@ namespace Modbus.Net
             return new MachineQueryJobScheduler(_scheduler, _trigger, jobKey);
         }
 
+        /// <summary>
+        ///     直接向任务队列中写一个数据模板，并跳过处理数据流程
+        /// </summary>
+        /// <param name="queryId">任务ID，每个触发器唯一</param>
+        /// <param name="values">要写入的数据模板</param>
+        /// <param name="machineDataType">获取数据的方式</param>
+        /// <returns></returns>
         public Task<MachineSetJobScheduler> ApplyTo(string queryId, Dictionary<string, double> values, MachineDataType machineDataType)
         {
             return ApplyTo<string>(queryId, values, machineDataType);
         }
 
+        /// <summary>
+        ///     直接向任务队列中写一个数据模板，并跳过处理数据流程
+        /// </summary>
+        /// <typeparam name="TMachineKey">设备的ID类型</typeparam>
+        /// <param name="queryId">任务ID，每个触发器唯一</param>
+        /// <param name="values">要写入的数据模板</param>
+        /// <param name="machineDataType">获取数据的方式</param>
+        /// <returns></returns>
+        /// <exception cref="NullReferenceException"></exception>
         public async Task<MachineSetJobScheduler> ApplyTo<TMachineKey>(string queryId, Dictionary<string, double> values, MachineDataType machineDataType) where TMachineKey : IEquatable<TMachineKey>
         {
             var applyJobScheduler = await Apply<TMachineKey>(queryId, values, machineDataType);
@@ -175,14 +253,23 @@ namespace Modbus.Net
         }
     }
 
+    /// <summary>
+    ///     处理数据任务
+    /// </summary>
     public sealed class MachineQueryJobScheduler
     {
-        IScheduler _scheduler;
+        private IScheduler _scheduler;
 
-        ITrigger _trigger;
+        private ITrigger _trigger;
 
-        JobKey _parentJobKey;
+        private JobKey _parentJobKey;
 
+        /// <summary>
+        ///     处理数据任务
+        /// </summary>
+        /// <param name="scheduler">调度器</param>
+        /// <param name="trigger">触发器</param>
+        /// <param name="parentJobKey">父任务的键</param>
         public MachineQueryJobScheduler(IScheduler scheduler, ITrigger trigger, JobKey parentJobKey)
         {
             _scheduler = scheduler;
@@ -190,11 +277,25 @@ namespace Modbus.Net
             _parentJobKey = parentJobKey;
         }
 
+        /// <summary>
+        ///     处理数据
+        /// </summary>
+        /// <param name="queryId">任务ID，每个触发器唯一</param>
+        /// <param name="QueryDataFunc">处理数据的函数，输入返回读数据的定义和值，输出写数据字典</param>
+        /// <returns></returns>
         public Task<MachineSetJobScheduler> Query(string queryId = null, Func<DataReturnDef, Dictionary<string, double>> QueryDataFunc = null)
         {
             return Query<string>(queryId, QueryDataFunc);
         }
 
+        /// <summary>
+        ///     处理数据
+        /// </summary>
+        /// <typeparam name="TMachineKey">设备的ID类型</typeparam>
+        /// <param name="queryId">任务ID，每个触发器唯一</param>
+        /// <param name="QueryDataFunc">处理数据的函数，输入返回读数据的定义和值，输出写数据字典</param>
+        /// <returns></returns>
+        /// <exception cref="NullReferenceException"></exception>
         public async Task<MachineSetJobScheduler> Query<TMachineKey>(string queryId = null, Func<DataReturnDef, Dictionary<string, double>> QueryDataFunc = null) where TMachineKey : IEquatable<TMachineKey>
         {
             if (queryId == null) return new MachineSetJobScheduler(_scheduler, _trigger, _parentJobKey);
@@ -206,9 +307,11 @@ namespace Modbus.Net
                 .StoreDurably(true)
                 .Build();
 
-            job.JobDataMap.Put("QueryMethod", QueryDataFunc);
+            if (QueryDataFunc != null)
+                job.JobDataMap.Put("QueryMethod", QueryDataFunc);
 
             var listener = _scheduler.ListenerManager.GetJobListener("Modbus.Net.DataQuery.Chain." + _trigger.Key.Name) as JobChainingJobListenerWithDataMap;
+            if (listener == null) throw new NullReferenceException("Listener " + "Modbus.Net.DataQuery.Chain." + _trigger.Key.Name + " is null");
             listener.AddJobChainLink(_parentJobKey, jobKey);
 
             await _scheduler.AddJob(job, true);
@@ -217,14 +320,23 @@ namespace Modbus.Net
         }
     }
 
+    /// <summary>
+    ///     写入数据任务
+    /// </summary>
     public sealed class MachineSetJobScheduler
     {
-        IScheduler _scheduler;
+        private IScheduler _scheduler;
 
-        ITrigger _trigger;
+        private ITrigger _trigger;
 
-        JobKey _parentJobKey;
+        private JobKey _parentJobKey;
 
+        /// <summary>
+        ///     写入数据任务
+        /// </summary>
+        /// <param name="scheduler">调度器</param>
+        /// <param name="trigger">触发器</param>
+        /// <param name="parentJobKey">父任务的键</param>
         public MachineSetJobScheduler(IScheduler scheduler, ITrigger trigger, JobKey parentJobKey)
         {
             _scheduler = scheduler;
@@ -234,6 +346,13 @@ namespace Modbus.Net
             _parentJobKey = parentJobKey;
         }
 
+        /// <summary>
+        ///     向设备写入数据
+        /// </summary>
+        /// <param name="queryId">任务ID，每个触发器唯一</param>
+        /// <param name="machine">写入数据的设备实例</param>
+        /// <returns></returns>
+        /// <exception cref="NullReferenceException"></exception>
         public async Task<MachineSetJobScheduler> To(string queryId, IMachineMethodData machine)
         {
             JobKey jobKey = JobKey.Create("Modbus.Net.DataQuery.Job." + queryId, "Modbus.Net.DataQuery.Group." + _trigger.Key.Name);
@@ -246,6 +365,7 @@ namespace Modbus.Net
             job.JobDataMap.Put("Machine", machine);
 
             var listener = _scheduler.ListenerManager.GetJobListener("Modbus.Net.DataQuery.Chain." + _trigger.Key.Name) as JobChainingJobListenerWithDataMap;
+            if (listener == null) throw new NullReferenceException("Listener " + "Modbus.Net.DataQuery.Chain." + _trigger.Key.Name + " is null");
             listener.AddJobChainLink(_parentJobKey, jobKey);
 
             await _scheduler.AddJob(job, true);
@@ -253,19 +373,34 @@ namespace Modbus.Net
             return new MachineSetJobScheduler(_scheduler, _trigger, jobKey);
         }
 
+        /// <summary>
+        ///     再次获取一个设备的数据
+        /// </summary>
+        /// <param name="queryId">任务ID，每个触发器唯一</param>
+        /// <param name="machine">要获取数据的设备实例</param>
+        /// <param name="machineDataType">获取数据的方式</param>
+        /// <returns></returns>
         public async Task<MachineQueryJobScheduler> From(string queryId, IMachineMethodData machine, MachineDataType machineDataType)
         {
             return await new MachineGetJobScheduler(_scheduler, _trigger, _parentJobKey).From(queryId, machine, machineDataType);
         }
 
+        /// <summary>
+        ///     执行任务
+        /// </summary>
+        /// <returns></returns>
         public async Task Run()
         {
             await _scheduler.Start();
         }
     }
 
+    /// <summary>
+    ///     获取数据任务
+    /// </summary>
     public class MachineGetDataJob : IJob
     {
+        /// <inheritdoc />
         public async Task Execute(IJobExecutionContext context)
         {
             object machine;
@@ -279,8 +414,13 @@ namespace Modbus.Net
         }
     }
 
+    /// <summary>
+    ///     处理数据任务
+    /// </summary>
+    /// <typeparam name="TMachineKey"></typeparam>
     public class MachineQueryDataJob<TMachineKey> : IJob where TMachineKey : IEquatable<TMachineKey>
     {
+        /// <inheritdoc />
         public async Task Execute(IJobExecutionContext context)
         {
             object machine;
@@ -299,8 +439,12 @@ namespace Modbus.Net
         }
     }
 
+    /// <summary>
+    ///     写数据任务
+    /// </summary>
     public class MachineSetDataJob : IJob
     {
+        /// <inheritdoc />
         public async Task Execute(IJobExecutionContext context)
         {
             object machine;
@@ -314,7 +458,9 @@ namespace Modbus.Net
             if (valuesSet == null && values != null)
                 valuesSet = ((Dictionary<string, ReturnUnit>)values).MapGetValuesToSetValues();
 
+            if (valuesSet == null) throw new NullReferenceException("Set value is null");
             var success = await (machine as IMachineMethodData)!.SetDatasAsync((MachineDataType)machineDataType, (Dictionary<string, double>)valuesSet);
+
         }
     }
 }

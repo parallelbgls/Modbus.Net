@@ -31,8 +31,6 @@ namespace Modbus.Net
 
         private int _timeoutTime;
 
-        private bool m_disposed;
-
         private Task _receiveThread;
         private bool _taskCancel = false;
 

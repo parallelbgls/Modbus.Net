@@ -10,9 +10,9 @@ namespace Modbus.Net.Tests
     [TestClass]
     public class BaseTest
     {
-        private List<AddressUnit<int>> _addressUnits;
+        private List<AddressUnit<int>>? _addressUnits;
 
-        private BaseMachine<int, int> _baseMachine2;
+        private BaseMachine<int, int>? _baseMachine2;
 
         [TestInitialize]
         public void Init()
@@ -138,7 +138,7 @@ namespace Modbus.Net.Tests
         public void AddressCombinerContinusTest()
         {
             var addressCombiner = new AddressCombinerContinus<int>(new AddressTranslatorModbus(), 100000);
-            var combinedAddresses = addressCombiner.Combine(_addressUnits).ToArray();
+            var combinedAddresses = addressCombiner.Combine(_addressUnits!).ToArray();
             Assert.AreEqual(combinedAddresses[0].Area, "3X");
             Assert.AreEqual(combinedAddresses[0].Address, 1);
             Assert.AreEqual(combinedAddresses[0].GetCount, 1);
@@ -166,7 +166,7 @@ namespace Modbus.Net.Tests
         public void AddressCombinerContinusLimitTest()
         {
             var addressCombiner = new AddressCombinerContinus<int>(new AddressTranslatorModbus(), 4);
-            var combinedAddresses = addressCombiner.Combine(_addressUnits).ToArray();
+            var combinedAddresses = addressCombiner.Combine(_addressUnits!).ToArray();
             Assert.AreEqual(combinedAddresses[0].Area, "3X");
             Assert.AreEqual(combinedAddresses[0].Address, 1);
             Assert.AreEqual(combinedAddresses[0].GetCount, 1);
@@ -197,7 +197,7 @@ namespace Modbus.Net.Tests
         public void AddressCombinerSingleTest()
         {
             var addressCombiner = new AddressCombinerSingle<int>();
-            var combinedAddresses = addressCombiner.Combine(_addressUnits).ToArray();
+            var combinedAddresses = addressCombiner.Combine(_addressUnits!).ToArray();
             Assert.AreEqual(combinedAddresses[0].Area, "3X");
             Assert.AreEqual(combinedAddresses[0].Address, 1);
             Assert.AreEqual(combinedAddresses[0].GetCount, 1);
@@ -221,7 +221,7 @@ namespace Modbus.Net.Tests
         public void AddressCombinerNumericJumpTest()
         {
             var addressCombiner = new AddressCombinerNumericJump<int>(10, 100000, new AddressTranslatorModbus());
-            var combinedAddresses = addressCombiner.Combine(_addressUnits).ToArray();
+            var combinedAddresses = addressCombiner.Combine(_addressUnits!).ToArray();
             Assert.AreEqual(combinedAddresses[0].Area, "3X");
             Assert.AreEqual(combinedAddresses[0].Address, 1);
             Assert.AreEqual(combinedAddresses[0].GetCount, 20);
@@ -237,7 +237,7 @@ namespace Modbus.Net.Tests
         public void AddressCombinerNumericJumpLimitTest()
         {
             var addressCombiner = new AddressCombinerNumericJump<int>(10, 10, new AddressTranslatorModbus());
-            var combinedAddresses = addressCombiner.Combine(_addressUnits).ToArray();
+            var combinedAddresses = addressCombiner.Combine(_addressUnits!).ToArray();
             Assert.AreEqual(combinedAddresses[0].Area, "3X");
             Assert.AreEqual(combinedAddresses[0].Address, 1);
             Assert.AreEqual(combinedAddresses[0].GetCount, 8);
@@ -256,7 +256,7 @@ namespace Modbus.Net.Tests
         public void AddressCombinerPercentageJumpTest()
         {
             var addressCombiner = new AddressCombinerPercentageJump<int>(30.0, 100000, new AddressTranslatorModbus());
-            var combinedAddresses = addressCombiner.Combine(_addressUnits).ToArray();
+            var combinedAddresses = addressCombiner.Combine(_addressUnits!).ToArray();
             Assert.AreEqual(combinedAddresses[0].Area, "3X");
             Assert.AreEqual(combinedAddresses[0].Address, 1);
             Assert.AreEqual(combinedAddresses[0].GetCount, 12);
@@ -275,7 +275,7 @@ namespace Modbus.Net.Tests
         public void AddressCombinerPercentageJumpLimitTest()
         {
             var addressCombiner = new AddressCombinerPercentageJump<int>(30.0, 10, new AddressTranslatorModbus());
-            var combinedAddresses = addressCombiner.Combine(_addressUnits).ToArray();
+            var combinedAddresses = addressCombiner.Combine(_addressUnits!).ToArray();
             Assert.AreEqual(combinedAddresses[0].Area, "3X");
             Assert.AreEqual(combinedAddresses[0].Address, 1);
             Assert.AreEqual(combinedAddresses[0].GetCount, 8);
@@ -296,7 +296,7 @@ namespace Modbus.Net.Tests
         [TestCleanup]
         public void MachineClean()
         {
-            _baseMachine2.Disconnect();
+            _baseMachine2?.Disconnect();
         }
     }
 }

@@ -3,7 +3,7 @@
 namespace Modbus.Net
 {
     /// <summary>
-    ///     Api入口的抽象
+    ///     Api入口的属性抽象
     /// </summary>
     public interface IUtilityProperty
     {

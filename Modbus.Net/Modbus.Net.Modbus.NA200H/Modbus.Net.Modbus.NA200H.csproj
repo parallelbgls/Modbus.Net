@@ -1,9 +1,25 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <TargetFrameworks>net6.0</TargetFrameworks>
+    <AssemblyName>Modbus.Net.Modbus.NA200H</AssemblyName>
+    <RootNamespace>Modbus.Net.Modbus.NA200H</RootNamespace>
+    <PackageId>Modbus.Net.Modbus.NA200H</PackageId>
+    <Version>1.4.0</Version>
+    <Authors>Chris L.(Luo Sheng)</Authors>
+    <Company>Hangzhou Delian Science Technology Co.,Ltd.</Company>
+    <Product>Modbus.Net.Modbus</Product>
+    <Description>Modbus.Net Modbus Implementation</Description>
+    <Copyright>Copyright 2023 Hangzhou Delian Science Technology Co.,Ltd.</Copyright>
+    <PackageProjectUrl>https://github.com/parallelbgls/Modbus.Net/tree/master/Modbus.Net/Modbus.Net.Modbus.NA200H</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/parallelbgls/Modbus.Net</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>hardware communicate protocol modbus Delian</PackageTags>
+    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <IncludeSymbols>True</IncludeSymbols>
+    <IncludeSource>True</IncludeSource>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>

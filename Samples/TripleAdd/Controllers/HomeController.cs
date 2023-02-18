@@ -15,8 +15,8 @@ namespace TripleAdd.Controllers
             _logger = logger;
         }
 
-        private static BaseUtility utility;
-        private static BaseMachine machine;
+        private static BaseUtility? utility;
+        private static BaseMachine? machine;
 
         public ActionResult Index()
         {
@@ -83,7 +83,7 @@ namespace TripleAdd.Controllers
         public async Task<ActionResult> SetUtility(TripleAddViewModel model)
         {
             ushort add1 = model.Add1, add2 = model.Add2, add3 = model.Add3;
-            await utility.SetDatasAsync("4X 1", new object[] { add1, add2, add3 });
+            await utility!.SetDatasAsync("4X 1", new object[] { add1, add2, add3 });
             return RedirectToAction("Utility");
         }
 
@@ -92,7 +92,7 @@ namespace TripleAdd.Controllers
         {
             ushort add1 = model.Add1, add2 = model.Add2, add3 = model.Add3;
             var setDic = new Dictionary<string, double> { { "Add1", add1 }, { "Add2", add2 }, { "Add3", add3 } };
-            await machine.SetDatasAsync(MachineDataType.CommunicationTag, setDic);
+            await machine!.SetDatasAsync(MachineDataType.CommunicationTag, setDic);
             return RedirectToAction("Machine");
         }
 

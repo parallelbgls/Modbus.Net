@@ -65,7 +65,7 @@ namespace Modbus.Net
     }
 
     /// <summary>
-    ///     设备的抽象
+    ///     设备属性的抽象
     /// </summary>
     public interface IMachineProperty<TKey> : IMachinePropertyWithoutKey where TKey : IEquatable<TKey>
     {
