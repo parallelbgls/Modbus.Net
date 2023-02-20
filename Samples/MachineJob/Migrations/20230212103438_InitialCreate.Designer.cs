@@ -8,7 +8,7 @@ using MachineJob;
 
 #nullable disable
 
-namespace Modbus.Net.Modbus.Test.Migrations
+namespace MachineJob.Migrations
 {
     [DbContext(typeof(DatabaseWriteContext))]
     [Migration("20230212103438_InitialCreate")]
@@ -22,7 +22,7 @@ namespace Modbus.Net.Modbus.Test.Migrations
                 .HasAnnotation("ProductVersion", "7.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            modelBuilder.Entity("Modbus.Net.Modbus.Test.DatabaseWriteEntity", b =>
+            modelBuilder.Entity("MachineJob.DatabaseWriteEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

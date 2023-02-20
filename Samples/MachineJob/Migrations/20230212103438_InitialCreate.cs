@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Modbus.Net.Modbus.Test.Migrations
+namespace MachineJob.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
