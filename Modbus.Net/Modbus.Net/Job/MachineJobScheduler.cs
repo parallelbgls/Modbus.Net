@@ -44,7 +44,7 @@ namespace Modbus.Net
         /// <returns></returns>
         public static async Task<MachineGetJobScheduler> CreateScheduler(string triggerKey, int count = 0, int intervalSecond = 1)
         {
-            return await CreateScheduler(triggerKey, count, intervalSecond);
+            return await CreateScheduler(triggerKey, count, (double)intervalSecond);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace Modbus.Net
         /// <returns></returns>
         public static async Task<MachineGetJobScheduler> CreateSchedulerMillisecond(string triggerKey, int count = 0, int intervalMilliSecond = 1000)
         {
-            return await CreateScheduler(triggerKey, count, intervalMilliSecond / 1000.0);
+            return await CreateScheduler(triggerKey, count, (double)intervalMilliSecond / 1000.0);
         }
 
         private static async Task<MachineGetJobScheduler> CreateScheduler(string triggerKey, int count = 0, double interval = 1)
