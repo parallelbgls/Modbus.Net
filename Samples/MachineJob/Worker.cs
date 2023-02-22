@@ -28,16 +28,28 @@ namespace MachineJob.Service
                 new AddressUnit() { Area = "4X", Address = 10, DataType = typeof(short), Id = "10", Name = "Test10" }
             };
 
-            IMachine<string> machine = new ModbusMachine<string, string>("ModbusMachine1", ModbusType.Tcp, "192.168.0.161", _addresses, true, 1, 2, Endian.BigEndianLsb);
+            IMachine<string> machine = new ModbusMachine<string, string>("ModbusMachine1", ModbusType.Tcp, "192.168.0.172", _addresses, true, 1, 2, Endian.BigEndianLsb);
             //IMachine<string> machine2 = new ModbusMachine<string, string>("ModbusMachine2", ModbusType.Tcp, "192.168.0.172", _addresses, true, 3, 2, Endian.BigEndianLsb);
 
-            await MachineJobSchedulerCreator.CreateScheduler("Trigger1", -1, 5).Result.From(machine.Id, machine, MachineDataType.Name).Result.Query(machine.Id + ".ConsoleQuery", QueryConsole).Result.To(machine.Id + ".To", machine).Result.Run();
-            //await MachineJobSchedulerCreator.CreateScheduler("Trigger2", -1, 5).Result.Apply(machine2.Id + ".Apply", null, MachineDataType.Name).Result.Query(machine2.Id + ".ConsoleQuery", QueryConsole2).Result.To(machine2.Id + ".To2", machine2).Result.From(machine2.Id, machine2, MachineDataType.Name).Result.Query(machine2.Id + ".ConsoleQuery2", QueryConsole).Result.Run();
+            await MachineJobSchedulerCreator.CreateScheduler("Trigger1", -1, 5).Result.From(machine.Id, machine, MachineDataType.Name).Result.Query(machine.Id + ".ConsoleQuery", QueryConsole).Result.To(machine.Id + ".To", machine).Result.Deal(machine.Id+".Deal", OnSuccess, OnFailure).Result.Run();
+            //await MachineJobSchedulerCreator.CreateScheduler("Trigger2", -1, 5).Result.Apply(machine2.Id + ".Apply", null, MachineDataType.Name).Result.Query(machine2.Id + ".ConsoleQuery", QueryConsole2).Result.To(machine2.Id + ".To", machine2).Result.Deal(machine.Id + ".Deal", OnSuccess, OnFailure).Result.From(machine2.Id, machine2, MachineDataType.Name).Result.Query(machine2.Id + ".ConsoleQuery2", QueryConsole).Result.Run();
         }
 
         public override async Task StopAsync(CancellationToken cancellationToken)
         {
             await MachineJobSchedulerCreator.CancelJob("Trigger1");
+        }
+
+        public Task OnSuccess()
+        {
+            Console.WriteLine("写任务成功");
+            return Task.CompletedTask;
+        }
+
+        public Task OnFailure()
+        {
+            Console.WriteLine("写任务失败");
+            return Task.CompletedTask;
         }
 
         private Dictionary<string, double> QueryConsole(DataReturnDef dataReturnDef)

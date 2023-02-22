@@ -3,6 +3,7 @@ using Quartz.Impl;
 using Quartz.Impl.Matchers;
 using System;
 using System.Collections.Generic;
+using System.Reflection.PortableExecutable;
 using System.Threading.Tasks;
 
 namespace Modbus.Net
@@ -353,7 +354,7 @@ namespace Modbus.Net
         /// <param name="machine">写入数据的设备实例</param>
         /// <returns></returns>
         /// <exception cref="NullReferenceException"></exception>
-        public async Task<MachineSetJobScheduler> To(string queryId, IMachineMethodData machine)
+        public async Task<MachineDealJobScheduler> To(string queryId, IMachineMethodData machine)
         {
             JobKey jobKey = JobKey.Create("Modbus.Net.DataQuery.Job." + queryId, "Modbus.Net.DataQuery.Group." + _trigger.Key.Name);
 
@@ -370,7 +371,7 @@ namespace Modbus.Net
 
             await _scheduler.AddJob(job, true);
 
-            return new MachineSetJobScheduler(_scheduler, _trigger, jobKey);
+            return new MachineDealJobScheduler(_scheduler, _trigger, jobKey);
         }
 
         /// <summary>
@@ -392,6 +393,63 @@ namespace Modbus.Net
         public async Task Run()
         {
             await _scheduler.Start();
+        }
+    }
+    
+    /// <summary>
+    ///     处理写返回任务
+    /// </summary>
+    public sealed class MachineDealJobScheduler
+    {
+        private IScheduler _scheduler;
+
+        private ITrigger _trigger;
+
+        private JobKey _parentJobKey;
+
+        /// <summary>
+        ///     处理写返回任务
+        /// </summary>
+        /// <param name="scheduler">调度器</param>
+        /// <param name="trigger">触发器</param>
+        /// <param name="parentJobKey">父任务的键</param>
+        public MachineDealJobScheduler(IScheduler scheduler, ITrigger trigger, JobKey parentJobKey)
+        {
+            _scheduler = scheduler;
+
+            _trigger = trigger;
+
+            _parentJobKey = parentJobKey;
+        }
+
+        /// <summary>
+        ///     处理写返回
+        /// </summary>
+        /// <param name="queryId">任务ID，每个触发器唯一</param>
+        /// <param name="onSuccess">成功回调方法</param>
+        /// <param name="onFailure">失败回调方法</param>
+        /// <returns></returns>
+        /// <exception cref="NullReferenceException"></exception>
+        public async Task<MachineSetJobScheduler> Deal(string queryId = null, Func<Task> onSuccess = null, Func<Task> onFailure = null)
+        {
+            if (queryId == null) return new MachineSetJobScheduler(_scheduler, _trigger, _parentJobKey);
+            JobKey jobKey = JobKey.Create("Modbus.Net.DataQuery.Job." + queryId, "Modbus.Net.DataQuery.Group." + _trigger.Key.Name);
+
+            IJobDetail job = JobBuilder.Create<MachineDealDataJob>()
+                .WithIdentity(jobKey)
+                .StoreDurably(true)
+            .Build();
+
+            job.JobDataMap.Put("OnSuccess", onSuccess);
+            job.JobDataMap.Put("OnFailure", onFailure);
+
+            var listener = _scheduler.ListenerManager.GetJobListener("Modbus.Net.DataQuery.Chain." + _trigger.Key.Name) as JobChainingJobListenerWithDataMap;
+            if (listener == null) throw new NullReferenceException("Listener " + "Modbus.Net.DataQuery.Chain." + _trigger.Key.Name + " is null");
+            listener.AddJobChainLink(_parentJobKey, jobKey);
+
+            await _scheduler.AddJob(job, true);
+
+            return new MachineSetJobScheduler(_scheduler, _trigger, jobKey);
         }
     }
 
@@ -458,9 +516,44 @@ namespace Modbus.Net
             if (valuesSet == null && values != null)
                 valuesSet = ((Dictionary<string, ReturnUnit>)values).MapGetValuesToSetValues();
 
-            if (valuesSet == null) throw new NullReferenceException("Set value is null");
+            if (valuesSet == null)
+            {
+                context.JobDetail.JobDataMap.Put("Success", false);
+                return;
+            }
             var success = await (machine as IMachineMethodData)!.SetDatasAsync((MachineDataType)machineDataType, (Dictionary<string, double>)valuesSet);
 
+            context.JobDetail.JobDataMap.Put("Success", success);
+        }
+    }
+
+    /// <summary>
+    ///     处理写返回任务
+    /// </summary>
+    public class MachineDealDataJob : IJob
+    {
+        /// <inheritdoc />
+        public async Task Execute(IJobExecutionContext context)
+        {
+            object success;
+            object onSuccess;
+            object onFailure;
+            context.JobDetail.JobDataMap.TryGetValue("Success", out success);
+            context.JobDetail.JobDataMap.TryGetValue("OnSuccess", out onSuccess);
+            context.JobDetail.JobDataMap.TryGetValue("OnFailure", out onFailure);
+            bool? successValue = (bool?)success;
+            if (successValue == true && onSuccess != null)
+            {
+                await ((Func<Task>)onSuccess)();
+            }
+            if (successValue == false && onFailure != null)
+            {
+                await ((Func<Task>)onFailure)();
+            }
+
+            context.JobDetail.JobDataMap.Remove("Success");
+            context.JobDetail.JobDataMap.Remove("OnSuccess");
+            context.JobDetail.JobDataMap.Remove("OnFailure");
         }
     }
 }
