@@ -15,7 +15,7 @@ namespace Modbus.Net
 
         private bool _taskCancel = false;
 
-        private int _waitingListMaxCount = 10000;
+        private int _waitingListMaxCount;
 
         private readonly Semaphore _taskCycleSema;
 
@@ -30,14 +30,16 @@ namespace Modbus.Net
         /// <param name="acquireTime">间隔时间</param>
         /// <param name="activateSema">是否开启信号量</param>
         /// <param name="duplicateFunc">包切分函数</param>
-        public FifoController(int acquireTime, bool activateSema = true, Func<byte[], ICollection<byte[]>> duplicateFunc = null)
+        /// <param name="waitingListMaxCount">包等待队列长度</param>
+        public FifoController(int acquireTime, bool activateSema = true, Func<byte[], ICollection<byte[]>> duplicateFunc = null, int waitingListMaxCount = 1)
             : base(duplicateFunc)
         {
+            _waitingListMaxCount = waitingListMaxCount;
             if (activateSema)
             {
                 _taskCycleSema = new Semaphore(0, _waitingListMaxCount);
             }
-            AcquireTime = acquireTime;
+            AcquireTime = acquireTime;          
         }
 
         /// <inheritdoc />

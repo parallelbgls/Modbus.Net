@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Modbus.Net\Modbus.Net.Modbus\Modbus.Net.Modbus.csproj" />
+    <ProjectReference Include="..\..\Modbus.Net\Modbus.Net.Siemens\Modbus.Net.Siemens.csproj" />
     <ProjectReference Include="..\..\Modbus.Net\Modbus.Net\Modbus.Net.csproj" />
   </ItemGroup>
 </Project>

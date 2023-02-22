@@ -21,8 +21,9 @@ namespace Modbus.Net
         /// <param name="acquireTime">获取间隔</param>
         /// <param name="activateSema">是否开启信号量</param>
         /// <param name="duplicateFunc">包切分函数</param>
+        /// <param name="waitingListMaxCount">包切分函数</param>
         public MatchController(ICollection<(int, int)>[] keyMatches, int acquireTime, bool activateSema = true,
-            Func<byte[], ICollection<byte[]>> duplicateFunc = null) : base(acquireTime, activateSema, duplicateFunc)
+            Func<byte[], ICollection<byte[]>> duplicateFunc = null, int waitingListMaxCount = 1) : base(acquireTime, activateSema, duplicateFunc, waitingListMaxCount)
         {
             KeyMatches = keyMatches;
         }
