@@ -40,15 +40,15 @@ namespace MachineJob.Service
             await MachineJobSchedulerCreator.CancelJob("Trigger1");
         }
 
-        public Task OnSuccess()
+        public Task OnSuccess(string machineId)
         {
-            Console.WriteLine("写任务成功");
+            Console.WriteLine("Machine {0} set success", machineId);
             return Task.CompletedTask;
         }
 
-        public Task OnFailure()
+        public Task OnFailure(string machineId)
         {
-            Console.WriteLine("写任务失败");
+            Console.WriteLine("Machine {0} set failure", machineId);
             return Task.CompletedTask;
         }
 

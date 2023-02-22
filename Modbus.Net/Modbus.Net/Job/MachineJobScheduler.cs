@@ -422,20 +422,34 @@ namespace Modbus.Net
             _parentJobKey = parentJobKey;
         }
 
+
         /// <summary>
         ///     处理写返回
         /// </summary>
         /// <param name="queryId">任务ID，每个触发器唯一</param>
-        /// <param name="onSuccess">成功回调方法</param>
-        /// <param name="onFailure">失败回调方法</param>
+        /// <param name="onSuccess">成功回调方法，参数为设备ID</param>
+        /// <param name="onFailure">失败回调方法，参数为设备ID</param>
         /// <returns></returns>
         /// <exception cref="NullReferenceException"></exception>
-        public async Task<MachineSetJobScheduler> Deal(string queryId = null, Func<Task> onSuccess = null, Func<Task> onFailure = null)
+        public async Task<MachineSetJobScheduler> Deal(string queryId = null, Func<string, Task> onSuccess = null, Func<string, Task> onFailure = null)
+        {
+            return await Deal<string>(queryId, onSuccess, onFailure);
+        }
+
+        /// <summary>
+        ///     处理写返回
+        /// </summary>
+        /// <param name="queryId">任务ID，每个触发器唯一</param>
+        /// <param name="onSuccess">成功回调方法，参数为设备ID</param>
+        /// <param name="onFailure">失败回调方法，参数为设备ID</param>
+        /// <returns></returns>
+        /// <exception cref="NullReferenceException"></exception>
+        public async Task<MachineSetJobScheduler> Deal<TMachineKey>(string queryId = null, Func<string, Task> onSuccess = null, Func<string, Task> onFailure = null) where TMachineKey : IEquatable<TMachineKey>
         {
             if (queryId == null) return new MachineSetJobScheduler(_scheduler, _trigger, _parentJobKey);
             JobKey jobKey = JobKey.Create("Modbus.Net.DataQuery.Job." + queryId, "Modbus.Net.DataQuery.Group." + _trigger.Key.Name);
 
-            IJobDetail job = JobBuilder.Create<MachineDealDataJob>()
+            IJobDetail job = JobBuilder.Create<MachineDealDataJob<TMachineKey>>()
                 .WithIdentity(jobKey)
                 .StoreDurably(true)
             .Build();
@@ -530,25 +544,27 @@ namespace Modbus.Net
     /// <summary>
     ///     处理写返回任务
     /// </summary>
-    public class MachineDealDataJob : IJob
+    public class MachineDealDataJob<TMachineKey> : IJob where TMachineKey: IEquatable<TMachineKey>
     {
         /// <inheritdoc />
         public async Task Execute(IJobExecutionContext context)
         {
+            object machine;
             object success;
             object onSuccess;
             object onFailure;
+            context.JobDetail.JobDataMap.TryGetValue("Machine", out machine);
             context.JobDetail.JobDataMap.TryGetValue("Success", out success);
             context.JobDetail.JobDataMap.TryGetValue("OnSuccess", out onSuccess);
             context.JobDetail.JobDataMap.TryGetValue("OnFailure", out onFailure);
             bool? successValue = (bool?)success;
             if (successValue == true && onSuccess != null)
             {
-                await ((Func<Task>)onSuccess)();
+                await ((Func<string, Task>)onSuccess)(((IMachineProperty<TMachineKey>)machine).GetMachineIdString());
             }
             if (successValue == false && onFailure != null)
             {
-                await ((Func<Task>)onFailure)();
+                await ((Func<string, Task>)onFailure)(((IMachineProperty<TMachineKey>)machine).GetMachineIdString());
             }
 
             context.JobDetail.JobDataMap.Remove("Success");
