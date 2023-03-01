@@ -99,7 +99,8 @@ ModbusMachine<int, string> machine3 = new ModbusMachine<int, string>(3, ModbusTy
         },
     }, true, 4, 1);
 Random r = new Random();
-await MachineJobSchedulerCreator.CreateScheduler("Trigger1", -1, 10).Result.Apply(machine.Id + ".Apply", null, MachineDataType.Address).Result.Query(machine.Id + ".Query", returnDef => {
+await MachineJobSchedulerCreator.CreateScheduler("Trigger1", -1, 10).Result.Apply(machine.Id + ".Apply", null, MachineDataType.Address).Result.Query(machine.Id + ".Query", returnDef =>
+{
     return new Dictionary<string, double>() {{
         "4X 1.0", r.Next() % 65536
     },
@@ -111,7 +112,8 @@ await MachineJobSchedulerCreator.CreateScheduler("Trigger1", -1, 10).Result.Appl
     }
 };
 }).Result.To(machine.Id + ".To", machine).Result.Deal().Result.Run();
-await MachineJobSchedulerCreator.CreateScheduler("Trigger2", -1, 10).Result.Apply(machine2.Id + ".Apply", null, MachineDataType.Address).Result.Query(machine2.Id + ".Query", returnDef => {
+await MachineJobSchedulerCreator.CreateScheduler("Trigger2", -1, 10).Result.Apply(machine2.Id + ".Apply", null, MachineDataType.Address).Result.Query(machine2.Id + ".Query", returnDef =>
+{
     return new Dictionary<string, double>() {{
         "4X 1.0", r.Next() % 65536
     },
@@ -123,7 +125,8 @@ await MachineJobSchedulerCreator.CreateScheduler("Trigger2", -1, 10).Result.Appl
     }
 };
 }).Result.To(machine2.Id + ".To", machine2).Result.Deal().Result.Run();
-await MachineJobSchedulerCreator.CreateScheduler("Trigger3", -1, 10).Result.Apply(machine3.Id + ".Apply", null, MachineDataType.Address).Result.Query(machine3.Id + ".Query", returnDef => {
+await MachineJobSchedulerCreator.CreateScheduler("Trigger3", -1, 10).Result.Apply(machine3.Id + ".Apply", null, MachineDataType.Address).Result.Query(machine3.Id + ".Query", returnDef =>
+{
     return new Dictionary<string, double>() {{
         "4X 1.0", r.Next() % 65536
     },

@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.Ports;
 using System.Text;
 
@@ -10,6 +12,12 @@ namespace Modbus.Net.Modbus
     /// </summary>
     public class ModbusAsciiProtocolLinker : ComProtocolLinker
     {
+        private static readonly IConfigurationRoot configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", true)
+            .Build();
+
         /// <summary>
         ///     构造函数
         /// </summary>
@@ -18,7 +26,7 @@ namespace Modbus.Net.Modbus
         public ModbusAsciiProtocolLinker(string com, int slaveAddress)
             : base(com, 9600, Parity.None, StopBits.One, 8, slaveAddress)
         {
-            ((BaseConnector)BaseConnector).AddController(new MatchController(new ICollection<(int, int)>[] { new List<(int, int)> { (1, 1), (2, 2) }, new List<(int, int)> { (3, 3), (4, 4) } }, int.Parse(new ConfigurationBuilder().AddJsonFile($"appsettings.json").Build().GetSection("Config")["FetchSleepTime"] ?? "0")));
+            ((BaseConnector)BaseConnector).AddController(new MatchController(new ICollection<(int, int)>[] { new List<(int, int)> { (1, 1), (2, 2) }, new List<(int, int)> { (3, 3), (4, 4) } }, int.Parse(configuration.GetSection("Modbus.Net")["FetchSleepTime"] ?? "0")));
         }
 
         /// <summary>

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Modbus.Net.Siemens
 {
@@ -9,12 +10,18 @@ namespace Modbus.Net.Siemens
     /// </summary>
     public class SiemensTcpProtocolLinker : TcpProtocolLinker
     {
+        private static readonly IConfigurationRoot configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", true)
+            .Build();
+
         /// <summary>
         ///     构造函数
         /// </summary>
         /// <param name="ip">IP地址</param>
         public SiemensTcpProtocolLinker(string ip)
-            : this(ip, int.Parse(new ConfigurationBuilder().AddJsonFile($"appsettings.json").Build().GetSection("Config")["SiemensPort"] ?? "102"))
+            : this(ip, int.Parse(configuration.GetSection("Modbus.Net")["SiemensPort"] ?? "102"))
         {
         }
 

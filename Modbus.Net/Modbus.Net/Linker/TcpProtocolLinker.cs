@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
-
+using System;
+using System.IO;
 
 namespace Modbus.Net
 {
@@ -8,11 +9,17 @@ namespace Modbus.Net
     /// </summary>
     public abstract class TcpProtocolLinker : ProtocolLinker
     {
+        private static readonly IConfigurationRoot configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", true)
+            .Build();
+
         /// <summary>
         ///     构造器
         /// </summary>
         protected TcpProtocolLinker(int port)
-            : this(new ConfigurationBuilder().AddJsonFile($"appsettings.json").Build().GetSection("Config")["IP"], port)
+            : this(configuration.GetSection("Modbus.Net")["IP"], port)
         {
         }
 
@@ -23,7 +30,7 @@ namespace Modbus.Net
         /// <param name="port">端口</param>
         /// <param name="isFullDuplex">是否为全双工</param>
         protected TcpProtocolLinker(string ip, int port, bool isFullDuplex = true)
-            : this(ip, port, int.Parse(new ConfigurationBuilder().AddJsonFile($"appsettings.json").Build().GetSection("Config")["IPConnectionTimeout"] ?? "-1"), isFullDuplex)
+            : this(ip, port, int.Parse(configuration.GetSection("Modbus.Net")["IPConnectionTimeout"] ?? "-1"), isFullDuplex)
         {
         }
 

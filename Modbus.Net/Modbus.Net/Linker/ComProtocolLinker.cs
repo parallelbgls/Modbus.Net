@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
+using System;
+using System.IO;
 using System.IO.Ports;
 
 namespace Modbus.Net
@@ -8,6 +10,12 @@ namespace Modbus.Net
     /// </summary>
     public abstract class ComProtocolLinker : ProtocolLinker
     {
+        private static readonly IConfigurationRoot configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", true)
+            .Build();
+
         /// <summary>
         ///     构造器
         /// </summary>
@@ -17,7 +25,7 @@ namespace Modbus.Net
         /// <param name="dataBits">数据位</param>
         /// <param name="slaveAddress">从站地址</param>
         protected ComProtocolLinker(int baudRate, Parity parity, StopBits stopBits, int dataBits, int slaveAddress)
-            : this(new ConfigurationBuilder().AddJsonFile($"appsettings.json").Build().GetSection("Config")["COM"], baudRate, parity, stopBits, dataBits, slaveAddress)
+            : this(configuration.GetSection("Modbus.Net")["COM"], baudRate, parity, stopBits, dataBits, slaveAddress)
         {
         }
 
@@ -35,7 +43,7 @@ namespace Modbus.Net
             int slaveAddress, bool isFullDuplex = false)
             : this(
                 com, baudRate, parity, stopBits, dataBits,
-                int.Parse(new ConfigurationBuilder().AddJsonFile($"appsettings.json").Build().GetSection("Config")["ComConnectionTimeout"] ?? "-1"), slaveAddress, isFullDuplex)
+                int.Parse(configuration.GetSection("Modbus.Net")["ComConnectionTimeout"] ?? "-1"), slaveAddress, isFullDuplex)
         {
         }
 

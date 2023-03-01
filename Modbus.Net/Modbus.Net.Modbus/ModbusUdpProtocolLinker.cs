@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Modbus.Net.Modbus
 {
@@ -8,12 +10,18 @@ namespace Modbus.Net.Modbus
     /// </summary>
     public class ModbusUdpProtocolLinker : UdpProtocolLinker
     {
+        private static readonly IConfigurationRoot configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", true)
+            .Build();
+
         /// <summary>
         ///     构造函数
         /// </summary>
         /// <param name="ip">IP地址</param>
         public ModbusUdpProtocolLinker(string ip)
-            : this(ip, int.Parse(new ConfigurationBuilder().AddJsonFile($"appsettings.json").Build().GetSection("Config")["ModbusPort"] ?? "502"))
+            : this(ip, int.Parse(configuration.GetSection("Modbus.Net")["ModbusPort"] ?? "502"))
         {
         }
 
@@ -24,7 +32,7 @@ namespace Modbus.Net.Modbus
         /// <param name="port">端口</param>
         public ModbusUdpProtocolLinker(string ip, int port) : base(ip, port)
         {
-            ((BaseConnector)BaseConnector).AddController(new FifoController(int.Parse(new ConfigurationBuilder().AddJsonFile($"appsettings.json").Build().GetSection("Config")["FetchSleepTime"] ?? "0"), true, DuplicateWithCount.GetDuplcateFunc(new List<int> { 4, 5 }, 6)));
+            ((BaseConnector)BaseConnector).AddController(new FifoController(int.Parse(configuration.GetSection("Modbus.Net")["FetchSleepTime"] ?? "0"), true, DuplicateWithCount.GetDuplcateFunc(new List<int> { 4, 5 }, 6)));
         }
 
         /// <summary>

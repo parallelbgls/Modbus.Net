@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
+using System;
+using System.IO;
 using System.IO.Ports;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,6 +13,12 @@ namespace Modbus.Net.Siemens
     /// </summary>
     public class SiemensPpiProtocolLinker : ComProtocolLinker
     {
+        private static readonly IConfigurationRoot configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", true)
+            .Build();
+
         /// <summary>
         ///     构造函数
         /// </summary>
@@ -19,7 +27,7 @@ namespace Modbus.Net.Siemens
         public SiemensPpiProtocolLinker(string com, int slaveAddress)
             : base(com, 9600, Parity.Even, StopBits.One, 8, slaveAddress)
         {
-            ((BaseConnector)BaseConnector).AddController(new FifoController(int.Parse(new ConfigurationBuilder().AddJsonFile($"appsettings.json").Build().GetSection("Config")["FetchSleepTime"] ?? "0"), true, null, 100));
+            ((BaseConnector)BaseConnector).AddController(new FifoController(int.Parse(configuration.GetSection("Modbus.Net")["FetchSleepTime"] ?? "0"), true, null, 100));
         }
 
         /// <summary>

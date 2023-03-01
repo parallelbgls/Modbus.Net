@@ -6,7 +6,13 @@ namespace MachineJob
 {
     public class DatabaseWriteContext : DbContext
     {
-        static readonly string connectionString = new ConfigurationBuilder().AddJsonFile($"appsettings.json").Build().GetConnectionString("DatabaseWriteConnectionString")!;
+        private static readonly IConfigurationRoot configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", true)
+            .Build();
+
+        private static readonly string connectionString = configuration.GetConnectionString("DatabaseWriteConnectionString")!;
 
         public DbSet<DatabaseWriteEntity> DatabaseWrites { get; set; }
 
