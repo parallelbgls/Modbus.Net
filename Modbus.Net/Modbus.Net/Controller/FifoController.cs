@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Serilog;
 
 namespace Modbus.Net
 {
@@ -11,6 +11,8 @@ namespace Modbus.Net
     /// </summary>
     public class FifoController : BaseController
     {
+        private static readonly ILogger<FifoController> logger = LogProvider.CreateLogger<FifoController>();
+
         private MessageWaitingDef _currentSendingPos;
 
         private bool _taskCancel = false;
@@ -39,7 +41,7 @@ namespace Modbus.Net
             {
                 _taskCycleSema = new Semaphore(0, _waitingListMaxCount);
             }
-            AcquireTime = acquireTime;          
+            AcquireTime = acquireTime;
         }
 
         /// <inheritdoc />
@@ -66,7 +68,7 @@ namespace Modbus.Net
                                 sendSuccess = true;
                             }
                         }
-                        else 
+                        else
                         {
                             if (WaitingMessages.Count <= 0)
                             {
@@ -83,7 +85,7 @@ namespace Modbus.Net
                         }
                     }
                     if (sendSuccess)
-                    { 
+                    {
                         _taskCycleSema?.WaitOne();
                     }
                 }
@@ -94,7 +96,7 @@ namespace Modbus.Net
             }
             catch (Exception e)
             {
-                Log.Error(e, "Controller throws exception");
+                logger.LogError(e, "Controller throws exception");
             }
 
         }
@@ -113,7 +115,7 @@ namespace Modbus.Net
         }
 
         /// <inheritdoc />
-        protected override (string,string)? GetKeyFromMessage(byte[] message)
+        protected override (string, string)? GetKeyFromMessage(byte[] message)
         {
             return null;
         }

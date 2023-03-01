@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace AnyType.Models
+﻿namespace AnyType.Models
 {
     public class TaskViewModel
     {

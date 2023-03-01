@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Serilog;
 
 namespace Modbus.Net
 {
@@ -12,6 +12,8 @@ namespace Modbus.Net
     /// </summary>
     public class ValueHelper
     {
+        private static readonly ILogger<ValueHelper> logger = LogProvider.CreateLogger<ValueHelper>();
+
         /// <summary>
         ///     兼容数据类型对应的字节长度
         /// </summary>
@@ -53,7 +55,7 @@ namespace Modbus.Net
         /// <returns>byte数组</returns>
         public byte[] GetBytes(byte value)
         {
-            return new[] {value};
+            return new[] { value };
         }
 
         /// <summary>
@@ -147,54 +149,54 @@ namespace Modbus.Net
             switch (type.FullName)
             {
                 case "System.Int16":
-                {
-                    var bytes = _Instance.GetBytes((short) value);
-                    return bytes;
-                }
+                    {
+                        var bytes = _Instance.GetBytes((short)value);
+                        return bytes;
+                    }
                 case "System.Int32":
-                {
-                    var bytes = _Instance.GetBytes((int) value);
-                    return bytes;
-                }
+                    {
+                        var bytes = _Instance.GetBytes((int)value);
+                        return bytes;
+                    }
                 case "System.Int64":
-                {
-                    var bytes = _Instance.GetBytes((long) value);
-                    return bytes;
-                }
+                    {
+                        var bytes = _Instance.GetBytes((long)value);
+                        return bytes;
+                    }
                 case "System.UInt16":
-                {
-                    var bytes = _Instance.GetBytes((ushort) value);
-                    return bytes;
-                }
+                    {
+                        var bytes = _Instance.GetBytes((ushort)value);
+                        return bytes;
+                    }
                 case "System.UInt32":
-                {
-                    var bytes = _Instance.GetBytes((uint) value);
-                    return bytes;
-                }
+                    {
+                        var bytes = _Instance.GetBytes((uint)value);
+                        return bytes;
+                    }
                 case "System.UInt64":
-                {
-                    var bytes = _Instance.GetBytes((ulong) value);
-                    return bytes;
-                }
+                    {
+                        var bytes = _Instance.GetBytes((ulong)value);
+                        return bytes;
+                    }
                 case "System.Single":
-                {
-                    var bytes = _Instance.GetBytes((float) value);
-                    return bytes;
-                }
+                    {
+                        var bytes = _Instance.GetBytes((float)value);
+                        return bytes;
+                    }
                 case "System.Double":
-                {
-                    var bytes = _Instance.GetBytes((double) value);
-                    return bytes;
-                }
+                    {
+                        var bytes = _Instance.GetBytes((double)value);
+                        return bytes;
+                    }
                 case "System.Byte":
-                {
-                    var bytes = _Instance.GetBytes((byte) value);
-                    return bytes;
-                }
+                    {
+                        var bytes = _Instance.GetBytes((byte)value);
+                        return bytes;
+                    }
                 default:
-                {
-                    throw new NotImplementedException("没有实现除整数以外的其它转换方式");
-                }
+                    {
+                        throw new NotImplementedException("没有实现除整数以外的其它转换方式");
+                    }
             }
         }
 
@@ -211,59 +213,59 @@ namespace Modbus.Net
             switch (t.FullName)
             {
                 case "System.Int16":
-                {
-                    var value = _Instance.GetShort(data, ref pos);
-                    return value;
-                }
+                    {
+                        var value = _Instance.GetShort(data, ref pos);
+                        return value;
+                    }
                 case "System.Int32":
-                {
-                    var value = _Instance.GetInt(data, ref pos);
-                    return value;
-                }
+                    {
+                        var value = _Instance.GetInt(data, ref pos);
+                        return value;
+                    }
                 case "System.Int64":
-                {
-                    var value = _Instance.GetLong(data, ref pos);
-                    return value;
-                }
+                    {
+                        var value = _Instance.GetLong(data, ref pos);
+                        return value;
+                    }
                 case "System.UInt16":
-                {
-                    var value = _Instance.GetUShort(data, ref pos);
-                    return value;
-                }
+                    {
+                        var value = _Instance.GetUShort(data, ref pos);
+                        return value;
+                    }
                 case "System.UInt32":
-                {
-                    var value = _Instance.GetUInt(data, ref pos);
-                    return value;
-                }
+                    {
+                        var value = _Instance.GetUInt(data, ref pos);
+                        return value;
+                    }
                 case "System.UInt64":
-                {
-                    var value = _Instance.GetULong(data, ref pos);
-                    return value;
-                }
+                    {
+                        var value = _Instance.GetULong(data, ref pos);
+                        return value;
+                    }
                 case "System.Single":
-                {
-                    var value = _Instance.GetFloat(data, ref pos);
-                    return value;
-                }
+                    {
+                        var value = _Instance.GetFloat(data, ref pos);
+                        return value;
+                    }
                 case "System.Double":
-                {
-                    var value = _Instance.GetDouble(data, ref pos);
-                    return value;
-                }
+                    {
+                        var value = _Instance.GetDouble(data, ref pos);
+                        return value;
+                    }
                 case "System.Byte":
-                {
-                    var value = _Instance.GetByte(data, ref pos);
-                    return value;
-                }
+                    {
+                        var value = _Instance.GetByte(data, ref pos);
+                        return value;
+                    }
                 case "System.Boolean":
-                {
-                    var value = _Instance.GetBit(data, ref pos, ref subPos);
-                    return value;
-                }
+                    {
+                        var value = _Instance.GetBit(data, ref pos, ref subPos);
+                        return value;
+                    }
                 default:
-                {
-                    throw new NotImplementedException("没有实现除整数以外的其它转换方式");
-                }
+                    {
+                        throw new NotImplementedException("没有实现除整数以外的其它转换方式");
+                    }
             }
         }
 
@@ -468,7 +470,7 @@ namespace Modbus.Net
             for (var i = 0; i < 8; i++)
             {
                 result <<= 1;
-                result |= (byte) (originalByte & 1);
+                result |= (byte)(originalByte & 1);
                 originalByte >>= 1;
             }
             return result;
@@ -492,7 +494,7 @@ namespace Modbus.Net
                     b = true;
                     //自动将目标数组中内含的子数组展开，是所有包含在子数组拼接为一个数组
                     var contentArray =
-                        ArrayList.Adapter((Array) content).ToArray(typeof(object)).OfType<object>();
+                        ArrayList.Adapter((Array)content).ToArray(typeof(object)).OfType<object>();
                     newContentsList.AddRange(contentArray);
                 }
                 else
@@ -521,9 +523,9 @@ namespace Modbus.Net
                     }
                     lastIsBool = true;
                     if (!LittleEndianBit)
-                        boolToByteTemp = (byte) (boolToByteTemp * 2 + ((bool) content ? 1 : 0));
+                        boolToByteTemp = (byte)(boolToByteTemp * 2 + ((bool)content ? 1 : 0));
                     else
-                        boolToByteTemp += (byte) ((bool) content ? Math.Pow(2, boolToByteCount) : 0);
+                        boolToByteTemp += (byte)((bool)content ? Math.Pow(2, boolToByteCount) : 0);
                     boolToByteCount++;
                 }
                 else
@@ -538,54 +540,54 @@ namespace Modbus.Net
                     switch (t)
                     {
                         case "System.Int16":
-                        {
-                            translateTarget.AddRange(_Instance.GetBytes((short) content));
-                            break;
-                        }
+                            {
+                                translateTarget.AddRange(_Instance.GetBytes((short)content));
+                                break;
+                            }
                         case "System.Int32":
-                        {
-                            translateTarget.AddRange(_Instance.GetBytes((int) content));
-                            break;
-                        }
+                            {
+                                translateTarget.AddRange(_Instance.GetBytes((int)content));
+                                break;
+                            }
                         case "System.Int64":
-                        {
-                            translateTarget.AddRange(_Instance.GetBytes((long) content));
-                            break;
-                        }
+                            {
+                                translateTarget.AddRange(_Instance.GetBytes((long)content));
+                                break;
+                            }
                         case "System.UInt16":
-                        {
-                            translateTarget.AddRange(_Instance.GetBytes((ushort) content));
-                            break;
-                        }
+                            {
+                                translateTarget.AddRange(_Instance.GetBytes((ushort)content));
+                                break;
+                            }
                         case "System.UInt32":
-                        {
-                            translateTarget.AddRange(_Instance.GetBytes((uint) content));
-                            break;
-                        }
+                            {
+                                translateTarget.AddRange(_Instance.GetBytes((uint)content));
+                                break;
+                            }
                         case "System.UInt64":
-                        {
-                            translateTarget.AddRange(_Instance.GetBytes((ulong) content));
-                            break;
-                        }
+                            {
+                                translateTarget.AddRange(_Instance.GetBytes((ulong)content));
+                                break;
+                            }
                         case "System.Single":
-                        {
-                            translateTarget.AddRange(_Instance.GetBytes((float) content));
-                            break;
-                        }
+                            {
+                                translateTarget.AddRange(_Instance.GetBytes((float)content));
+                                break;
+                            }
                         case "System.Double":
-                        {
-                            translateTarget.AddRange(_Instance.GetBytes((double) content));
-                            break;
-                        }
+                            {
+                                translateTarget.AddRange(_Instance.GetBytes((double)content));
+                                break;
+                            }
                         case "System.Byte":
-                        {
-                            translateTarget.AddRange(_Instance.GetBytes((byte) content));
-                            break;
-                        }
+                            {
+                                translateTarget.AddRange(_Instance.GetBytes((byte)content));
+                                break;
+                            }
                         default:
-                        {
-                            throw new NotImplementedException("没有实现除整数以外的其它转换方式");
-                        }
+                            {
+                                throw new NotImplementedException("没有实现除整数以外的其它转换方式");
+                            }
                     }
                 }
             }
@@ -604,7 +606,7 @@ namespace Modbus.Net
         /// <returns>object数组</returns>
         public virtual object[] ByteArrayToObjectArray(byte[] contents, KeyValuePair<Type, int> translateTypeAndCount)
         {
-            return ByteArrayToObjectArray(contents, new List<KeyValuePair<Type, int>> {translateTypeAndCount});
+            return ByteArrayToObjectArray(contents, new List<KeyValuePair<Type, int>> { translateTypeAndCount });
         }
 
         /// <summary>
@@ -644,77 +646,77 @@ namespace Modbus.Net
                         switch (translateUnit.Key.ToString())
                         {
                             case "System.Int16":
-                            {
-                                var value = _Instance.GetShort(contents, ref count);
-                                translation.Add(value);
-                                break;
-                            }
+                                {
+                                    var value = _Instance.GetShort(contents, ref count);
+                                    translation.Add(value);
+                                    break;
+                                }
                             case "System.Int32":
-                            {
-                                var value = _Instance.GetInt(contents, ref count);
-                                translation.Add(value);
-                                break;
-                            }
+                                {
+                                    var value = _Instance.GetInt(contents, ref count);
+                                    translation.Add(value);
+                                    break;
+                                }
                             case "System.Int64":
-                            {
-                                var value = _Instance.GetLong(contents, ref count);
-                                translation.Add(value);
-                                break;
-                            }
+                                {
+                                    var value = _Instance.GetLong(contents, ref count);
+                                    translation.Add(value);
+                                    break;
+                                }
                             case "System.UInt16":
-                            {
-                                var value = _Instance.GetUShort(contents, ref count);
-                                translation.Add(value);
-                                break;
-                            }
+                                {
+                                    var value = _Instance.GetUShort(contents, ref count);
+                                    translation.Add(value);
+                                    break;
+                                }
                             case "System.UInt32":
-                            {
-                                var value = _Instance.GetUInt(contents, ref count);
-                                translation.Add(value);
-                                break;
-                            }
+                                {
+                                    var value = _Instance.GetUInt(contents, ref count);
+                                    translation.Add(value);
+                                    break;
+                                }
                             case "System.UInt64":
-                            {
-                                var value = _Instance.GetULong(contents, ref count);
-                                translation.Add(value);
-                                break;
-                            }
+                                {
+                                    var value = _Instance.GetULong(contents, ref count);
+                                    translation.Add(value);
+                                    break;
+                                }
                             case "System.Single":
-                            {
-                                var value = _Instance.GetFloat(contents, ref count);
-                                translation.Add(value);
-                                break;
-                            }
+                                {
+                                    var value = _Instance.GetFloat(contents, ref count);
+                                    translation.Add(value);
+                                    break;
+                                }
                             case "System.Double":
-                            {
-                                var value = _Instance.GetDouble(contents, ref count);
-                                translation.Add(value);
-                                break;
-                            }
+                                {
+                                    var value = _Instance.GetDouble(contents, ref count);
+                                    translation.Add(value);
+                                    break;
+                                }
                             case "System.Byte":
-                            {
-                                var value = _Instance.GetByte(contents, ref count);
-                                translation.Add(value);
-                                break;
-                            }
+                                {
+                                    var value = _Instance.GetByte(contents, ref count);
+                                    translation.Add(value);
+                                    break;
+                                }
                             case "System.Boolean":
-                            {
-                                var value = _Instance.GetBits(contents, ref count);
-                                var k = translateUnit.Value - i < 8 ? translateUnit.Value - i : 8;
-                                for (var j = 0; j < k; j++)
-                                    translation.Add(value[j]);
-                                i += 7;
-                                break;
-                            }
+                                {
+                                    var value = _Instance.GetBits(contents, ref count);
+                                    var k = translateUnit.Value - i < 8 ? translateUnit.Value - i : 8;
+                                    for (var j = 0; j < k; j++)
+                                        translation.Add(value[j]);
+                                    i += 7;
+                                    break;
+                                }
                             default:
-                            {
-                                throw new NotImplementedException("Number casting not implemented");
-                            }
+                                {
+                                    throw new NotImplementedException("Number casting not implemented");
+                                }
                         }
                     }
                     catch (Exception e)
                     {
-                        Log.Error(e, "ValueHelper -> ByteArrayToObjectArray error");
+                        logger.LogError(e, "ValueHelper -> ByteArrayToObjectArray error");
                         count = contents.Length;
                     }
                 }
@@ -749,59 +751,59 @@ namespace Modbus.Net
             switch (type.FullName)
             {
                 case "System.Int16":
-                {
-                    var success = _Instance.SetValue(contents, setPos, (short) setValue);
-                    return success;
-                }
+                    {
+                        var success = _Instance.SetValue(contents, setPos, (short)setValue);
+                        return success;
+                    }
                 case "System.Int32":
-                {
-                    var success = _Instance.SetValue(contents, setPos, (int) setValue);
-                    return success;
-                }
+                    {
+                        var success = _Instance.SetValue(contents, setPos, (int)setValue);
+                        return success;
+                    }
                 case "System.Int64":
-                {
-                    var success = _Instance.SetValue(contents, setPos, (long) setValue);
-                    return success;
-                }
+                    {
+                        var success = _Instance.SetValue(contents, setPos, (long)setValue);
+                        return success;
+                    }
                 case "System.UInt16":
-                {
-                    var success = _Instance.SetValue(contents, setPos, (ushort) setValue);
-                    return success;
-                }
+                    {
+                        var success = _Instance.SetValue(contents, setPos, (ushort)setValue);
+                        return success;
+                    }
                 case "System.UInt32":
-                {
-                    var success = _Instance.SetValue(contents, setPos, (uint) setValue);
-                    return success;
-                }
+                    {
+                        var success = _Instance.SetValue(contents, setPos, (uint)setValue);
+                        return success;
+                    }
                 case "System.UInt64":
-                {
-                    var success = _Instance.SetValue(contents, setPos, (ulong) setValue);
-                    return success;
-                }
+                    {
+                        var success = _Instance.SetValue(contents, setPos, (ulong)setValue);
+                        return success;
+                    }
                 case "System.Single":
-                {
-                    var success = _Instance.SetValue(contents, setPos, (float) setValue);
-                    return success;
-                }
+                    {
+                        var success = _Instance.SetValue(contents, setPos, (float)setValue);
+                        return success;
+                    }
                 case "System.Double":
-                {
-                    var success = _Instance.SetValue(contents, setPos, (double) setValue);
-                    return success;
-                }
+                    {
+                        var success = _Instance.SetValue(contents, setPos, (double)setValue);
+                        return success;
+                    }
                 case "System.Byte":
-                {
-                    var success = _Instance.SetValue(contents, setPos, (byte) setValue);
-                    return success;
-                }
+                    {
+                        var success = _Instance.SetValue(contents, setPos, (byte)setValue);
+                        return success;
+                    }
                 case "System.Boolean":
-                {
-                    var success = _Instance.SetBit(contents, setPos, subPos, (bool) setValue);
-                    return success;
-                }
+                    {
+                        var success = _Instance.SetBit(contents, setPos, subPos, (bool)setValue);
+                        return success;
+                    }
                 default:
-                {
-                    throw new NotImplementedException("Number casting not implemented");
-                }
+                    {
+                        throw new NotImplementedException("Number casting not implemented");
+                    }
             }
         }
 
@@ -822,7 +824,7 @@ namespace Modbus.Net
             }
             catch (Exception e)
             {
-                Log.Error(e, "ValueHelper -> SetValue set value failed");
+                logger.LogError(e, "ValueHelper -> SetValue set value failed");
                 return false;
             }
         }
@@ -844,14 +846,14 @@ namespace Modbus.Net
                     creation *= 2;
                     if (i == subPos) creation++;
                 }
-                return (byte) (number | creation);
+                return (byte)(number | creation);
             }
             for (var i = 7; i >= 0; i--)
             {
                 creation *= 2;
                 if (i != subPos) creation++;
             }
-            return (byte) (number & creation);
+            return (byte)(number & creation);
         }
 
         /// <summary>
@@ -871,7 +873,7 @@ namespace Modbus.Net
             }
             catch (Exception e)
             {
-                Log.Error(e, "ValueHelper -> SetBit set bit failed");
+                logger.LogError(e, "ValueHelper -> SetBit set bit failed");
                 return false;
             }
         }
@@ -900,21 +902,21 @@ namespace Modbus.Net
             switch (endian)
             {
                 case Endian.LittleEndianLsb:
-                {
-                    return Instance;
-                }
+                    {
+                        return Instance;
+                    }
                 case Endian.BigEndianLsb:
-                {
-                    return BigEndianValueHelper.Instance;
-                }
+                    {
+                        return BigEndianValueHelper.Instance;
+                    }
                 case Endian.BigEndianMsb:
-                {
-                    return BigEndianMsbValueHelper.Instance;
-                }
+                    {
+                        return BigEndianMsbValueHelper.Instance;
+                    }
                 default:
-                {
-                    return Instance;
-                }
+                    {
+                        return Instance;
+                    }
             }
         }
 

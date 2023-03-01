@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Modbus.Net.Modbus;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Modbus.Net.Siemens;
 
 namespace Modbus.Net.Tests

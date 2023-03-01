@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-public enum LightLamp{Red,Yellow,Green}
+﻿public enum LightLamp { Red, Yellow, Green }
 namespace CrossLampControl.WebApi.Models
 {
     public class Lamp

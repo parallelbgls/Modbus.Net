@@ -44,15 +44,15 @@ namespace AnyType.Controllers
         };
 
             values = from unitValue in addressUnits
-                        select
-                            new TaskViewModel()
-                            {
-                                Id = unitValue.Id,
-                                Name = unitValue.Name,
-                                Address = unitValue.Address + "." + unitValue.SubAddress,
-                                Value = 0,
-                                Type = unitValue.DataType.Name
-                            };
+                     select
+                         new TaskViewModel()
+                         {
+                             Id = unitValue.Id,
+                             Name = unitValue.Name,
+                             Address = unitValue.Address + "." + unitValue.SubAddress,
+                             Value = 0,
+                             Type = unitValue.DataType.Name
+                         };
             var machine = new ModbusMachine("1", ModbusType.Tcp, "192.168.0.172:502", addressUnits, true, 2, 0);
             //启动任务
             await MachineJobSchedulerCreator.CreateScheduler("Trigger1", -1, 1).Result.From(machine.Id, machine, MachineDataType.CommunicationTag).Result.Query("Query1",

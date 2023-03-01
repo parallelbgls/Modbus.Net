@@ -1,6 +1,6 @@
-﻿using Quartz.Listener;
+﻿using Microsoft.Extensions.Logging;
 using Quartz;
-using Serilog;
+using Quartz.Listener;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,6 +12,8 @@ namespace Modbus.Net
     /// </summary>
     public class JobChainingJobListenerWithDataMap : JobListenerSupport
     {
+        private static readonly ILogger<JobChainingJobListenerWithDataMap> logger = LogProvider.CreateLogger<JobChainingJobListenerWithDataMap>();
+
         /// <summary>
         /// JobChaningJobListener with DataMap passing from parent job to next job
         /// </summary>
@@ -58,7 +60,7 @@ namespace Modbus.Net
                 return;
             }
 
-            Log.Information("Job '{JobKey}' will now chain to Job '{Job}'", context.JobDetail.Key, sj);
+            logger.LogInformation("Job '{JobKey}' will now chain to Job '{Job}'", context.JobDetail.Key, sj);
 
             try
             {
@@ -78,7 +80,7 @@ namespace Modbus.Net
             }
             catch (SchedulerException se)
             {
-                Log.Error(se, "Error encountered during chaining to Job '{Job}'", sj);
+                logger.LogError(se, "Error encountered during chaining to Job '{Job}'", sj);
             }
         }
 #nullable disable

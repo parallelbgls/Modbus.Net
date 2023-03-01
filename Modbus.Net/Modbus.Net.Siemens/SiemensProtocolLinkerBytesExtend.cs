@@ -14,8 +14,8 @@ namespace Modbus.Net.Siemens
         /// <returns>扩展后的协议内容</returns>
         public byte[] BytesExtend(byte[] content)
         {
-            Array.Copy(new byte[] {0x03, 0x00, 0x00, 0x00, 0x02, 0xf0, 0x80}, 0, content, 0, 7);
-            Array.Copy(BigEndianValueHelper.Instance.GetBytes((ushort) content.Length), 0, content, 2, 2);
+            Array.Copy(new byte[] { 0x03, 0x00, 0x00, 0x00, 0x02, 0xf0, 0x80 }, 0, content, 0, 7);
+            Array.Copy(BigEndianValueHelper.Instance.GetBytes((ushort)content.Length), 0, content, 2, 2);
             return content;
         }
 
@@ -46,13 +46,13 @@ namespace Modbus.Net.Siemens
         {
             var newContent = new byte[content.Length + 2];
             Array.Copy(content, 0, newContent, 0, content.Length);
-            Array.Copy(new byte[] {0x68, (byte) (content.Length - 4), (byte) (content.Length - 4), 0x68}, 0, newContent,
+            Array.Copy(new byte[] { 0x68, (byte)(content.Length - 4), (byte)(content.Length - 4), 0x68 }, 0, newContent,
                 0, 4);
             var check = 0;
             for (var i = 4; i < newContent.Length - 2; i++)
                 check += newContent[i];
             check = check % 256;
-            newContent[newContent.Length - 2] = (byte) check;
+            newContent[newContent.Length - 2] = (byte)check;
             newContent[newContent.Length - 1] = 0x16;
             return newContent;
         }

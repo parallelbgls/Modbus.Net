@@ -12,7 +12,7 @@ namespace Modbus.Net
         /// <summary>
         ///     匹配字典
         /// </summary>
-        protected ICollection<(int,int)>[] KeyMatches { get; }
+        protected ICollection<(int, int)>[] KeyMatches { get; }
 
         /// <summary>
         ///     构造器
@@ -29,7 +29,7 @@ namespace Modbus.Net
         }
 
         /// <inheritdoc />
-        protected override (string,string)? GetKeyFromMessage(byte[] message)
+        protected override (string, string)? GetKeyFromMessage(byte[] message)
         {
             string ans1 = "";
             string ans2 = "";

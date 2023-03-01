@@ -1,11 +1,10 @@
-﻿using System;
+﻿using Hylasoft.Opc.Common;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Hylasoft.Opc.Common;
-using Serilog;
 
 namespace Modbus.Net.OPC
 {
@@ -14,6 +13,8 @@ namespace Modbus.Net.OPC
     /// </summary>
     public abstract class OpcConnector : BaseConnector<OpcParamIn, OpcParamOut>
     {
+        private static readonly ILogger<OpcConnector> logger = LogProvider.CreateLogger<OpcConnector>();
+
         /// <summary>
         ///     是否正在连接
         /// </summary>
@@ -61,12 +62,12 @@ namespace Modbus.Net.OPC
                 Client?.Dispose();
                 Client = null;
                 _connect = false;
-                Log.Information("opc client {ConnectionToken} disconnected success", ConnectionToken);
+                logger.LogInformation("opc client {ConnectionToken} disconnected success", ConnectionToken);
                 return true;
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "opc client {ConnectionToken} disconnected error", ConnectionToken);
+                logger.LogError(ex, "opc client {ConnectionToken} disconnected error", ConnectionToken);
                 _connect = false;
                 return false;
             }
@@ -108,7 +109,7 @@ namespace Modbus.Net.OPC
                     if (answerTag != null)
                     {
                         var result = await Client.ReadAsync<object>(answerTag);
-                        Log.Verbose($"Opc Machine {ConnectionToken} Read opc tag {answerTag} for value {result}");
+                        logger.LogDebug($"Opc Machine {ConnectionToken} Read opc tag {answerTag} for value {result}");
                         return new OpcParamOut
                         {
                             Success = true,
@@ -134,11 +135,11 @@ namespace Modbus.Net.OPC
                         try
                         {
                             await Client.WriteAsync(answerTag, value);
-                            Log.Verbose($"Opc Machine {ConnectionToken} Write opc tag {answerTag} for value {value}");
+                            logger.LogDebug($"Opc Machine {ConnectionToken} Write opc tag {answerTag} for value {value}");
                         }
                         catch (Exception e)
                         {
-                            Log.Error(e, "opc client {ConnectionToken} write exception", ConnectionToken);
+                            logger.LogError(e, "opc client {ConnectionToken} write exception", ConnectionToken);
                             return new OpcParamOut
                             {
                                 Success = false
@@ -157,7 +158,7 @@ namespace Modbus.Net.OPC
             }
             catch (Exception e)
             {
-                Log.Error(e, "opc client {ConnectionToken} read exception", ConnectionToken);
+                logger.LogError(e, "opc client {ConnectionToken} read exception", ConnectionToken);
                 return new OpcParamOut
                 {
                     Success = false,
@@ -200,12 +201,12 @@ namespace Modbus.Net.OPC
             {
                 await Client.Connect();
                 _connect = true;
-                Log.Information("opc client {ConnectionToken} connect success", ConnectionToken);
+                logger.LogInformation("opc client {ConnectionToken} connect success", ConnectionToken);
                 return true;
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "opc client {ConnectionToken} connected failed", ConnectionToken);
+                logger.LogError(ex, "opc client {ConnectionToken} connected failed", ConnectionToken);
                 _connect = false;
                 return false;
             }

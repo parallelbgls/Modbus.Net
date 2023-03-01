@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Hylasoft.Opc.Common;
+using Hylasoft.Opc.Ua;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Hylasoft.Opc.Common;
-using Hylasoft.Opc.Ua;
 
 namespace Modbus.Net.OPC
 {

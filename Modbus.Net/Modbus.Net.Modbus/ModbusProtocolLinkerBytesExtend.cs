@@ -26,7 +26,7 @@ namespace Modbus.Net.Modbus
     /// </summary>
     public class ModbusUdpProtocolLinkerBytesExtend : ModbusTcpProtocolLinkerBytesExtend
     {
-        
+
     }
 
     /// <summary>
@@ -34,7 +34,7 @@ namespace Modbus.Net.Modbus
     /// </summary>
     public class ModbusRtuInTcpProtocolLinkerBytesExtend : ModbusRtuProtocolLinkerBytesExtend
     {
-        
+
     }
 
     /// <summary>
@@ -60,7 +60,7 @@ namespace Modbus.Net.Modbus
             //Modbus/Tcp协议扩张，前面加6个字节，前面4个为0，后面两个为协议整体内容的长度
             var newFormat = new byte[6 + content.Length];
             var tag = 0;
-            var leng = (ushort) content.Length;
+            var leng = (ushort)content.Length;
             Array.Copy(BigEndianValueHelper.Instance.GetBytes(tag), 0, newFormat, 0, 4);
             Array.Copy(BigEndianValueHelper.Instance.GetBytes(leng), 0, newFormat, 4, 2);
             Array.Copy(content, 0, newFormat, 6, content.Length);

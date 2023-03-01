@@ -39,12 +39,12 @@ namespace Modbus.Net
             if (connectionTimeout == -1)
             {
                 //初始化连接对象
-                BaseConnector = new UdpConnector(ip, port, isFullDuplex:isFullDuplex);
+                BaseConnector = new UdpConnector(ip, port, isFullDuplex: isFullDuplex);
             }
             else
             {
                 //初始化连接对象
-                BaseConnector = new UdpConnector(ip, port, connectionTimeout, isFullDuplex:isFullDuplex);
+                BaseConnector = new UdpConnector(ip, port, connectionTimeout, isFullDuplex: isFullDuplex);
             }
         }
     }

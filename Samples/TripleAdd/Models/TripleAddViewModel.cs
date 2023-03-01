@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace TripleAdd.Models
+﻿namespace TripleAdd.Models
 {
     public class TripleAddViewModel
     {

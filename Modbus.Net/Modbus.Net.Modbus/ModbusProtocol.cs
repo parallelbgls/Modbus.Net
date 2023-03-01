@@ -132,10 +132,10 @@ namespace Modbus.Net.Modbus
         {
             SlaveAddress = slaveAddress;
             var translateAddress = addressTranslator.AddressTranslate(startAddress, true);
-            FunctionCode = (byte) translateAddress.Area;
-            StartAddress = (ushort) translateAddress.Address;
+            FunctionCode = (byte)translateAddress.Area;
+            StartAddress = (ushort)translateAddress.Address;
             GetCount =
-                (ushort) Math.Ceiling(getCount / addressTranslator.GetAreaByteLength(translateAddress.AreaString));
+                (ushort)Math.Ceiling(getCount / addressTranslator.GetAreaByteLength(translateAddress.AreaString));
         }
 
         /// <summary>
@@ -213,7 +213,7 @@ namespace Modbus.Net.Modbus
         /// <returns>读取数据的协议核心</returns>
         public override byte[] Format(IInputStruct message)
         {
-            var r_message = (ReadDataModbusInputStruct) message;
+            var r_message = (ReadDataModbusInputStruct)message;
             return Format(r_message.SlaveAddress, r_message.FunctionCode,
                 r_message.StartAddress, r_message.GetCount);
         }
@@ -257,12 +257,12 @@ namespace Modbus.Net.Modbus
         {
             SlaveAddress = slaveAddress;
             var translateAddress = addressTranslator.AddressTranslate(startAddress, false);
-            FunctionCode = (byte) translateAddress.Area;
-            StartAddress = (ushort) translateAddress.Address;
+            FunctionCode = (byte)translateAddress.Area;
+            StartAddress = (ushort)translateAddress.Address;
             var writeByteValue = ValueHelper.GetInstance(endian).ObjectArrayToByteArray(writeValue);
             WriteCount =
-                (ushort) (writeByteValue.Length / addressTranslator.GetAreaByteLength(translateAddress.AreaString));
-            WriteByteCount = (byte) writeByteValue.Length;
+                (ushort)(writeByteValue.Length / addressTranslator.GetAreaByteLength(translateAddress.AreaString));
+            WriteByteCount = (byte)writeByteValue.Length;
             WriteValue = writeByteValue;
         }
 
@@ -351,7 +351,7 @@ namespace Modbus.Net.Modbus
         /// <returns>写寄存器协议核心</returns>
         public override byte[] Format(IInputStruct message)
         {
-            var r_message = (WriteDataModbusInputStruct) message;
+            var r_message = (WriteDataModbusInputStruct)message;
             var dataValue = Format(r_message.WriteValue);
             var formattingBytes = Format(r_message.SlaveAddress, r_message.FunctionCode,
                 r_message.StartAddress, r_message.WriteCount, r_message.WriteByteCount, dataValue);
@@ -393,13 +393,13 @@ namespace Modbus.Net.Modbus
         {
             SlaveAddress = slaveAddress;
             var translateAddress = addressTranslator.AddressTranslate(startAddress, false, true);
-            FunctionCode = (byte) translateAddress.Area;
-            StartAddress = (ushort) translateAddress.Address;
+            FunctionCode = (byte)translateAddress.Area;
+            StartAddress = (ushort)translateAddress.Address;
             var writeByteValue =
-                FunctionCode == (byte) ModbusProtocolWriteDataFunctionCode.WriteSingleCoil
-                    ? ((bool) writeValue
-                        ? new byte[] {0xFF, 0x00}
-                        : new byte[] {0x00, 0x00})
+                FunctionCode == (byte)ModbusProtocolWriteDataFunctionCode.WriteSingleCoil
+                    ? ((bool)writeValue
+                        ? new byte[] { 0xFF, 0x00 }
+                        : new byte[] { 0x00, 0x00 })
                     : ValueHelper.GetInstance(endian).GetBytes(ushort.Parse(writeValue.ToString()));
             WriteValue = writeByteValue;
         }
@@ -480,7 +480,7 @@ namespace Modbus.Net.Modbus
         /// <returns>写寄存器协议核心</returns>
         public override byte[] Format(IInputStruct message)
         {
-            var r_message = (WriteSingleDataModbusInputStruct) message;
+            var r_message = (WriteSingleDataModbusInputStruct)message;
             var dataValue = Format(r_message.WriteValue);
             var formattingBytes = Format(r_message.SlaveAddress, r_message.FunctionCode,
                 r_message.StartAddress, dataValue);
@@ -522,7 +522,7 @@ namespace Modbus.Net.Modbus
         public GetSystemTimeModbusInputStruct(byte slaveAddress)
         {
             SlaveAddress = slaveAddress;
-            FunctionCode = (byte) ModbusProtocolTimeFunctionCode.GetSystemTime;
+            FunctionCode = (byte)ModbusProtocolTimeFunctionCode.GetSystemTime;
             StartAddress = 30000;
             GetCount = 5;
         }
@@ -609,7 +609,7 @@ namespace Modbus.Net.Modbus
         /// <returns>写系统时间的核心</returns>
         public override byte[] Format(IInputStruct message)
         {
-            var r_message = (GetSystemTimeModbusInputStruct) message;
+            var r_message = (GetSystemTimeModbusInputStruct)message;
             return Format(r_message.SlaveAddress, r_message.FunctionCode,
                 r_message.StartAddress, r_message.GetCount);
         }
@@ -654,17 +654,17 @@ namespace Modbus.Net.Modbus
         public SetSystemTimeModbusInputStruct(byte slaveAddress, DateTime time)
         {
             SlaveAddress = slaveAddress;
-            FunctionCode = (byte) ModbusProtocolTimeFunctionCode.SetSystemTime;
+            FunctionCode = (byte)ModbusProtocolTimeFunctionCode.SetSystemTime;
             StartAddress = 30000;
             WriteCount = 5;
             WriteByteCount = 10;
-            Year = (ushort) time.Year;
-            Day = (byte) time.Day;
-            Month = (byte) time.Month;
-            Hour = (ushort) time.Hour;
-            Second = (byte) time.Second;
-            Minute = (byte) time.Minute;
-            Millisecond = (ushort) time.Millisecond;
+            Year = (ushort)time.Year;
+            Day = (byte)time.Day;
+            Month = (byte)time.Month;
+            Hour = (ushort)time.Hour;
+            Second = (byte)time.Second;
+            Minute = (byte)time.Minute;
+            Millisecond = (ushort)time.Millisecond;
         }
 
         /// <summary>
@@ -782,7 +782,7 @@ namespace Modbus.Net.Modbus
         /// <returns>写系统时间的核心</returns>
         public override byte[] Format(IInputStruct message)
         {
-            var r_message = (SetSystemTimeModbusInputStruct) message;
+            var r_message = (SetSystemTimeModbusInputStruct)message;
             return Format(r_message.SlaveAddress, r_message.FunctionCode,
                 r_message.StartAddress, r_message.WriteCount, r_message.WriteByteCount, r_message.Year,
                 r_message.Day,

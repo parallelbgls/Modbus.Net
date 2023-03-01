@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Threading.Tasks;
-using Serilog;
 
 namespace Modbus.Net.Siemens
 {
@@ -59,6 +59,8 @@ namespace Modbus.Net.Siemens
     /// </summary>
     public class SiemensUtility : BaseUtility
     {
+        private static readonly ILogger<SiemensUtility> logger = LogProvider.CreateLogger<SiemensUtility>();
+
         private readonly ushort _maxCalled;
         private readonly ushort _maxCalling;
         private readonly ushort _maxPdu;
@@ -89,51 +91,51 @@ namespace Modbus.Net.Siemens
             switch (model)
             {
                 case SiemensMachineModel.S7_200:
-                {
-                    _tdpuSize = 0x09;
-                    _taspSrc = (ushort)(0x1000 + src);
-                    _tsapDst = (ushort)(0x1000 + dst);
-                    _maxCalling = 0x0001;
-                    _maxCalled = 0x0001;
-                    _maxPdu = 0x03c0;
-                    break;
-                }
+                    {
+                        _tdpuSize = 0x09;
+                        _taspSrc = (ushort)(0x1000 + src);
+                        _tsapDst = (ushort)(0x1000 + dst);
+                        _maxCalling = 0x0001;
+                        _maxCalled = 0x0001;
+                        _maxPdu = 0x03c0;
+                        break;
+                    }
                 case SiemensMachineModel.S7_300:
                 case SiemensMachineModel.S7_400:
-                {
-                    _tdpuSize = 0x1a;
-                    _taspSrc = 0x4b54;
-                    _tsapDst = (ushort)(0x0300 + dst);
-                    _maxCalling = 0x0001;
-                    _maxCalled = 0x0001;
-                    _maxPdu = 0x00f0;
-                    break;
-                }
+                    {
+                        _tdpuSize = 0x1a;
+                        _taspSrc = 0x4b54;
+                        _tsapDst = (ushort)(0x0300 + dst);
+                        _maxCalling = 0x0001;
+                        _maxCalled = 0x0001;
+                        _maxPdu = 0x00f0;
+                        break;
+                    }
                 case SiemensMachineModel.S7_1200:
                 case SiemensMachineModel.S7_1500:
-                {
-                    _tdpuSize = 0x0a;
-                    _taspSrc = 0x1011;
-                    _tsapDst = (ushort)(0x0300 + dst);
+                    {
+                        _tdpuSize = 0x0a;
+                        _taspSrc = 0x1011;
+                        _tsapDst = (ushort)(0x0300 + dst);
                         _maxCalling = 0x0003;
-                    _maxCalled = 0x0003;
-                    _maxPdu = 0x0100;
-                    break;
-                }
+                        _maxCalled = 0x0003;
+                        _maxPdu = 0x0100;
+                        break;
+                    }
                 case SiemensMachineModel.S7_200_Smart:
-                {
-                    _tdpuSize = 0x0a;
-                    _taspSrc = 0x0101;
-                    _tsapDst = 0x0101;
-                    _maxCalling = 0x0001;
-                    _maxCalled = 0x0001;
-                    _maxPdu = 0x03c0;
-                    break;
-                }
+                    {
+                        _tdpuSize = 0x0a;
+                        _taspSrc = 0x0101;
+                        _tsapDst = 0x0101;
+                        _maxCalling = 0x0001;
+                        _maxCalled = 0x0001;
+                        _maxPdu = 0x03c0;
+                        break;
+                    }
                 default:
-                {
-                    throw new NotImplementedException("Siemens PLC Model not Supported");
-                }
+                    {
+                        throw new NotImplementedException("Siemens PLC Model not Supported");
+                    }
             }
             ConnectionType = connectionType;
             AddressTranslator = new AddressTranslatorSiemens();
@@ -169,11 +171,11 @@ namespace Modbus.Net.Siemens
                 var connectionStringSplit = ConnectionString.Split(':');
                 try
                 {
-                    return connectionStringSplit.Length < 2 ? (int?) null : int.Parse(connectionStringSplit[1]);
+                    return connectionStringSplit.Length < 2 ? (int?)null : int.Parse(connectionStringSplit[1]);
                 }
                 catch (Exception e)
                 {
-                    Log.Error(e, $"SiemensUtility: {ConnectionString} format error");
+                    logger.LogError(e, $"SiemensUtility: {ConnectionString} format error");
                     return null;
                 }
             }
@@ -192,29 +194,29 @@ namespace Modbus.Net.Siemens
                 {
                     //PPI                    
                     case SiemensType.Ppi:
-                    {
-                        Wrapper = ConnectionString == null
-                            ? new SiemensPpiProtocol(SlaveAddress, MasterAddress)
-                            : new SiemensPpiProtocol(ConnectionString, SlaveAddress, MasterAddress);
-                        break;
-                    }
+                        {
+                            Wrapper = ConnectionString == null
+                                ? new SiemensPpiProtocol(SlaveAddress, MasterAddress)
+                                : new SiemensPpiProtocol(ConnectionString, SlaveAddress, MasterAddress);
+                            break;
+                        }
                     //MPI
                     case SiemensType.Mpi:
-                    {
-                        throw new NotImplementedException();
-                    }                   
+                        {
+                            throw new NotImplementedException();
+                        }
                     //Ethenet
                     case SiemensType.Tcp:
-                    {
-                        Wrapper = ConnectionString == null
-                            ? new SiemensTcpProtocol(_tdpuSize, _taspSrc, _tsapDst, _maxCalling, _maxCalled, _maxPdu)
-                            : (ConnectionStringPort == null
-                                ? new SiemensTcpProtocol(_tdpuSize, _taspSrc, _tsapDst, _maxCalling, _maxCalled, _maxPdu,
-                                    ConnectionString)
-                                : new SiemensTcpProtocol(_tdpuSize, _taspSrc, _tsapDst, _maxCalling, _maxCalled, _maxPdu,
-                                    ConnectionStringIp, ConnectionStringPort.Value));
-                        break;
-                    }
+                        {
+                            Wrapper = ConnectionString == null
+                                ? new SiemensTcpProtocol(_tdpuSize, _taspSrc, _tsapDst, _maxCalling, _maxCalled, _maxPdu)
+                                : (ConnectionStringPort == null
+                                    ? new SiemensTcpProtocol(_tdpuSize, _taspSrc, _tsapDst, _maxCalling, _maxCalled, _maxPdu,
+                                        ConnectionString)
+                                    : new SiemensTcpProtocol(_tdpuSize, _taspSrc, _tsapDst, _maxCalling, _maxCalled, _maxPdu,
+                                        ConnectionStringIp, ConnectionStringPort.Value));
+                            break;
+                        }
                 }
             }
         }
@@ -225,7 +227,7 @@ namespace Modbus.Net.Siemens
         /// <param name="connectionType">需要设置的连接类型</param>
         public override void SetConnectionType(int connectionType)
         {
-            ConnectionType = (SiemensType) connectionType;
+            ConnectionType = (SiemensType)connectionType;
         }
 
         /// <summary>
@@ -244,7 +246,7 @@ namespace Modbus.Net.Siemens
                     _sendCount = (ushort)(_sendCount % ushort.MaxValue + 1);
                     readRequestSiemensInputStruct = new ReadRequestSiemensInputStruct(SlaveAddress, MasterAddress,
                         _sendCount, SiemensTypeCode.Byte, startAddress, (ushort)getByteCount, AddressTranslator);
-                }               
+                }
                 var readRequestSiemensOutputStruct =
                     await
                         Wrapper.SendReceiveAsync<ReadRequestSiemensOutputStruct>(
@@ -254,7 +256,7 @@ namespace Modbus.Net.Siemens
             }
             catch (Exception e)
             {
-                Log.Error(e, $"SiemensUtility -> GetDatas: {ConnectionString} error");
+                logger.LogError(e, $"SiemensUtility -> GetDatas: {ConnectionString} error");
                 return null;
             }
         }
@@ -275,7 +277,7 @@ namespace Modbus.Net.Siemens
                     _sendCount = (ushort)(_sendCount % ushort.MaxValue + 1);
                     writeRequestSiemensInputStruct = new WriteRequestSiemensInputStruct(SlaveAddress, MasterAddress,
                         _sendCount, startAddress, setContents, AddressTranslator);
-                }                
+                }
                 var writeRequestSiemensOutputStruct =
                     await
                         Wrapper.SendReceiveAsync<WriteRequestSiemensOutputStruct>(
@@ -285,7 +287,7 @@ namespace Modbus.Net.Siemens
             }
             catch (Exception e)
             {
-                Log.Error(e, $"ModbusUtility -> SetDatas: {ConnectionString} error");
+                logger.LogError(e, $"ModbusUtility -> SetDatas: {ConnectionString} error");
                 return false;
             }
         }

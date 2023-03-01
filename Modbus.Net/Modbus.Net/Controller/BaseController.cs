@@ -10,7 +10,7 @@ namespace Modbus.Net
     ///     控制器基类
     /// </summary>
     public abstract class BaseController : IController
-    { 
+    {
         /// <summary>
         ///     等待的消息队列
         /// </summary>
@@ -66,7 +66,7 @@ namespace Modbus.Net
         {
             if (SendingThread == null)
             {
-                SendingThread = Task.Run(()=>SendingMessageControlInner());               
+                SendingThread = Task.Run(() => SendingMessageControlInner());
             }
         }
 
@@ -101,14 +101,14 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="message">待确认的信息</param>
         /// <returns>信息的检索关键字</returns>
-        protected abstract (string,string)? GetKeyFromMessage(byte[] message);
+        protected abstract (string, string)? GetKeyFromMessage(byte[] message);
 
         /// <inheritdoc />
         public ICollection<(byte[], bool)> ConfirmMessage(byte[] receiveMessage)
         {
             var ans = new List<(byte[], bool)>();
             var duplicatedMessages = DuplicateFunc?.Invoke(receiveMessage);
-            duplicatedMessages = duplicatedMessages ?? new List<byte[]> {receiveMessage};
+            duplicatedMessages = duplicatedMessages ?? new List<byte[]> { receiveMessage };
             foreach (var message in duplicatedMessages)
             {
                 var def = GetMessageFromWaitingList(message);
@@ -127,7 +127,7 @@ namespace Modbus.Net
             return ans;
         }
 
-        
+
 
         /// <summary>
         ///     从等待队列中匹配信息

@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using Nito.AsyncEx;
+using System;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Nito.AsyncEx;
-using Serilog;
 
 namespace Modbus.Net
 {
@@ -14,6 +14,8 @@ namespace Modbus.Net
     /// </summary>
     public class TcpConnector : BaseConnector, IDisposable
     {
+        private static readonly ILogger<TcpConnector> logger = LogProvider.CreateLogger<TcpConnector>();
+
         private readonly string _host;
         private readonly int _port;
 
@@ -53,7 +55,7 @@ namespace Modbus.Net
         /// <inheritdoc />
         protected override int TimeoutTime
         {
-            get  =>
+            get =>
             _timeoutTime;
             set
             {
@@ -94,7 +96,7 @@ namespace Modbus.Net
             {
                 CloseClientSocket();
                 _socketClient = null;
-                Log.Debug("Tcp client {ConnectionToken} Disposed", ConnectionToken);
+                logger.LogDebug("Tcp client {ConnectionToken} Disposed", ConnectionToken);
             }
         }
 
@@ -134,16 +136,16 @@ namespace Modbus.Net
                         _taskCancel = false;
                         Controller.SendStart();
                         ReceiveMsgThreadStart();
-                        Log.Information("Tcp client {ConnectionToken} connected", ConnectionToken);
+                        logger.LogInformation("Tcp client {ConnectionToken} connected", ConnectionToken);
                         return true;
                     }
-                    Log.Error("Tcp client {ConnectionToken} connect failed.", ConnectionToken);
+                    logger.LogError("Tcp client {ConnectionToken} connect failed.", ConnectionToken);
                     Dispose();
                     return false;
                 }
                 catch (Exception err)
                 {
-                    Log.Error(err, "Tcp client {ConnectionToken} connect exception", ConnectionToken);
+                    logger.LogError(err, "Tcp client {ConnectionToken} connect exception", ConnectionToken);
                     Dispose();
                     return false;
                 }
@@ -159,12 +161,12 @@ namespace Modbus.Net
             try
             {
                 Dispose();
-                Log.Information("Tcp client {ConnectionToken} disconnected successfully", ConnectionToken);
+                logger.LogInformation("Tcp client {ConnectionToken} disconnected successfully", ConnectionToken);
                 return true;
             }
             catch (Exception err)
             {
-                Log.Error(err, "Tcp client {ConnectionToken} disconnected exception", ConnectionToken);
+                logger.LogError(err, "Tcp client {ConnectionToken} disconnected exception", ConnectionToken);
                 return false;
             }
             finally
@@ -187,13 +189,13 @@ namespace Modbus.Net
 
                 RefreshSendCount();
 
-                Log.Verbose("Tcp client {ConnectionToken} send text len = {Length}", ConnectionToken, datagram.Length);
-                Log.Verbose($"Tcp client {ConnectionToken} send: {String.Concat(datagram.Select(p => " " + p.ToString("X2")))}");
+                logger.LogDebug("Tcp client {ConnectionToken} send text len = {Length}", ConnectionToken, datagram.Length);
+                logger.LogDebug($"Tcp client {ConnectionToken} send: {String.Concat(datagram.Select(p => " " + p.ToString("X2")))}");
                 await stream.WriteAsync(datagram, 0, datagram.Length);
             }
             catch (Exception err)
             {
-                Log.Error(err, "Tcp client {ConnectionToken} send exception", ConnectionToken);
+                logger.LogError(err, "Tcp client {ConnectionToken} send exception", ConnectionToken);
                 Dispose();
             }
         }
@@ -229,9 +231,9 @@ namespace Modbus.Net
                     if (len > 0)
                     {
                         byte[] receiveBytes = CheckReplyDatagram(len);
-                        Log.Verbose("Tcp client {ConnectionToken} receive text len = {Length}", ConnectionToken,
+                        logger.LogDebug("Tcp client {ConnectionToken} receive text len = {Length}", ConnectionToken,
                             receiveBytes.Length);
-                        Log.Verbose(
+                        logger.LogDebug(
                             $"Tcp client {ConnectionToken} receive: {String.Concat(receiveBytes.Select(p => " " + p.ToString("X2")))}");
                         var isMessageConfirmed = Controller.ConfirmMessage(receiveBytes);
                         foreach (var confirmed in isMessageConfirmed)
@@ -246,7 +248,7 @@ namespace Modbus.Net
                                 }
                             }
                         }
-                        
+
                         RefreshReceiveCount();
                     }
                 }
@@ -257,7 +259,7 @@ namespace Modbus.Net
             }
             catch (Exception err)
             {
-                Log.Error(err, "Tcp client {ConnectionToken} receive exception", ConnectionToken);
+                logger.LogError(err, "Tcp client {ConnectionToken} receive exception", ConnectionToken);
                 //CloseClientSocket();
             }
         }
@@ -280,19 +282,19 @@ namespace Modbus.Net
         private void RefreshSendCount()
         {
             _sendCount++;
-            Log.Verbose("Tcp client {ConnectionToken} send count: {SendCount}", ConnectionToken, _sendCount);
+            logger.LogDebug("Tcp client {ConnectionToken} send count: {SendCount}", ConnectionToken, _sendCount);
         }
 
         private void RefreshReceiveCount()
         {
             _receiveCount++;
-            Log.Verbose("Tcp client {ConnectionToken} receive count: {SendCount}", ConnectionToken, _receiveCount);
+            logger.LogDebug("Tcp client {ConnectionToken} receive count: {SendCount}", ConnectionToken, _receiveCount);
         }
 
         private void RefreshErrorCount()
         {
             _errorCount++;
-            Log.Verbose("Tcp client {ConnectionToken} error count: {ErrorCount}", ConnectionToken, _errorCount);
+            logger.LogDebug("Tcp client {ConnectionToken} error count: {ErrorCount}", ConnectionToken, _errorCount);
         }
 
         private void CloseClientSocket()
@@ -307,12 +309,12 @@ namespace Modbus.Net
                     if (_socketClient.Connected)
                     {
                         _socketClient.Close();
-                    }                 
+                    }
                 }
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Tcp client {ConnectionToken} client close exception", ConnectionToken);
+                logger.LogError(ex, "Tcp client {ConnectionToken} client close exception", ConnectionToken);
             }
         }
     }

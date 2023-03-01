@@ -1,6 +1,6 @@
-﻿using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Nito.AsyncEx;
+using System.Threading.Tasks;
 
 namespace Modbus.Net.Siemens
 {

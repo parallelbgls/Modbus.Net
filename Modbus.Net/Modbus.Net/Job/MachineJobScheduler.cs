@@ -3,7 +3,6 @@ using Quartz.Impl;
 using Quartz.Impl.Matchers;
 using System;
 using System.Collections.Generic;
-using System.Reflection.PortableExecutable;
 using System.Threading.Tasks;
 
 namespace Modbus.Net
@@ -67,13 +66,13 @@ namespace Modbus.Net
             ITrigger trigger;
             if (count >= 0)
                 trigger = TriggerBuilder.Create()
-                    .WithIdentity(triggerKey, "Modbus.Net.DataQuery.Group."+ triggerKey)
+                    .WithIdentity(triggerKey, "Modbus.Net.DataQuery.Group." + triggerKey)
                     .StartNow()
                     .WithSimpleSchedule(b => b.WithInterval(TimeSpan.FromSeconds(interval)).WithRepeatCount(count))
                     .Build();
             else
                 trigger = TriggerBuilder.Create()
-                    .WithIdentity(triggerKey, "Modbus.Net.DataQuery.Group."+ triggerKey)
+                    .WithIdentity(triggerKey, "Modbus.Net.DataQuery.Group." + triggerKey)
                     .StartNow()
                     .WithSimpleSchedule(b => b.WithInterval(TimeSpan.FromSeconds(interval)).RepeatForever())
                     .Build();
@@ -101,7 +100,7 @@ namespace Modbus.Net
             IScheduler scheduler = await StdSchedulerFactory.GetDefaultScheduler();
             var jobKeys = await scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals("Modbus.Net.DataQuery.Group." + triggerKey));
             await scheduler.UnscheduleJob(new TriggerKey(triggerKey, "Modbus.Net.DataQuery.Group." + triggerKey));
-            await scheduler.DeleteJobs(jobKeys);         
+            await scheduler.DeleteJobs(jobKeys);
         }
     }
 
@@ -219,7 +218,7 @@ namespace Modbus.Net
                 await _scheduler.AddJob(job, true);
             }
             else
-            {            
+            {
                 await _scheduler.ScheduleJob(job, _trigger);
             }
 
@@ -395,7 +394,7 @@ namespace Modbus.Net
             await _scheduler.Start();
         }
     }
-    
+
     /// <summary>
     ///     处理写返回任务
     /// </summary>
@@ -544,7 +543,7 @@ namespace Modbus.Net
     /// <summary>
     ///     处理写返回任务
     /// </summary>
-    public class MachineDealDataJob<TMachineKey> : IJob where TMachineKey: IEquatable<TMachineKey>
+    public class MachineDealDataJob<TMachineKey> : IJob where TMachineKey : IEquatable<TMachineKey>
     {
         /// <inheritdoc />
         public async Task Execute(IJobExecutionContext context)

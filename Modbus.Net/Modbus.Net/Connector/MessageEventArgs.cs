@@ -1,5 +1,5 @@
 ﻿namespace Modbus.Net
-{   
+{
     /// <summary>
     ///     数据返回代理参数
     /// </summary>
@@ -12,7 +12,7 @@
         public TParamOut ReturnMessage { get; set; }
     }
 
-    
+
     /// <summary>
     ///     数据发送代理参数
     /// </summary>

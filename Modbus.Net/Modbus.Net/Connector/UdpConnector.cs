@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using Nito.AsyncEx;
+using System;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Nito.AsyncEx;
-using Serilog;
 
 namespace Modbus.Net
 {
@@ -13,6 +13,8 @@ namespace Modbus.Net
     /// </summary>
     public class UdpConnector : BaseConnector, IDisposable
     {
+        private static readonly ILogger<UdpConnector> logger = LogProvider.CreateLogger<UdpConnector>();
+
         private readonly string _host;
         private readonly int _port;
 
@@ -81,7 +83,7 @@ namespace Modbus.Net
             {
                 CloseClientSocket();
                 _socketClient = null;
-                Log.Debug("Udp client {ConnectionToken} Disposed", ConnectionToken);
+                logger.LogDebug("Udp client {ConnectionToken} Disposed", ConnectionToken);
             }
         }
 
@@ -101,7 +103,7 @@ namespace Modbus.Net
             {
                 if (_socketClient != null)
                 {
-                    return true;                 
+                    return true;
                 }
                 try
                 {
@@ -116,17 +118,17 @@ namespace Modbus.Net
                         _taskCancel = false;
                         Controller.SendStart();
                         ReceiveMsgThreadStart();
-                        Log.Information("Udp client {ConnectionToken} connected", ConnectionToken);
+                        logger.LogInformation("Udp client {ConnectionToken} connected", ConnectionToken);
                         return true;
                     }
 
-                    Log.Error("Udp client {ConnectionToken} connect failed.", ConnectionToken);
+                    logger.LogError("Udp client {ConnectionToken} connect failed.", ConnectionToken);
                     Dispose();
                     return false;
                 }
                 catch (Exception err)
                 {
-                    Log.Error(err, "Udp client {ConnectionToken} connect exception", ConnectionToken);
+                    logger.LogError(err, "Udp client {ConnectionToken} connect exception", ConnectionToken);
                     Dispose();
                     return false;
                 }
@@ -142,12 +144,12 @@ namespace Modbus.Net
             try
             {
                 Dispose();
-                Log.Information("Udp client {ConnectionToken} disconnected successfully", ConnectionToken);
+                logger.LogInformation("Udp client {ConnectionToken} disconnected successfully", ConnectionToken);
                 return true;
             }
             catch (Exception err)
             {
-                Log.Error(err, "Udp client {ConnectionToken} disconnected exception", ConnectionToken);
+                logger.LogError(err, "Udp client {ConnectionToken} disconnected exception", ConnectionToken);
                 return false;
             }
             finally
@@ -168,13 +170,13 @@ namespace Modbus.Net
 
                 RefreshSendCount();
 
-                Log.Verbose("Udp client {ConnectionToken} send text len = {Length}", ConnectionToken, datagram.Length);
-                Log.Verbose($"Udp client {ConnectionToken} send: {String.Concat(datagram.Select(p => " " + p.ToString("X2")))}");
+                logger.LogDebug("Udp client {ConnectionToken} send text len = {Length}", ConnectionToken, datagram.Length);
+                logger.LogDebug($"Udp client {ConnectionToken} send: {String.Concat(datagram.Select(p => " " + p.ToString("X2")))}");
                 await _socketClient.SendAsync(datagram, datagram.Length);
             }
             catch (Exception err)
             {
-                Log.Error(err, "Udp client {ConnectionToken} send exception", ConnectionToken);
+                logger.LogError(err, "Udp client {ConnectionToken} send exception", ConnectionToken);
                 Dispose();
             }
         }
@@ -210,9 +212,9 @@ namespace Modbus.Net
                     {
                         if (receive.Buffer.Clone() is byte[] receiveBytes)
                         {
-                            Log.Verbose("Udp client {ConnectionToken} receive text len = {Length}", ConnectionToken,
+                            logger.LogDebug("Udp client {ConnectionToken} receive text len = {Length}", ConnectionToken,
                                 receiveBytes.Length);
-                            Log.Verbose(
+                            logger.LogDebug(
                                 $"Udp client {ConnectionToken} receive: {String.Concat(receiveBytes.Select(p => " " + p.ToString("X2")))}");
                             var isMessageConfirmed = Controller.ConfirmMessage(receiveBytes);
                             foreach (var confirmed in isMessageConfirmed)
@@ -239,7 +241,7 @@ namespace Modbus.Net
             }
             catch (Exception err)
             {
-                Log.Error(err, "Udp client {ConnectionToken} receive exception", ConnectionToken);
+                logger.LogError(err, "Udp client {ConnectionToken} receive exception", ConnectionToken);
                 //CloseClientSocket();
             }
         }
@@ -247,19 +249,19 @@ namespace Modbus.Net
         private void RefreshSendCount()
         {
             _sendCount++;
-            Log.Verbose("Udp client {ConnectionToken} send count: {SendCount}", ConnectionToken, _sendCount);
+            logger.LogDebug("Udp client {ConnectionToken} send count: {SendCount}", ConnectionToken, _sendCount);
         }
 
         private void RefreshReceiveCount()
         {
             _receiveCount++;
-            Log.Verbose("Udp client {ConnectionToken} receive count: {SendCount}", ConnectionToken, _receiveCount);
+            logger.LogDebug("Udp client {ConnectionToken} receive count: {SendCount}", ConnectionToken, _receiveCount);
         }
 
         private void RefreshErrorCount()
         {
             _errorCount++;
-            Log.Verbose("Udp client {ConnectionToken} error count: {ErrorCount}", ConnectionToken, _errorCount);
+            logger.LogDebug("Udp client {ConnectionToken} error count: {ErrorCount}", ConnectionToken, _errorCount);
         }
 
         private void CloseClientSocket()
@@ -280,7 +282,7 @@ namespace Modbus.Net
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Udp client {ConnectionToken} client close exception", ConnectionToken);
+                logger.LogError(ex, "Udp client {ConnectionToken} client close exception", ConnectionToken);
             }
         }
     }

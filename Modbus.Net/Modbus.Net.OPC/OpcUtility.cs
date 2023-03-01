@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Threading.Tasks;
-using Serilog;
 
 namespace Modbus.Net.OPC
 {
@@ -11,6 +11,8 @@ namespace Modbus.Net.OPC
         PipeUnit<OpcParamIn, OpcParamOut, IProtocolLinker<OpcParamIn, OpcParamOut>,
             ProtocolUnit<OpcParamIn, OpcParamOut>>>
     {
+        private static readonly ILogger<OpcUtility> logger = LogProvider.CreateLogger<OpcUtility>();
+
         /// <summary>
         ///     获取分隔符
         /// </summary>
@@ -66,7 +68,7 @@ namespace Modbus.Net.OPC
             }
             catch (Exception e)
             {
-                Log.Error(e, $"OpcUtility -> GetDatas: {ConnectionString} error");
+                logger.LogError(e, $"OpcUtility -> GetDatas: {ConnectionString} error");
                 return null;
             }
         }
@@ -92,7 +94,7 @@ namespace Modbus.Net.OPC
             }
             catch (Exception e)
             {
-                Log.Error(e, $"OpcUtility -> SetDatas: {ConnectionString} error");
+                logger.LogError(e, $"OpcUtility -> SetDatas: {ConnectionString} error");
                 return false;
             }
         }

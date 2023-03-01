@@ -77,7 +77,7 @@
         /// <returns>格式化后的字节流</returns>
         public override OpcParamIn Format(IInputStruct message)
         {
-            var r_message = (ReadRequestOpcInputStruct) message;
+            var r_message = (ReadRequestOpcInputStruct)message;
             return new OpcParamIn
             {
                 IsRead = true,
@@ -169,7 +169,7 @@
         /// <returns>格式化后的字节流</returns>
         public override OpcParamIn Format(IInputStruct message)
         {
-            var r_message = (WriteRequestOpcInputStruct) message;
+            var r_message = (WriteRequestOpcInputStruct)message;
             return new OpcParamIn
             {
                 IsRead = false,

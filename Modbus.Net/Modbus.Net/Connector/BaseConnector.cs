@@ -1,18 +1,20 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Logging;
 using Nito.AsyncEx;
-using Serilog;
+using System;
+using System.Threading.Tasks;
 
 namespace Modbus.Net
 {
     /// <inheritdoc />
     public abstract class BaseConnector : BaseConnector<byte[], byte[]>
     {
+        private static readonly ILogger<BaseConnector> logger = LogProvider.CreateLogger<BaseConnector>();
+
         /// <summary>
         ///     发送锁
         /// </summary>
         protected abstract AsyncLock Lock { get; }
-        
+
         /// <summary>
         ///     是否为全双工
         /// </summary>
@@ -51,7 +53,7 @@ namespace Modbus.Net
         {
             IDisposable asyncLock = null;
             try
-            {                
+            {
                 var messageSendingdef = Controller.AddMessage(message);
                 if (messageSendingdef != null)
                 {
@@ -71,12 +73,12 @@ namespace Modbus.Net
                     }
                     Controller.ForceRemoveWaitingMessage(messageSendingdef);
                 }
-                Log.Information("Message is waiting in {0}. Cancel!", ConnectionToken);
+                logger.LogInformation("Message is waiting in {0}. Cancel!", ConnectionToken);
                 return null;
             }
             catch (Exception e)
             {
-                Log.Error(e, "Connector {0} Send Error.", ConnectionToken);
+                logger.LogError(e, "Connector {0} Send Error.", ConnectionToken);
                 return null;
             }
             finally
@@ -149,14 +151,14 @@ namespace Modbus.Net
         /// </summary>
         protected abstract void ReceiveMsgThreadStop();
 
-         /// <summary>
-         ///     数据返回代理函数
-         /// </summary>
-         /// <param name="receiveMessage"></param>
-         /// <returns></returns>
+        /// <summary>
+        ///     数据返回代理函数
+        /// </summary>
+        /// <param name="receiveMessage"></param>
+        /// <returns></returns>
         protected TParamIn InvokeReturnMessage(TParamOut receiveMessage)
         {
-            return MessageReturn?.Invoke(this, new MessageReturnArgs<TParamOut>{ReturnMessage = receiveMessage})?.SendMessage;
+            return MessageReturn?.Invoke(this, new MessageReturnArgs<TParamOut> { ReturnMessage = receiveMessage })?.SendMessage;
         }
     }
 }

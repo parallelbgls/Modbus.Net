@@ -55,14 +55,14 @@ namespace Modbus.Net
         {
             if (connectionTimeout == -1)
             {
-                BaseConnector = new ComConnector(com + ":" + slaveAddress, baudRate, parity, stopBits, dataBits, isFullDuplex:isFullDuplex);
+                BaseConnector = new ComConnector(com + ":" + slaveAddress, baudRate, parity, stopBits, dataBits, isFullDuplex: isFullDuplex);
             }
             else
             {
                 BaseConnector = new ComConnector(com + ":" + slaveAddress, baudRate, parity, stopBits, dataBits,
-                    connectionTimeout, isFullDuplex:isFullDuplex);
+                    connectionTimeout, isFullDuplex: isFullDuplex);
             }
-            
+
         }
     }
 }

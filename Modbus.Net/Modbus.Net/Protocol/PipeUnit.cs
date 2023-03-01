@@ -96,7 +96,7 @@ namespace Modbus.Net
         /// <param name="protocolLinker">连接器</param>
         public PipeUnit(TProtocolLinker protocolLinker) : this(protocolLinker, null, null, true)
         {
-            
+
         }
 
         /// <summary>

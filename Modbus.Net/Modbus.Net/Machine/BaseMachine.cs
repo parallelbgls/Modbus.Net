@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Serilog;
 
 namespace Modbus.Net
 {
@@ -80,6 +80,8 @@ namespace Modbus.Net
         where TKey : IEquatable<TKey>
         where TUnitKey : IEquatable<TUnitKey>
     {
+        private static readonly ILogger<BaseMachine<TKey, TUnitKey>> logger = LogProvider.CreateLogger<BaseMachine<TKey, TUnitKey>>();
+
         private readonly int _maxErrorCount = 3;
 
         /// <summary>
@@ -243,39 +245,39 @@ namespace Modbus.Net
                                            AddressTranslator.GetAreaByteLength(communicateAddress.Area)) +
                                        address.SubAddress * 0.125;
                         //字节坐标的主地址位置
-                        var localMainPos = (int) localPos;
+                        var localMainPos = (int)localPos;
                         //字节坐标的子地址位置
-                        var localSubPos = (int) ((localPos - localMainPos) * 8);
+                        var localSubPos = (int)((localPos - localMainPos) * 8);
 
                         //根据类型选择返回结果的键是通讯标识还是地址
                         string key;
                         switch (getDataType)
                         {
                             case MachineDataType.CommunicationTag:
-                            {
-                                key = address.CommunicationTag;
-                                break;
-                            }
+                                {
+                                    key = address.CommunicationTag;
+                                    break;
+                                }
                             case MachineDataType.Address:
-                            {
-                                key = AddressFormater.FormatAddress(address.Area, address.Address, address.SubAddress);
-                                break;
-                            }
+                                {
+                                    key = AddressFormater.FormatAddress(address.Area, address.Address, address.SubAddress);
+                                    break;
+                                }
                             case MachineDataType.Name:
-                            {
-                                key = address.Name;
-                                break;
-                            }
+                                {
+                                    key = address.Name;
+                                    break;
+                                }
                             case MachineDataType.Id:
-                            {
-                                key = address.Id.ToString();
-                                break;
-                            }
+                                {
+                                    key = address.Id.ToString();
+                                    break;
+                                }
                             default:
-                            {
-                                key = address.CommunicationTag;
-                                break;
-                            }
+                                {
+                                    key = address.CommunicationTag;
+                                    break;
+                                }
                         }
 
                         try
@@ -302,7 +304,7 @@ namespace Modbus.Net
                         catch (Exception e)
                         {
                             ErrorCount++;
-                            Log.Error(e, $"BaseMachine -> GetDatas, Id:{Id} Connection:{ConnectionToken} key {key} existing. ErrorCount {ErrorCount}.");
+                            logger.LogError(e, $"BaseMachine -> GetDatas, Id:{Id} Connection:{ConnectionToken} key {key} existing. ErrorCount {ErrorCount}.");
 
                             if (ErrorCount >= _maxErrorCount)
                                 Disconnect();
@@ -321,8 +323,8 @@ namespace Modbus.Net
             catch (Exception e)
             {
                 ErrorCount++;
-                Log.Error(e, $"BaseMachine -> GetDatas, Id:{Id} Connection:{ConnectionToken} error. ErrorCount {ErrorCount}.");
-                
+                logger.LogError(e, $"BaseMachine -> GetDatas, Id:{Id} Connection:{ConnectionToken} error. ErrorCount {ErrorCount}.");
+
                 if (ErrorCount >= _maxErrorCount)
                     Disconnect();
                 return null;
@@ -364,48 +366,48 @@ namespace Modbus.Net
                     switch (setDataType)
                     {
                         case MachineDataType.Address:
-                        {
-                            address =
-                                GetAddresses.SingleOrDefault(
-                                    p =>
-                                        AddressFormater.FormatAddress(p.Area, p.Address, p.SubAddress) == value.Key ||
-                                        p.DataType != typeof(bool) &&
-                                        AddressFormater.FormatAddress(p.Area, p.Address) == value.Key);
-                            break;
-                        }
+                            {
+                                address =
+                                    GetAddresses.SingleOrDefault(
+                                        p =>
+                                            AddressFormater.FormatAddress(p.Area, p.Address, p.SubAddress) == value.Key ||
+                                            p.DataType != typeof(bool) &&
+                                            AddressFormater.FormatAddress(p.Area, p.Address) == value.Key);
+                                break;
+                            }
                         case MachineDataType.CommunicationTag:
-                        {
-                            address =
-                                GetAddresses.SingleOrDefault(p => p.CommunicationTag == value.Key);
-                            break;
-                        }
+                            {
+                                address =
+                                    GetAddresses.SingleOrDefault(p => p.CommunicationTag == value.Key);
+                                break;
+                            }
                         case MachineDataType.Name:
-                        {
-                            address = GetAddresses.SingleOrDefault(p => p.Name == value.Key);
-                            break;
-                        }
+                            {
+                                address = GetAddresses.SingleOrDefault(p => p.Name == value.Key);
+                                break;
+                            }
                         case MachineDataType.Id:
-                        {
-                            address = GetAddresses.SingleOrDefault(p => p.Id.ToString() == value.Key);
-                            break;
-                        }
+                            {
+                                address = GetAddresses.SingleOrDefault(p => p.Id.ToString() == value.Key);
+                                break;
+                            }
                         default:
-                        {
-                            address =
-                                GetAddresses.SingleOrDefault(p => p.CommunicationTag == value.Key);
-                            break;
-                        }
+                            {
+                                address =
+                                    GetAddresses.SingleOrDefault(p => p.CommunicationTag == value.Key);
+                                break;
+                            }
                     }
                     //地址为空报错
                     if (address == null)
                     {
-                        Log.Error($"Machine {ConnectionToken} Address {value.Key} doesn't exist.");
+                        logger.LogError($"Machine {ConnectionToken} Address {value.Key} doesn't exist.");
                         continue;
                     }
                     //不能写报错
                     if (!address.CanWrite)
                     {
-                        Log.Error($"Machine {ConnectionToken} Address {value.Key} cannot write.");
+                        logger.LogError($"Machine {ConnectionToken} Address {value.Key} cannot write.");
                         continue;
                     }
                     addresses.Add(address);
@@ -449,58 +451,58 @@ namespace Modbus.Net
                                 AddressTranslator.GetAreaByteLength(communicateAddress.Area),
                                 AddressTranslator.GetAreaByteLength(communicateAddress.Area), 0);
                         //字节坐标主地址
-                        var mainByteCount = (int) byteCount;
+                        var mainByteCount = (int)byteCount;
                         //字节坐标自地址
-                        var localByteCount = (int) ((byteCount - (int) byteCount) * 8);
+                        var localByteCount = (int)((byteCount - (int)byteCount) * 8);
 
                         //协议坐标地址
                         var localPos = byteCount / AddressTranslator.GetAreaByteLength(communicateAddress.Area);
                         //协议坐标子地址
                         var subPos =
                             (int)
-                            ((localPos - (int) localPos) /
+                            ((localPos - (int)localPos) /
                              (0.125 / AddressTranslator.GetAreaByteLength(communicateAddress.Area)));
                         //协议主地址字符串
                         var address = AddressFormater.FormatAddress(communicateAddress.Area,
-                            communicateAddress.Address + (int) localPos, subPos);
+                            communicateAddress.Address + (int)localPos, subPos);
                         //协议完整地址字符串
                         var address2 = subPos != 0
                             ? null
                             : AddressFormater.FormatAddress(communicateAddress.Area,
-                                communicateAddress.Address + (int) localPos);
+                                communicateAddress.Address + (int)localPos);
                         //获取写入类型
                         var dataType = addressUnit.DataType;
                         KeyValuePair<string, double> value;
                         switch (setDataType)
                         {
                             case MachineDataType.Address:
-                            {
-                                //获取要写入的值
-                                value =
-                                    values.SingleOrDefault(
-                                        p => p.Key == address || address2 != null && p.Key == address2);
-                                break;
-                            }
+                                {
+                                    //获取要写入的值
+                                    value =
+                                        values.SingleOrDefault(
+                                            p => p.Key == address || address2 != null && p.Key == address2);
+                                    break;
+                                }
                             case MachineDataType.CommunicationTag:
-                            {
-                                value = values.SingleOrDefault(p => p.Key == addressUnit.CommunicationTag);
-                                break;
-                            }
+                                {
+                                    value = values.SingleOrDefault(p => p.Key == addressUnit.CommunicationTag);
+                                    break;
+                                }
                             case MachineDataType.Name:
-                            {
-                                value = values.SingleOrDefault(p => p.Key == addressUnit.Name);
-                                break;
-                            }
+                                {
+                                    value = values.SingleOrDefault(p => p.Key == addressUnit.Name);
+                                    break;
+                                }
                             case MachineDataType.Id:
-                            {
-                                value = values.SingleOrDefault(p => p.Key == addressUnit.Id.ToString());
-                                break;
-                            }
+                                {
+                                    value = values.SingleOrDefault(p => p.Key == addressUnit.Id.ToString());
+                                    break;
+                                }
                             default:
-                            {
-                                value = values.SingleOrDefault(p => p.Key == addressUnit.CommunicationTag);
-                                break;
-                            }
+                                {
+                                    value = values.SingleOrDefault(p => p.Key == addressUnit.CommunicationTag);
+                                    break;
+                                }
                         }
                         //将要写入的值加入队列
                         var data = Convert.ChangeType(value.Value / addressUnit.Zoom, dataType);
@@ -521,7 +523,7 @@ namespace Modbus.Net
             catch (Exception e)
             {
                 ErrorCount++;
-                Log.Error(e, $"BaseMachine -> SetDatas, Id:{Id} Connection:{ConnectionToken} error. ErrorCount {ErrorCount}.");
+                logger.LogError(e, $"BaseMachine -> SetDatas, Id:{Id} Connection:{ConnectionToken} error. ErrorCount {ErrorCount}.");
 
                 if (ErrorCount >= _maxErrorCount)
                     Disconnect();
@@ -619,7 +621,7 @@ namespace Modbus.Net
             }
             catch (Exception e)
             {
-                Log.Error(e, $"BaseMachine -> GetAddressUnitById Id:{Id} ConnectionToken:{ConnectionToken} addressUnitId:{addressUnitId} Repeated");
+                logger.LogError(e, $"BaseMachine -> GetAddressUnitById Id:{Id} ConnectionToken:{ConnectionToken} addressUnitId:{addressUnitId} Repeated");
                 return null;
             }
         }

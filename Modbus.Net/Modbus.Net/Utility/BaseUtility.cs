@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Serilog;
 
 /// <summary>
 ///     端格式
@@ -47,6 +47,8 @@ namespace Modbus.Net
         where TProtocolUnit : class, IProtocolFormatting<TParamIn, TParamOut> where TParamOut : class
         where TPipeUnit : PipeUnit<TParamIn, TParamOut, IProtocolLinker<TParamIn, TParamOut>, TProtocolUnit>
     {
+        private static readonly ILogger<BaseUtility<TParamIn, TParamOut, TProtocolUnit, TPipeUnit>> logger = LogProvider.CreateLogger<BaseUtility<TParamIn, TParamOut, TProtocolUnit, TPipeUnit>>();
+
         /// <summary>
         ///     协议收发主体
         /// </summary>
@@ -122,13 +124,13 @@ namespace Modbus.Net
                 var typeName = getTypeAndCount.Key.FullName;
                 var bCount = BigEndianValueHelper.Instance.ByteLength[typeName];
                 var getReturnValue = await GetDatasAsync(startAddress,
-                    (int) Math.Ceiling(bCount * getTypeAndCount.Value));
+                    (int)Math.Ceiling(bCount * getTypeAndCount.Value));
                 var getBytes = getReturnValue;
                 return ValueHelper.GetInstance(Endian).ByteArrayToObjectArray(getBytes, getTypeAndCount);
             }
             catch (Exception e)
             {
-                Log.Error(e, $"ModbusUtility -> GetDatas: {ConnectionString} error");
+                logger.LogError(e, $"ModbusUtility -> GetDatas: {ConnectionString} error");
                 return null;
             }
         }
@@ -164,7 +166,7 @@ namespace Modbus.Net
             }
             catch (Exception e)
             {
-                Log.Error(e, $"ModbusUtility -> GetDatas Generic: {ConnectionString} error");
+                logger.LogError(e, $"ModbusUtility -> GetDatas Generic: {ConnectionString} error");
                 return null;
             }
         }
@@ -198,14 +200,14 @@ namespace Modbus.Net
                     from getTypeAndCount in translateTypeAndCount
                     let typeName = getTypeAndCount.Key.FullName
                     let bCount = BigEndianValueHelper.Instance.ByteLength[typeName]
-                    select (int) Math.Ceiling(bCount * getTypeAndCount.Value)).Sum();
+                    select (int)Math.Ceiling(bCount * getTypeAndCount.Value)).Sum();
                 var getReturnValue = await GetDatasAsync(startAddress, bAllCount);
                 var getBytes = getReturnValue;
                 return ValueHelper.GetInstance(Endian).ByteArrayToObjectArray(getBytes, translateTypeAndCount);
             }
             catch (Exception e)
             {
-                Log.Error(e, $"ModbusUtility -> GetDatas pair: {ConnectionString} error");
+                logger.LogError(e, $"ModbusUtility -> GetDatas pair: {ConnectionString} error");
                 return null;
             }
         }

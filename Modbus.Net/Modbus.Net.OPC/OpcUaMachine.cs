@@ -23,8 +23,8 @@ namespace Modbus.Net.OPC
             : base(id, getAddresses, keepConnect)
         {
             BaseUtility = new OpcUaUtility(connectionString, isRegexOn);
-            ((OpcUtility) BaseUtility).GetSeperator +=
-                () => ((AddressFormaterOpc<string, string>) AddressFormater).Seperator;
+            ((OpcUtility)BaseUtility).GetSeperator +=
+                () => ((AddressFormaterOpc<string, string>)AddressFormater).Seperator;
         }
 
         /// <summary>
@@ -56,8 +56,8 @@ namespace Modbus.Net.OPC
             : base(id, getAddresses, keepConnect)
         {
             BaseUtility = new OpcUaUtility(connectionString, isRegexOn);
-            ((OpcUtility) BaseUtility).GetSeperator +=
-                () => ((AddressFormaterOpc<string, string>) AddressFormater).Seperator;
+            ((OpcUtility)BaseUtility).GetSeperator +=
+                () => ((AddressFormaterOpc<string, string>)AddressFormater).Seperator;
         }
 
         /// <summary>

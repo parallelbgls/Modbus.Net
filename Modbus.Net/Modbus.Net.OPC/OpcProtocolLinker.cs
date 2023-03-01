@@ -34,7 +34,7 @@ namespace Modbus.Net.OPC
             //容错处理
             var checkRight = CheckRight(receiveBytes);
             return checkRight == null
-                ? new OpcParamOut {Success = false, Value = new byte[0]}
+                ? new OpcParamOut { Success = false, Value = new byte[0] }
                 : (!checkRight.Value ? null : receiveBytes);
             //返回字符
         }

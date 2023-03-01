@@ -64,11 +64,11 @@ namespace Modbus.Net
                             CRC = CRC >> 1;
                 }
             }
-            Rcvbuf[1] = (byte) ((CRC & 0xff00) >> 8); //高位置  
-            Rcvbuf[0] = (byte) (CRC & 0x00ff); //低位置 
+            Rcvbuf[1] = (byte)((CRC & 0xff00) >> 8); //高位置  
+            Rcvbuf[0] = (byte)(CRC & 0x00ff); //低位置 
             CRC = Rcvbuf[0] << 8;
             CRC += Rcvbuf[1];
-            return (short) CRC;
+            return (short)CRC;
         }
 
         #endregion
@@ -195,7 +195,7 @@ namespace Modbus.Net
             byte sum = 0;
             foreach (var b in code)
                 sum += b;
-            sum = (byte) (~sum + 1); //取反+1
+            sum = (byte)(~sum + 1); //取反+1
             var lrc = sum.ToString("X2");
             return lrc;
         }

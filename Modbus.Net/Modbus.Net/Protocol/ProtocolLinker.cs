@@ -82,7 +82,7 @@ namespace Modbus.Net
             return true;
         }
     }
-    
+
     /// <summary>
     ///     基本的协议连接器
     /// </summary>
