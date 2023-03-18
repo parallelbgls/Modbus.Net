@@ -24,7 +24,7 @@ namespace Modbus.Net.Modbus
         /// <param name="com">串口地址</param>
         /// <param name="slaveAddress">从站号</param>
         public ModbusAsciiProtocolLinker(string com, int slaveAddress)
-            : base(com, 9600, Parity.None, StopBits.One, 8, slaveAddress)
+            : base(com, slaveAddress)
         {
             ((BaseConnector)BaseConnector).AddController(new MatchController(new ICollection<(int, int)>[] { new List<(int, int)> { (1, 1), (2, 2) }, new List<(int, int)> { (3, 3), (4, 4) } }, int.Parse(configuration.GetSection("Modbus.Net")["FetchSleepTime"] ?? "0")));
         }

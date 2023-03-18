@@ -23,7 +23,7 @@ namespace Modbus.Net
         /// <param name="duplicateFunc">包切分函数</param>
         /// <param name="waitingListMaxCount">包等待队列长度</param>
         public MatchController(ICollection<(int, int)>[] keyMatches, int acquireTime, bool activateSema = true,
-            Func<byte[], ICollection<byte[]>> duplicateFunc = null, int waitingListMaxCount = 1) : base(acquireTime, activateSema, duplicateFunc, waitingListMaxCount)
+            Func<byte[], ICollection<byte[]>> duplicateFunc = null, int waitingListMaxCount = 100) : base(acquireTime, activateSema, duplicateFunc, waitingListMaxCount)
         {
             KeyMatches = keyMatches;
         }

@@ -25,7 +25,7 @@ namespace Modbus.Net.Siemens
         /// <param name="com">串口地址</param>
         /// <param name="slaveAddress">从站号</param>
         public SiemensPpiProtocolLinker(string com, int slaveAddress)
-            : base(com, 9600, Parity.Even, StopBits.One, 8, slaveAddress)
+            : base(com, slaveAddress)
         {
             ((BaseConnector)BaseConnector).AddController(new FifoController(int.Parse(configuration.GetSection("Modbus.Net")["FetchSleepTime"] ?? "0"), true, null, 100));
         }
