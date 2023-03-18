@@ -135,18 +135,18 @@ namespace Modbus.Net.Tests
             _modbusRtuMachine1.Disconnect();
             _modbusRtuMachine2.Disconnect();
 
-            Assert.AreEqual(ans["A1"].DeviceValue, dic1["A1"]);
-            Assert.AreEqual(ans2["A1"].DeviceValue, dic2["A1"]);
-            Assert.AreEqual(ans["A2"].DeviceValue, dic1["A2"]);
-            Assert.AreEqual(ans2["A2"].DeviceValue, dic2["A2"]);
-            Assert.AreEqual(ans["A3"].DeviceValue, dic1["A3"]);
-            Assert.AreEqual(ans2["A3"].DeviceValue, dic2["A3"]);
-            Assert.AreEqual(ans["A4"].DeviceValue, dic1["A4"]);
-            Assert.AreEqual(ans2["A4"].DeviceValue, dic2["A4"]);
-            Assert.AreEqual(ans["A5"].DeviceValue, dic1["A5"]);
-            Assert.AreEqual(ans2["A5"].DeviceValue, dic2["A5"]);
-            Assert.AreEqual(ans["A6"].DeviceValue, dic1["A6"]);
-            Assert.AreEqual(ans2["A6"].DeviceValue, dic2["A6"]);
+            Assert.AreEqual(ans.Datas["A1"].DeviceValue, dic1["A1"]);
+            Assert.AreEqual(ans2.Datas["A1"].DeviceValue, dic2["A1"]);
+            Assert.AreEqual(ans.Datas["A2"].DeviceValue, dic1["A2"]);
+            Assert.AreEqual(ans2.Datas["A2"].DeviceValue, dic2["A2"]);
+            Assert.AreEqual(ans.Datas["A3"].DeviceValue, dic1["A3"]);
+            Assert.AreEqual(ans2.Datas["A3"].DeviceValue, dic2["A3"]);
+            Assert.AreEqual(ans.Datas["A4"].DeviceValue, dic1["A4"]);
+            Assert.AreEqual(ans2.Datas["A4"].DeviceValue, dic2["A4"]);
+            Assert.AreEqual(ans.Datas["A5"].DeviceValue, dic1["A5"]);
+            Assert.AreEqual(ans2.Datas["A5"].DeviceValue, dic2["A5"]);
+            Assert.AreEqual(ans.Datas["A6"].DeviceValue, dic1["A6"]);
+            Assert.AreEqual(ans2.Datas["A6"].DeviceValue, dic2["A6"]);
         }
     }
 }

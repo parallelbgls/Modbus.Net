@@ -34,7 +34,7 @@ namespace CrossLamp.Controllers
                     await _utility.ConnectAsync();
                 }
                 Lamp light = new Lamp();
-                object[] lampsbyte = await _utility.GetDatasAsync("0X 1", new KeyValuePair<Type, int>(typeof(bool), 7));
+                object[] lampsbyte = (await _utility.GetDatasAsync("0X 1", new KeyValuePair<Type, int>(typeof(bool), 7))).Datas;
                 bool[] lamps = BigEndianValueHelper.Instance.ObjectArrayToDestinationArray<bool>(lampsbyte);
                 if (lamps[0])
                 {

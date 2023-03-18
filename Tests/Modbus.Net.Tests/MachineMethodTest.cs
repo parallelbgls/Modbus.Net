@@ -25,7 +25,7 @@ namespace Modbus.Net.Tests
             var success = await baseMachine.BaseUtility.GetUtilityMethods<IUtilityMethodTime>().SetTimeAsync(DateTime.Now);
             Assert.AreEqual(success, true);
             var time = await baseMachine.BaseUtility.GetUtilityMethods<IUtilityMethodTime>().GetTimeAsync();
-            Assert.AreEqual((time.ToUniversalTime() - DateTime.Now.ToUniversalTime()).Seconds < 10, true);
+            Assert.AreEqual((time.Datas.ToUniversalTime() - DateTime.Now.ToUniversalTime()).Seconds < 10, true);
             baseMachine.Disconnect();
         }
 
@@ -54,7 +54,7 @@ namespace Modbus.Net.Tests
                 });
             Assert.AreEqual(success, true);
             var datas = await baseMachine.GetMachineMethods<IMachineMethodData>().GetDatasAsync(MachineDataType.Address);
-            Assert.AreEqual(datas["0X 1.0"].DeviceValue, 1);
+            Assert.AreEqual(datas.Datas["0X 1.0"].DeviceValue, 1);
             success = await baseMachine.GetMachineMethods<IMachineMethodData>().SetDatasAsync(
                 MachineDataType.Address,
                 new Dictionary<string, double>

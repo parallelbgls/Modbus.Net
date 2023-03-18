@@ -43,7 +43,7 @@ namespace Modbus.Net.Tests
             await _siemensTcpMachine.SetDatasAsync(MachineDataType.Address, dic1);
 
             var ans = await _siemensTcpMachine.GetDatasAsync(MachineDataType.Address);
-            Assert.AreEqual(ans["Q 0.0"].DeviceValue, dic1["Q 0.0"]);
+            Assert.AreEqual(ans.Datas["Q 0.0"].DeviceValue, dic1["Q 0.0"]);
         }
 
         [TestMethod]
@@ -64,7 +64,7 @@ namespace Modbus.Net.Tests
 
             _siemensTcpMachine!.GetAddresses = addresses;
             var ans = await _siemensTcpMachine.GetDatasAsync(MachineDataType.Address);
-            Assert.AreEqual(ans["I 0.0"].DeviceValue, 0);
+            Assert.AreEqual(ans.Datas["I 0.0"].DeviceValue, 0);
         }
 
         [TestMethod]
@@ -96,7 +96,7 @@ namespace Modbus.Net.Tests
 
             await _siemensTcpMachine.SetDatasAsync(MachineDataType.Address, dic1);
             var ans = await _siemensTcpMachine.GetDatasAsync(MachineDataType.Address);
-            Assert.AreEqual(ans["M 0.0"].DeviceValue, dic1["M 0"]);
+            Assert.AreEqual(ans.Datas["M 0.0"].DeviceValue, dic1["M 0"]);
         }
 
         [TestMethod]
@@ -129,7 +129,7 @@ namespace Modbus.Net.Tests
             await _siemensTcpMachine.SetDatasAsync(MachineDataType.Address, dic1);
 
             var ans = await _siemensTcpMachine.GetDatasAsync(MachineDataType.Address);
-            Assert.AreEqual(ans["M 0.0"].DeviceValue, dic1["M 0.0"]);
+            Assert.AreEqual(ans.Datas["M 0.0"].DeviceValue, dic1["M 0.0"]);
         }
 
         [TestMethod]
@@ -161,7 +161,7 @@ namespace Modbus.Net.Tests
             await _siemensTcpMachine.SetDatasAsync(MachineDataType.Address, dic1);
 
             var ans = await _siemensTcpMachine.GetDatasAsync(MachineDataType.Address);
-            Assert.AreEqual(ans["DB2 0.0"].DeviceValue, dic1["DB2 0.0"]);
+            Assert.AreEqual(ans.Datas["DB2 0.0"].DeviceValue, dic1["DB2 0.0"]);
         }
 
         [TestMethod]
@@ -252,12 +252,12 @@ namespace Modbus.Net.Tests
             _siemensTcpMachine!.GetAddresses = addresses;
             await _siemensTcpMachine.SetDatasAsync(MachineDataType.CommunicationTag, dic1);
             var ans = await _siemensTcpMachine.GetDatasAsync(MachineDataType.CommunicationTag);
-            Assert.AreEqual(ans["A1"].DeviceValue, dic1["A1"]);
-            Assert.AreEqual(ans["A2"].DeviceValue, dic1["A2"]);
-            Assert.AreEqual(ans["A3"].DeviceValue, dic1["A3"]);
-            Assert.AreEqual(ans["A4"].DeviceValue, dic1["A4"]);
-            Assert.AreEqual(ans["A5"].DeviceValue, dic1["A5"]);
-            Assert.AreEqual(ans["A6"].DeviceValue, dic1["A6"]);
+            Assert.AreEqual(ans.Datas["A1"].DeviceValue, dic1["A1"]);
+            Assert.AreEqual(ans.Datas["A2"].DeviceValue, dic1["A2"]);
+            Assert.AreEqual(ans.Datas["A3"].DeviceValue, dic1["A3"]);
+            Assert.AreEqual(ans.Datas["A4"].DeviceValue, dic1["A4"]);
+            Assert.AreEqual(ans.Datas["A5"].DeviceValue, dic1["A5"]);
+            Assert.AreEqual(ans.Datas["A6"].DeviceValue, dic1["A6"]);
         }
 
         [TestCleanup]

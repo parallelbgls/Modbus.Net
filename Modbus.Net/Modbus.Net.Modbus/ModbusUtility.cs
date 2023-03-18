@@ -61,7 +61,7 @@ namespace Modbus.Net.Modbus
         /// <param name="startAddress">起始地址</param>
         /// <param name="setContent">需要设置的数据</param>
         /// <returns>设置是否成功</returns>
-        Task<bool> SetSingleDataAsync(string startAddress, object setContent);
+        Task<ReturnStruct<bool>> SetSingleDataAsync(string startAddress, object setContent);
     }
 
     /// <summary>
@@ -251,7 +251,7 @@ namespace Modbus.Net.Modbus
         ///     读时间
         /// </summary>
         /// <returns>设备的时间</returns>
-        public async Task<DateTime> GetTimeAsync()
+        public async Task<ReturnStruct<DateTime>> GetTimeAsync()
         {
             try
             {
@@ -259,12 +259,24 @@ namespace Modbus.Net.Modbus
                 var outputStruct =
                     await Wrapper.SendReceiveAsync<GetSystemTimeModbusOutputStruct>(
                         Wrapper[typeof(GetSystemTimeModbusProtocol)], inputStruct);
-                return outputStruct?.Time ?? DateTime.MinValue;
+                return new ReturnStruct<DateTime>
+                {
+                    Datas = outputStruct?.Time ?? DateTime.MinValue,
+                    IsSuccess = true,
+                    ErrorCode = 0,
+                    ErrorMsg = ""
+                };
             }
-            catch (Exception e)
+            catch (ModbusProtocolErrorException e)
             {
-                logger.LogError(e, $"ModbusUtility -> GetTime: {ConnectionString} error");
-                return DateTime.MinValue;
+                logger.LogError(e, $"ModbusUtility -> GetTime: {ConnectionString} error: {e.Message}");
+                return new ReturnStruct<DateTime>
+                {
+                    Datas = DateTime.MinValue,
+                    IsSuccess = false,
+                    ErrorCode = e.ErrorMessageNumber,
+                    ErrorMsg = e.Message
+                };
             }
         }
 
@@ -273,7 +285,7 @@ namespace Modbus.Net.Modbus
         /// </summary>
         /// <param name="setTime">需要写入的时间</param>
         /// <returns>写入是否成功</returns>
-        public async Task<bool> SetTimeAsync(DateTime setTime)
+        public async Task<ReturnStruct<bool>> SetTimeAsync(DateTime setTime)
         {
             try
             {
@@ -281,12 +293,24 @@ namespace Modbus.Net.Modbus
                 var outputStruct =
                     await Wrapper.SendReceiveAsync<SetSystemTimeModbusOutputStruct>(
                         Wrapper[typeof(SetSystemTimeModbusProtocol)], inputStruct);
-                return outputStruct?.WriteCount > 0;
+                return new ReturnStruct<bool>()
+                {
+                    Datas = outputStruct?.WriteCount > 0,
+                    IsSuccess = outputStruct?.WriteCount > 0,
+                    ErrorCode = outputStruct?.WriteCount > 0 ? 0 : -2,
+                    ErrorMsg = outputStruct?.WriteCount > 0 ? "" : "Data length zero"
+                };
             }
-            catch (Exception e)
+            catch (ModbusProtocolErrorException e)
             {
-                logger.LogError(e, $"ModbusUtility -> SetTime: {ConnectionString} error");
-                return false;
+                logger.LogError(e, $"ModbusUtility -> SetTime: {ConnectionString} error: {e.Message}");
+                return new ReturnStruct<bool>
+                {
+                    Datas = false,
+                    IsSuccess = false,
+                    ErrorCode = e.ErrorMessageNumber,
+                    ErrorMsg = e.Message
+                };
             }
         }
 
@@ -305,7 +329,7 @@ namespace Modbus.Net.Modbus
         /// <param name="startAddress">起始地址</param>
         /// <param name="getByteCount">获取字节个数</param>
         /// <returns>获取的结果</returns>
-        public override async Task<byte[]> GetDatasAsync(string startAddress, int getByteCount)
+        public override async Task<ReturnStruct<byte[]>> GetDatasAsync(string startAddress, int getByteCount)
         {
             try
             {
@@ -314,12 +338,24 @@ namespace Modbus.Net.Modbus
                 var outputStruct = await
                     Wrapper.SendReceiveAsync<ReadDataModbusOutputStruct>(Wrapper[typeof(ReadDataModbusProtocol)],
                         inputStruct);
-                return outputStruct?.DataValue;
+                return new ReturnStruct<byte[]>
+                {
+                    Datas = outputStruct?.DataValue,
+                    IsSuccess = true,
+                    ErrorCode = 0,
+                    ErrorMsg = ""
+                };
             }
-            catch (Exception e)
+            catch (ModbusProtocolErrorException e)
             {
-                logger.LogError(e, $"ModbusUtility -> GetDatas: {ConnectionString} error");
-                return null;
+                logger.LogError(e, $"ModbusUtility -> GetDatas: {ConnectionString} error: {e.Message}");
+                return new ReturnStruct<byte[]>
+                {
+                    Datas = null,
+                    IsSuccess = false,
+                    ErrorCode = e.ErrorMessageNumber,
+                    ErrorMsg = e.Message
+                };
             }
         }
 
@@ -329,7 +365,7 @@ namespace Modbus.Net.Modbus
         /// <param name="startAddress">起始地址</param>
         /// <param name="setContents">需要设置的数据</param>
         /// <returns>设置是否成功</returns>
-        public override async Task<bool> SetDatasAsync(string startAddress, object[] setContents)
+        public override async Task<ReturnStruct<bool>> SetDatasAsync(string startAddress, object[] setContents)
         {
             try
             {
@@ -338,12 +374,24 @@ namespace Modbus.Net.Modbus
                 var outputStruct = await
                     Wrapper.SendReceiveAsync<WriteDataModbusOutputStruct>(Wrapper[typeof(WriteDataModbusProtocol)],
                         inputStruct);
-                return outputStruct?.WriteCount == setContents.Length;
+                return new ReturnStruct<bool>()
+                {
+                    Datas = outputStruct?.WriteCount == setContents.Length,
+                    IsSuccess = outputStruct?.WriteCount == setContents.Length,
+                    ErrorCode = outputStruct?.WriteCount == setContents.Length ? 0 : -2,
+                    ErrorMsg = outputStruct?.WriteCount == setContents.Length ? "" : "Data length mismatch"
+                };
             }
-            catch (Exception e)
+            catch (ModbusProtocolErrorException e)
             {
-                logger.LogError(e, $"ModbusUtility -> SetDatas: {ConnectionString} error");
-                return false;
+                logger.LogError(e, $"ModbusUtility -> SetDatas: {ConnectionString} error: {e.Message}");
+                return new ReturnStruct<bool>
+                {
+                    Datas = false,
+                    IsSuccess = false,
+                    ErrorCode = e.ErrorMessageNumber,
+                    ErrorMsg = e.Message
+                };
             }
         }
 
@@ -353,7 +401,7 @@ namespace Modbus.Net.Modbus
         /// <param name="startAddress">起始地址</param>
         /// <param name="setContent">需要设置的数据</param>
         /// <returns>设置是否成功</returns>
-        public async Task<bool> SetSingleDataAsync(string startAddress, object setContent)
+        public async Task<ReturnStruct<bool>> SetSingleDataAsync(string startAddress, object setContent)
         {
             try
             {
@@ -362,12 +410,24 @@ namespace Modbus.Net.Modbus
                 var outputStruct = await
                     Wrapper.SendReceiveAsync<WriteSingleDataModbusOutputStruct>(Wrapper[typeof(WriteSingleDataModbusProtocol)],
                         inputStruct);
-                return outputStruct?.WriteValue.ToString() == setContent.ToString();
+                return new ReturnStruct<bool>()
+                {
+                    Datas = outputStruct?.WriteValue.ToString() == setContent.ToString(),
+                    IsSuccess = outputStruct?.WriteValue.ToString() == setContent.ToString(),
+                    ErrorCode = outputStruct?.WriteValue.ToString() == setContent.ToString() ? 0 : -2,
+                    ErrorMsg = outputStruct?.WriteValue.ToString() == setContent.ToString() ? "" : "Data length mismatch"
+                }; 
             }
-            catch (Exception e)
+            catch (ModbusProtocolErrorException e)
             {
-                logger.LogError(e, $"ModbusUtility -> SetSingleDatas: {ConnectionString} error");
-                return false;
+                logger.LogError(e, $"ModbusUtility -> SetSingleDatas: {ConnectionString} error: {e.Message}");
+                return new ReturnStruct<bool>
+                {
+                    Datas = false,
+                    IsSuccess = false,
+                    ErrorCode = e.ErrorMessageNumber,
+                    ErrorMsg = e.Message
+                };
             }
         }
     }

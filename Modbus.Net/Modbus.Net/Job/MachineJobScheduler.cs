@@ -27,7 +27,7 @@ namespace Modbus.Net
         /// <summary>
         ///     返回的数据值
         /// </summary>
-        public Dictionary<string, ReturnUnit> ReturnValues { get; set; }
+        public ReturnStruct<Dictionary<string, ReturnUnit>> ReturnValues { get; set; }
     }
 
     /// <summary>
@@ -430,7 +430,7 @@ namespace Modbus.Net
         /// <param name="onFailure">失败回调方法，参数为设备ID</param>
         /// <returns></returns>
         /// <exception cref="NullReferenceException"></exception>
-        public async Task<MachineSetJobScheduler> Deal(string queryId = null, Func<string, Task> onSuccess = null, Func<string, Task> onFailure = null)
+        public async Task<MachineSetJobScheduler> Deal(string queryId = null, Func<string, Task> onSuccess = null, Func<string, int, string, Task> onFailure = null)
         {
             return await Deal<string>(queryId, onSuccess, onFailure);
         }
@@ -443,7 +443,7 @@ namespace Modbus.Net
         /// <param name="onFailure">失败回调方法，参数为设备ID</param>
         /// <returns></returns>
         /// <exception cref="NullReferenceException"></exception>
-        public async Task<MachineSetJobScheduler> Deal<TMachineKey>(string queryId = null, Func<string, Task> onSuccess = null, Func<string, Task> onFailure = null) where TMachineKey : IEquatable<TMachineKey>
+        public async Task<MachineSetJobScheduler> Deal<TMachineKey>(string queryId = null, Func<string, Task> onSuccess = null, Func<string, int, string, Task> onFailure = null) where TMachineKey : IEquatable<TMachineKey>
         {
             if (queryId == null) return new MachineSetJobScheduler(_scheduler, _trigger, _parentJobKey);
             JobKey jobKey = JobKey.Create("Modbus.Net.DataQuery.Job." + queryId, "Modbus.Net.DataQuery.Group." + _trigger.Key.Name);
@@ -504,7 +504,7 @@ namespace Modbus.Net
 
             if (QueryMethod != null && values != null)
             {
-                context.JobDetail.JobDataMap.Put("SetValue", QueryMethodDispatch(new DataReturnDef() { MachineId = machine == null ? null : ((IMachineProperty<TMachineKey>)machine).GetMachineIdString(), ReturnValues = (Dictionary<string, ReturnUnit>)values }));
+                context.JobDetail.JobDataMap.Put("SetValue", QueryMethodDispatch(new DataReturnDef() { MachineId = machine == null ? null : ((IMachineProperty<TMachineKey>)machine).GetMachineIdString(), ReturnValues = (ReturnStruct<Dictionary<string, ReturnUnit>>)values }));
                 await context.Scheduler.AddJob(context.JobDetail, true, false);
             }
         }
@@ -527,7 +527,7 @@ namespace Modbus.Net
             context.JobDetail.JobDataMap.TryGetValue("Value", out values);
             context.JobDetail.JobDataMap.TryGetValue("SetValue", out valuesSet);
             if (valuesSet == null && values != null)
-                valuesSet = ((Dictionary<string, ReturnUnit>)values).MapGetValuesToSetValues();
+                valuesSet = ((ReturnStruct<Dictionary<string, ReturnUnit>>)values).Datas.MapGetValuesToSetValues();
 
             if (valuesSet == null)
             {
@@ -556,14 +556,14 @@ namespace Modbus.Net
             context.JobDetail.JobDataMap.TryGetValue("Success", out success);
             context.JobDetail.JobDataMap.TryGetValue("OnSuccess", out onSuccess);
             context.JobDetail.JobDataMap.TryGetValue("OnFailure", out onFailure);
-            bool? successValue = (bool?)success;
-            if (successValue == true && onSuccess != null)
+            ReturnStruct<bool> successValue = (ReturnStruct<bool>)success;
+            if (successValue.IsSuccess == true && onSuccess != null)
             {
                 await ((Func<string, Task>)onSuccess)(((IMachineProperty<TMachineKey>)machine).GetMachineIdString());
             }
-            if (successValue == false && onFailure != null)
+            if (successValue.IsSuccess == false && onFailure != null)
             {
-                await ((Func<string, Task>)onFailure)(((IMachineProperty<TMachineKey>)machine).GetMachineIdString());
+                await ((Func<string, int, string, Task>)onFailure)(((IMachineProperty<TMachineKey>)machine).GetMachineIdString(), successValue.ErrorCode, successValue.ErrorMsg);
             }
 
             context.JobDetail.JobDataMap.Remove("Success");

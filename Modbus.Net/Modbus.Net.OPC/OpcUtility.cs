@@ -54,7 +54,7 @@ namespace Modbus.Net.OPC
         /// <param name="startAddress">开始地址</param>
         /// <param name="getByteCount">获取字节数个数</param>
         /// <returns>接收到的byte数据</returns>
-        public override async Task<byte[]> GetDatasAsync(string startAddress, int getByteCount)
+        public override async Task<ReturnStruct<byte[]>> GetDatasAsync(string startAddress, int getByteCount)
         {
             try
             {
@@ -64,12 +64,24 @@ namespace Modbus.Net.OPC
                     await
                         Wrapper.SendReceiveAsync<ReadRequestOpcOutputStruct>(Wrapper[typeof(ReadRequestOpcProtocol)],
                             readRequestOpcInputStruct);
-                return readRequestOpcOutputStruct?.GetValue;
+                return new ReturnStruct<byte[]>
+                {
+                    Datas = readRequestOpcOutputStruct?.GetValue,
+                    IsSuccess = true,
+                    ErrorCode = 0,
+                    ErrorMsg = ""
+                };
             }
             catch (Exception e)
             {
-                logger.LogError(e, $"OpcUtility -> GetDatas: {ConnectionString} error");
-                return null;
+                logger.LogError(e, $"OpcUtility -> GetDatas: {ConnectionString} error: {e.Message}");
+                return new ReturnStruct<byte[]>
+                {
+                    Datas = null,
+                    IsSuccess = true,
+                    ErrorCode = -100,
+                    ErrorMsg = e.Message
+                };
             }
         }
 
@@ -79,7 +91,7 @@ namespace Modbus.Net.OPC
         /// <param name="startAddress">开始地址</param>
         /// <param name="setContents">设置数据</param>
         /// <returns>是否设置成功</returns>
-        public override async Task<bool> SetDatasAsync(string startAddress, object[] setContents)
+        public override async Task<ReturnStruct<bool>> SetDatasAsync(string startAddress, object[] setContents)
         {
             try
             {
@@ -90,12 +102,24 @@ namespace Modbus.Net.OPC
                     await
                         Wrapper.SendReceiveAsync<WriteRequestOpcOutputStruct>(Wrapper[typeof(WriteRequestOpcProtocol)],
                             writeRequestOpcInputStruct);
-                return writeRequestOpcOutputStruct?.WriteResult == true;
+                return new ReturnStruct<bool>
+                {
+                    Datas = writeRequestOpcOutputStruct?.WriteResult == true,
+                    IsSuccess = writeRequestOpcOutputStruct?.WriteResult == true,
+                    ErrorCode = writeRequestOpcOutputStruct?.WriteResult == true ? 0 : 1,
+                    ErrorMsg = writeRequestOpcOutputStruct?.WriteResult == true ? "" : "Write Failed"
+                };
             }
             catch (Exception e)
             {
-                logger.LogError(e, $"OpcUtility -> SetDatas: {ConnectionString} error");
-                return false;
+                logger.LogError(e, $"OpcUtility -> SetDatas: {ConnectionString} error: {e.Message}");
+                return new ReturnStruct<bool>
+                {
+                    Datas = false,
+                    IsSuccess = false,
+                    ErrorCode = -100,
+                    ErrorMsg = e.Message
+                };
             }
         }
     }

@@ -59,11 +59,11 @@ namespace AnyType.Controllers
                 returnValues =>
                 {
                     //唯一的参数包含返回值，是一个唯一标识符（machine的第二个参数），返回值（类型ReturnUnit）的键值对。
-                    if (returnValues.ReturnValues != null)
+                    if (returnValues.ReturnValues.Datas != null)
                     {
                         lock (values)
                         {
-                            var unitValues = from val in returnValues.ReturnValues
+                            var unitValues = from val in returnValues.ReturnValues.Datas
                                              select
                                              new Tuple<AddressUnit, double?>(
                                                  addressUnits.FirstOrDefault(p => p.CommunicationTag == val.Key)!, val.Value.DeviceValue);

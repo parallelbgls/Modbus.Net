@@ -193,7 +193,7 @@ namespace Modbus.Net
         ///     读取数据
         /// </summary>
         /// <returns>从设备读取的数据</returns>
-        public Dictionary<string, ReturnUnit> GetDatas(MachineDataType getDataType)
+        public ReturnStruct<Dictionary<string, ReturnUnit>> GetDatas(MachineDataType getDataType)
         {
             return AsyncHelper.RunSync(() => GetDatasAsync(getDataType));
         }
@@ -203,7 +203,7 @@ namespace Modbus.Net
         ///     读取数据
         /// </summary>
         /// <returns>从设备读取的数据</returns>
-        public async Task<Dictionary<string, ReturnUnit>> GetDatasAsync(MachineDataType getDataType)
+        public async Task<ReturnStruct<Dictionary<string, ReturnUnit>>> GetDatasAsync(MachineDataType getDataType)
         {
             try
             {
@@ -212,7 +212,13 @@ namespace Modbus.Net
                 if (!BaseUtility.IsConnected)
                     await BaseUtility.ConnectAsync();
                 //如果无法连接，终止
-                if (!BaseUtility.IsConnected) return null;
+                if (!BaseUtility.IsConnected) return 
+                        new ReturnStruct<Dictionary<string, ReturnUnit>>() { 
+                            Datas = null,
+                            IsSuccess = false,
+                            ErrorCode = -1,
+                            ErrorMsg = "Connection Error"
+                        };
                 //遍历每一个实际向设备获取数据的连续地址
                 foreach (var communicateAddress in CommunicateAddresses)
                 {
@@ -229,12 +235,31 @@ namespace Modbus.Net
 
 
                     //如果没有数据，终止
-                    if (datas == null || datas.Length != 0 && datas.Length <
+                    if (datas.IsSuccess == false || datas.Datas == null)
+                    {
+                        return new ReturnStruct<Dictionary<string, ReturnUnit>>()
+                        {
+                            Datas = null,
+                            IsSuccess = false,
+                            ErrorCode = datas.ErrorCode,
+                            ErrorMsg = datas.ErrorMsg
+                        };
+                    }
+                    else if (datas.Datas.Length != 0 && datas.Datas.Length <
                         (int)
                         Math.Ceiling(communicateAddress.GetCount *
                                      BigEndianValueHelper.Instance.ByteLength[
                                          communicateAddress.DataType.FullName]))
-                        return null;
+                    {
+                        return new ReturnStruct<Dictionary<string, ReturnUnit>>()
+                        {
+                            Datas = null,
+                            IsSuccess = false,
+                            ErrorCode = -2,
+                            ErrorMsg = "Data length mismatch"
+                        };
+                    }
+
 
 
                     foreach (var address in communicateAddress.OriginalAddresses)
@@ -283,7 +308,7 @@ namespace Modbus.Net
                         try
                         {
                             //如果没有数据返回空
-                            if (datas.Length == 0)
+                            if (datas.Datas.Length == 0)
                                 ans.Add(key, new ReturnUnit
                                 {
                                     DeviceValue = null,
@@ -296,7 +321,7 @@ namespace Modbus.Net
                                         DeviceValue =
                                             Convert.ToDouble(
                                                 ValueHelper.GetInstance(BaseUtility.Endian)
-                                                    .GetValue(datas, ref localMainPos, ref localSubPos,
+                                                    .GetValue(datas.Datas, ref localMainPos, ref localSubPos,
                                                         address.DataType)) * address.Zoom,
                                         AddressUnit = address.MapAddressUnitTUnitKeyToAddressUnit(),
                                     });
@@ -308,7 +333,13 @@ namespace Modbus.Net
 
                             if (ErrorCount >= _maxErrorCount)
                                 Disconnect();
-                            return null;
+                            return new ReturnStruct<Dictionary<string, ReturnUnit>>()
+                            {
+                                Datas = null,
+                                IsSuccess = false,
+                                ErrorCode = -3,
+                                ErrorMsg = "Data translation mismatch"
+                            };
                         }
                     }
                 }
@@ -318,7 +349,13 @@ namespace Modbus.Net
                 //返回数据
                 if (ans.All(p => p.Value.DeviceValue == null)) ans = null;
                 ErrorCount = 0;
-                return ans;
+                return new ReturnStruct<Dictionary<string, ReturnUnit>>
+                {
+                    Datas = ans,
+                    IsSuccess = true,
+                    ErrorCode = 0,
+                    ErrorMsg = ""
+                };
             }
             catch (Exception e)
             {
@@ -327,7 +364,13 @@ namespace Modbus.Net
 
                 if (ErrorCount >= _maxErrorCount)
                     Disconnect();
-                return null;
+                return new ReturnStruct<Dictionary<string, ReturnUnit>>()
+                {
+                    Datas = null,
+                    IsSuccess = false,
+                    ErrorCode = -100,
+                    ErrorMsg = "Unknown Exception"
+                };
             }
         }
 
@@ -337,7 +380,7 @@ namespace Modbus.Net
         /// <param name="setDataType">写入类型</param>
         /// <param name="values">需要写入的数据字典，当写入类型为Address时，键为需要写入的地址，当写入类型为CommunicationTag时，键为需要写入的单元的描述</param>
         /// <returns>是否写入成功</returns>
-        public bool SetDatas(MachineDataType setDataType, Dictionary<string, double> values)
+        public ReturnStruct<bool> SetDatas(MachineDataType setDataType, Dictionary<string, double> values)
         {
             return AsyncHelper.RunSync(() => SetDatasAsync(setDataType, values));
         }
@@ -348,7 +391,7 @@ namespace Modbus.Net
         /// <param name="setDataType">写入类型</param>
         /// <param name="values">需要写入的数据字典，当写入类型为Address时，键为需要写入的地址，当写入类型为CommunicationTag时，键为需要写入的单元的描述</param>
         /// <returns>是否写入成功</returns>
-        public async Task<bool> SetDatasAsync(MachineDataType setDataType, Dictionary<string, double> values)
+        public async Task<ReturnStruct<bool>> SetDatasAsync(MachineDataType setDataType, Dictionary<string, double> values)
         {
             try
             {
@@ -356,7 +399,13 @@ namespace Modbus.Net
                 if (!BaseUtility.IsConnected)
                     await BaseUtility.ConnectAsync();
                 //如果设备无法连接，终止
-                if (!BaseUtility.IsConnected) return false;
+                if (!BaseUtility.IsConnected) return new ReturnStruct<bool>()
+                {
+                    Datas = false,
+                    IsSuccess = false,
+                    ErrorCode = -1,
+                    ErrorMsg = "Connection Error"
+                };
                 var addresses = new List<AddressUnit<TUnitKey>>();
                 //遍历每个要设置的值
                 foreach (var value in values)
@@ -434,12 +483,28 @@ namespace Modbus.Net
                     var datas = datasReturn;
 
                     //如果没有数据，终止
-                    if (datas == null || datas.Length <
+                    if (datas.IsSuccess == false || datas.Datas == null)
+                    {
+                        return new ReturnStruct<bool>()
+                        {
+                            Datas = false,
+                            IsSuccess = false,
+                            ErrorCode = datas.ErrorCode,
+                            ErrorMsg = datas.ErrorMsg
+                        };
+                    }
+                        else if(datas.Datas.Length <
                         (int)
                         Math.Ceiling(communicateAddress.GetCount *
                                      BigEndianValueHelper.Instance.ByteLength[
                                          communicateAddress.DataType.FullName]))
-                        return false;
+                        return new ReturnStruct<bool>()
+                        {
+                            Datas = false,
+                            IsSuccess = false,
+                            ErrorCode = -2,
+                            ErrorMsg = "Data length not match"
+                        };
 
                     foreach (var addressUnit in communicateAddress.OriginalAddresses)
                     {
@@ -507,13 +572,19 @@ namespace Modbus.Net
                         //将要写入的值加入队列
                         var data = Convert.ChangeType(value.Value / addressUnit.Zoom, dataType);
 
-                        if (!valueHelper.SetValue(datas, mainByteCount, localByteCount, data))
-                            return false;
+                        if (!valueHelper.SetValue(datas.Datas, mainByteCount, localByteCount, data))
+                            return new ReturnStruct<bool>()
+                            {
+                                Datas = false,
+                                IsSuccess = false,
+                                ErrorCode = -3,
+                                ErrorMsg = "Data translation mismatch"
+                            }; ;
                     }
                     //写入数据
                     await
                         BaseUtility.GetUtilityMethods<IUtilityMethodData>().SetDatasAsync(addressStart,
-                            valueHelper.ByteArrayToObjectArray(datas,
+                            valueHelper.ByteArrayToObjectArray(datas.Datas,
                                 new KeyValuePair<Type, int>(communicateAddress.DataType, communicateAddress.GetCount)));
                 }
                 //如果不保持连接，断开连接
@@ -527,9 +598,21 @@ namespace Modbus.Net
 
                 if (ErrorCount >= _maxErrorCount)
                     Disconnect();
-                return false;
+                return new ReturnStruct<bool>()
+                {
+                    Datas = false,
+                    IsSuccess = false,
+                    ErrorCode = -100,
+                    ErrorMsg = "Unknown Exception"
+                };
             }
-            return true;
+            return new ReturnStruct<bool>()
+            {
+                Datas = true,
+                IsSuccess = true,
+                ErrorCode = 0,
+                ErrorMsg = ""
+            };
         }
 
         /// <summary>

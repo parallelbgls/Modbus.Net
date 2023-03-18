@@ -5,7 +5,7 @@
     <AssemblyName>Modbus.Net.Modbus.NA200H</AssemblyName>
     <RootNamespace>Modbus.Net.Modbus.NA200H</RootNamespace>
     <PackageId>Modbus.Net.Modbus.NA200H</PackageId>
-    <Version>1.4.0-beta03</Version>
+    <Version>1.4.0-beta04</Version>
     <Authors>Chris L.(Luo Sheng)</Authors>
     <Company>Hangzhou Delian Science Technology Co.,Ltd.</Company>
     <Product>Modbus.Net.Modbus</Product>

@@ -48,8 +48,8 @@ namespace Modbus.Net.Tests
             await _modbusTcpMachine.SetDatasAsync(MachineDataType.Address, dic1);
             var ans = await _modbusTcpMachine.GetDatasAsync(MachineDataType.Address);
             var ans2 = await _modbusTcpMachine2.GetDatasAsync(MachineDataType.Address);
-            Assert.AreEqual(ans["4X 1.0"].DeviceValue, dic1["4X 1"]);
-            Assert.AreEqual(ans2["4X 1.0"].DeviceValue, (ushort)dic1["4X 1"] % 256 * 256 + (ushort)dic1["4X 1"] / 256);
+            Assert.AreEqual(ans.Datas["4X 1.0"].DeviceValue, dic1["4X 1"]);
+            Assert.AreEqual(ans2.Datas["4X 1.0"].DeviceValue, (ushort)dic1["4X 1"] % 256 * 256 + (ushort)dic1["4X 1"] / 256);
         }
     }
 }

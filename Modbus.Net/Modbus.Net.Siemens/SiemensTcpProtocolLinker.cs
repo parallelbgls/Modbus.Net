@@ -63,7 +63,7 @@ namespace Modbus.Net.Siemens
                     }
                     return true;
                 default:
-                    throw new FormatException();
+                    throw new FormatException($"Error content code with code {content[5]} {content[8]}");
             }
         }
     }

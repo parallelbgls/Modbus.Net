@@ -45,7 +45,7 @@ namespace TripleAdd.Controllers
                 utility.AddressTranslator = new AddressTranslatorModbus();
                 await utility.ConnectAsync();
             }
-            object[] getNum = await utility.GetDatasAsync("4X 1", new KeyValuePair<Type, int>(typeof(ushort), 4));
+            object[] getNum = (await utility.GetDatasAsync("4X 1", new KeyValuePair<Type, int>(typeof(ushort), 4))).Datas;
             ushort[] getNumUshorts = BigEndianValueHelper.Instance.ObjectArrayToDestinationArray<ushort>(getNum);
             return SetValue(getNumUshorts);
         }
@@ -64,7 +64,7 @@ namespace TripleAdd.Controllers
                 machine.AddressCombiner = new AddressCombinerContinus(machine.AddressTranslator, 100000);
                 machine.AddressCombinerSet = new AddressCombinerContinus(machine.AddressTranslator, 100000);
             }
-            var resultFormat = (await machine.GetDatasAsync(MachineDataType.CommunicationTag)).MapGetValuesToSetValues();
+            var resultFormat = (await machine.GetDatasAsync(MachineDataType.CommunicationTag)).Datas.MapGetValuesToSetValues();
             return SetValue(new ushort[4] { (ushort)resultFormat["Add1"], (ushort)resultFormat["Add2"], (ushort)resultFormat["Add3"], (ushort)resultFormat["Ans"] });
         }
 

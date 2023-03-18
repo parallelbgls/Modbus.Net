@@ -64,7 +64,7 @@ namespace MachineJob.Service
             return Task.CompletedTask;
         }
 
-        public Task OnFailure(string machineId)
+        public Task OnFailure(string machineId, int errorCode, string errorMsg)
         {
             _logger.LogError("Machine {0} set failure", machineId);
             return Task.CompletedTask;
@@ -72,7 +72,7 @@ namespace MachineJob.Service
 
         private Dictionary<string, double> QueryConsole(DataReturnDef dataReturnDef)
         {
-            var values = dataReturnDef.ReturnValues;
+            var values = dataReturnDef.ReturnValues.Datas;
             foreach (var value in values)
             {
                 _logger.LogInformation(dataReturnDef.MachineId + " " + value.Key + " " + value.Value.DeviceValue);

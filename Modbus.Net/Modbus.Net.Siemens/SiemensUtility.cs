@@ -16,7 +16,7 @@ namespace Modbus.Net.Siemens
         /// <summary>
         /// MPI
         /// </summary>
-        Mpi = 1,
+        //Mpi = 1,
         /// <summary>
         /// 以太网
         /// </summary>
@@ -201,10 +201,10 @@ namespace Modbus.Net.Siemens
                             break;
                         }
                     //MPI
-                    case SiemensType.Mpi:
-                        {
-                            throw new NotImplementedException();
-                        }
+                    //case SiemensType.Mpi:
+                        //{
+                            //throw new NotImplementedException();
+                        //}
                     //Ethenet
                     case SiemensType.Tcp:
                         {
@@ -236,7 +236,7 @@ namespace Modbus.Net.Siemens
         /// <param name="startAddress">开始地址</param>
         /// <param name="getByteCount">读取字节个数</param>
         /// <returns>从设备中读取的数据</returns>
-        public override async Task<byte[]> GetDatasAsync(string startAddress, int getByteCount)
+        public override async Task<ReturnStruct<byte[]>> GetDatasAsync(string startAddress, int getByteCount)
         {
             try
             {
@@ -252,12 +252,35 @@ namespace Modbus.Net.Siemens
                         Wrapper.SendReceiveAsync<ReadRequestSiemensOutputStruct>(
                             Wrapper[typeof(ReadRequestSiemensProtocol)],
                             readRequestSiemensInputStruct);
-                return readRequestSiemensOutputStruct?.GetValue;
+                return new ReturnStruct<byte[]>
+                {
+                    Datas = readRequestSiemensOutputStruct?.GetValue,
+                    IsSuccess = true,
+                    ErrorCode = 0,
+                    ErrorMsg = ""
+                };
             }
-            catch (Exception e)
+            catch (SiemensProtocolErrorException e)
             {
-                logger.LogError(e, $"SiemensUtility -> GetDatas: {ConnectionString} error");
-                return null;
+                logger.LogError(e, $"SiemensUtility -> GetDatas: {ConnectionString} error: {e.Message}");
+                return new ReturnStruct<byte[]>
+                {
+                    Datas = null,
+                    IsSuccess = false,
+                    ErrorCode = e.ErrorCode,
+                    ErrorMsg = e.Message
+                };
+            }
+            catch (FormatException e)
+            {
+                logger.LogError(e, $"SiemensUtility -> GetDatas: {ConnectionString} error: {e.Message}");
+                return new ReturnStruct<byte[]>
+                {
+                    Datas = null,
+                    IsSuccess = false,
+                    ErrorCode = -1,
+                    ErrorMsg = e.Message
+                };
             }
         }
 
@@ -267,7 +290,7 @@ namespace Modbus.Net.Siemens
         /// <param name="startAddress">开始地址</param>
         /// <param name="setContents">需要写入的数据</param>
         /// <returns>写入是否成功</returns>
-        public override async Task<bool> SetDatasAsync(string startAddress, object[] setContents)
+        public override async Task<ReturnStruct<bool>> SetDatasAsync(string startAddress, object[] setContents)
         {
             try
             {
@@ -283,12 +306,34 @@ namespace Modbus.Net.Siemens
                         Wrapper.SendReceiveAsync<WriteRequestSiemensOutputStruct>(
                             Wrapper[typeof(WriteRequestSiemensProtocol)],
                             writeRequestSiemensInputStruct);
-                return writeRequestSiemensOutputStruct?.AccessResult == SiemensAccessResult.NoError;
+                return new ReturnStruct<bool> {
+                    Datas = writeRequestSiemensOutputStruct?.AccessResult == SiemensAccessResult.NoError,
+                    IsSuccess = writeRequestSiemensOutputStruct?.AccessResult == SiemensAccessResult.NoError,
+                    ErrorCode = writeRequestSiemensOutputStruct?.AccessResult == SiemensAccessResult.NoError ? 0 : (int)writeRequestSiemensOutputStruct?.AccessResult,
+                    ErrorMsg = writeRequestSiemensOutputStruct?.AccessResult.ToString()
+                };
             }
-            catch (Exception e)
+            catch (SiemensProtocolErrorException e)
             {
-                logger.LogError(e, $"ModbusUtility -> SetDatas: {ConnectionString} error");
-                return false;
+                logger.LogError(e, $"ModbusUtility -> SetDatas: {ConnectionString} error: {e.Message}");
+                return new ReturnStruct<bool>
+                {
+                    Datas = false,
+                    IsSuccess = false,
+                    ErrorCode = e.ErrorCode,
+                    ErrorMsg = e.Message
+                };
+            }
+            catch (FormatException e)
+            {
+                logger.LogError(e, $"SiemensUtility -> GetDatas: {ConnectionString} error: {e.Message}");
+                return new ReturnStruct<bool>
+                {
+                    Datas = false,
+                    IsSuccess = false,
+                    ErrorCode = -1,
+                    ErrorMsg = e.Message
+                };
             }
         }
     }
