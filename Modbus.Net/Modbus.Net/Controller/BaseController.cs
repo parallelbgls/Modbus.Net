@@ -111,7 +111,7 @@ namespace Modbus.Net
             Array.Copy(receiveMessage, receiveMessageCopy, receiveMessage.Length);
             var length = LengthCalc?.Invoke(receiveMessageCopy);
             List<byte[]> duplicatedMessages;
-            if (length == null) return ans;
+            if (length == null || length == -1) return ans;
             else
             {
                 duplicatedMessages = new List<byte[]>();
@@ -119,6 +119,7 @@ namespace Modbus.Net
                 {
                     duplicatedMessages.Add(receiveMessageCopy.Take(length.Value).ToArray());
                     receiveMessageCopy = receiveMessageCopy.TakeLast(receiveMessage.Length - length.Value).ToArray();
+                    if (receiveMessageCopy.Length == 0) break;
                     length = LengthCalc?.Invoke(receiveMessageCopy);
                     if (length == -1) break;
                 }

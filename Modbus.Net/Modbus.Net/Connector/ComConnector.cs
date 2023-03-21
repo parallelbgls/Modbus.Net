@@ -85,7 +85,7 @@ namespace Modbus.Net
         /// <summary>
         /// 缓冲的字节流
         /// </summary>
-        private List<byte> cachedBytes = new List<byte>();
+        private List<byte> _cachedBytes = new List<byte>();
 
         /// <summary>
         ///     构造器
@@ -488,23 +488,32 @@ namespace Modbus.Net
                         logger.LogDebug(
                             $"Com client {ConnectionToken} receive msg: {string.Concat(returnBytes.Select(p => " " + p.ToString("X2")))}");
 
-                        cachedBytes.AddRange(returnBytes);
-                        var isMessageConfirmed = Controller.ConfirmMessage(cachedBytes.ToArray());
+                        lock (_cachedBytes)
+                        {
+                            _cachedBytes.AddRange(returnBytes);
+                        }
+                        var isMessageConfirmed = Controller.ConfirmMessage(_cachedBytes.ToArray());
                         foreach (var confirmed in isMessageConfirmed)
                         {
                             if (confirmed.Item2 == false)
                             {
                                 //主动传输事件
                             }
-                            cachedBytes.RemoveRange(0, confirmed.Item1.Length);
+                            lock (_cachedBytes)
+                            {
+                                _cachedBytes.RemoveRange(0, confirmed.Item1.Length);
+                            }
                         }
-                        if (isMessageConfirmed.Count > 0 && cachedBytes.Count > 0)
+                        if (isMessageConfirmed.Count > 0 && _cachedBytes.Count > 0)
                         {
                             logger.LogError("Com client {ConnectionToken} cached msg error: {Length}", ConnectionToken,
-                                cachedBytes.Count);
+                                _cachedBytes.Count);
                             logger.LogError(
-                                $"Com client {ConnectionToken} cached msg: {string.Concat(cachedBytes.Select(p => " " + p.ToString("X2")))}");
-                            cachedBytes.Clear();
+                                $"Com client {ConnectionToken} cached msg: {string.Concat(_cachedBytes.Select(p => " " + p.ToString("X2")))}");
+                            lock (_cachedBytes)
+                            {
+                                _cachedBytes.Clear();
+                            }
                         }
                         RefreshReceiveCount();
                     }
