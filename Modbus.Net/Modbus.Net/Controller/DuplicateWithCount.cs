@@ -9,52 +9,32 @@ namespace Modbus.Net
     public static class DuplicateWithCount
     {
         /// <summary>
-        ///     切分包
+        ///     计算切分包的长度
         /// </summary>
         /// <param name="receiveMessage">收到的报文信息</param>
         /// <param name="packageCountPositions">收到的断包长度查询位置</param>
-        /// <param name="otherCount">除掉长度查询信息外其它报文的长度</param>
+        /// <param name="otherCount">除指示的长度外其它位置的长度</param>
         /// <returns>切分后的报文信息</returns>
-        private static ICollection<byte[]> DuplicateMessages(byte[] receiveMessage, ICollection<int> packageCountPositions, int otherCount)
+        private static int CalculateLength(byte[] receiveMessage, ICollection<int> packageCountPositions, int otherCount)
         {
-            if (packageCountPositions == null)
-                return new List<byte[]> { receiveMessage };
-            var ans = new List<byte[]>();
-            var pos = 0;
-            while (pos < receiveMessage.Length)
+            var ans = 0;
+            foreach (var position in packageCountPositions)
             {
-                try
-                {
-                    var length = 0;
-                    foreach (var countPos in packageCountPositions)
-                    {
-                        length = length * 256 + receiveMessage[pos + countPos];
-                    }
-                    if (length == 0) { break; }
-                    length += otherCount;
-                    if (pos + length > receiveMessage.Length) break;
-                    byte[] currentPackage = new byte[length];
-                    Array.Copy(receiveMessage, pos, currentPackage, 0, length);
-                    ans.Add(currentPackage);
-                    pos += length;
-                }
-                catch (Exception)
-                {
-                    break;
-                }
+                if (position >= receiveMessage.Length) return -1;
+                ans = ans * 256 + receiveMessage[position];
             }
-            return ans;
+            return ans + otherCount;
         }
 
         /// <summary>
-        ///     获取按照长度断包的函数
+        ///     获取长度函数
         /// </summary>
         /// <param name="packageCountPositions">断包长度的位置信息</param>
-        /// <param name="otherCount">除掉长度查询信息外其它报文的长度</param>
+        /// <param name="otherCount">除指示的长度外其它位置的长度</param>
         /// <returns>断包函数</returns>
-        public static Func<byte[], ICollection<byte[]>> GetDuplcateFunc(ICollection<int> packageCountPositions, int otherCount)
+        public static Func<byte[], int> GetDuplcateFunc(ICollection<int> packageCountPositions, int otherCount)
         {
-            return receiveMessage => DuplicateMessages(receiveMessage, packageCountPositions, otherCount);
+            return receiveMessage => CalculateLength(receiveMessage, packageCountPositions, otherCount);
         }
     }
 }

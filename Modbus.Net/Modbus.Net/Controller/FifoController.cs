@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
@@ -31,10 +30,10 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="acquireTime">间隔时间</param>
         /// <param name="activateSema">是否开启信号量</param>
-        /// <param name="duplicateFunc">包切分函数</param>
+        /// <param name="lengthCalc">包切分长度函数</param>
         /// <param name="waitingListMaxCount">包等待队列长度</param>
-        public FifoController(int acquireTime, bool activateSema = true, Func<byte[], ICollection<byte[]>> duplicateFunc = null, int? waitingListMaxCount = null)
-            : base(duplicateFunc)
+        public FifoController(int acquireTime, bool activateSema = true, Func<byte[], int> lengthCalc = null, int? waitingListMaxCount = null)
+            : base(lengthCalc)
         {
             _waitingListMaxCount = int.Parse(waitingListMaxCount != null ? waitingListMaxCount.ToString() : null ?? ConfigurationReader.GetValueDirect("Controller", "WaitingListCount"));
             if (activateSema)

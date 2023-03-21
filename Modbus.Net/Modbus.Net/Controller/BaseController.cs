@@ -24,16 +24,16 @@ namespace Modbus.Net
         /// <summary>
         ///     包切分位置
         /// </summary>
-        protected Func<byte[], ICollection<byte[]>> DuplicateFunc { get; }
+        protected Func<byte[], int> LengthCalc { get; }
 
         /// <summary>
         ///     构造器
         /// </summary>
-        /// <param name="duplicateFunc">包切分函数</param>
-        protected BaseController(Func<byte[], ICollection<byte[]>> duplicateFunc = null)
+        /// <param name="lengthCalc">包长度计算函数</param>
+        protected BaseController(Func<byte[], int> lengthCalc = null)
         {
             WaitingMessages = new List<MessageWaitingDef>();
-            DuplicateFunc = duplicateFunc;
+            LengthCalc = lengthCalc;
         }
 
         /// <inheritdoc />
@@ -107,8 +107,22 @@ namespace Modbus.Net
         public ICollection<(byte[], bool)> ConfirmMessage(byte[] receiveMessage)
         {
             var ans = new List<(byte[], bool)>();
-            var duplicatedMessages = DuplicateFunc?.Invoke(receiveMessage);
-            duplicatedMessages = duplicatedMessages ?? new List<byte[]> { receiveMessage };
+            byte[] receiveMessageCopy = new byte[receiveMessage.Length];
+            Array.Copy(receiveMessage, receiveMessageCopy, receiveMessage.Length);
+            var length = LengthCalc?.Invoke(receiveMessageCopy);
+            List<byte[]> duplicatedMessages;
+            if (length == null) return ans;
+            else
+            {
+                duplicatedMessages = new List<byte[]>();
+                while (receiveMessageCopy.Length >= length)
+                {
+                    duplicatedMessages.Add(receiveMessageCopy.Take(length.Value).ToArray());
+                    receiveMessageCopy = receiveMessageCopy.TakeLast(receiveMessage.Length - length.Value).ToArray();
+                    length = LengthCalc?.Invoke(receiveMessageCopy);
+                    if (length == -1) break;
+                }
+            }
             foreach (var message in duplicatedMessages)
             {
                 var def = GetMessageFromWaitingList(message);
@@ -122,7 +136,10 @@ namespace Modbus.Net
                     def.ReceiveMutex.Set();
                     ans.Add((message, true));
                 }
-                ans.Add((message, false));
+                else
+                {
+                    ans.Add((message, false));
+                }
             }
             return ans;
         }

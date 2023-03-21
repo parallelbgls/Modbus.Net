@@ -10,8 +10,8 @@ namespace Modbus.Net
     {
         /// <inheritdoc />
         public MatchDirectlySendController(ICollection<(int, int)>[] keyMatches,
-            Func<byte[], ICollection<byte[]>> duplicateFunc = null, int? waitingListMaxCount = null) : base(keyMatches,
-            0, false, duplicateFunc, waitingListMaxCount)
+            Func<byte[], int> lengthCalc = null, int? waitingListMaxCount = null) : base(keyMatches,
+            0, false, lengthCalc, waitingListMaxCount)
         {
         }
 

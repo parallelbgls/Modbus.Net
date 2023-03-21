@@ -83,9 +83,9 @@ namespace Modbus.Net
         private bool _taskCancel = false;
 
         /// <summary>
-        ///     Dispose是否执行
+        /// 缓冲的字节流
         /// </summary>
-        private bool m_disposed;
+        private List<byte> cachedBytes = new List<byte>();
 
         /// <summary>
         ///     构造器
@@ -251,32 +251,28 @@ namespace Modbus.Net
         /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!m_disposed)
+            if (disposing)
             {
-                if (disposing)
+                // Release managed resources
+                Controller.SendStop();
+            }
+            // Release unmanaged resources
+            if (SerialPort != null)
+            {
+                if (Linkers.Values.Count(p => p == _com) <= 1)
                 {
-                    // Release managed resources
-                    Controller.SendStop();
-                }
-                // Release unmanaged resources
-                if (SerialPort != null)
-                {
-                    if (Linkers.Values.Count(p => p == _com) <= 1)
+                    if (SerialPort.IsOpen)
                     {
-                        if (SerialPort.IsOpen)
-                        {
-                            SerialPort.Close();
-                        }
-                        SerialPort.Dispose();
-                        logger.LogInformation("Com interface {Com} Disposed", _com);
-                        Connectors[_com] = null;
-                        Connectors.Remove(_com);
-                        ReceiveMsgThreadStop();
+                        SerialPort.Close();
                     }
-                    Linkers.Remove(_slave);
-                    logger.LogInformation("Com connector {ConnectionToken} Removed", ConnectionToken);
+                    SerialPort.Dispose();
+                    logger.LogInformation("Com interface {Com} Disposed", _com);
+                    Connectors[_com] = null;
+                    Connectors.Remove(_com);
+                    ReceiveMsgThreadStop();
                 }
-                m_disposed = true;
+                Linkers.Remove(_slave);
+                logger.LogInformation("Com connector {ConnectionToken} Removed", ConnectionToken);
             }
         }
 
@@ -484,22 +480,32 @@ namespace Modbus.Net
                 {
                     Thread.Sleep(100);
                     var returnBytes = ReadMsg();
+
                     if (returnBytes != null)
                     {
                         logger.LogDebug("Com client {ConnectionToken} receive msg length: {Length}", ConnectionToken,
                             returnBytes.Length);
                         logger.LogDebug(
-                            $"Com client {ConnectionToken} receive msg: {String.Concat(returnBytes.Select(p => " " + p.ToString("X2")))}");
+                            $"Com client {ConnectionToken} receive msg: {string.Concat(returnBytes.Select(p => " " + p.ToString("X2")))}");
 
-                        var isMessageConfirmed = Controller.ConfirmMessage(returnBytes);
+                        cachedBytes.AddRange(returnBytes);
+                        var isMessageConfirmed = Controller.ConfirmMessage(cachedBytes.ToArray());
                         foreach (var confirmed in isMessageConfirmed)
                         {
                             if (confirmed.Item2 == false)
                             {
                                 //主动传输事件
                             }
+                            cachedBytes.RemoveRange(0, confirmed.Item1.Length);
                         }
-
+                        if (isMessageConfirmed.Count > 0 && cachedBytes.Count > 0)
+                        {
+                            logger.LogError("Com client {ConnectionToken} cached msg error: {Length}", ConnectionToken,
+                                cachedBytes.Count);
+                            logger.LogError(
+                                $"Com client {ConnectionToken} cached msg: {string.Concat(cachedBytes.Select(p => " " + p.ToString("X2")))}");
+                            cachedBytes.Clear();
+                        }
                         RefreshReceiveCount();
                     }
                 }
