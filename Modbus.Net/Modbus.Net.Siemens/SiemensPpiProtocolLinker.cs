@@ -13,12 +13,6 @@ namespace Modbus.Net.Siemens
     /// </summary>
     public class SiemensPpiProtocolLinker : ComProtocolLinker
     {
-        private static readonly IConfigurationRoot configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
-            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", true)
-            .Build();
-
         /// <summary>
         ///     构造函数
         /// </summary>
@@ -27,7 +21,7 @@ namespace Modbus.Net.Siemens
         public SiemensPpiProtocolLinker(string com, int slaveAddress)
             : base(com, slaveAddress)
         {
-            ((BaseConnector)BaseConnector).AddController(new FifoController(int.Parse(configuration.GetSection("Modbus.Net")["FetchSleepTime"] ?? "0"), true, null, 100));
+            ((BaseConnector)BaseConnector).AddController(new FifoController(int.Parse(ConfigurationReader.GetValue("COM:" + com + ":" + slaveAddress, "FetchSleepTime")), waitingListMaxCount: ConfigurationReader.GetValue("COM:" + com + ":" + slaveAddress, "WaitingListCount") != null ? int.Parse(ConfigurationReader.GetValue("COM:" + com + ":" + slaveAddress, "WaitingListCount")) : null));
         }
 
         /// <summary>

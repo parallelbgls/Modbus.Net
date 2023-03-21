@@ -33,6 +33,7 @@ namespace Modbus.Net
         protected BaseConnector(int timeoutTime = 10000, bool isFullDuplex = true)
         {
             IsFullDuplex = isFullDuplex;
+            if (timeoutTime < -1) timeoutTime = -1;
             TimeoutTime = timeoutTime;
         }
 

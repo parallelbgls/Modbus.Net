@@ -22,12 +22,6 @@ namespace Modbus.Net.Siemens
         private int _connectTryCount;
         private readonly AsyncLock _lock = new AsyncLock();
 
-        private static readonly IConfigurationRoot configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
-            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", true)
-            .Build();
-
         /// <summary>
         ///     构造函数
         /// </summary>
@@ -39,7 +33,7 @@ namespace Modbus.Net.Siemens
         /// <param name="maxPdu"></param>
         public SiemensTcpProtocol(byte tdpuSize, ushort tsapSrc, ushort tsapDst, ushort maxCalling, ushort maxCalled,
             ushort maxPdu)
-            : this(tdpuSize, tsapSrc, tsapDst, maxCalling, maxCalled, maxPdu, configuration.GetSection("Modbus.Net")["IP"])
+            : this(tdpuSize, tsapSrc, tsapDst, maxCalling, maxCalled, maxPdu, ConfigurationReader.GetValueDirect("TCP:Siemens", "IP"))
         {
         }
 
@@ -57,7 +51,7 @@ namespace Modbus.Net.Siemens
             ushort maxPdu, string ip)
             : this(
                 tdpuSize, tsapSrc, tsapDst, maxCalling, maxCalled, maxPdu, ip,
-                int.Parse(configuration.GetSection("Modbus.Net")["SiemensPort"] ?? "102"))
+                int.Parse(ConfigurationReader.GetValueDirect("TCP:Siemens", "SiemensPort")))
         {
         }
 

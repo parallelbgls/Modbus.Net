@@ -9,19 +9,13 @@ namespace Modbus.Net.Modbus
     /// </summary>
     public class ModbusRtuProtocol : ModbusProtocol
     {
-        private static readonly IConfigurationRoot configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
-            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", true)
-            .Build();
-
-        /// <summary>
+       /// <summary>
         ///     构造函数
         /// </summary>
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
         public ModbusRtuProtocol(byte slaveAddress, byte masterAddress)
-            : this(configuration.GetSection("Modbus.Net")["COM"], slaveAddress, masterAddress)
+            : this(ConfigurationReader.GetValueDirect("COM:Modbus", "COM"), slaveAddress, masterAddress)
         {
         }
 

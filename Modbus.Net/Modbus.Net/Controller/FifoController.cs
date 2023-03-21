@@ -13,12 +13,6 @@ namespace Modbus.Net
     /// </summary>
     public class FifoController : BaseController
     {
-        private static readonly IConfigurationRoot configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
-            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", true)
-            .Build();
-
         private static readonly ILogger<FifoController> logger = LogProvider.CreateLogger<FifoController>();
 
         private MessageWaitingDef _currentSendingPos;
@@ -41,10 +35,10 @@ namespace Modbus.Net
         /// <param name="activateSema">是否开启信号量</param>
         /// <param name="duplicateFunc">包切分函数</param>
         /// <param name="waitingListMaxCount">包等待队列长度</param>
-        public FifoController(int acquireTime, bool activateSema = true, Func<byte[], ICollection<byte[]>> duplicateFunc = null, int waitingListMaxCount = 100)
+        public FifoController(int acquireTime, bool activateSema = true, Func<byte[], ICollection<byte[]>> duplicateFunc = null, int? waitingListMaxCount = null)
             : base(duplicateFunc)
         {
-            _waitingListMaxCount = int.Parse(configuration.GetSection("Modbus.Net")["WaitingListCount"] ?? waitingListMaxCount.ToString());
+            _waitingListMaxCount = int.Parse(waitingListMaxCount != null ? waitingListMaxCount.ToString() : null ?? ConfigurationReader.GetValueDirect("Controller","WaitingListCount"));
             if (activateSema)
             {
                 _taskCycleSema = new Semaphore(0, _waitingListMaxCount);

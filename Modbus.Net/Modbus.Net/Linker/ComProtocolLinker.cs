@@ -10,49 +10,6 @@ namespace Modbus.Net
     /// </summary>
     public abstract class ComProtocolLinker : ProtocolLinker
     {
-        private static readonly IConfigurationRoot configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
-            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", true)
-            .Build();
-
-        /// <summary>
-        ///     构造器
-        /// </summary>
-        /// <param name="slaveAddress">从站地址</param>
-        protected ComProtocolLinker(int slaveAddress)
-            : this(configuration.GetSection("Modbus.Net")["COM"] ?? "COM1", slaveAddress)
-        {
-        }
-
-        /// <summary>
-        ///     构造器
-        /// </summary>
-        /// <param name="com">串口端口号</param>
-        /// <param name="slaveAddress">从站地址</param>
-        protected ComProtocolLinker(string com, int slaveAddress)
-            : this(com, slaveAddress, int.Parse(configuration.GetSection("Modbus.Net")["ComBaudRate"] ?? "9600"), Enum.Parse<Parity>(configuration.GetSection("Modbus.Net")["ComParity"] ?? "Parity.None"), Enum.Parse<StopBits>(configuration.GetSection("Modbus.Net")["ComStopBits"] ?? "StopBits.One"), int.Parse(configuration.GetSection("Modbus.Net")["ComDataBits"] ?? "8"))
-        {
-        }
-
-        /// <summary>
-        ///     构造器
-        /// </summary>
-        /// <param name="com">串口端口号</param>
-        /// <param name="baudRate">波特率</param>
-        /// <param name="parity">校验位</param>
-        /// <param name="stopBits">停止位</param>
-        /// <param name="dataBits">数据位</param>
-        /// <param name="slaveAddress">从站地址</param>
-        /// <param name="isFullDuplex">是否为全双工</param>
-        protected ComProtocolLinker(string com, int slaveAddress, int baudRate, Parity parity, StopBits stopBits, int dataBits,
-             bool isFullDuplex = false)
-            : this(
-                com, slaveAddress, baudRate, parity, stopBits, dataBits,
-                int.Parse(configuration.GetSection("Modbus.Net")["ComConnectionTimeout"] ?? "-1"), isFullDuplex)
-        {
-        }
-
         /// <summary>
         ///     构造器
         /// </summary>
@@ -64,19 +21,16 @@ namespace Modbus.Net
         /// <param name="connectionTimeout">超时时间</param>
         /// <param name="slaveAddress">从站地址</param>
         /// <param name="isFullDuplex">是否为全双工</param>
-        protected ComProtocolLinker(string com, int slaveAddress, int baudRate, Parity parity, StopBits stopBits, int dataBits,
-            int connectionTimeout,  bool isFullDuplex = false)
+        protected ComProtocolLinker(string com, int slaveAddress, int? baudRate = null, Parity? parity = null, StopBits? stopBits = null, int? dataBits = null,
+            int? connectionTimeout = null,  bool? isFullDuplex = null)
         {
-            if (connectionTimeout == -1)
-            {
-                BaseConnector = new ComConnector(com + ":" + slaveAddress, baudRate, parity, stopBits, dataBits, isFullDuplex: isFullDuplex);
-            }
-            else
-            {
-                BaseConnector = new ComConnector(com + ":" + slaveAddress, baudRate, parity, stopBits, dataBits,
-                    connectionTimeout, isFullDuplex: isFullDuplex);
-            }
-
+            baudRate = int.Parse(baudRate != null ? baudRate.ToString() : null ?? ConfigurationReader.GetValue("COM:"+com, "BaudRate"));
+            parity = Enum.Parse<Parity>(parity != null ? parity.ToString() : null ?? ConfigurationReader.GetValue("COM:" + com, "Parity"));
+            stopBits = Enum.Parse<StopBits>(stopBits != null ? stopBits.ToString() : null ?? ConfigurationReader.GetValue("COM:" + com, "StopBits"));
+            dataBits = int.Parse(dataBits != null ? dataBits.ToString() : null ?? ConfigurationReader.GetValue("COM:" + com, "DataBits"));
+            connectionTimeout = int.Parse(connectionTimeout != null ? connectionTimeout.ToString() : null ?? ConfigurationReader.GetValue("COM:" + com, "ConnectionTimeout"));
+            isFullDuplex = bool.Parse(isFullDuplex != null ? isFullDuplex.ToString() : null ?? ConfigurationReader.GetValue("COM:" + com, "FullDuplex"));
+            BaseConnector = new ComConnector(com + ":" + slaveAddress, baudRate.Value, parity.Value, stopBits.Value, dataBits.Value, connectionTimeout.Value, isFullDuplex.Value);
         }
     }
 }

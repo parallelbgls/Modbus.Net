@@ -11,12 +11,6 @@ namespace Modbus.Net.Siemens
     /// </summary>
     public class SiemensPpiProtocol : SiemensProtocol
     {
-        private static readonly IConfigurationRoot configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
-            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", true)
-            .Build();
-
         private readonly string _com;
         private readonly AsyncLock _lock = new AsyncLock();
 
@@ -26,7 +20,7 @@ namespace Modbus.Net.Siemens
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
         public SiemensPpiProtocol(byte slaveAddress, byte masterAddress)
-            : this(configuration.GetSection("Modbus.Net")["COM"], slaveAddress, masterAddress)
+            : this(ConfigurationReader.GetValueDirect("COM:Siemens", "COM"), slaveAddress, masterAddress)
         {
         }
 

@@ -10,18 +10,12 @@ namespace Modbus.Net.Modbus
     /// </summary>
     public class ModbusTcpProtocolLinker : TcpProtocolLinker
     {
-        private static readonly IConfigurationRoot configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
-            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", true)
-            .Build();
-
         /// <summary>
         ///     构造函数
         /// </summary>
         /// <param name="ip">IP地址</param>
         public ModbusTcpProtocolLinker(string ip)
-            : this(ip, int.Parse(configuration.GetSection("Modbus.Net")["ModbusPort"] ?? "502"))
+            : this(ip, int.Parse(ConfigurationReader.GetValueDirect("TCP:" + ip, "ModbusPort") ?? ConfigurationReader.GetValueDirect("TCP:Modbus", "ModbusPort")))
         {
         }
 
@@ -32,7 +26,7 @@ namespace Modbus.Net.Modbus
         /// <param name="port">端口</param>
         public ModbusTcpProtocolLinker(string ip, int port) : base(ip, port)
         {
-            ((BaseConnector)BaseConnector).AddController(new FifoController(int.Parse(configuration.GetSection("Modbus.Net")["FetchSleepTime"] ?? "0"), true, DuplicateWithCount.GetDuplcateFunc(new List<int> { 4, 5 }, 6)));
+            ((BaseConnector)BaseConnector).AddController(new FifoController(int.Parse(ConfigurationReader.GetValue("TCP:" + ip + ":" + port, "FetchSleepTime")), waitingListMaxCount: ConfigurationReader.GetValue("TCP:" + ip + ":" + port, "WaitingListCount") != null ? int.Parse(ConfigurationReader.GetValue("TCP:" + ip + ":" + port, "WaitingListCount")) : null));
         }
 
         /// <summary>

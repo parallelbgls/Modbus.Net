@@ -10,18 +10,12 @@ namespace Modbus.Net.Siemens
     /// </summary>
     public class SiemensTcpProtocolLinker : TcpProtocolLinker
     {
-        private static readonly IConfigurationRoot configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
-            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", true)
-            .Build();
-
         /// <summary>
         ///     构造函数
         /// </summary>
         /// <param name="ip">IP地址</param>
         public SiemensTcpProtocolLinker(string ip)
-            : this(ip, int.Parse(configuration.GetSection("Modbus.Net")["SiemensPort"] ?? "102"))
+            : this(ip, int.Parse(ConfigurationReader.GetValueDirect("TCP:" + ip, "Siemens") ?? ConfigurationReader.GetValueDirect("TCP:Siemens", "SiemensPort")))
         {
         }
 
@@ -33,7 +27,7 @@ namespace Modbus.Net.Siemens
         public SiemensTcpProtocolLinker(string ip, int port)
             : base(ip, port)
         {
-            ((BaseConnector)BaseConnector).AddController(new MatchDirectlySendController(new ICollection<(int, int)>[] { new List<(int, int)> { (11, 11), (12, 12) } }, DuplicateWithCount.GetDuplcateFunc(new List<int> { 2, 3 }, 0), 100));
+            ((BaseConnector)BaseConnector).AddController(new MatchDirectlySendController(new ICollection<(int, int)>[] { new List<(int, int)> { (11, 11), (12, 12) } }, DuplicateWithCount.GetDuplcateFunc(new List<int> { 2, 3 }, 0), waitingListMaxCount: ConfigurationReader.GetValue("TCP:" + ip + ":" + port, "WaitingListCount") != null ? int.Parse(ConfigurationReader.GetValue("TCP:" + ip + ":" + port, "WaitingListCount")) : null));
         }
 
         /// <summary>

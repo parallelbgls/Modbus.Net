@@ -10,18 +10,12 @@ namespace Modbus.Net.Modbus
     /// </summary>
     public class ModbusUdpProtocolLinker : UdpProtocolLinker
     {
-        private static readonly IConfigurationRoot configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
-            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", true)
-            .Build();
-
         /// <summary>
         ///     构造函数
         /// </summary>
         /// <param name="ip">IP地址</param>
         public ModbusUdpProtocolLinker(string ip)
-            : this(ip, int.Parse(configuration.GetSection("Modbus.Net")["ModbusPort"] ?? "502"))
+            : this(ip, int.Parse(ConfigurationReader.GetValue("UDP:" + ip, "ModbusPort")))
         {
         }
 
@@ -32,7 +26,7 @@ namespace Modbus.Net.Modbus
         /// <param name="port">端口</param>
         public ModbusUdpProtocolLinker(string ip, int port) : base(ip, port)
         {
-            ((BaseConnector)BaseConnector).AddController(new FifoController(int.Parse(configuration.GetSection("Modbus.Net")["FetchSleepTime"] ?? "0"), true, DuplicateWithCount.GetDuplcateFunc(new List<int> { 4, 5 }, 6)));
+            ((BaseConnector)BaseConnector).AddController(new FifoController(int.Parse(ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "FetchSleepTime")), waitingListMaxCount: ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "WaitingListCount") != null ? int.Parse(ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "WaitingListCount")) : null));
         }
 
         /// <summary>
