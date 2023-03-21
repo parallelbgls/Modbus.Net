@@ -1,15 +1,11 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
-using System.IO;
-
-namespace Modbus.Net.Modbus
+﻿namespace Modbus.Net.Modbus
 {
     /// <summary>
     ///     Modbus/Rtu协议
     /// </summary>
     public class ModbusRtuProtocol : ModbusProtocol
     {
-       /// <summary>
+        /// <summary>
         ///     构造函数
         /// </summary>
         /// <param name="slaveAddress">从站号</param>

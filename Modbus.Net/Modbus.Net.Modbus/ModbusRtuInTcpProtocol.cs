@@ -1,8 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
-using System.IO;
-
-namespace Modbus.Net.Modbus
+﻿namespace Modbus.Net.Modbus
 {
     /// <summary>
     ///     Modbus/Rtu协议tcp透传

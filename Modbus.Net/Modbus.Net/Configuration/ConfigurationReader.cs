@@ -1,10 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Modbus.Net
 {
@@ -28,7 +25,7 @@ namespace Modbus.Net
         /// <param name="key">元素的键</param>
         /// <returns>元素的值</returns>
         public static string? GetValue(string path, string key)
-        {      
+        {
             var split = path.Split(":");
             string? ans = null;
             while (split.Length > 0)
@@ -56,7 +53,7 @@ namespace Modbus.Net
             var firstColon = path.IndexOf(":");
             while (firstColon != -1)
             {
-                root = root?.GetSection(path.Substring(0,firstColon));
+                root = root?.GetSection(path.Substring(0, firstColon));
                 path = path.Substring(firstColon + 1);
                 firstColon = path.IndexOf(":");
             }

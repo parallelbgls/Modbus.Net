@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
-using System.IO;
+﻿using System;
 using System.IO.Ports;
 
 namespace Modbus.Net
@@ -22,9 +20,9 @@ namespace Modbus.Net
         /// <param name="slaveAddress">从站地址</param>
         /// <param name="isFullDuplex">是否为全双工</param>
         protected ComProtocolLinker(string com, int slaveAddress, int? baudRate = null, Parity? parity = null, StopBits? stopBits = null, int? dataBits = null,
-            int? connectionTimeout = null,  bool? isFullDuplex = null)
+            int? connectionTimeout = null, bool? isFullDuplex = null)
         {
-            baudRate = int.Parse(baudRate != null ? baudRate.ToString() : null ?? ConfigurationReader.GetValue("COM:"+com, "BaudRate"));
+            baudRate = int.Parse(baudRate != null ? baudRate.ToString() : null ?? ConfigurationReader.GetValue("COM:" + com, "BaudRate"));
             parity = Enum.Parse<Parity>(parity != null ? parity.ToString() : null ?? ConfigurationReader.GetValue("COM:" + com, "Parity"));
             stopBits = Enum.Parse<StopBits>(stopBits != null ? stopBits.ToString() : null ?? ConfigurationReader.GetValue("COM:" + com, "StopBits"));
             dataBits = int.Parse(dataBits != null ? dataBits.ToString() : null ?? ConfigurationReader.GetValue("COM:" + com, "DataBits"));

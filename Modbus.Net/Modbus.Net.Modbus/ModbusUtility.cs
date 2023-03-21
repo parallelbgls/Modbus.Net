@@ -416,7 +416,7 @@ namespace Modbus.Net.Modbus
                     IsSuccess = outputStruct?.WriteValue.ToString() == setContent.ToString(),
                     ErrorCode = outputStruct?.WriteValue.ToString() == setContent.ToString() ? 0 : -2,
                     ErrorMsg = outputStruct?.WriteValue.ToString() == setContent.ToString() ? "" : "Data length mismatch"
-                }; 
+                };
             }
             catch (ModbusProtocolErrorException e)
             {

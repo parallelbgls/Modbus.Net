@@ -212,8 +212,9 @@ namespace Modbus.Net
                 if (!BaseUtility.IsConnected)
                     await BaseUtility.ConnectAsync();
                 //如果无法连接，终止
-                if (!BaseUtility.IsConnected) return 
-                        new ReturnStruct<Dictionary<string, ReturnUnit>>() { 
+                if (!BaseUtility.IsConnected) return
+                        new ReturnStruct<Dictionary<string, ReturnUnit>>()
+                        {
                             Datas = null,
                             IsSuccess = false,
                             ErrorCode = -1,
@@ -493,11 +494,11 @@ namespace Modbus.Net
                             ErrorMsg = datas.ErrorMsg
                         };
                     }
-                        else if(datas.Datas.Length <
-                        (int)
-                        Math.Ceiling(communicateAddress.GetCount *
-                                     BigEndianValueHelper.Instance.ByteLength[
-                                         communicateAddress.DataType.FullName]))
+                    else if (datas.Datas.Length <
+                    (int)
+                    Math.Ceiling(communicateAddress.GetCount *
+                                 BigEndianValueHelper.Instance.ByteLength[
+                                     communicateAddress.DataType.FullName]))
                         return new ReturnStruct<bool>()
                         {
                             Datas = false,

@@ -1,8 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
-using System.IO;
-
-namespace Modbus.Net
+﻿namespace Modbus.Net
 {
     /// <summary>
     ///     Udp连接对象

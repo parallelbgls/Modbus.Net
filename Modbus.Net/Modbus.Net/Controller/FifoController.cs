@@ -1,8 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 
@@ -38,7 +36,7 @@ namespace Modbus.Net
         public FifoController(int acquireTime, bool activateSema = true, Func<byte[], ICollection<byte[]>> duplicateFunc = null, int? waitingListMaxCount = null)
             : base(duplicateFunc)
         {
-            _waitingListMaxCount = int.Parse(waitingListMaxCount != null ? waitingListMaxCount.ToString() : null ?? ConfigurationReader.GetValueDirect("Controller","WaitingListCount"));
+            _waitingListMaxCount = int.Parse(waitingListMaxCount != null ? waitingListMaxCount.ToString() : null ?? ConfigurationReader.GetValueDirect("Controller", "WaitingListCount"));
             if (activateSema)
             {
                 _taskCycleSema = new Semaphore(0, _waitingListMaxCount);

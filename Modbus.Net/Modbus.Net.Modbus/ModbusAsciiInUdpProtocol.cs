@@ -1,8 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
-using System.IO;
-
-namespace Modbus.Net.Modbus
+﻿namespace Modbus.Net.Modbus
 {
     /// <summary>
     ///     Modbus/Ascii码协议Udp透传
@@ -15,7 +11,7 @@ namespace Modbus.Net.Modbus
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
         public ModbusAsciiInUdpProtocol(byte slaveAddress, byte masterAddress)
-            : this(ConfigurationReader.GetValueDirect("UDP:Modbus","IP"), slaveAddress, masterAddress)
+            : this(ConfigurationReader.GetValueDirect("UDP:Modbus", "IP"), slaveAddress, masterAddress)
         {
         }
 

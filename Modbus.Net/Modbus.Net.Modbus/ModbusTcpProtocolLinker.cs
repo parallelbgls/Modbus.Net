@@ -1,9 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.IO;
-
-namespace Modbus.Net.Modbus
+﻿namespace Modbus.Net.Modbus
 {
     /// <summary>
     ///     Modbus/Tcp协议连接器

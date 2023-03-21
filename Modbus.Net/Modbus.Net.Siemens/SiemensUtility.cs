@@ -202,9 +202,9 @@ namespace Modbus.Net.Siemens
                         }
                     //MPI
                     //case SiemensType.Mpi:
-                        //{
-                            //throw new NotImplementedException();
-                        //}
+                    //{
+                    //throw new NotImplementedException();
+                    //}
                     //Ethenet
                     case SiemensType.Tcp:
                         {
@@ -306,7 +306,8 @@ namespace Modbus.Net.Siemens
                         Wrapper.SendReceiveAsync<WriteRequestSiemensOutputStruct>(
                             Wrapper[typeof(WriteRequestSiemensProtocol)],
                             writeRequestSiemensInputStruct);
-                return new ReturnStruct<bool> {
+                return new ReturnStruct<bool>
+                {
                     Datas = writeRequestSiemensOutputStruct?.AccessResult == SiemensAccessResult.NoError,
                     IsSuccess = writeRequestSiemensOutputStruct?.AccessResult == SiemensAccessResult.NoError,
                     ErrorCode = writeRequestSiemensOutputStruct?.AccessResult == SiemensAccessResult.NoError ? 0 : (int)writeRequestSiemensOutputStruct?.AccessResult,
