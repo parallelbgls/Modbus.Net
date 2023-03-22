@@ -217,15 +217,18 @@ namespace Modbus.Net
                             logger.LogDebug(
                                 $"Udp client {ConnectionToken} receive: {String.Concat(receiveBytes.Select(p => " " + p.ToString("X2")))}");
                             var isMessageConfirmed = Controller.ConfirmMessage(receiveBytes);
-                            foreach (var confirmed in isMessageConfirmed)
+                            if (isMessageConfirmed != null)
                             {
-                                if (confirmed.Item2 == false)
+                                foreach (var confirmed in isMessageConfirmed)
                                 {
-                                    var sendMessage = InvokeReturnMessage(confirmed.Item1);
-                                    //主动传输事件
-                                    if (sendMessage != null)
+                                    if (confirmed.Item2 == false)
                                     {
-                                        await SendMsgWithoutConfirm(sendMessage);
+                                        var sendMessage = InvokeReturnMessage(confirmed.Item1);
+                                        //主动传输事件
+                                        if (sendMessage != null)
+                                        {
+                                            await SendMsgWithoutConfirm(sendMessage);
+                                        }
                                     }
                                 }
                             }

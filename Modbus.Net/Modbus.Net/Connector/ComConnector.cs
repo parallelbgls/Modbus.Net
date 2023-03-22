@@ -85,7 +85,19 @@ namespace Modbus.Net
         /// <summary>
         /// 缓冲的字节流
         /// </summary>
-        private List<byte> _cachedBytes = new List<byte>();
+        private static Dictionary<string, List<byte>> _cachedBytes = new Dictionary<string, List<byte>>();
+
+        private List<byte> CacheBytes
+        {
+            get
+            {
+                if (!_cachedBytes.ContainsKey(_com))
+                {
+                    _cachedBytes.Add(_com, new List<byte>());
+                }
+                return _cachedBytes[_com];
+            }
+        }
 
         /// <summary>
         ///     构造器
@@ -151,12 +163,12 @@ namespace Modbus.Net
         /// <summary>
         ///     连接中的连接器
         /// </summary>
-        private static Dictionary<string, string> Linkers { get; } = new Dictionary<string, string>();
+        private static HashSet<(string, string)> Linkers { get; } = new HashSet<(string, string)>();
 
         /// <summary>
         ///     连接关键字(串口号:从站号)
         /// </summary>
-        public override string ConnectionToken => _slave + ":" + _com;
+        public override string ConnectionToken => _com + ":" + _slave;
 
         /// <summary>
         ///     获取当前连接器使用的串口
@@ -253,13 +265,14 @@ namespace Modbus.Net
         {
             if (disposing)
             {
-                // Release managed resources
-                Controller.SendStop();
+                // Release managed resources               
             }
             // Release unmanaged resources
             if (SerialPort != null)
             {
-                if (Linkers.Values.Count(p => p == _com) <= 1)
+                Linkers.Remove((_slave, _com));
+                logger.LogInformation("Com connector {ConnectionToken} Removed", _com);
+                if (Linkers.Count(p => p.Item2 == _com) == 0)
                 {
                     if (SerialPort.IsOpen)
                     {
@@ -267,12 +280,12 @@ namespace Modbus.Net
                     }
                     SerialPort.Dispose();
                     logger.LogInformation("Com interface {Com} Disposed", _com);
+                    Controller.SendStop();
+                    Controllers.Remove(_com);
                     Connectors[_com] = null;
                     Connectors.Remove(_com);
                     ReceiveMsgThreadStop();
                 }
-                Linkers.Remove(_slave);
-                logger.LogInformation("Com connector {ConnectionToken} Removed", ConnectionToken);
             }
         }
 
@@ -294,13 +307,13 @@ namespace Modbus.Net
         private void RefreshReceiveCount()
         {
             _receiveCount++;
-            logger.LogDebug("Com client {ConnectionToken} receive count: {SendCount}", ConnectionToken, _receiveCount);
+            logger.LogDebug("Com client {ConnectionToken} receive count: {SendCount}", _com, _receiveCount);
         }
 
         private void RefreshErrorCount()
         {
             _errorCount++;
-            logger.LogDebug("Com client {ConnectionToken} error count: {ErrorCount}", ConnectionToken, _errorCount);
+            logger.LogDebug("Com client {ConnectionToken} error count: {ErrorCount}", _com, _errorCount);
         }
 
         /// <inheritdoc />
@@ -310,7 +323,7 @@ namespace Modbus.Net
             {
                 if (SerialPort != null && !SerialPort.IsOpen)
                     SerialPort.Dispose();
-                return SerialPort != null && SerialPort.IsOpen && Linkers.ContainsKey(_slave);
+                return SerialPort != null && SerialPort.IsOpen && Linkers.Contains((_slave, _com));
             }
         }
 
@@ -336,9 +349,9 @@ namespace Modbus.Net
                             ReadTimeout = TimeoutTime
                         });
                     }
-                    if (!Linkers.ContainsKey(_slave))
+                    if (!Linkers.Contains((_slave, _com)))
                     {
-                        Linkers.Add(_slave, _com);
+                        Linkers.Add((_slave, _com));
                     }
                     if (!SerialPort.IsOpen)
                     {
@@ -352,13 +365,13 @@ namespace Modbus.Net
                     }
                 }
 
-                logger.LogInformation("Com client {ConnectionToken} connect success", ConnectionToken);
+                logger.LogInformation("Com client {ConnectionToken} connect success", _com);
 
                 return true;
             }
             catch (Exception e)
             {
-                logger.LogError(e, "Com client {ConnectionToken} connect error", ConnectionToken);
+                logger.LogError(e, "Com client {ConnectionToken} connect error", _com);
                 Dispose();
                 return false;
             }
@@ -373,7 +386,7 @@ namespace Modbus.Net
         /// <inheritdoc />
         public override bool Disconnect()
         {
-            if (Linkers.ContainsKey(_slave) && Connectors.ContainsKey(_com))
+            if (Linkers.Contains((_slave, _com)) && Connectors.ContainsKey(_com))
                 try
                 {
                     Dispose();
@@ -419,7 +432,7 @@ namespace Modbus.Net
                 }
                 catch (Exception err)
                 {
-                    logger.LogError(err, "Com client {ConnectionToken} open error", ConnectionToken);
+                    logger.LogError(err, "Com client {ConnectionToken} open error", _com);
                     Dispose();
                     try
                     {
@@ -427,7 +440,7 @@ namespace Modbus.Net
                     }
                     catch (Exception err2)
                     {
-                        logger.LogError(err2, "Com client {ConnectionToken} open error", ConnectionToken);
+                        logger.LogError(err2, "Com client {ConnectionToken} open error", _com);
                         Dispose();
                     }
                 }
@@ -463,7 +476,7 @@ namespace Modbus.Net
         /// <inheritdoc />
         protected override void ReceiveMsgThreadStart()
         {
-            _receiveThread = Task.Run(() => ReceiveMessage());
+            _receiveThread = Task.Run(ReceiveMessage);
         }
 
         /// <inheritdoc />
@@ -483,36 +496,42 @@ namespace Modbus.Net
 
                     if (returnBytes != null)
                     {
-                        logger.LogDebug("Com client {ConnectionToken} receive msg length: {Length}", ConnectionToken,
+                        logger.LogDebug("Com client {ConnectionToken} receive msg length: {Length}", _com,
                             returnBytes.Length);
                         logger.LogDebug(
-                            $"Com client {ConnectionToken} receive msg: {string.Concat(returnBytes.Select(p => " " + p.ToString("X2")))}");
+                            $"Com client {_com} receive msg: {string.Concat(returnBytes.Select(p => " " + p.ToString("X2")))}");
 
-                        lock (_cachedBytes)
+                        lock (CacheBytes)
                         {
-                            _cachedBytes.AddRange(returnBytes);
+                            CacheBytes.AddRange(returnBytes);
                         }
-                        var isMessageConfirmed = Controller.ConfirmMessage(_cachedBytes.ToArray());
-                        foreach (var confirmed in isMessageConfirmed)
-                        {
-                            if (confirmed.Item2 == false)
-                            {
-                                //主动传输事件
-                            }
-                            lock (_cachedBytes)
-                            {
-                                _cachedBytes.RemoveRange(0, confirmed.Item1.Length);
-                            }
-                        }
-                        if (isMessageConfirmed.Count > 0 && _cachedBytes.Count > 0)
+                        var isMessageConfirmed = Controller.ConfirmMessage(CacheBytes.ToArray());
+                        if (isMessageConfirmed == null)
                         {
                             logger.LogError("Com client {ConnectionToken} cached msg error: {Length}", ConnectionToken,
-                                _cachedBytes.Count);
+                                    CacheBytes.Count);
                             logger.LogError(
-                                $"Com client {ConnectionToken} cached msg: {string.Concat(_cachedBytes.Select(p => " " + p.ToString("X2")))}");
-                            lock (_cachedBytes)
+                                $"Com client {ConnectionToken} cached msg: {string.Concat(CacheBytes.Select(p => " " + p.ToString("X2")))}");
+                            lock (CacheBytes)
                             {
-                                _cachedBytes.Clear();
+                                CacheBytes.Clear();
+                            }
+                        }
+                        else
+                        {
+                            foreach (var confirmed in isMessageConfirmed)
+                            {
+                                if (confirmed.Item2)
+                                {
+                                    lock (CacheBytes)
+                                    {
+                                        CacheBytes.RemoveRange(0, confirmed.Item1.Length);
+                                    }
+                                }
+                                else if (confirmed.Item2 == false)
+                                {
+                                    //主动传输事件
+                                }
                             }
                         }
                         RefreshReceiveCount();
@@ -542,7 +561,7 @@ namespace Modbus.Net
             }
             catch (Exception e)
             {
-                logger.LogError(e, "Com client {ConnectionToken} read error", ConnectionToken);
+                logger.LogError(e, "Com client {ConnectionToken} read error", _com);
                 RefreshErrorCount();
                 Dispose();
                 return null;

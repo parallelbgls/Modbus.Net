@@ -24,7 +24,7 @@ namespace Modbus.Net.Modbus
         public ModbusAsciiInUdpProtocolLinker(string ip, int port)
             : base(ip, port)
         {
-            ((BaseConnector)BaseConnector).AddController(new FifoController(int.Parse(ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "FetchSleepTime")), lengthCalc: content => { if (content[0] != 0x3a) return -1; for (int i = 1; i < content.Length; i++) { if (content[i - 1] == 0x0D && content[i] == 0x0A) return i + 1; } return -1; }, waitingListMaxCount: ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "WaitingListCount") != null ? int.Parse(ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "WaitingListCount")) : null));
+            ((BaseConnector)BaseConnector).AddController(new FifoController(int.Parse(ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "FetchSleepTime")), lengthCalc: content => { if (content[0] != 0x3a) return 0; for (int i = 1; i < content.Length; i++) { if (content[i - 1] == 0x0D && content[i] == 0x0A) return i + 1; } return -1; }, waitingListMaxCount: ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "WaitingListCount") != null ? int.Parse(ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "WaitingListCount")) : null));
         }
 
         /// <summary>
