@@ -92,7 +92,7 @@ namespace Modbus.Net
     /// <summary>
     ///     基础的协议连接类
     /// </summary>
-    public abstract class BaseConnector<TParamIn, TParamOut> : IConnector<TParamIn, TParamOut> where TParamIn : class
+    public abstract class BaseConnector<TParamIn, TParamOut> : IConnectorWithController<TParamIn, TParamOut> where TParamIn : class
     {
         /// <summary>
         ///     数据返回代理参数
@@ -107,10 +107,7 @@ namespace Modbus.Net
         /// </summary>
         public event MessageReturnDelegate MessageReturn;
 
-        /// <summary>
-        ///     增加传输控制器
-        /// </summary>
-        /// <param name="controller">传输控制器</param>
+        /// <inheritdoc />
         public void AddController(IController controller)
         {
             Controller = controller;

@@ -46,7 +46,7 @@ namespace MachineJob.Service
 
             IMachine<string> machine = new ModbusMachine<string, string>("ModbusMachine1", ModbusType.Tcp, null, _addresses, true, 1, 2, Endian.BigEndianLsb);
             IMachine<string> machine2 = new SiemensMachine<string, string>("SiemensMachine1", SiemensType.Tcp, null, SiemensMachineModel.S7_1200, _addresses2, true, 1, 2);
-            IMachine<string> machine3 = new ModbusMachine<string, string>("ModbusMachine2", ModbusType.Rtu, "COM3", _addresses, true, 3, 2);
+            IMachine<string> machine3 = new ModbusMachine<string, string>("ModbusMachine2", ModbusType.Rtu, "COM1", _addresses, true, 3, 2);
             var machines = new List<IMachine<string>>() { machine, machine2, machine3 };
             return Task.Run(() => MultipleMachinesJobScheduler.RunScheduler(machines, async (machine, scheduler) =>
             {
