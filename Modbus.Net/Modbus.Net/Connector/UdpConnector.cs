@@ -1,9 +1,14 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using DotNetty.Buffers;
+using DotNetty.Common.Utilities;
+using DotNetty.Transport.Bootstrapping;
+using DotNetty.Transport.Channels;
+using DotNetty.Transport.Channels.Sockets;
+using Microsoft.Extensions.Logging;
 using Nito.AsyncEx;
 using System;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Modbus.Net
@@ -11,27 +16,19 @@ namespace Modbus.Net
     /// <summary>
     ///     Udp收发类
     /// </summary>
-    public class UdpConnector : BaseConnector, IDisposable
+    public class UdpConnector : EventHandlerConnector, IDisposable
     {
         private static readonly ILogger<UdpConnector> logger = LogProvider.CreateLogger<UdpConnector>();
 
         private readonly string _host;
         private readonly int _port;
 
-        /// <summary>
-        ///     1MB 的接收缓冲区
-        /// </summary>
-        private readonly byte[] _receiveBuffer = new byte[1024];
-
         private int _errorCount;
         private int _receiveCount;
 
         private int _sendCount;
 
-        private UdpClient _socketClient;
-
-        private Task _receiveThread;
-        private bool _taskCancel = false;
+        private IChannel Channel { get; set; }
 
         /// <summary>
         ///     构造器
@@ -53,7 +50,7 @@ namespace Modbus.Net
         protected override int TimeoutTime { get; set; }
 
         /// <inheritdoc />
-        public override bool IsConnected => _socketClient?.Client != null && _socketClient.Client.Connected;
+        public override bool IsConnected => Channel != null && Channel.Active;
 
         /// <inheritdoc />
         protected override AsyncLock Lock { get; } = new AsyncLock();
@@ -79,10 +76,10 @@ namespace Modbus.Net
                 // Release managed resources
             }
             // Release unmanaged resources
-            if (_socketClient != null)
+            if (Channel != null)
             {
-                CloseClientSocket();
-                _socketClient = null;
+                CloseClientSocket().Wait();
+                Channel = null;
                 logger.LogDebug("Udp client {ConnectionToken} Disposed", ConnectionToken);
             }
         }
@@ -101,23 +98,30 @@ namespace Modbus.Net
         {
             using (await Lock.LockAsync())
             {
-                if (_socketClient != null)
+                if (Channel != null)
                 {
                     return true;
                 }
                 try
                 {
-                    _socketClient = new UdpClient();
+                    var bootstrap = new Bootstrap();
+                    bootstrap
+                        .Group(new MultithreadEventLoopGroup())
+                        .Channel<SocketDatagramChannel>()
+                        .Option(ChannelOption.SoBroadcast, true)
+                        .Option(ChannelOption.ConnectTimeout, TimeSpan.FromMilliseconds(TimeoutTime))
+                        .Handler(new ActionChannelInitializer<IChannel>(channel =>
+                        {
+                            IChannelPipeline pipeline = channel.Pipeline;
 
-                    var cts = new CancellationTokenSource();
-                    cts.CancelAfter(TimeoutTime);
-                    await Task.Run(() => _socketClient.Connect(_host, _port), cts.Token);
+                            pipeline.AddLast("handler", this);
+                        }));
 
-                    if (_socketClient.Client.Connected)
+                    Channel = await bootstrap.BindAsync(IPEndPoint.MinPort);
+
+                    if (Channel.Active)
                     {
-                        _taskCancel = false;
                         Controller.SendStart();
-                        ReceiveMsgThreadStart();
                         logger.LogInformation("Udp client {ConnectionToken} connected", ConnectionToken);
                         return true;
                     }
@@ -138,7 +142,7 @@ namespace Modbus.Net
         /// <inheritdoc />
         public override bool Disconnect()
         {
-            if (_socketClient == null)
+            if (Channel == null)
                 return true;
 
             try
@@ -150,11 +154,14 @@ namespace Modbus.Net
             catch (Exception err)
             {
                 logger.LogError(err, "Udp client {ConnectionToken} disconnected exception", ConnectionToken);
+
+                RefreshErrorCount();
+
                 return false;
             }
             finally
             {
-                _socketClient = null;
+                Channel = null;
             }
         }
 
@@ -171,71 +178,53 @@ namespace Modbus.Net
                 RefreshSendCount();
 
                 logger.LogDebug("Udp client {ConnectionToken} send text len = {Length}", ConnectionToken, datagram.Length);
-                logger.LogDebug($"Udp client {ConnectionToken} send: {String.Concat(datagram.Select(p => " " + p.ToString("X2")))}");
-                await _socketClient.SendAsync(datagram, datagram.Length);
+                logger.LogDebug($"Udp client {ConnectionToken} send: {string.Concat(datagram.Select(p => " " + p.ToString("X2")))}");
+                IByteBuffer buffer = Unpooled.Buffer();
+                buffer.WriteBytes(datagram);
+                var packet = new DatagramPacket((IByteBuffer)buffer.Retain(), new IPEndPoint(IPAddress.Parse(_host), _port));
+                await Channel.WriteAndFlushAsync(packet);
             }
             catch (Exception err)
             {
                 logger.LogError(err, "Udp client {ConnectionToken} send exception", ConnectionToken);
+
+                RefreshErrorCount();
+
                 Dispose();
             }
         }
 
-        /// <inheritdoc />
-        protected override void ReceiveMsgThreadStart()
-        {
-            _receiveThread = Task.Run(ReceiveMessage);
-        }
-
-        /// <inheritdoc />
-        protected override void ReceiveMsgThreadStop()
-        {
-            _taskCancel = true;
-        }
-
-        /// <summary>
-        ///     接收返回消息
-        /// </summary>
-        /// <returns>返回的消息</returns>
-        protected async Task ReceiveMessage()
+        /// <inheridoc />
+        public override async void ChannelRead(IChannelHandlerContext ctx, object message)
         {
             try
             {
-                while (!_taskCancel)
+                if (message is DatagramPacket packet)
                 {
-                    if (_socketClient == null) break;
-                    var receive = await _socketClient.ReceiveAsync();
-
-                    var len = receive.Buffer.Length;
-                    // 异步接收回答
-                    if (len > 0)
+                    var buffer = packet.Content;
+                    byte[] msg = buffer.Array.Slice(buffer.ArrayOffset, buffer.ReadableBytes);
+                    logger.LogDebug("Udp client {ConnectionToken} receive text len = {Length}", ConnectionToken,
+                                    msg.Length);
+                    logger.LogDebug(
+                        $"Udp client {ConnectionToken} receive: {string.Concat(msg.Select(p => " " + p.ToString("X2")))}");
+                    var isMessageConfirmed = Controller.ConfirmMessage(msg);
+                    if (isMessageConfirmed != null)
                     {
-                        if (receive.Buffer.Clone() is byte[] receiveBytes)
+                        foreach (var confirmed in isMessageConfirmed)
                         {
-                            logger.LogDebug("Udp client {ConnectionToken} receive text len = {Length}", ConnectionToken,
-                                receiveBytes.Length);
-                            logger.LogDebug(
-                                $"Udp client {ConnectionToken} receive: {String.Concat(receiveBytes.Select(p => " " + p.ToString("X2")))}");
-                            var isMessageConfirmed = Controller.ConfirmMessage(receiveBytes);
-                            if (isMessageConfirmed != null)
+                            if (confirmed.Item2 == false)
                             {
-                                foreach (var confirmed in isMessageConfirmed)
+                                var sendMessage = InvokeReturnMessage(confirmed.Item1);
+                                //主动传输事件
+                                if (sendMessage != null)
                                 {
-                                    if (confirmed.Item2 == false)
-                                    {
-                                        var sendMessage = InvokeReturnMessage(confirmed.Item1);
-                                        //主动传输事件
-                                        if (sendMessage != null)
-                                        {
-                                            await SendMsgWithoutConfirm(sendMessage);
-                                        }
-                                    }
+                                    await SendMsgWithoutConfirm(sendMessage);
                                 }
                             }
                         }
-
-                        RefreshReceiveCount();
                     }
+
+                    RefreshReceiveCount();
                 }
             }
             catch (ObjectDisposedException)
@@ -245,7 +234,10 @@ namespace Modbus.Net
             catch (Exception err)
             {
                 logger.LogError(err, "Udp client {ConnectionToken} receive exception", ConnectionToken);
-                //CloseClientSocket();
+
+                RefreshErrorCount();
+
+                await CloseClientSocket();
             }
         }
 
@@ -267,25 +259,25 @@ namespace Modbus.Net
             logger.LogDebug("Udp client {ConnectionToken} error count: {ErrorCount}", ConnectionToken, _errorCount);
         }
 
-        private void CloseClientSocket()
+        private async Task CloseClientSocket()
         {
             try
             {
                 Controller.SendStop();
                 Controller.Clear();
-                ReceiveMsgThreadStop();
-                if (_socketClient != null)
+                if (Channel != null)
                 {
-                    if (_socketClient.Client?.Connected == true)
+                    if (Channel.Active)
                     {
-                        _socketClient.Client.Disconnect(false);
+                        await Channel.CloseAsync();
                     }
-                    _socketClient.Close();
                 }
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Udp client {ConnectionToken} client close exception", ConnectionToken);
+
+                RefreshErrorCount();
             }
         }
     }

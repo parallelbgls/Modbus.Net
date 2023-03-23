@@ -24,7 +24,7 @@ namespace Modbus.Net.Modbus
         public ModbusRtuInUdpProtocolLinker(string ip, int port)
             : base(ip, port)
         {
-            ((BaseConnector)BaseConnector).AddController(new FifoController(int.Parse(ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "FetchSleepTime")), lengthCalc: content => { if (content[1] == 5 || content[1] == 6 || content[1] == 15 || content[1] == 16 || content[1] == 21) return 8; else return DuplicateWithCount.GetDuplcateFunc(new List<int> { 2 }, 5).Invoke(content); }, waitingListMaxCount: ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "WaitingListCount") != null ? int.Parse(ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "WaitingListCount")) : null));
+            ((EventHandlerConnector)BaseConnector).AddController(new FifoController(int.Parse(ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "FetchSleepTime")), lengthCalc: content => { if (content[1] == 5 || content[1] == 6 || content[1] == 15 || content[1] == 16 || content[1] == 21) return 8; else return DuplicateWithCount.GetDuplcateFunc(new List<int> { 2 }, 5).Invoke(content); }, waitingListMaxCount: ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "WaitingListCount") != null ? int.Parse(ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "WaitingListCount")) : null));
         }
 
         /// <summary>

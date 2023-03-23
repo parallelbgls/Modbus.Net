@@ -1,9 +1,13 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using DotNetty.Buffers;
+using DotNetty.Common.Utilities;
+using DotNetty.Transport.Bootstrapping;
+using DotNetty.Transport.Channels;
+using DotNetty.Transport.Channels.Sockets;
+using Microsoft.Extensions.Logging;
 using Nito.AsyncEx;
 using System;
 using System.Linq;
-using System.Net.Sockets;
-using System.Threading;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Modbus.Net
@@ -12,29 +16,19 @@ namespace Modbus.Net
     ///     Socket收发类
     ///     作者：本类来源于CSDN，并由罗圣（Chris L.）根据实际需要修改
     /// </summary>
-    public class TcpConnector : BaseConnector, IDisposable
+    public class TcpConnector : EventHandlerConnector, IDisposable
     {
         private static readonly ILogger<TcpConnector> logger = LogProvider.CreateLogger<TcpConnector>();
 
         private readonly string _host;
         private readonly int _port;
 
-        /// <summary>
-        ///     1MB 的接收缓冲区
-        /// </summary>
-        private readonly byte[] _receiveBuffer = new byte[1024];
-
         private int _errorCount;
         private int _receiveCount;
 
         private int _sendCount;
 
-        private TcpClient _socketClient;
-
-        private int _timeoutTime;
-
-        private Task _receiveThread;
-        private bool _taskCancel = false;
+        private IChannel Channel { get; set; }
 
         /// <summary>
         ///     构造器
@@ -53,20 +47,10 @@ namespace Modbus.Net
         public override string ConnectionToken => _host;
 
         /// <inheritdoc />
-        protected override int TimeoutTime
-        {
-            get =>
-            _timeoutTime;
-            set
-            {
-                _timeoutTime = value;
-                if (_socketClient != null)
-                    _socketClient.ReceiveTimeout = _timeoutTime;
-            }
-        }
+        protected override int TimeoutTime { get; set; }
 
         /// <inheritdoc />
-        public override bool IsConnected => _socketClient?.Client != null && _socketClient.Connected;
+        public override bool IsConnected => Channel?.Open == true;
 
         /// <inheritdoc />
         protected override AsyncLock Lock { get; } = new AsyncLock();
@@ -92,10 +76,10 @@ namespace Modbus.Net
                 // Release managed resources
             }
             // Release unmanaged resources
-            if (_socketClient != null)
+            if (Channel != null)
             {
-                CloseClientSocket();
-                _socketClient = null;
+                CloseClientSocket().Wait();
+                Channel = null;
                 logger.LogDebug("Tcp client {ConnectionToken} Disposed", ConnectionToken);
             }
         }
@@ -114,28 +98,31 @@ namespace Modbus.Net
         {
             using (await Lock.LockAsync())
             {
-                if (_socketClient != null)
+                if (Channel != null)
                 {
-                    if (_socketClient.Connected)
+                    if (Channel.Open)
                         return true;
                 }
                 try
                 {
-                    _socketClient = new TcpClient
-                    {
-                        SendTimeout = TimeoutTime,
-                        ReceiveTimeout = TimeoutTime
-                    };
+                    var bootstrap = new Bootstrap();
+                    bootstrap
+                        .Group(new MultithreadEventLoopGroup())
+                        .Channel<TcpSocketChannel>()
+                        .Option(ChannelOption.TcpNodelay, true)
+                        .Option(ChannelOption.ConnectTimeout, TimeSpan.FromMilliseconds(TimeoutTime))
+                        .Handler(new ActionChannelInitializer<ISocketChannel>(channel =>
+                        {
+                            IChannelPipeline pipeline = channel.Pipeline;
 
-                    var cts = new CancellationTokenSource();
-                    cts.CancelAfter(TimeoutTime);
-                    await _socketClient.ConnectAsync(_host, _port).WithCancellation(cts.Token);
+                            pipeline.AddLast("handler", this);
+                        }));
 
-                    if (_socketClient.Connected)
+                    Channel = await bootstrap.ConnectAsync(new IPEndPoint(IPAddress.Parse(_host), _port));
+
+                    if (Channel.Open)
                     {
-                        _taskCancel = false;
                         Controller.SendStart();
-                        ReceiveMsgThreadStart();
                         logger.LogInformation("Tcp client {ConnectionToken} connected", ConnectionToken);
                         return true;
                     }
@@ -146,6 +133,9 @@ namespace Modbus.Net
                 catch (Exception err)
                 {
                     logger.LogError(err, "Tcp client {ConnectionToken} connect exception", ConnectionToken);
+
+                    RefreshErrorCount();
+
                     Dispose();
                     return false;
                 }
@@ -155,7 +145,7 @@ namespace Modbus.Net
         /// <inheritdoc />
         public override bool Disconnect()
         {
-            if (_socketClient == null)
+            if (Channel.Open)
                 return true;
 
             try
@@ -167,11 +157,14 @@ namespace Modbus.Net
             catch (Exception err)
             {
                 logger.LogError(err, "Tcp client {ConnectionToken} disconnected exception", ConnectionToken);
+
+                RefreshErrorCount();
+
                 return false;
             }
             finally
             {
-                _socketClient = null;
+                Channel = null;
             }
         }
 
@@ -185,75 +178,54 @@ namespace Modbus.Net
                 if (!IsConnected)
                     await ConnectAsync();
 
-                var stream = _socketClient.GetStream();
-
                 RefreshSendCount();
 
                 logger.LogDebug("Tcp client {ConnectionToken} send text len = {Length}", ConnectionToken, datagram.Length);
-                logger.LogDebug($"Tcp client {ConnectionToken} send: {String.Concat(datagram.Select(p => " " + p.ToString("X2")))}");
-                await stream.WriteAsync(datagram, 0, datagram.Length);
+                logger.LogDebug($"Tcp client {ConnectionToken} send: {string.Concat(datagram.Select(p => " " + p.ToString("X2")))}");
+                IByteBuffer buffer = Unpooled.Buffer();
+                buffer.WriteBytes(datagram);
+                await Channel.WriteAndFlushAsync(buffer);
             }
             catch (Exception err)
             {
                 logger.LogError(err, "Tcp client {ConnectionToken} send exception", ConnectionToken);
+
+                RefreshErrorCount();
+
                 Dispose();
             }
         }
 
-        /// <inheritdoc />
-        protected override void ReceiveMsgThreadStart()
-        {
-            _receiveThread = Task.Run(ReceiveMessage);
-        }
-
-        /// <inheritdoc />
-        protected override void ReceiveMsgThreadStop()
-        {
-            _taskCancel = true;
-        }
-
-        /// <summary>
-        ///     接收返回消息
-        /// </summary>
-        /// <returns>返回的消息</returns>
-        protected async Task ReceiveMessage()
+        /// <inheridoc />
+        public override async void ChannelRead(IChannelHandlerContext context, object message)
         {
             try
             {
-                while (!_taskCancel)
+                if (message is IByteBuffer buffer)
                 {
-                    if (_socketClient == null) break;
-                    NetworkStream stream = _socketClient.GetStream();
-                    var len = await stream.ReadAsync(_receiveBuffer, 0, _receiveBuffer.Length);
-                    stream.Flush();
-
-                    // 异步接收回答
-                    if (len > 0)
+                    byte[] msg = buffer.Array.Slice(buffer.ArrayOffset, buffer.ReadableBytes);
+                    logger.LogDebug("Tcp client {ConnectionToken} receive text len = {Length}", ConnectionToken,
+                       msg.Length);
+                    logger.LogDebug(
+                        $"Tcp client {ConnectionToken} receive: {string.Concat(msg.Select(p => " " + p.ToString("X2")))}");
+                    var isMessageConfirmed = Controller.ConfirmMessage(msg);
+                    if (isMessageConfirmed != null)
                     {
-                        byte[] receiveBytes = CheckReplyDatagram(len);
-                        logger.LogDebug("Tcp client {ConnectionToken} receive text len = {Length}", ConnectionToken,
-                            receiveBytes.Length);
-                        logger.LogDebug(
-                            $"Tcp client {ConnectionToken} receive: {String.Concat(receiveBytes.Select(p => " " + p.ToString("X2")))}");
-                        var isMessageConfirmed = Controller.ConfirmMessage(receiveBytes);
-                        if (isMessageConfirmed != null)
+                        foreach (var confirmed in isMessageConfirmed)
                         {
-                            foreach (var confirmed in isMessageConfirmed)
+                            if (confirmed.Item2 == false)
                             {
-                                if (confirmed.Item2 == false)
+                                var sendMessage = InvokeReturnMessage(confirmed.Item1);
+                                //主动传输事件
+                                if (sendMessage != null)
                                 {
-                                    var sendMessage = InvokeReturnMessage(confirmed.Item1);
-                                    //主动传输事件
-                                    if (sendMessage != null)
-                                    {
-                                        await SendMsgWithoutConfirm(sendMessage);
-                                    }
+                                    await SendMsgWithoutConfirm(sendMessage);
                                 }
                             }
                         }
-
-                        RefreshReceiveCount();
                     }
+
+                    RefreshReceiveCount();
                 }
             }
             catch (ObjectDisposedException)
@@ -263,23 +235,11 @@ namespace Modbus.Net
             catch (Exception err)
             {
                 logger.LogError(err, "Tcp client {ConnectionToken} receive exception", ConnectionToken);
-                //CloseClientSocket();
-            }
-        }
 
-        /// <summary>
-        ///     接收消息，并转换成字符串
-        /// </summary>
-        /// <param name="len">消息的长度</param>
-        private byte[] CheckReplyDatagram(int len)
-        {
-            var replyMessage = new byte[len];
-            Array.Copy(_receiveBuffer, replyMessage, len);
-
-            if (len <= 0)
                 RefreshErrorCount();
 
-            return replyMessage;
+                await CloseClientSocket();
+            }
         }
 
         private void RefreshSendCount()
@@ -300,24 +260,25 @@ namespace Modbus.Net
             logger.LogDebug("Tcp client {ConnectionToken} error count: {ErrorCount}", ConnectionToken, _errorCount);
         }
 
-        private void CloseClientSocket()
+        private async Task CloseClientSocket()
         {
             try
             {
                 Controller.SendStop();
                 Controller.Clear();
-                ReceiveMsgThreadStop();
-                if (_socketClient != null)
+                if (Channel != null)
                 {
-                    if (_socketClient.Connected)
+                    if (Channel.Open)
                     {
-                        _socketClient.Close();
+                        await Channel.CloseAsync();
                     }
                 }
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Tcp client {ConnectionToken} client close exception", ConnectionToken);
+
+                RefreshErrorCount();
             }
         }
     }
