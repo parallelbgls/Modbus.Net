@@ -25,3 +25,4 @@ Thanks
 -------------------
 * Quartz - Job Scheduler
 * Serilog - Logging
+* DotNetty - Network Transporting
