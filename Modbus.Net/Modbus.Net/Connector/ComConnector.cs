@@ -57,6 +57,11 @@ namespace Modbus.Net
         /// </summary>
         private readonly StopBits _stopBits;
 
+        /// <summary>
+        ///     停止位
+        /// </summary>
+        private readonly Handshake _handshake;
+
         /// <inheritdoc />
         protected override int TimeoutTime { get; set; }
 
@@ -107,20 +112,23 @@ namespace Modbus.Net
         /// <param name="parity">校验位</param>
         /// <param name="stopBits">停止位</param>
         /// <param name="dataBits">数据位</param>
+        /// <param name="handshake">流控制</param>
         /// <param name="timeoutTime">超时时间</param>
         /// <param name="isFullDuplex">是否为全双工</param>
-        public ComConnector(string com, int baudRate, Parity parity, StopBits stopBits, int dataBits, int timeoutTime = 10000, bool isFullDuplex = false) : base(timeoutTime, isFullDuplex)
+        public ComConnector(string com, BaudRate baudRate, Parity parity, StopBits stopBits, DataBits dataBits, Handshake handshake, int timeoutTime = 10000, bool isFullDuplex = false) : base(timeoutTime, isFullDuplex)
         {
             //端口号 
             _com = com.Split(':')[0];
             //波特率
-            _baudRate = baudRate;
+            _baudRate = (int)baudRate;
             //奇偶校验
             _parity = parity;
             //停止位 
             _stopBits = stopBits;
             //数据位
-            _dataBits = dataBits;
+            _dataBits = (int)dataBits;
+            //流控制
+            _handshake = handshake;
             //从站号
             _slave = com.Split(':')[1];
         }
@@ -346,6 +354,7 @@ namespace Modbus.Net
                             Parity = _parity,
                             StopBits = _stopBits,
                             DataBits = _dataBits,
+                            Handshake = _handshake,
                             ReadTimeout = TimeoutTime
                         });
                     }

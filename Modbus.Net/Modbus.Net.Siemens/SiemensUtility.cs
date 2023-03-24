@@ -13,10 +13,12 @@ namespace Modbus.Net.Siemens
         /// PPI
         /// </summary>
         Ppi = 0,
+#pragma warning disable
         /// <summary>
         /// MPI
         /// </summary>
         //Mpi = 1,
+#pragma warning restore
         /// <summary>
         /// 以太网
         /// </summary>
