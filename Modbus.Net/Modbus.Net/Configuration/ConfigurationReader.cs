@@ -14,7 +14,7 @@ namespace Modbus.Net
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.default.json")
             .AddJsonFile("appsettings.json")
-            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? "Production"}.json", true)
+            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", true)
             .Build();
 
 #nullable enable
