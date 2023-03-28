@@ -50,6 +50,9 @@ namespace Modbus.Net.Modbus
     /// </summary>
     public class ModbusTcpProtocolLinkerBytesExtend : IProtocolLinkerBytesExtend
     {
+        private static ushort _sendCount = 0;
+        private static readonly object _counterLock = new object();
+
         /// <summary>
         ///     协议扩展，协议内容发送前调用
         /// </summary>
@@ -57,13 +60,19 @@ namespace Modbus.Net.Modbus
         /// <returns>扩展后的协议内容</returns>
         public byte[] BytesExtend(byte[] content)
         {
-            //Modbus/Tcp协议扩张，前面加6个字节，前面4个为0，后面两个为协议整体内容的长度
+            //Modbus/Tcp协议扩张，前面加6个字节，前面2个为事务编号，中间两个为0，后面两个为协议整体内容的长度
             var newFormat = new byte[6 + content.Length];
-            var tag = 0;
-            var leng = (ushort)content.Length;
-            Array.Copy(BigEndianValueHelper.Instance.GetBytes(tag), 0, newFormat, 0, 4);
-            Array.Copy(BigEndianValueHelper.Instance.GetBytes(leng), 0, newFormat, 4, 2);
-            Array.Copy(content, 0, newFormat, 6, content.Length);
+            lock (_counterLock)
+            {
+                var transaction = (ushort)(_sendCount % 65536 + 1);
+                var tag = (ushort)0;
+                var leng = (ushort)content.Length;
+                Array.Copy(BigEndianValueHelper.Instance.GetBytes(transaction), 0, newFormat, 0, 2);
+                Array.Copy(BigEndianValueHelper.Instance.GetBytes(tag), 0, newFormat, 2, 2);
+                Array.Copy(BigEndianValueHelper.Instance.GetBytes(leng), 0, newFormat, 4, 2);
+                Array.Copy(content, 0, newFormat, 6, content.Length);
+                _sendCount++;
+            }
             return newFormat;
         }
 

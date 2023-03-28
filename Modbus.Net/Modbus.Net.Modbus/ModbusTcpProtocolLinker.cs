@@ -23,7 +23,7 @@ namespace Modbus.Net.Modbus
         /// <param name="port">端口</param>
         public ModbusTcpProtocolLinker(string ip, int port) : base(ip, port)
         {
-            ((IConnectorWithController<byte[], byte[]>)BaseConnector).AddController(new FifoController(int.Parse(ConfigurationReader.GetValue("TCP:" + ip + ":" + port, "FetchSleepTime")), lengthCalc: DuplicateWithCount.GetDuplcateFunc(new List<int> { 4, 5 }, 6), waitingListMaxCount: ConfigurationReader.GetValue("TCP:" + ip + ":" + port, "WaitingListCount") != null ? int.Parse(ConfigurationReader.GetValue("TCP:" + ip + ":" + port, "WaitingListCount")) : null));
+            ((IConnectorWithController<byte[], byte[]>)BaseConnector).AddController(new ModbusTcpMatchDirectlySendController(new ICollection<(int, int)>[] { new List<(int, int)> { (0, 0), (1, 1) } }, lengthCalc: DuplicateWithCount.GetDuplcateFunc(new List<int> { 4, 5 }, 6), waitingListMaxCount: ConfigurationReader.GetValue("TCP:" + ip + ":" + port, "WaitingListCount") != null ? int.Parse(ConfigurationReader.GetValue("TCP:" + ip + ":" + port, "WaitingListCount")) : null));
         }
 
         /// <summary>
