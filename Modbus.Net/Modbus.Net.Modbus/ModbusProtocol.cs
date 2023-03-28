@@ -28,7 +28,7 @@ namespace Modbus.Net.Modbus
         ///     读输入寄存器
         /// </summary>
         ReadInputRegister = 4,
-    
+
         /// <summary>
         ///     写单个线圈
         /// </summary>

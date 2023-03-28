@@ -76,7 +76,7 @@ namespace Modbus.Net
     /// </summary>
     /// <typeparam name="TKey">设备的Id类型</typeparam>
     /// <typeparam name="TUnitKey">设备中使用的AddressUnit的Id类型</typeparam>
-    public abstract class BaseMachine<TKey, TUnitKey> : IMachine<TKey>
+    public abstract class BaseMachine<TKey, TUnitKey> : IMachine<TKey>, IMachineReflectionCall
         where TKey : IEquatable<TKey>
         where TUnitKey : IEquatable<TUnitKey>
     {
@@ -666,6 +666,39 @@ namespace Modbus.Net
         }
 
         /// <summary>
+        ///     获取Utility的执行方法
+        /// </summary>
+        /// <typeparam name="TUtilityMethod">Utility实现的接口名称</typeparam>
+        /// <returns></returns>
+        public TUtilityMethod GetUtilityMethods<TUtilityMethod>() where TUtilityMethod : class, IUtilityMethod
+        {
+            return BaseUtility as TUtilityMethod;
+        }
+
+        /// <inheritdoc />
+        public async Task<ReturnStruct<T>> InvokeGet<T>(string functionName, object[] parameters)
+        {
+            var machineMethodType = GetType();
+            var machineMethod = this as IMachineMethod;
+            var machineSetMethod = machineMethodType.GetMethod("Get" + functionName + "Async");
+            var ans = machineSetMethod.Invoke(machineMethod, parameters);
+            return await (Task<ReturnStruct<T>>)ans;
+        }
+
+        /// <inheritdoc />
+        public async Task<ReturnStruct<bool>> InvokeSet<T>(string functionName, object[] parameters, T datas)
+        {
+            var machineMethodType = GetType();
+            var machineMethod = this as IMachineMethod;
+            var machineSetMethod = machineMethodType.GetMethod("Set" + functionName + "Async");
+            object[] allParams = new object[parameters.Length + 1];
+            Array.Copy(parameters, allParams, parameters.Length);
+            allParams[parameters.Length] = datas;
+            var ans = machineSetMethod.Invoke(machineMethod, allParams);
+            return await (Task<ReturnStruct<bool>>)ans;
+        }
+
+        /// <summary>
         ///     连接设备
         /// </summary>
         /// <returns>是否连接成功</returns>
@@ -708,16 +741,6 @@ namespace Modbus.Net
                 logger.LogError(e, $"BaseMachine -> GetAddressUnitById Id:{Id} ConnectionToken:{ConnectionToken} addressUnitId:{addressUnitId} Repeated");
                 return null;
             }
-        }
-
-        /// <summary>
-        ///     获取Utility
-        /// </summary>
-        /// <typeparam name="TUtilityMethod">Utility实现的接口名称</typeparam>
-        /// <returns></returns>
-        public TUtilityMethod GetUtility<TUtilityMethod>() where TUtilityMethod : class, IUtilityMethod
-        {
-            return BaseUtility as TUtilityMethod;
         }
     }
 

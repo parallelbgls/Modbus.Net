@@ -11,7 +11,7 @@ namespace Modbus.Net.Tests
         public void GetUtility()
         {
             BaseMachine<int, int> baseMachine = new ModbusMachine<int, int>(1, ModbusType.Tcp, "192.168.3.12", null, true, 2, 0);
-            var utility = baseMachine.GetUtility<IUtilityMethodData>();
+            var utility = baseMachine.GetUtilityMethods<IUtilityMethodData>();
             var methods = utility.GetType().GetRuntimeMethods();
             Assert.AreEqual(methods.FirstOrDefault(method => method.Name == "GetDataAsync") != null, true);
             Assert.AreEqual(methods.FirstOrDefault(method => method.Name == "SetDataAsync") != null, true);
@@ -22,7 +22,7 @@ namespace Modbus.Net.Tests
         public async Task InvokeUtility()
         {
             BaseMachine<int, int> baseMachine = new ModbusMachine<int, int>(1, ModbusType.Tcp, "192.168.3.12", null, true, 2, 0);
-            var success = await baseMachine.BaseUtility.GetUtilityMethods<IUtilityMethodData>().SetDatasAsync("4X 1", new object[] {(byte)11});
+            var success = await baseMachine.BaseUtility.GetUtilityMethods<IUtilityMethodData>().SetDatasAsync("4X 1", new object[] { (byte)11 });
             Assert.AreEqual(success, true);
             var datas = await baseMachine.BaseUtility.GetUtilityMethods<IUtilityMethodData>().GetDatasAsync("4X 1", 1);
             Assert.AreEqual(datas.Datas[0], 11);
