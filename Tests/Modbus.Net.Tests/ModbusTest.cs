@@ -289,18 +289,18 @@ namespace Modbus.Net.Tests
                 }
             };
 
-            await _modbusTcpMachine!.BaseUtility.GetUtilityMethods<IUtilityMethodWriteSingle>().SetSingleDataAsync("4X 1", dic1["4X 1"]);
-            await _modbusAsciiMachine!.BaseUtility.GetUtilityMethods<IUtilityMethodWriteSingle>().SetSingleDataAsync("4X 1", dic1["4X 1"]);
-            await _modbusRtuMachine!.BaseUtility.GetUtilityMethods<IUtilityMethodWriteSingle>().SetSingleDataAsync("4X 1", dic1["4X 1"]);
+            await _modbusTcpMachine!.BaseUtility.GetUtilityMethods<IUtilityMethodWriteSingleCoil>().SetSingleCoilAsync("4X 1", dic1["4X 1"]);
+            await _modbusAsciiMachine!.BaseUtility.GetUtilityMethods<IUtilityMethodWriteSingleCoil>().SetSingleCoilAsync("4X 1", dic1["4X 1"]);
+            await _modbusRtuMachine!.BaseUtility.GetUtilityMethods<IUtilityMethodWriteSingleCoil>().SetSingleCoilAsync("4X 1", dic1["4X 1"]);
             var ans = await _modbusTcpMachine.BaseUtility.GetUtilityMethods<IUtilityMethodData>().GetDatasAsync<ushort>("4X 1", 1);
             var ans2 = await _modbusRtuMachine.BaseUtility.GetUtilityMethods<IUtilityMethodData>().GetDatasAsync<ushort>("4X 1", 1);
             var ans3 = await _modbusAsciiMachine.BaseUtility.GetUtilityMethods<IUtilityMethodData>().GetDatasAsync<ushort>("4X 1", 1);
             Assert.AreEqual(ans.Datas[0], dic1["4X 1"]);
             Assert.AreEqual(ans2.Datas[0], dic1["4X 1"]);
             Assert.AreEqual(ans3.Datas[0], dic1["4X 1"]);
-            await _modbusTcpMachine.BaseUtility.GetUtilityMethods<IUtilityMethodWriteSingle>().SetSingleDataAsync("0X 1", dic2["0X 1"] >= 1);
-            await _modbusAsciiMachine.BaseUtility.GetUtilityMethods<IUtilityMethodWriteSingle>().SetSingleDataAsync("0X 1", dic2["0X 1"] >= 1);
-            await _modbusRtuMachine.BaseUtility.GetUtilityMethods<IUtilityMethodWriteSingle>().SetSingleDataAsync("0X 1", dic2["0X 1"] >= 1);
+            await _modbusTcpMachine.BaseUtility.GetUtilityMethods<IUtilityMethodWriteSingleCoil>().SetSingleCoilAsync("0X 1", dic2["0X 1"] >= 1);
+            await _modbusAsciiMachine.BaseUtility.GetUtilityMethods<IUtilityMethodWriteSingleCoil>().SetSingleCoilAsync("0X 1", dic2["0X 1"] >= 1);
+            await _modbusRtuMachine.BaseUtility.GetUtilityMethods<IUtilityMethodWriteSingleCoil>().SetSingleCoilAsync("0X 1", dic2["0X 1"] >= 1);
             var ans21 = await _modbusTcpMachine.BaseUtility.GetUtilityMethods<IUtilityMethodData>().GetDatasAsync<bool>("0X 1", 1);
             var ans22 = await _modbusRtuMachine.BaseUtility.GetUtilityMethods<IUtilityMethodData>().GetDatasAsync<bool>("0X 1", 1);
             var ans23 = await _modbusAsciiMachine.BaseUtility.GetUtilityMethods<IUtilityMethodData>().GetDatasAsync<bool>("0X 1", 1);
