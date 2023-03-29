@@ -26,7 +26,7 @@ namespace Modbus.Net
     /// <summary>
     ///     设备调度器创建类
     /// </summary>
-    public sealed class MachineJobSchedulerCreator<TMachineMethod, TMachineKey, TReturnUnit> where TMachineKey : IEquatable<TMachineKey> where TReturnUnit : struct where TMachineMethod : IMachineMethod
+    public sealed class MachineJobSchedulerCreator<TMachineMethod, TMachineKey, TReturnUnit> where TMachineKey : IEquatable<TMachineKey> where TReturnUnit : struct where TMachineMethod : class, IMachineMethod
     {
         /// <summary>
         ///     创建设备调度器
@@ -100,7 +100,7 @@ namespace Modbus.Net
     /// <summary>
     ///     获取数据任务
     /// </summary>
-    public sealed class MachineGetJobScheduler<TMachineMethod, TMachineKey, TReturnUnit> where TMachineKey : IEquatable<TMachineKey> where TReturnUnit : struct where TMachineMethod : IMachineMethod
+    public sealed class MachineGetJobScheduler<TMachineMethod, TMachineKey, TReturnUnit> where TMachineKey : IEquatable<TMachineKey> where TReturnUnit : struct where TMachineMethod : class, IMachineMethod
     {
         private IScheduler _scheduler;
 
@@ -229,7 +229,7 @@ namespace Modbus.Net
     /// <summary>
     ///     处理数据任务
     /// </summary>
-    public sealed class MachineQueryJobScheduler<TMachineMethod, TMachineKey, TReturnUnit> where TMachineKey : IEquatable<TMachineKey> where TReturnUnit : struct where TMachineMethod : IMachineMethod
+    public sealed class MachineQueryJobScheduler<TMachineMethod, TMachineKey, TReturnUnit> where TMachineKey : IEquatable<TMachineKey> where TReturnUnit : struct where TMachineMethod : class, IMachineMethod
     {
         private IScheduler _scheduler;
 
@@ -284,7 +284,7 @@ namespace Modbus.Net
     /// <summary>
     ///     写入数据任务
     /// </summary>
-    public sealed class MachineSetJobScheduler<TMachineMethod, TMachineKey, TReturnUnit> where TMachineKey : IEquatable<TMachineKey> where TReturnUnit : struct where TMachineMethod : IMachineMethod
+    public sealed class MachineSetJobScheduler<TMachineMethod, TMachineKey, TReturnUnit> where TMachineKey : IEquatable<TMachineKey> where TReturnUnit : struct where TMachineMethod : class, IMachineMethod
     {
         private IScheduler _scheduler;
 
@@ -365,8 +365,8 @@ namespace Modbus.Net
     /// <summary>
     ///     处理写返回任务
     /// </summary>
-    public sealed class MachineDealJobScheduler<TMachineMethod, TMachineKey, TReturnUnit> where TMachineKey : IEquatable<TMachineKey> where TReturnUnit : struct where TMachineMethod : IMachineMethod
-    {
+    public sealed class MachineDealJobScheduler<TMachineMethod, TMachineKey, TReturnUnit> where TMachineKey : IEquatable<TMachineKey> where TReturnUnit : struct where TMachineMethod : class, IMachineMethod
+    { 
         private IScheduler _scheduler;
 
         private ITrigger _trigger;
