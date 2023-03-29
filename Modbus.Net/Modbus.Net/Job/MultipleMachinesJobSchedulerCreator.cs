@@ -9,7 +9,7 @@ namespace Modbus.Net
     /// <summary>
     ///		多设备任务调度器
     /// </summary>
-    public sealed class MultipleMachinesJobScheduler<TMachineMethod, TMachineKey, TReturnUnit> where TMachineKey: IEquatable<TMachineKey> where TReturnUnit : struct where TMachineMethod : IMachineMethod
+    public sealed class MultipleMachinesJobScheduler<TMachineMethod, TMachineKey, TReturnUnit> where TMachineKey : IEquatable<TMachineKey> where TReturnUnit : struct where TMachineMethod : IMachineMethod
     {
         private static int _machineCount = 0;
 

@@ -48,5 +48,5 @@ namespace Modbus.Net.Modbus
         {
         }
     }
-   
+
 }

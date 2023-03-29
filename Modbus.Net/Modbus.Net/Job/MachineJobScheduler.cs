@@ -3,7 +3,6 @@ using Quartz.Impl;
 using Quartz.Impl.Matchers;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Modbus.Net
@@ -101,7 +100,7 @@ namespace Modbus.Net
     /// <summary>
     ///     获取数据任务
     /// </summary>
-    public sealed class MachineGetJobScheduler<TMachineMethod, TMachineKey, TReturnUnit> where TMachineKey: IEquatable<TMachineKey> where TReturnUnit : struct where TMachineMethod : IMachineMethod
+    public sealed class MachineGetJobScheduler<TMachineMethod, TMachineKey, TReturnUnit> where TMachineKey : IEquatable<TMachineKey> where TReturnUnit : struct where TMachineMethod : IMachineMethod
     {
         private IScheduler _scheduler;
 
@@ -151,13 +150,13 @@ namespace Modbus.Net
                 .Build();
 
             string methodName = typeof(TMachineMethod).Name;
-            if (methodName.Substring(0,14) != "IMachineMethod")
+            if (methodName.Substring(0, 14) != "IMachineMethod")
             {
                 throw new FormatException("IMachineMethod Name not match format exception");
             }
             job.JobDataMap.Put("DataType", machineDataType);
             job.JobDataMap.Put("Machine", machine);
-            job.JobDataMap.Put("Function", methodName.Remove(0,14));
+            job.JobDataMap.Put("Function", methodName.Remove(0, 14));
 
             if (_parentJobKey != null)
             {
@@ -230,7 +229,7 @@ namespace Modbus.Net
     /// <summary>
     ///     处理数据任务
     /// </summary>
-    public sealed class MachineQueryJobScheduler<TMachineMethod, TMachineKey, TReturnUnit> where TMachineKey: IEquatable<TMachineKey> where TReturnUnit : struct where TMachineMethod : IMachineMethod
+    public sealed class MachineQueryJobScheduler<TMachineMethod, TMachineKey, TReturnUnit> where TMachineKey : IEquatable<TMachineKey> where TReturnUnit : struct where TMachineMethod : IMachineMethod
     {
         private IScheduler _scheduler;
 
@@ -285,7 +284,7 @@ namespace Modbus.Net
     /// <summary>
     ///     写入数据任务
     /// </summary>
-    public sealed class MachineSetJobScheduler<TMachineMethod, TMachineKey, TReturnUnit> where TMachineKey: IEquatable<TMachineKey> where TReturnUnit : struct where TMachineMethod : IMachineMethod
+    public sealed class MachineSetJobScheduler<TMachineMethod, TMachineKey, TReturnUnit> where TMachineKey : IEquatable<TMachineKey> where TReturnUnit : struct where TMachineMethod : IMachineMethod
     {
         private IScheduler _scheduler;
 
@@ -330,7 +329,7 @@ namespace Modbus.Net
                 throw new FormatException("IMachineMethod Name not match format exception");
             }
             job.JobDataMap.Put("Machine", machine);
-            job.JobDataMap.Put("Function", methodName.Remove(0,14));
+            job.JobDataMap.Put("Function", methodName.Remove(0, 14));
 
             var listener = _scheduler.ListenerManager.GetJobListener("Modbus.Net.DataQuery.Chain." + _trigger.Key.Name) as JobChainingJobListenerWithDataMap;
             if (listener == null) throw new NullReferenceException("Listener " + "Modbus.Net.DataQuery.Chain." + _trigger.Key.Name + " is null");
@@ -398,7 +397,7 @@ namespace Modbus.Net
         /// <returns></returns>
         /// <exception cref="NullReferenceException"></exception>
         public async Task<MachineSetJobScheduler<TMachineMethod, TMachineKey, TReturnUnit>> Deal(string queryId = null, Func<string, Task> onSuccess = null, Func<string, int, string, Task> onFailure = null)
-        { 
+        {
             if (queryId == null) return new MachineSetJobScheduler<TMachineMethod, TMachineKey, TReturnUnit>(_scheduler, _trigger, _parentJobKey);
             JobKey jobKey = JobKey.Create("Modbus.Net.DataQuery.Job." + queryId, "Modbus.Net.DataQuery.Group." + _trigger.Key.Name);
 
