@@ -145,10 +145,9 @@ namespace Modbus.Net
         /// <param name="queryId">任务ID，每个触发器唯一</param>
         /// <param name="machine">要获取数据的设备实例</param>
         /// <param name="machineDataType">获取数据的方式</param>
-        /// <param name="callFunction">调用函数的名称</param>
         /// <returns></returns>
         /// <exception cref="NullReferenceException"></exception>
-        public async Task<MachineQueryJobScheduler> From(string queryId, IMachineReflectionCall machine, MachineDataType machineDataType, string callFunction = "Datas")
+        public async Task<MachineQueryJobScheduler> From(string queryId, IMachineReflectionCall machine, MachineDataType machineDataType)
         {
             JobKey jobKey = JobKey.Create("Modbus.Net.DataQuery.Job." + queryId, "Modbus.Net.DataQuery.Group." + _trigger.Key.Name);
 
@@ -159,7 +158,7 @@ namespace Modbus.Net
 
             job.JobDataMap.Put("DataType", machineDataType);
             job.JobDataMap.Put("Machine", machine);
-            job.JobDataMap.Put("Function", callFunction);
+            job.JobDataMap.Put("Function", "Datas");
 
             if (_parentJobKey != null)
             {
@@ -353,10 +352,9 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="queryId">任务ID，每个触发器唯一</param>
         /// <param name="machine">写入数据的设备实例</param>
-        /// <param name="callFunction">调用函数的名称</param>
         /// <returns></returns>
         /// <exception cref="NullReferenceException"></exception>
-        public async Task<MachineDealJobScheduler> To(string queryId, IMachineReflectionCall machine, string callFunction = "Datas")
+        public async Task<MachineDealJobScheduler> To(string queryId, IMachineReflectionCall machine)
         {
             JobKey jobKey = JobKey.Create("Modbus.Net.DataQuery.Job." + queryId, "Modbus.Net.DataQuery.Group." + _trigger.Key.Name);
 
@@ -366,7 +364,7 @@ namespace Modbus.Net
                 .Build();
 
             job.JobDataMap.Put("Machine", machine);
-            job.JobDataMap.Put("Function", callFunction);
+            job.JobDataMap.Put("Function", "Datas");
 
             var listener = _scheduler.ListenerManager.GetJobListener("Modbus.Net.DataQuery.Chain." + _trigger.Key.Name) as JobChainingJobListenerWithDataMap;
             if (listener == null) throw new NullReferenceException("Listener " + "Modbus.Net.DataQuery.Chain." + _trigger.Key.Name + " is null");
@@ -383,11 +381,10 @@ namespace Modbus.Net
         /// <param name="queryId">任务ID，每个触发器唯一</param>
         /// <param name="machine">要获取数据的设备实例</param>
         /// <param name="machineDataType">获取数据的方式</param>
-        /// <param name="callFunction">调用函数的名称</param>
         /// <returns></returns>
-        public async Task<MachineQueryJobScheduler> From(string queryId, IMachineReflectionCall machine, MachineDataType machineDataType, string callFunction = "Datas")
+        public async Task<MachineQueryJobScheduler> From(string queryId, IMachineReflectionCall machine, MachineDataType machineDataType)
         {
-            return await new MachineGetJobScheduler(_scheduler, _trigger, _parentJobKey).From(queryId, machine, machineDataType, callFunction);
+            return await new MachineGetJobScheduler(_scheduler, _trigger, _parentJobKey).From(queryId, machine, machineDataType);
         }
 
         /// <summary>
