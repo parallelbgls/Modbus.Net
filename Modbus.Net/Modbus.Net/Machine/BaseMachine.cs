@@ -35,45 +35,6 @@ namespace Modbus.Net
     /// <summary>
     ///     设备
     /// </summary>
-    public abstract class BaseMachine : BaseMachine<string, string>
-    {
-        /// <summary>
-        ///     构造器
-        /// </summary>
-        /// <param name="id">设备的ID号</param>
-        /// <param name="getAddresses">需要与设备通讯的地址</param>
-        protected BaseMachine(string id, IEnumerable<AddressUnit> getAddresses) : base(id, getAddresses)
-        {
-        }
-
-        /// <summary>
-        ///     构造器
-        /// </summary>
-        /// <param name="id">设备的ID号</param>
-        /// <param name="getAddresses">需要与设备通讯的地址</param>
-        /// <param name="keepConnect">是否保持连接</param>
-        protected BaseMachine(string id, IEnumerable<AddressUnit> getAddresses, bool keepConnect)
-            : base(id, getAddresses, keepConnect)
-        {
-        }
-
-        /// <summary>
-        ///     构造器
-        /// </summary>
-        /// <param name="id">设备的ID号</param>
-        /// <param name="getAddresses">需要与设备通讯的地址</param>
-        /// <param name="keepConnect">是否保持连接</param>
-        /// <param name="slaveAddress">从站地址</param>
-        /// <param name="masterAddress">主站地址</param>
-        protected BaseMachine(string id, IEnumerable<AddressUnit> getAddresses, bool keepConnect, byte slaveAddress,
-            byte masterAddress) : base(id, getAddresses, keepConnect, slaveAddress, masterAddress)
-        {
-        }
-    }
-
-    /// <summary>
-    ///     设备
-    /// </summary>
     /// <typeparam name="TKey">设备的Id类型</typeparam>
     /// <typeparam name="TUnitKey">设备中使用的AddressUnit的Id类型</typeparam>
     public abstract class BaseMachine<TKey, TUnitKey> : IMachine<TKey>, IMachineReflectionCall
@@ -193,7 +154,7 @@ namespace Modbus.Net
         ///     读取数据
         /// </summary>
         /// <returns>从设备读取的数据</returns>
-        public ReturnStruct<Dictionary<string, ReturnUnit>> GetDatas(MachineDataType getDataType)
+        public ReturnStruct<Dictionary<string, ReturnUnit<double>>> GetDatas(MachineDataType getDataType)
         {
             return AsyncHelper.RunSync(() => GetDatasAsync(getDataType));
         }
@@ -203,17 +164,17 @@ namespace Modbus.Net
         ///     读取数据
         /// </summary>
         /// <returns>从设备读取的数据</returns>
-        public async Task<ReturnStruct<Dictionary<string, ReturnUnit>>> GetDatasAsync(MachineDataType getDataType)
+        public async Task<ReturnStruct<Dictionary<string, ReturnUnit<double>>>> GetDatasAsync(MachineDataType getDataType)
         {
             try
             {
-                var ans = new Dictionary<string, ReturnUnit>();
+                var ans = new Dictionary<string, ReturnUnit<double>>();
                 //检测并连接设备
                 if (!BaseUtility.IsConnected)
                     await BaseUtility.ConnectAsync();
                 //如果无法连接，终止
                 if (!BaseUtility.IsConnected) return
-                        new ReturnStruct<Dictionary<string, ReturnUnit>>()
+                        new ReturnStruct<Dictionary<string, ReturnUnit<double>>>()
                         {
                             Datas = null,
                             IsSuccess = false,
@@ -238,7 +199,7 @@ namespace Modbus.Net
                     //如果没有数据，终止
                     if (datas.IsSuccess == false || datas.Datas == null)
                     {
-                        return new ReturnStruct<Dictionary<string, ReturnUnit>>()
+                        return new ReturnStruct<Dictionary<string, ReturnUnit<double>>>()
                         {
                             Datas = null,
                             IsSuccess = false,
@@ -252,7 +213,7 @@ namespace Modbus.Net
                                      BigEndianValueHelper.Instance.ByteLength[
                                          communicateAddress.DataType.FullName]))
                     {
-                        return new ReturnStruct<Dictionary<string, ReturnUnit>>()
+                        return new ReturnStruct<Dictionary<string, ReturnUnit<double>>>()
                         {
                             Datas = null,
                             IsSuccess = false,
@@ -310,14 +271,14 @@ namespace Modbus.Net
                         {
                             //如果没有数据返回空
                             if (datas.Datas.Length == 0)
-                                ans.Add(key, new ReturnUnit
+                                ans.Add(key, new ReturnUnit<double>
                                 {
                                     DeviceValue = null,
                                     AddressUnit = address.MapAddressUnitTUnitKeyToAddressUnit(),
                                 });
                             else
                                 ans.Add(key,
-                                    new ReturnUnit
+                                    new ReturnUnit<double>
                                     {
                                         DeviceValue =
                                             Convert.ToDouble(
@@ -334,7 +295,7 @@ namespace Modbus.Net
 
                             if (ErrorCount >= _maxErrorCount)
                                 Disconnect();
-                            return new ReturnStruct<Dictionary<string, ReturnUnit>>()
+                            return new ReturnStruct<Dictionary<string, ReturnUnit<double>>>()
                             {
                                 Datas = null,
                                 IsSuccess = false,
@@ -350,7 +311,7 @@ namespace Modbus.Net
                 //返回数据
                 if (ans.All(p => p.Value.DeviceValue == null)) ans = null;
                 ErrorCount = 0;
-                return new ReturnStruct<Dictionary<string, ReturnUnit>>
+                return new ReturnStruct<Dictionary<string, ReturnUnit<double>>>
                 {
                     Datas = ans,
                     IsSuccess = true,
@@ -365,7 +326,7 @@ namespace Modbus.Net
 
                 if (ErrorCount >= _maxErrorCount)
                     Disconnect();
-                return new ReturnStruct<Dictionary<string, ReturnUnit>>()
+                return new ReturnStruct<Dictionary<string, ReturnUnit<double>>>()
                 {
                     Datas = null,
                     IsSuccess = false,
@@ -676,17 +637,17 @@ namespace Modbus.Net
         }
 
         /// <inheritdoc />
-        public async Task<ReturnStruct<T>> InvokeGet<T>(string functionName, object[] parameters)
+        public Task<ReturnStruct<T>> InvokeGet<T>(string functionName, object[] parameters)
         {
             var machineMethodType = GetType();
             var machineMethod = this as IMachineMethod;
             var machineSetMethod = machineMethodType.GetMethod("Get" + functionName + "Async");
             var ans = machineSetMethod.Invoke(machineMethod, parameters);
-            return await (Task<ReturnStruct<T>>)ans;
+            return (Task<ReturnStruct<T>>)ans;
         }
 
         /// <inheritdoc />
-        public async Task<ReturnStruct<bool>> InvokeSet<T>(string functionName, object[] parameters, T datas)
+        public Task<ReturnStruct<bool>> InvokeSet<T>(string functionName, object[] parameters, T datas)
         {
             var machineMethodType = GetType();
             var machineMethod = this as IMachineMethod;
@@ -695,7 +656,7 @@ namespace Modbus.Net
             Array.Copy(parameters, allParams, parameters.Length);
             allParams[parameters.Length] = datas;
             var ans = machineSetMethod.Invoke(machineMethod, allParams);
-            return await (Task<ReturnStruct<bool>>)ans;
+            return (Task<ReturnStruct<bool>>)ans;
         }
 
         /// <summary>
@@ -714,15 +675,6 @@ namespace Modbus.Net
         public bool Disconnect()
         {
             return BaseUtility.Disconnect();
-        }
-
-        /// <summary>
-        ///     获取设备的Id，字符串格式
-        /// </summary>
-        /// <returns></returns>
-        public string GetMachineIdString()
-        {
-            return Id.ToString();
         }
 
         /// <summary>
@@ -756,13 +708,6 @@ namespace Modbus.Net
         {
             return obj.GetHashCode();
         }
-    }
-
-    /// <summary>
-    ///     通讯单元
-    /// </summary>
-    public class CommunicationUnit : CommunicationUnit<string>
-    {
     }
 
     /// <summary>
@@ -811,12 +756,12 @@ namespace Modbus.Net
     /// <summary>
     ///     返回的数据单元
     /// </summary>
-    public class ReturnUnit
+    public class ReturnUnit<TReturn> where TReturn : struct
     {
         /// <summary>
         ///     返回的数据
         /// </summary>
-        public double? DeviceValue { get; set; }
+        public TReturn? DeviceValue { get; set; }
 
         /// <summary>
         ///     数据定义
@@ -904,36 +849,6 @@ namespace Modbus.Net
         public bool Equals(AddressUnit<TKey> other)
         {
             return Area.ToUpper() == other.Area.ToUpper() && Address == other.Address || Id.Equals(other.Id);
-        }
-    }
-
-    /// <summary>
-    ///     AddressUnit扩展
-    /// </summary>
-    public static class AddressUnitExtend
-    {
-        /// <summary>
-        ///     映射泛型AddressUnit到字符串型AddressUnit
-        /// </summary>
-        /// <param name="addressUnit"></param>
-        /// <returns></returns>
-        public static AddressUnit MapAddressUnitTUnitKeyToAddressUnit<TUnitKey>(this AddressUnit<TUnitKey> addressUnit) where TUnitKey : IEquatable<TUnitKey>
-        {
-            return new AddressUnit()
-            {
-                Id = addressUnit.ToString(),
-                Area = addressUnit.Area,
-                Address = addressUnit.Address,
-                SubAddress = addressUnit.SubAddress,
-                DataType = addressUnit.DataType,
-                Zoom = addressUnit.Zoom,
-                DecimalPos = addressUnit.DecimalPos,
-                CommunicationTag = addressUnit.CommunicationTag,
-                Name = addressUnit.Name,
-                Unit = addressUnit.Unit,
-                CanWrite = addressUnit.CanWrite,
-                UnitExtend = addressUnit.UnitExtend
-            };
         }
     }
 }

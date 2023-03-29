@@ -6,16 +6,16 @@ namespace Modbus.Net.Tests
     [TestClass]
     public class EndianTest
     {
-        private BaseMachine? _modbusTcpMachine;
+        private BaseMachine<string, string>? _modbusTcpMachine;
 
-        private BaseMachine? _modbusTcpMachine2;
+        private BaseMachine<string, string>? _modbusTcpMachine2;
 
         [TestInitialize]
         public void Init()
         {
-            _modbusTcpMachine = new ModbusMachine("1", ModbusType.Tcp, "127.0.0.1", null, true, 1, 0);
+            _modbusTcpMachine = new ModbusMachine<string, string>("1", ModbusType.Tcp, "127.0.0.1", null, true, 1, 0);
 
-            _modbusTcpMachine2 = new ModbusMachine("2", ModbusType.Tcp, "127.0.0.1", null, true, 1, 0, Endian.LittleEndianLsb);
+            _modbusTcpMachine2 = new ModbusMachine<string, string>("2", ModbusType.Tcp, "127.0.0.1", null, true, 1, 0, Endian.LittleEndianLsb);
         }
 
         [TestMethod]

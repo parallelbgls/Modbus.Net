@@ -7,13 +7,6 @@ namespace Modbus.Net
     /// <summary>
     ///     地址组合器，组合后的每一组地址将只需一次向设备进行通讯
     /// </summary>
-    public abstract class AddressCombiner : AddressCombiner<string>
-    {
-    }
-
-    /// <summary>
-    ///     地址组合器，组合后的每一组地址将只需一次向设备进行通讯
-    /// </summary>
     public abstract class AddressCombiner<TKey> where TKey : IEquatable<TKey>
     {
         /// <summary>
@@ -22,22 +15,6 @@ namespace Modbus.Net
         /// <param name="addresses">需要进行组合的地址</param>
         /// <returns>组合完成后与设备通讯的地址</returns>
         public abstract IEnumerable<CommunicationUnit<TKey>> Combine(IEnumerable<AddressUnit<TKey>> addresses);
-    }
-
-    /// <summary>
-    ///     连续的地址将组合成一组，向设备进行通讯
-    /// </summary>
-    public class AddressCombinerContinus : AddressCombinerContinus<string>
-    {
-        /// <summary>
-        ///     构造函数
-        /// </summary>
-        /// <param name="addressTranslator">地址转换器</param>
-        /// <param name="maxLength">单个发送协议允许的数据最长长度（字节）</param>
-        public AddressCombinerContinus(AddressTranslator addressTranslator, int maxLength)
-            : base(addressTranslator, maxLength)
-        {
-        }
     }
 
     /// <summary>
@@ -229,13 +206,6 @@ namespace Modbus.Net
     /// <summary>
     ///     单个地址变为一组，每一个地址都进行一次查询
     /// </summary>
-    public class AddressCombinerSingle : AddressCombinerSingle<string>
-    {
-    }
-
-    /// <summary>
-    ///     单个地址变为一组，每一个地址都进行一次查询
-    /// </summary>
     public class AddressCombinerSingle<TKey> : AddressCombiner<TKey> where TKey : IEquatable<TKey>
     {
         /// <summary>
@@ -267,23 +237,6 @@ namespace Modbus.Net
     {
         public CommunicationUnit<TKey> EndUnit { get; set; }
         public int GapNumber { get; set; }
-    }
-
-    /// <summary>
-    ///     可以调过多少数量的地址，把两个地址段变为一组通讯
-    /// </summary>
-    public class AddressCombinerNumericJump : AddressCombinerNumericJump<string>
-    {
-        /// <summary>
-        ///     构造函数
-        /// </summary>
-        /// <param name="jumpByteCount">需要跳过的字节个数</param>
-        /// <param name="maxLength">单个协议允许的数据最长长度（字节）</param>
-        /// <param name="addressTranslator">地址转换器</param>
-        public AddressCombinerNumericJump(int jumpByteCount, int maxLength, AddressTranslator addressTranslator)
-            : base(jumpByteCount, maxLength, addressTranslator)
-        {
-        }
     }
 
     /// <summary>
@@ -379,23 +332,6 @@ namespace Modbus.Net
                 continusAddresses.Insert(index, newAddress);
             }
             return continusAddresses;
-        }
-    }
-
-    /// <summary>
-    ///     可以调过多少百分比的地址，把两个地址段变为一个
-    /// </summary>
-    public class AddressCombinerPercentageJump : AddressCombinerPercentageJump<string>
-    {
-        /// <summary>
-        ///     构造函数
-        /// </summary>
-        /// <param name="percentage">允许跳过的字节数除以待组合的地址的字节数的百分比</param>
-        /// <param name="maxLength">单个协议允许的数据最大长度</param>
-        /// <param name="addressTranslator">地址转换器</param>
-        public AddressCombinerPercentageJump(double percentage, int maxLength, AddressTranslator addressTranslator)
-            : base(percentage, maxLength, addressTranslator)
-        {
         }
     }
 

@@ -67,7 +67,7 @@ namespace Modbus.Net.Modbus
     /// <summary>
     ///     Modbus基础Api入口
     /// </summary>
-    public class ModbusUtility : BaseUtility, IUtilityMethodWriteSingleCoil
+    public class ModbusUtility : BaseUtility<byte[], byte[], ProtocolUnit<byte[], byte[]>, PipeUnit>, IUtilityMethodWriteSingleCoil
     {
         private static readonly ILogger<ModbusUtility> logger = LogProvider.CreateLogger<ModbusUtility>();
 

@@ -56,12 +56,6 @@ namespace Modbus.Net
         /// </summary>
         /// <returns>是否断开成功</returns>
         bool Disconnect();
-
-        /// <summary>
-        ///     获取设备的Id的字符串
-        /// </summary>
-        /// <returns></returns>
-        string GetMachineIdString();
     }
 
     /// <summary>

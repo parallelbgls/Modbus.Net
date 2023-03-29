@@ -6,12 +6,12 @@ namespace Modbus.Net.Tests
     [TestClass]
     public class SiemensTest
     {
-        private BaseMachine? _siemensTcpMachine;
+        private BaseMachine<string, string>? _siemensTcpMachine;
 
         [TestInitialize]
         public void Init()
         {
-            _siemensTcpMachine = new SiemensMachine("1", SiemensType.Tcp, "192.168.3.10", SiemensMachineModel.S7_1200, null, true, 2, 0);
+            _siemensTcpMachine = new SiemensMachine<string, string>("1", SiemensType.Tcp, "192.168.3.10", SiemensMachineModel.S7_1200, null, true, 2, 0);
         }
 
         [TestMethod]

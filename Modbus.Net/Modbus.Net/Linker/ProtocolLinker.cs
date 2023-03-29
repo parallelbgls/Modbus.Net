@@ -47,7 +47,7 @@ namespace Modbus.Net
             var bytesExtend =
                 Activator.CreateInstance(GetType().GetTypeInfo().Assembly.GetType(GetType().FullName + "BytesExtend"))
                     as
-                    IProtocolLinkerBytesExtend;
+                    IProtocolLinkerBytesExtend<byte[], byte[]>;
             return bytesExtend?.BytesExtend(content);
         }
 
@@ -62,7 +62,7 @@ namespace Modbus.Net
             var bytesExtend =
                 Activator.CreateInstance(GetType().GetTypeInfo().Assembly.GetType(GetType().FullName + "BytesExtend"))
                     as
-                    IProtocolLinkerBytesExtend;
+                    IProtocolLinkerBytesExtend<byte[], byte[]>;
             return bytesExtend?.BytesDecact(content);
         }
 

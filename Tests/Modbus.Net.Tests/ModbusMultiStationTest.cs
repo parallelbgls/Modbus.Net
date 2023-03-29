@@ -6,15 +6,15 @@ namespace Modbus.Net.Tests
     [TestClass]
     public class ModbusMultiStationTest
     {
-        private BaseMachine? _modbusRtuMachine1;
+        private BaseMachine<string, string>? _modbusRtuMachine1;
 
-        private BaseMachine? _modbusRtuMachine2;
+        private BaseMachine<string, string>? _modbusRtuMachine2;
 
         [TestInitialize]
         public void Init()
         {
-            _modbusRtuMachine1 = new ModbusMachine("1", ModbusType.Rtu, "COM1", null, true, 1, 0);
-            _modbusRtuMachine2 = new ModbusMachine("2", ModbusType.Rtu, "COM1", null, true, 2, 0);
+            _modbusRtuMachine1 = new ModbusMachine<string, string>("1", ModbusType.Rtu, "COM1", null, true, 1, 0);
+            _modbusRtuMachine2 = new ModbusMachine<string, string>("2", ModbusType.Rtu, "COM1", null, true, 2, 0);
         }
 
         [TestMethod]

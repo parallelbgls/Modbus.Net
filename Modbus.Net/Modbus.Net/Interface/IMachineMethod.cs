@@ -13,19 +13,19 @@ namespace Modbus.Net
     /// <summary>
     ///     Machine的数据读写接口
     /// </summary>
-    public interface IMachineMethodData : IMachineMethod
+    public interface IMachineMethodDatas : IMachineMethod
     {
         /// <summary>
         ///     读取数据
         /// </summary>
         /// <returns>从设备读取的数据</returns>
-        ReturnStruct<Dictionary<string, ReturnUnit>> GetDatas(MachineDataType getDataType);
+        ReturnStruct<Dictionary<string, ReturnUnit<double>>> GetDatas(MachineDataType getDataType);
 
         /// <summary>
         ///     读取数据
         /// </summary>
         /// <returns>从设备读取的数据</returns>
-        Task<ReturnStruct<Dictionary<string, ReturnUnit>>> GetDatasAsync(MachineDataType getDataType);
+        Task<ReturnStruct<Dictionary<string, ReturnUnit<double>>>> GetDatasAsync(MachineDataType getDataType);
 
         /// <summary>
         ///     写入数据

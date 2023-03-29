@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Modbus.Net;
 using Modbus.Net.Modbus;
 using System.Diagnostics;
+using MachineJobSchedulerCreator = Modbus.Net.MachineJobSchedulerCreator<Modbus.Net.IMachineMethodDatas, string, double>;
+using ModbusMachine = Modbus.Net.Modbus.ModbusMachine<string, string>;
 
 namespace AnyType.Controllers
 {

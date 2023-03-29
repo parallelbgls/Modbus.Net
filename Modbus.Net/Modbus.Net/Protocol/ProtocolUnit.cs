@@ -5,13 +5,6 @@ namespace Modbus.Net
     /// <summary>
     ///     协议单元
     /// </summary>
-    public abstract class ProtocolUnit : ProtocolUnit<byte[], byte[]>
-    {
-    }
-
-    /// <summary>
-    ///     协议单元
-    /// </summary>
     public abstract class ProtocolUnit<TParamIn, TParamOut> : IProtocolFormatting<TParamIn, TParamOut>
     {
         /// <summary>

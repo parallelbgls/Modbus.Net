@@ -3,13 +3,6 @@
     /// <summary>
     ///     协议字节伸缩
     /// </summary>
-    public interface IProtocolLinkerBytesExtend : IProtocolLinkerBytesExtend<byte[], byte[]>
-    {
-    }
-
-    /// <summary>
-    ///     协议字节伸缩
-    /// </summary>
     public interface IProtocolLinkerBytesExtend<TParamIn, TParamOut>
     {
         /// <summary>

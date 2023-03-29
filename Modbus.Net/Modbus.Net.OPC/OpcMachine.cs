@@ -26,7 +26,7 @@ namespace Modbus.Net.OPC
     /// <summary>
     ///     Opc Da设备
     /// </summary>
-    public abstract class OpcMachine : BaseMachine
+    public abstract class OpcMachine : BaseMachine<string, string>
     {
         /// <summary>
         ///     构造函数
@@ -37,8 +37,8 @@ namespace Modbus.Net.OPC
         protected OpcMachine(string id, IEnumerable<AddressUnit> getAddresses, bool keepConnect)
             : base(id, getAddresses, keepConnect)
         {
-            AddressCombiner = new AddressCombinerSingle();
-            AddressCombinerSet = new AddressCombinerSingle();
+            AddressCombiner = new AddressCombinerSingle<string>();
+            AddressCombinerSet = new AddressCombinerSingle<string>();
         }
     }
 }

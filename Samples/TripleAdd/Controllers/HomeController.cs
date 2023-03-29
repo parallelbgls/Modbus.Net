@@ -15,8 +15,8 @@ namespace TripleAdd.Controllers
             _logger = logger;
         }
 
-        private static BaseUtility? utility;
-        private static BaseMachine? machine;
+        private static IUtility? utility;
+        private static IMachine<string>? machine;
 
         public ActionResult Index()
         {
@@ -54,15 +54,15 @@ namespace TripleAdd.Controllers
         {
             if (machine == null)
             {
-                machine = new ModbusMachine("1", ModbusType.Tcp, "192.168.0.161", new List<AddressUnit>()
+                machine = new ModbusMachine<string, string>("1", ModbusType.Tcp, "192.168.0.161", new List<AddressUnit>()
                 {
                     new AddressUnit() {Id = "1", Area = "4X", Address = 1, CommunicationTag = "Add1", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
                     new AddressUnit() {Id = "2", Area = "4X", Address = 2, CommunicationTag = "Add2", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
                     new AddressUnit() {Id = "3", Area = "4X", Address = 3, CommunicationTag = "Add3", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
                     new AddressUnit() {Id = "4", Area = "4X", Address = 4, CommunicationTag = "Ans",  DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
                 }, 2, 0);
-                machine.AddressCombiner = new AddressCombinerContinus(machine.AddressTranslator, 100000);
-                machine.AddressCombinerSet = new AddressCombinerContinus(machine.AddressTranslator, 100000);
+                machine.AddressCombiner = new AddressCombinerContinus<string>(machine.AddressTranslator, 100000);
+                machine.AddressCombinerSet = new AddressCombinerContinus<string>(machine.AddressTranslator, 100000);
             }
             var resultFormat = (await machine.GetDatasAsync(MachineDataType.CommunicationTag)).Datas.MapGetValuesToSetValues();
             return SetValue(new ushort[4] { (ushort)resultFormat["Add1"], (ushort)resultFormat["Add2"], (ushort)resultFormat["Add3"], (ushort)resultFormat["Ans"] });

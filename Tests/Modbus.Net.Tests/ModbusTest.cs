@@ -6,20 +6,20 @@ namespace Modbus.Net.Tests
     [TestClass]
     public class ModbusTest
     {
-        private BaseMachine? _modbusTcpMachine;
+        private BaseMachine<string, string>? _modbusTcpMachine;
 
-        private BaseMachine? _modbusRtuMachine;
+        private BaseMachine<string, string>? _modbusRtuMachine;
 
-        private BaseMachine? _modbusAsciiMachine;
+        private BaseMachine<string, string>? _modbusAsciiMachine;
 
         [TestInitialize]
         public void Init()
         {
-            _modbusTcpMachine = new ModbusMachine("1", ModbusType.Tcp, "192.168.3.10", null, true, 2, 0);
+            _modbusTcpMachine = new ModbusMachine<string, string>("1", ModbusType.Tcp, "192.168.3.10", null, true, 2, 0);
 
-            _modbusRtuMachine = new ModbusMachine("2", ModbusType.Rtu, "COM5", null, true, 2, 0);
+            _modbusRtuMachine = new ModbusMachine<string, string>("2", ModbusType.Rtu, "COM5", null, true, 2, 0);
 
-            _modbusAsciiMachine = new ModbusMachine("3", ModbusType.Ascii, "COM5", null, true, 2, 0);
+            _modbusAsciiMachine = new ModbusMachine<string, string>("3", ModbusType.Ascii, "COM5", null, true, 2, 0);
         }
 
         [TestMethod]

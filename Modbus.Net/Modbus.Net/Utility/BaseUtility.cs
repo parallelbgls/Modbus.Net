@@ -30,19 +30,6 @@ namespace Modbus.Net
     /// <summary>
     ///     基础Api入口
     /// </summary>
-    public abstract class BaseUtility : BaseUtility<byte[], byte[], ProtocolUnit, PipeUnit>
-    {
-        /// <summary>
-        ///     构造器
-        /// </summary>
-        protected BaseUtility(byte slaveAddress, byte masterAddress) : base(slaveAddress, masterAddress)
-        {
-        }
-    }
-
-    /// <summary>
-    ///     基础Api入口
-    /// </summary>
     public abstract class BaseUtility<TParamIn, TParamOut, TProtocolUnit, TPipeUnit> : IUtility
         where TProtocolUnit : class, IProtocolFormatting<TParamIn, TParamOut> where TParamOut : class
         where TPipeUnit : PipeUnit<TParamIn, TParamOut, IProtocolLinker<TParamIn, TParamOut>, TProtocolUnit>

@@ -5,7 +5,7 @@ namespace Modbus.Net.Siemens
     /// <summary>
     ///     西门子Tcp协议扩展
     /// </summary>
-    public class SiemensTcpProtocolLinkerBytesExtend : IProtocolLinkerBytesExtend
+    public class SiemensTcpProtocolLinkerBytesExtend : IProtocolLinkerBytesExtend<byte[], byte[]>
     {
         /// <summary>
         ///     协议扩展，协议内容发送前调用
@@ -35,7 +35,7 @@ namespace Modbus.Net.Siemens
     /// <summary>
     ///     西门子Ppi协议扩展
     /// </summary>
-    public class SiemensPpiProtocolLinkerBytesExtend : IProtocolLinkerBytesExtend
+    public class SiemensPpiProtocolLinkerBytesExtend : IProtocolLinkerBytesExtend<byte[], byte[]>
     {
         /// <summary>
         ///     协议扩展，协议内容发送前调用

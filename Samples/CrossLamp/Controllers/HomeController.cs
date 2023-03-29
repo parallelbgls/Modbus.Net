@@ -16,7 +16,7 @@ namespace CrossLamp.Controllers
             _logger = logger;
         }
 
-        private static BaseUtility? _utility = null;
+        private static IUtility? _utility = null;
 
         public ActionResult Index()
         {

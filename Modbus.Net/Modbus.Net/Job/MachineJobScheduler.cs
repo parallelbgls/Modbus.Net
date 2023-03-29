@@ -3,6 +3,7 @@ using Quartz.Impl;
 using Quartz.Impl.Matchers;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Modbus.Net
@@ -10,14 +11,7 @@ namespace Modbus.Net
     /// <summary>
     ///     返回结果的定义类
     /// </summary>
-    public class DataReturnDef : DataReturnDef<string>
-    {
-    }
-
-    /// <summary>
-    ///     返回结果的定义类
-    /// </summary>
-    public class DataReturnDef<TMachineKey> where TMachineKey : IEquatable<TMachineKey>
+    public class DataReturnDef<TMachineKey, TReturnUnit> where TMachineKey : IEquatable<TMachineKey> where TReturnUnit : struct
     {
         /// <summary>
         ///     设备的Id
@@ -27,13 +21,13 @@ namespace Modbus.Net
         /// <summary>
         ///     返回的数据值
         /// </summary>
-        public ReturnStruct<Dictionary<string, ReturnUnit>> ReturnValues { get; set; }
+        public ReturnStruct<Dictionary<string, ReturnUnit<TReturnUnit>>> ReturnValues { get; set; }
     }
 
     /// <summary>
     ///     设备调度器创建类
     /// </summary>
-    public sealed class MachineJobSchedulerCreator
+    public sealed class MachineJobSchedulerCreator<TMachineMethod, TMachineKey, TReturnUnit> where TMachineKey : IEquatable<TMachineKey> where TReturnUnit : struct where TMachineMethod : IMachineMethod
     {
         /// <summary>
         ///     创建设备调度器
@@ -42,7 +36,7 @@ namespace Modbus.Net
         /// <param name="count">重复次数，负数为无限循环，0为执行一次</param>
         /// <param name="intervalSecond">间隔秒数</param>
         /// <returns></returns>
-        public static async Task<MachineGetJobScheduler> CreateScheduler(string triggerKey, int count = 0, int intervalSecond = 1)
+        public static async Task<MachineGetJobScheduler<TMachineMethod, TMachineKey, TReturnUnit>> CreateScheduler(string triggerKey, int count = 0, int intervalSecond = 1)
         {
             return await CreateScheduler(triggerKey, count, (double)intervalSecond);
         }
@@ -54,12 +48,12 @@ namespace Modbus.Net
         /// <param name="count">重复次数，负数为无限循环，0为执行一次</param>
         /// <param name="intervalMilliSecond">间隔毫秒数</param>
         /// <returns></returns>
-        public static async Task<MachineGetJobScheduler> CreateSchedulerMillisecond(string triggerKey, int count = 0, int intervalMilliSecond = 1000)
+        public static async Task<MachineGetJobScheduler<TMachineMethod, TMachineKey, TReturnUnit>> CreateSchedulerMillisecond(string triggerKey, int count = 0, int intervalMilliSecond = 1000)
         {
-            return await CreateScheduler(triggerKey, count, (double)intervalMilliSecond / 1000.0);
+            return await CreateScheduler(triggerKey, count, intervalMilliSecond / 1000.0);
         }
 
-        private static async Task<MachineGetJobScheduler> CreateScheduler(string triggerKey, int count = 0, double interval = 1)
+        private static async Task<MachineGetJobScheduler<TMachineMethod, TMachineKey, TReturnUnit>> CreateScheduler(string triggerKey, int count = 0, double interval = 1)
         {
             IScheduler scheduler = await StdSchedulerFactory.GetDefaultScheduler();
 
@@ -87,7 +81,7 @@ namespace Modbus.Net
             var jobKeys = await scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals("Modbus.Net.DataQuery.Group." + triggerKey));
             await scheduler.DeleteJobs(jobKeys);
 
-            return new MachineGetJobScheduler(scheduler, trigger);
+            return new MachineGetJobScheduler<TMachineMethod, TMachineKey, TReturnUnit>(scheduler, trigger);
         }
 
         /// <summary>
@@ -107,7 +101,7 @@ namespace Modbus.Net
     /// <summary>
     ///     获取数据任务
     /// </summary>
-    public sealed class MachineGetJobScheduler
+    public sealed class MachineGetJobScheduler<TMachineMethod, TMachineKey, TReturnUnit> where TMachineKey: IEquatable<TMachineKey> where TReturnUnit : struct where TMachineMethod : IMachineMethod
     {
         private IScheduler _scheduler;
 
@@ -147,18 +141,23 @@ namespace Modbus.Net
         /// <param name="machineDataType">获取数据的方式</param>
         /// <returns></returns>
         /// <exception cref="NullReferenceException"></exception>
-        public async Task<MachineQueryJobScheduler> From(string queryId, IMachineReflectionCall machine, MachineDataType machineDataType)
+        public async Task<MachineQueryJobScheduler<TMachineMethod, TMachineKey, TReturnUnit>> From(string queryId, IMachineReflectionCall machine, MachineDataType machineDataType)
         {
             JobKey jobKey = JobKey.Create("Modbus.Net.DataQuery.Job." + queryId, "Modbus.Net.DataQuery.Group." + _trigger.Key.Name);
 
-            IJobDetail job = JobBuilder.Create<MachineGetDataJob>()
+            IJobDetail job = JobBuilder.Create<MachineGetDataJob<TReturnUnit>>()
                 .WithIdentity(jobKey)
                 .StoreDurably(true)
                 .Build();
 
+            string methodName = typeof(TMachineMethod).Name;
+            if (methodName.Substring(0,14) != "IMachineMethod")
+            {
+                throw new FormatException("IMachineMethod Name not match format exception");
+            }
             job.JobDataMap.Put("DataType", machineDataType);
             job.JobDataMap.Put("Machine", machine);
-            job.JobDataMap.Put("Function", "Datas");
+            job.JobDataMap.Put("Function", methodName.Remove(0,14));
 
             if (_parentJobKey != null)
             {
@@ -173,35 +172,22 @@ namespace Modbus.Net
                 await _scheduler.ScheduleJob(job, _trigger);
             }
 
-            return new MachineQueryJobScheduler(_scheduler, _trigger, jobKey);
+            return new MachineQueryJobScheduler<TMachineMethod, TMachineKey, TReturnUnit>(_scheduler, _trigger, jobKey);
         }
 
         /// <summary>
         ///     直接向任务队列中写一个数据模板
         /// </summary>
-        /// <param name="queryId">任务ID，每个触发器唯一</param>
-        /// <param name="values">要写入的数据模板</param>
-        /// <param name="machineDataType">获取数据的方式</param>
-        /// <returns></returns>
-        public Task<MachineQueryJobScheduler> Apply(string queryId, Dictionary<string, double> values, MachineDataType machineDataType)
-        {
-            return Apply<string>(queryId, values, machineDataType);
-        }
-
-        /// <summary>
-        ///     直接向任务队列中写一个数据模板
-        /// </summary>
-        /// <typeparam name="TMachineKey">设备的ID类型</typeparam>
         /// <param name="queryId">任务ID，每个触发器唯一</param>
         /// <param name="values">要写入的数据模板</param>
         /// <param name="machineDataType">获取数据的方式</param>
         /// <returns></returns>
         /// <exception cref="NullReferenceException"></exception>
-        public async Task<MachineQueryJobScheduler> Apply<TMachineKey>(string queryId, Dictionary<string, double> values, MachineDataType machineDataType) where TMachineKey : IEquatable<TMachineKey>
+        public async Task<MachineQueryJobScheduler<TMachineMethod, TMachineKey, TReturnUnit>> Apply(string queryId, Dictionary<string, double> values, MachineDataType machineDataType)
         {
             JobKey jobKey = JobKey.Create("Modbus.Net.DataQuery.Job." + queryId, "Modbus.Net.DataQuery.Group." + _trigger.Key.Name);
 
-            IJobDetail job = JobBuilder.Create<MachineQueryDataJob<TMachineKey>>()
+            IJobDetail job = JobBuilder.Create<MachineQueryDataJob<TMachineKey, TReturnUnit>>()
                 .WithIdentity(jobKey)
                 .StoreDurably(true)
                 .Build();
@@ -223,33 +209,20 @@ namespace Modbus.Net
                 await _scheduler.ScheduleJob(job, _trigger);
             }
 
-            return new MachineQueryJobScheduler(_scheduler, _trigger, jobKey);
+            return new MachineQueryJobScheduler<TMachineMethod, TMachineKey, TReturnUnit>(_scheduler, _trigger, jobKey);
         }
 
         /// <summary>
         ///     直接向任务队列中写一个数据模板，并跳过处理数据流程
         /// </summary>
-        /// <param name="queryId">任务ID，每个触发器唯一</param>
-        /// <param name="values">要写入的数据模板</param>
-        /// <param name="machineDataType">获取数据的方式</param>
-        /// <returns></returns>
-        public Task<MachineSetJobScheduler> ApplyTo(string queryId, Dictionary<string, double> values, MachineDataType machineDataType)
-        {
-            return ApplyTo<string>(queryId, values, machineDataType);
-        }
-
-        /// <summary>
-        ///     直接向任务队列中写一个数据模板，并跳过处理数据流程
-        /// </summary>
-        /// <typeparam name="TMachineKey">设备的ID类型</typeparam>
         /// <param name="queryId">任务ID，每个触发器唯一</param>
         /// <param name="values">要写入的数据模板</param>
         /// <param name="machineDataType">获取数据的方式</param>
         /// <returns></returns>
         /// <exception cref="NullReferenceException"></exception>
-        public async Task<MachineSetJobScheduler> ApplyTo<TMachineKey>(string queryId, Dictionary<string, double> values, MachineDataType machineDataType) where TMachineKey : IEquatable<TMachineKey>
+        public async Task<MachineSetJobScheduler<TMachineMethod, TMachineKey, TReturnUnit>> ApplyTo(string queryId, Dictionary<string, double> values, MachineDataType machineDataType)
         {
-            var applyJobScheduler = await Apply<TMachineKey>(queryId, values, machineDataType);
+            var applyJobScheduler = await Apply(queryId, values, machineDataType);
             return await applyJobScheduler.Query();
         }
     }
@@ -257,7 +230,7 @@ namespace Modbus.Net
     /// <summary>
     ///     处理数据任务
     /// </summary>
-    public sealed class MachineQueryJobScheduler
+    public sealed class MachineQueryJobScheduler<TMachineMethod, TMachineKey, TReturnUnit> where TMachineKey: IEquatable<TMachineKey> where TReturnUnit : struct where TMachineMethod : IMachineMethod
     {
         private IScheduler _scheduler;
 
@@ -284,26 +257,14 @@ namespace Modbus.Net
         /// <param name="queryId">任务ID，每个触发器唯一</param>
         /// <param name="QueryDataFunc">处理数据的函数，输入返回读数据的定义和值，输出写数据字典</param>
         /// <returns></returns>
-        public Task<MachineSetJobScheduler> Query(string queryId = null, Func<DataReturnDef, Dictionary<string, double>> QueryDataFunc = null)
-        {
-            return Query<string>(queryId, QueryDataFunc);
-        }
-
-        /// <summary>
-        ///     处理数据
-        /// </summary>
-        /// <typeparam name="TMachineKey">设备的ID类型</typeparam>
-        /// <param name="queryId">任务ID，每个触发器唯一</param>
-        /// <param name="QueryDataFunc">处理数据的函数，输入返回读数据的定义和值，输出写数据字典</param>
-        /// <returns></returns>
         /// <exception cref="NullReferenceException"></exception>
-        public async Task<MachineSetJobScheduler> Query<TMachineKey>(string queryId = null, Func<DataReturnDef, Dictionary<string, double>> QueryDataFunc = null) where TMachineKey : IEquatable<TMachineKey>
+        public async Task<MachineSetJobScheduler<TMachineMethod, TMachineKey, TReturnUnit>> Query(string queryId = null, Func<DataReturnDef<TMachineKey, TReturnUnit>, Dictionary<string, TReturnUnit>> QueryDataFunc = null)
         {
-            if (queryId == null) return new MachineSetJobScheduler(_scheduler, _trigger, _parentJobKey);
+            if (queryId == null) return new MachineSetJobScheduler<TMachineMethod, TMachineKey, TReturnUnit>(_scheduler, _trigger, _parentJobKey);
 
             JobKey jobKey = JobKey.Create("Modbus.Net.DataQuery.Job." + queryId, "Modbus.Net.DataQuery.Group." + _trigger.Key.Name);
 
-            IJobDetail job = JobBuilder.Create<MachineQueryDataJob<TMachineKey>>()
+            IJobDetail job = JobBuilder.Create<MachineQueryDataJob<TMachineKey, TReturnUnit>>()
                 .WithIdentity(jobKey)
                 .StoreDurably(true)
                 .Build();
@@ -317,14 +278,14 @@ namespace Modbus.Net
 
             await _scheduler.AddJob(job, true);
 
-            return new MachineSetJobScheduler(_scheduler, _trigger, jobKey);
+            return new MachineSetJobScheduler<TMachineMethod, TMachineKey, TReturnUnit>(_scheduler, _trigger, jobKey);
         }
     }
 
     /// <summary>
     ///     写入数据任务
     /// </summary>
-    public sealed class MachineSetJobScheduler
+    public sealed class MachineSetJobScheduler<TMachineMethod, TMachineKey, TReturnUnit> where TMachineKey: IEquatable<TMachineKey> where TReturnUnit : struct where TMachineMethod : IMachineMethod
     {
         private IScheduler _scheduler;
 
@@ -354,17 +315,22 @@ namespace Modbus.Net
         /// <param name="machine">写入数据的设备实例</param>
         /// <returns></returns>
         /// <exception cref="NullReferenceException"></exception>
-        public async Task<MachineDealJobScheduler> To(string queryId, IMachineReflectionCall machine)
+        public async Task<MachineDealJobScheduler<TMachineMethod, TMachineKey, TReturnUnit>> To(string queryId, IMachineReflectionCall machine)
         {
             JobKey jobKey = JobKey.Create("Modbus.Net.DataQuery.Job." + queryId, "Modbus.Net.DataQuery.Group." + _trigger.Key.Name);
 
-            IJobDetail job = JobBuilder.Create<MachineSetDataJob>()
+            IJobDetail job = JobBuilder.Create<MachineSetDataJob<TReturnUnit>>()
                 .WithIdentity(jobKey)
                 .StoreDurably(true)
-                .Build();
+            .Build();
 
+            string methodName = typeof(TMachineMethod).Name;
+            if (methodName.Substring(0, 14) != "IMachineMethod")
+            {
+                throw new FormatException("IMachineMethod Name not match format exception");
+            }
             job.JobDataMap.Put("Machine", machine);
-            job.JobDataMap.Put("Function", "Datas");
+            job.JobDataMap.Put("Function", methodName.Remove(0,14));
 
             var listener = _scheduler.ListenerManager.GetJobListener("Modbus.Net.DataQuery.Chain." + _trigger.Key.Name) as JobChainingJobListenerWithDataMap;
             if (listener == null) throw new NullReferenceException("Listener " + "Modbus.Net.DataQuery.Chain." + _trigger.Key.Name + " is null");
@@ -372,7 +338,7 @@ namespace Modbus.Net
 
             await _scheduler.AddJob(job, true);
 
-            return new MachineDealJobScheduler(_scheduler, _trigger, jobKey);
+            return new MachineDealJobScheduler<TMachineMethod, TMachineKey, TReturnUnit>(_scheduler, _trigger, jobKey);
         }
 
         /// <summary>
@@ -382,9 +348,9 @@ namespace Modbus.Net
         /// <param name="machine">要获取数据的设备实例</param>
         /// <param name="machineDataType">获取数据的方式</param>
         /// <returns></returns>
-        public async Task<MachineQueryJobScheduler> From(string queryId, IMachineReflectionCall machine, MachineDataType machineDataType)
+        public async Task<MachineQueryJobScheduler<TMachineMethod, TMachineKey, TReturnUnit>> From(string queryId, IMachineReflectionCall machine, MachineDataType machineDataType)
         {
-            return await new MachineGetJobScheduler(_scheduler, _trigger, _parentJobKey).From(queryId, machine, machineDataType);
+            return await new MachineGetJobScheduler<TMachineMethod, TMachineKey, TReturnUnit>(_scheduler, _trigger, _parentJobKey).From(queryId, machine, machineDataType);
         }
 
         /// <summary>
@@ -400,7 +366,7 @@ namespace Modbus.Net
     /// <summary>
     ///     处理写返回任务
     /// </summary>
-    public sealed class MachineDealJobScheduler
+    public sealed class MachineDealJobScheduler<TMachineMethod, TMachineKey, TReturnUnit> where TMachineKey : IEquatable<TMachineKey> where TReturnUnit : struct where TMachineMethod : IMachineMethod
     {
         private IScheduler _scheduler;
 
@@ -423,7 +389,6 @@ namespace Modbus.Net
             _parentJobKey = parentJobKey;
         }
 
-
         /// <summary>
         ///     处理写返回
         /// </summary>
@@ -432,22 +397,9 @@ namespace Modbus.Net
         /// <param name="onFailure">失败回调方法，参数为设备ID</param>
         /// <returns></returns>
         /// <exception cref="NullReferenceException"></exception>
-        public async Task<MachineSetJobScheduler> Deal(string queryId = null, Func<string, Task> onSuccess = null, Func<string, int, string, Task> onFailure = null)
-        {
-            return await Deal<string>(queryId, onSuccess, onFailure);
-        }
-
-        /// <summary>
-        ///     处理写返回
-        /// </summary>
-        /// <param name="queryId">任务ID，每个触发器唯一</param>
-        /// <param name="onSuccess">成功回调方法，参数为设备ID</param>
-        /// <param name="onFailure">失败回调方法，参数为设备ID</param>
-        /// <returns></returns>
-        /// <exception cref="NullReferenceException"></exception>
-        public async Task<MachineSetJobScheduler> Deal<TMachineKey>(string queryId = null, Func<string, Task> onSuccess = null, Func<string, int, string, Task> onFailure = null) where TMachineKey : IEquatable<TMachineKey>
-        {
-            if (queryId == null) return new MachineSetJobScheduler(_scheduler, _trigger, _parentJobKey);
+        public async Task<MachineSetJobScheduler<TMachineMethod, TMachineKey, TReturnUnit>> Deal(string queryId = null, Func<string, Task> onSuccess = null, Func<string, int, string, Task> onFailure = null)
+        { 
+            if (queryId == null) return new MachineSetJobScheduler<TMachineMethod, TMachineKey, TReturnUnit>(_scheduler, _trigger, _parentJobKey);
             JobKey jobKey = JobKey.Create("Modbus.Net.DataQuery.Job." + queryId, "Modbus.Net.DataQuery.Group." + _trigger.Key.Name);
 
             IJobDetail job = JobBuilder.Create<MachineDealDataJob<TMachineKey>>()
@@ -464,14 +416,14 @@ namespace Modbus.Net
 
             await _scheduler.AddJob(job, true);
 
-            return new MachineSetJobScheduler(_scheduler, _trigger, jobKey);
+            return new MachineSetJobScheduler<TMachineMethod, TMachineKey, TReturnUnit>(_scheduler, _trigger, jobKey);
         }
     }
 
     /// <summary>
     ///     获取数据任务
     /// </summary>
-    public class MachineGetDataJob : IJob
+    public class MachineGetDataJob<TReturnUnit> : IJob where TReturnUnit : struct
     {
         /// <inheritdoc />
         public async Task Execute(IJobExecutionContext context)
@@ -482,7 +434,7 @@ namespace Modbus.Net
             context.JobDetail.JobDataMap.TryGetValue("Machine", out machine);
             context.JobDetail.JobDataMap.TryGetValue("DataType", out machineDataType);
             context.JobDetail.JobDataMap.TryGetValue("Function", out callFunction);
-            var values = await (machine as IMachineReflectionCall)!.InvokeGet<Dictionary<string, ReturnUnit>>((string)callFunction, new object[] { (MachineDataType)machineDataType });
+            var values = await (machine as IMachineReflectionCall)!.InvokeGet<Dictionary<string, ReturnUnit<TReturnUnit>>>((string)callFunction, new object[] { (MachineDataType)machineDataType });
 
             context.JobDetail.JobDataMap.Put("Value", values);
             await context.Scheduler.AddJob(context.JobDetail, true, false);
@@ -492,8 +444,7 @@ namespace Modbus.Net
     /// <summary>
     ///     处理数据任务
     /// </summary>
-    /// <typeparam name="TMachineKey"></typeparam>
-    public class MachineQueryDataJob<TMachineKey> : IJob where TMachineKey : IEquatable<TMachineKey>
+    public class MachineQueryDataJob<TMachineKey, TReturnUnit> : IJob where TMachineKey : IEquatable<TMachineKey> where TReturnUnit : struct
     {
         /// <inheritdoc />
         public async Task Execute(IJobExecutionContext context)
@@ -504,11 +455,11 @@ namespace Modbus.Net
             context.JobDetail.JobDataMap.TryGetValue("Machine", out machine);
             context.JobDetail.JobDataMap.TryGetValue("Value", out values);
             context.JobDetail.JobDataMap.TryGetValue("QueryMethod", out QueryMethod);
-            Func<DataReturnDef, Dictionary<string, double>> QueryMethodDispatch = (Func<DataReturnDef, Dictionary<string, double>>)QueryMethod;
+            Func<DataReturnDef<TMachineKey, TReturnUnit>, Dictionary<string, TReturnUnit>> QueryMethodDispatch = (Func<DataReturnDef<TMachineKey, TReturnUnit>, Dictionary<string, TReturnUnit>>)QueryMethod;
 
             if (QueryMethod != null && values != null)
             {
-                context.JobDetail.JobDataMap.Put("SetValue", QueryMethodDispatch(new DataReturnDef() { MachineId = machine == null ? null : ((IMachineProperty<TMachineKey>)machine).GetMachineIdString(), ReturnValues = (ReturnStruct<Dictionary<string, ReturnUnit>>)values }));
+                context.JobDetail.JobDataMap.Put("SetValue", QueryMethodDispatch(new DataReturnDef<TMachineKey, TReturnUnit>() { MachineId = machine == null ? default : ((IMachineProperty<TMachineKey>)machine).Id, ReturnValues = (ReturnStruct<Dictionary<string, ReturnUnit<TReturnUnit>>>)values }));
                 await context.Scheduler.AddJob(context.JobDetail, true, false);
             }
         }
@@ -517,7 +468,7 @@ namespace Modbus.Net
     /// <summary>
     ///     写数据任务
     /// </summary>
-    public class MachineSetDataJob : IJob
+    public class MachineSetDataJob<TReturnUnit> : IJob where TReturnUnit : struct
     {
         /// <inheritdoc />
         public async Task Execute(IJobExecutionContext context)
@@ -533,7 +484,9 @@ namespace Modbus.Net
             context.JobDetail.JobDataMap.TryGetValue("SetValue", out valuesSet);
             context.JobDetail.JobDataMap.TryGetValue("Function", out callFunction);
             if (valuesSet == null && values != null)
-                valuesSet = ((ReturnStruct<Dictionary<string, ReturnUnit>>)values).Datas.MapGetValuesToSetValues();
+            {
+                valuesSet = ((ReturnStruct<Dictionary<string, ReturnUnit<TReturnUnit>>>)values).Datas.MapGetValuesToSetValues();
+            }
 
             if (valuesSet == null)
             {
@@ -565,11 +518,11 @@ namespace Modbus.Net
             ReturnStruct<bool> successValue = (ReturnStruct<bool>)success;
             if (successValue.IsSuccess == true && onSuccess != null)
             {
-                await ((Func<string, Task>)onSuccess)(((IMachineProperty<TMachineKey>)machine).GetMachineIdString());
+                await ((Func<TMachineKey, Task>)onSuccess)(((IMachineProperty<TMachineKey>)machine).Id);
             }
             if (successValue.IsSuccess == false && onFailure != null)
             {
-                await ((Func<string, int, string, Task>)onFailure)(((IMachineProperty<TMachineKey>)machine).GetMachineIdString(), successValue.ErrorCode, successValue.ErrorMsg);
+                await ((Func<TMachineKey, int, string, Task>)onFailure)(((IMachineProperty<TMachineKey>)machine).Id, successValue.ErrorCode, successValue.ErrorMsg);
             }
 
             context.JobDetail.JobDataMap.Remove("Success");

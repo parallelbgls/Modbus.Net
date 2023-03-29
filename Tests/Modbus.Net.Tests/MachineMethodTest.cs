@@ -44,7 +44,7 @@ namespace Modbus.Net.Tests
                     DataType = typeof(bool)
                 }
             }, true, 2, 0);
-            var success = await baseMachine.GetMachineMethods<IMachineMethodData>().SetDatasAsync(
+            var success = await baseMachine.GetMachineMethods<IMachineMethodDatas>().SetDatasAsync(
                 MachineDataType.Address,
                 new Dictionary<string, double>
                 {
@@ -53,9 +53,9 @@ namespace Modbus.Net.Tests
                     }
                 });
             Assert.AreEqual(success, true);
-            var datas = await baseMachine.GetMachineMethods<IMachineMethodData>().GetDatasAsync(MachineDataType.Address);
+            var datas = await baseMachine.GetMachineMethods<IMachineMethodDatas>().GetDatasAsync(MachineDataType.Address);
             Assert.AreEqual(datas.Datas["0X 1.0"].DeviceValue, 1);
-            success = await baseMachine.GetMachineMethods<IMachineMethodData>().SetDatasAsync(
+            success = await baseMachine.GetMachineMethods<IMachineMethodDatas>().SetDatasAsync(
                 MachineDataType.Address,
                 new Dictionary<string, double>
                 {

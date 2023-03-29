@@ -62,7 +62,7 @@ namespace Modbus.Net.Siemens
         /// <param name="unit">协议核心</param>
         /// <param name="content">协议的参数</param>
         /// <returns>设备返回的信息</returns>
-        private async Task<PipeUnit> ForceSendReceiveAsync(ProtocolUnit unit, IInputStruct content)
+        private async Task<PipeUnit> ForceSendReceiveAsync(ProtocolUnit<byte[], byte[]> unit, IInputStruct content)
         {
             return await base.SendReceiveAsync(unit, content);
         }

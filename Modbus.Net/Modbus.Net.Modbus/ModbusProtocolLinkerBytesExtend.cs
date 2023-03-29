@@ -48,7 +48,7 @@ namespace Modbus.Net.Modbus
     /// <summary>
     ///     Tcp协议字节伸缩
     /// </summary>
-    public class ModbusTcpProtocolLinkerBytesExtend : IProtocolLinkerBytesExtend
+    public class ModbusTcpProtocolLinkerBytesExtend : IProtocolLinkerBytesExtend<byte[], byte[]>
     {
         private static ushort _sendCount = 0;
         private static readonly object _counterLock = new object();
@@ -93,7 +93,7 @@ namespace Modbus.Net.Modbus
     /// <summary>
     ///     Rtu协议字节伸缩
     /// </summary>
-    public class ModbusRtuProtocolLinkerBytesExtend : IProtocolLinkerBytesExtend
+    public class ModbusRtuProtocolLinkerBytesExtend : IProtocolLinkerBytesExtend<byte[], byte[]>
     {
         /// <summary>
         ///     协议扩展，协议内容发送前调用
@@ -128,7 +128,7 @@ namespace Modbus.Net.Modbus
     /// <summary>
     ///     Ascii协议字节伸缩
     /// </summary>
-    public class ModbusAsciiProtocolLinkerBytesExtend : IProtocolLinkerBytesExtend
+    public class ModbusAsciiProtocolLinkerBytesExtend : IProtocolLinkerBytesExtend<byte[], byte[]>
     {
         /// <summary>
         ///     协议扩展，协议内容发送前调用

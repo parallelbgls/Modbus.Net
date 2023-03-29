@@ -59,7 +59,7 @@ namespace Modbus.Net.Siemens
     /// <summary>
     ///     西门子通讯Api入口
     /// </summary>
-    public class SiemensUtility : BaseUtility
+    public class SiemensUtility : BaseUtility<byte[], byte[], ProtocolUnit<byte[], byte[]>, PipeUnit>
     {
         private static readonly ILogger<SiemensUtility> logger = LogProvider.CreateLogger<SiemensUtility>();
 

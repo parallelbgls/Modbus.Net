@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ProtocolUnit = Modbus.Net.ProtocolUnit<byte[], byte[]>;
 
 namespace Modbus.Net.Modbus
 {

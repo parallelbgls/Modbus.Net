@@ -8,7 +8,7 @@ namespace Modbus.Net
     /// <summary>
     ///     基本协议
     /// </summary>
-    public abstract class BaseProtocol : BaseProtocol<byte[], byte[], ProtocolUnit, PipeUnit>
+    public abstract class BaseProtocol : BaseProtocol<byte[], byte[], ProtocolUnit<byte[], byte[]>, PipeUnit>
     {
         /// <summary>
         ///     构造器
@@ -42,7 +42,7 @@ namespace Modbus.Net
         /// <param name="content">输入信息的结构化描述</param>
         /// <returns>输出信息的结构化描述</returns>
         public override async Task<PipeUnit>
-            SendReceiveAsync(ProtocolUnit unit, IInputStruct content)
+            SendReceiveAsync(ProtocolUnit<byte[], byte[]> unit, IInputStruct content)
         {
             if (content != null)
             {
