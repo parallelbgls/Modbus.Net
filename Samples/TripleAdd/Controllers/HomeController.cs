@@ -16,7 +16,7 @@ namespace TripleAdd.Controllers
         }
 
         private static IUtility? utility;
-        private static IMachine<string>? machine;
+        private static BaseMachine<string, string>? machine;
 
         public ActionResult Index()
         {
