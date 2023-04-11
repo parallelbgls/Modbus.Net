@@ -3,7 +3,7 @@
     /// <summary>
     ///     Api入口的抽象
     /// </summary>
-    public interface IUtility : IUtilityProperty, IUtilityMethodData
+    public interface IUtility : IUtilityProperty, IUtilityMethodDatas
     {
     }
 }

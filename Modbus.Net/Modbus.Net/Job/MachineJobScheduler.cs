@@ -140,7 +140,7 @@ namespace Modbus.Net
         /// <param name="machineDataType">获取数据的方式</param>
         /// <returns></returns>
         /// <exception cref="NullReferenceException"></exception>
-        public async Task<MachineQueryJobScheduler<TMachineMethod, TMachineKey, TReturnUnit>> From(string queryId, IMachineReflectionCall machine, MachineDataType machineDataType)
+        public async Task<MachineQueryJobScheduler<TMachineMethod, TMachineKey, TReturnUnit>> From(string queryId, IMachineMethod machine, MachineDataType machineDataType)
         {
             JobKey jobKey = JobKey.Create("Modbus.Net.DataQuery.Job." + queryId, "Modbus.Net.DataQuery.Group." + _trigger.Key.Name);
 
@@ -314,7 +314,7 @@ namespace Modbus.Net
         /// <param name="machine">写入数据的设备实例</param>
         /// <returns></returns>
         /// <exception cref="NullReferenceException"></exception>
-        public async Task<MachineDealJobScheduler<TMachineMethod, TMachineKey, TReturnUnit>> To(string queryId, IMachineReflectionCall machine)
+        public async Task<MachineDealJobScheduler<TMachineMethod, TMachineKey, TReturnUnit>> To(string queryId, IMachineMethod machine)
         {
             JobKey jobKey = JobKey.Create("Modbus.Net.DataQuery.Job." + queryId, "Modbus.Net.DataQuery.Group." + _trigger.Key.Name);
 
@@ -347,7 +347,7 @@ namespace Modbus.Net
         /// <param name="machine">要获取数据的设备实例</param>
         /// <param name="machineDataType">获取数据的方式</param>
         /// <returns></returns>
-        public async Task<MachineQueryJobScheduler<TMachineMethod, TMachineKey, TReturnUnit>> From(string queryId, IMachineReflectionCall machine, MachineDataType machineDataType)
+        public async Task<MachineQueryJobScheduler<TMachineMethod, TMachineKey, TReturnUnit>> From(string queryId, IMachineMethod machine, MachineDataType machineDataType)
         {
             return await new MachineGetJobScheduler<TMachineMethod, TMachineKey, TReturnUnit>(_scheduler, _trigger, _parentJobKey).From(queryId, machine, machineDataType);
         }
@@ -433,7 +433,7 @@ namespace Modbus.Net
             context.JobDetail.JobDataMap.TryGetValue("Machine", out machine);
             context.JobDetail.JobDataMap.TryGetValue("DataType", out machineDataType);
             context.JobDetail.JobDataMap.TryGetValue("Function", out callFunction);
-            var values = await (machine as IMachineReflectionCall)!.InvokeGet<Dictionary<string, ReturnUnit<TReturnUnit>>>((string)callFunction, new object[] { (MachineDataType)machineDataType });
+            var values = await (machine as IMachineMethod)!.InvokeGet<Dictionary<string, ReturnUnit<TReturnUnit>>>((string)callFunction, new object[] { (MachineDataType)machineDataType });
 
             context.JobDetail.JobDataMap.Put("Value", values);
             await context.Scheduler.AddJob(context.JobDetail, true, false);
@@ -492,7 +492,7 @@ namespace Modbus.Net
                 context.JobDetail.JobDataMap.Put("Success", false);
                 return;
             }
-            var success = await (machine as IMachineReflectionCall)!.InvokeSet((string)callFunction, new object[] { (MachineDataType)machineDataType }, (Dictionary<string, double>)valuesSet);
+            var success = await (machine as IMachineMethod)!.InvokeSet((string)callFunction, new object[] { (MachineDataType)machineDataType }, (Dictionary<string, double>)valuesSet);
 
             context.JobDetail.JobDataMap.Put("Success", success);
         }

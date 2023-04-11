@@ -37,7 +37,7 @@ namespace Modbus.Net
     /// </summary>
     /// <typeparam name="TKey">设备的Id类型</typeparam>
     /// <typeparam name="TUnitKey">设备中使用的AddressUnit的Id类型</typeparam>
-    public abstract class BaseMachine<TKey, TUnitKey> : IMachine<TKey>, IMachineReflectionCall
+    public abstract class BaseMachine<TKey, TUnitKey> : IMachine<TKey>
         where TKey : IEquatable<TKey>
         where TUnitKey : IEquatable<TUnitKey>
     {
@@ -187,7 +187,7 @@ namespace Modbus.Net
                     //获取数据
                     var datas =
                         await
-                            BaseUtility.GetUtilityMethods<IUtilityMethodData>().GetDatasAsync(
+                            BaseUtility.GetUtilityMethods<IUtilityMethodDatas>().GetDatasAsync(
                                 AddressFormater.FormatAddress(communicateAddress.Area, communicateAddress.Address,
                                     communicateAddress.SubAddress),
                                 (int)
@@ -433,7 +433,7 @@ namespace Modbus.Net
                         communicateAddress.Address);
 
                     var datasReturn =
-                        await BaseUtility.GetUtilityMethods<IUtilityMethodData>().GetDatasAsync(
+                        await BaseUtility.GetUtilityMethods<IUtilityMethodDatas>().GetDatasAsync(
                             AddressFormater.FormatAddress(communicateAddress.Area, communicateAddress.Address, 0),
                             (int)
                             Math.Ceiling(communicateAddress.GetCount *
@@ -545,7 +545,7 @@ namespace Modbus.Net
                     }
                     //写入数据
                     await
-                        BaseUtility.GetUtilityMethods<IUtilityMethodData>().SetDatasAsync(addressStart,
+                        BaseUtility.GetUtilityMethods<IUtilityMethodDatas>().SetDatasAsync(addressStart,
                             valueHelper.ByteArrayToObjectArray(datas.Datas,
                                 new KeyValuePair<Type, int>(communicateAddress.DataType, communicateAddress.GetCount)));
                 }
@@ -634,29 +634,6 @@ namespace Modbus.Net
         public TUtilityMethod GetUtilityMethods<TUtilityMethod>() where TUtilityMethod : class, IUtilityMethod
         {
             return BaseUtility as TUtilityMethod;
-        }
-
-        /// <inheritdoc />
-        public Task<ReturnStruct<T>> InvokeGet<T>(string functionName, object[] parameters)
-        {
-            var machineMethodType = GetType();
-            var machineMethod = this as IMachineMethod;
-            var machineSetMethod = machineMethodType.GetMethod("Get" + functionName + "Async");
-            var ans = machineSetMethod.Invoke(machineMethod, parameters);
-            return (Task<ReturnStruct<T>>)ans;
-        }
-
-        /// <inheritdoc />
-        public Task<ReturnStruct<bool>> InvokeSet<T>(string functionName, object[] parameters, T datas)
-        {
-            var machineMethodType = GetType();
-            var machineMethod = this as IMachineMethod;
-            var machineSetMethod = machineMethodType.GetMethod("Set" + functionName + "Async");
-            object[] allParams = new object[parameters.Length + 1];
-            Array.Copy(parameters, allParams, parameters.Length);
-            allParams[parameters.Length] = datas;
-            var ans = machineSetMethod.Invoke(machineMethod, allParams);
-            return (Task<ReturnStruct<bool>>)ans;
         }
 
         /// <summary>

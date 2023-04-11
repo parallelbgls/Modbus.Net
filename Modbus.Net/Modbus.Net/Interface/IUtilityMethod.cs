@@ -14,7 +14,7 @@ namespace Modbus.Net
     /// <summary>
     ///     Utility的数据读写接口
     /// </summary>
-    public interface IUtilityMethodData : IUtilityMethod
+    public interface IUtilityMethodDatas : IUtilityMethod
     {
         /// <summary>
         ///     获取数据
