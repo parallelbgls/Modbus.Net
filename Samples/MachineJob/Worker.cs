@@ -1,10 +1,10 @@
 using Modbus.Net;
 using Modbus.Net.Modbus;
 using Modbus.Net.Siemens;
-using ModbusMachine = Modbus.Net.Modbus.ModbusMachine<string, string>;
-using SiemensMachine = Modbus.Net.Siemens.SiemensMachine<string, string>;
-using MultipleMachinesJobScheduler = Modbus.Net.MultipleMachinesJobScheduler<Modbus.Net.IMachineMethodDatas, string, double>;
 using DataReturnDef = Modbus.Net.DataReturnDef<string, double>;
+using ModbusMachine = Modbus.Net.Modbus.ModbusMachine<string, string>;
+using MultipleMachinesJobScheduler = Modbus.Net.MultipleMachinesJobScheduler<Modbus.Net.IMachineMethodDatas, string, double>;
+using SiemensMachine = Modbus.Net.Siemens.SiemensMachine<string, string>;
 
 namespace MachineJob.Service
 {
