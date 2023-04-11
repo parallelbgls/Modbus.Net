@@ -3,6 +3,8 @@ using Quartz.Impl;
 using Quartz.Impl.Matchers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Modbus.Net
@@ -149,14 +151,10 @@ namespace Modbus.Net
                 .StoreDurably(true)
                 .Build();
 
-            string methodName = typeof(TMachineMethod).Name;
-            if (methodName.Substring(0, 14) != "IMachineMethod")
-            {
-                throw new FormatException("IMachineMethod Name not match format exception");
-            }
+            Type methodType = typeof(TMachineMethod);
             job.JobDataMap.Put("DataType", machineDataType);
             job.JobDataMap.Put("Machine", machine);
-            job.JobDataMap.Put("Function", methodName.Remove(0, 14));
+            job.JobDataMap.Put("MethodType", methodType);
 
             if (_parentJobKey != null)
             {
@@ -323,13 +321,9 @@ namespace Modbus.Net
                 .StoreDurably(true)
             .Build();
 
-            string methodName = typeof(TMachineMethod).Name;
-            if (methodName.Substring(0, 14) != "IMachineMethod")
-            {
-                throw new FormatException("IMachineMethod Name not match format exception");
-            }
+            Type methodType = typeof(TMachineMethod);
             job.JobDataMap.Put("Machine", machine);
-            job.JobDataMap.Put("Function", methodName.Remove(0, 14));
+            job.JobDataMap.Put("MethodType", methodType);
 
             var listener = _scheduler.ListenerManager.GetJobListener("Modbus.Net.DataQuery.Chain." + _trigger.Key.Name) as JobChainingJobListenerWithDataMap;
             if (listener == null) throw new NullReferenceException("Listener " + "Modbus.Net.DataQuery.Chain." + _trigger.Key.Name + " is null");
@@ -366,7 +360,7 @@ namespace Modbus.Net
     ///     处理写返回任务
     /// </summary>
     public sealed class MachineDealJobScheduler<TMachineMethod, TMachineKey, TReturnUnit> where TMachineKey : IEquatable<TMachineKey> where TReturnUnit : struct where TMachineMethod : class, IMachineMethod
-    { 
+    {
         private IScheduler _scheduler;
 
         private ITrigger _trigger;
@@ -429,11 +423,13 @@ namespace Modbus.Net
         {
             object machine;
             object machineDataType;
-            object callFunction;
+            object methodType;
             context.JobDetail.JobDataMap.TryGetValue("Machine", out machine);
             context.JobDetail.JobDataMap.TryGetValue("DataType", out machineDataType);
-            context.JobDetail.JobDataMap.TryGetValue("Function", out callFunction);
-            var values = await (machine as IMachineMethod)!.InvokeGet<Dictionary<string, ReturnUnit<TReturnUnit>>>((string)callFunction, new object[] { (MachineDataType)machineDataType });
+            context.JobDetail.JobDataMap.TryGetValue("MethodType", out methodType);
+
+            MethodInfo invokeGetGenericMethod = typeof(IMachineMethod).GetExtensionMethods(GetType().Assembly).First(p => p.Name == "InvokeGet").MakeGenericMethod((Type)methodType, typeof(Dictionary<string, ReturnUnit<TReturnUnit>>));
+            var values = await (Task<ReturnStruct<Dictionary<string, ReturnUnit<TReturnUnit>>>>)invokeGetGenericMethod.Invoke(machine, new object[] { machine, new object[] { (MachineDataType)machineDataType } });
 
             context.JobDetail.JobDataMap.Put("Value", values);
             await context.Scheduler.AddJob(context.JobDetail, true, false);
@@ -476,12 +472,12 @@ namespace Modbus.Net
             object machineDataType;
             object values;
             object valuesSet;
-            object callFunction;
+            object methodType;
             context.JobDetail.JobDataMap.TryGetValue("Machine", out machine);
             context.JobDetail.JobDataMap.TryGetValue("DataType", out machineDataType);
             context.JobDetail.JobDataMap.TryGetValue("Value", out values);
             context.JobDetail.JobDataMap.TryGetValue("SetValue", out valuesSet);
-            context.JobDetail.JobDataMap.TryGetValue("Function", out callFunction);
+            context.JobDetail.JobDataMap.TryGetValue("MethodType", out methodType);
             if (valuesSet == null && values != null)
             {
                 valuesSet = ((ReturnStruct<Dictionary<string, ReturnUnit<TReturnUnit>>>)values).Datas.MapGetValuesToSetValues();
@@ -492,7 +488,8 @@ namespace Modbus.Net
                 context.JobDetail.JobDataMap.Put("Success", false);
                 return;
             }
-            var success = await (machine as IMachineMethod)!.InvokeSet((string)callFunction, new object[] { (MachineDataType)machineDataType }, (Dictionary<string, double>)valuesSet);
+            MethodInfo invokeGetGenericMethod = typeof(IMachineMethod).GetExtensionMethods(GetType().Assembly).First(p => p.Name == "InvokeSet").MakeGenericMethod((Type)methodType, typeof(Dictionary<string, double>));
+            var success = await (Task<ReturnStruct<bool>>)invokeGetGenericMethod.Invoke(machine, new object[] { machine, new object[] { (MachineDataType)machineDataType }, (Dictionary<string, double>)valuesSet });
 
             context.JobDetail.JobDataMap.Put("Success", success);
         }
