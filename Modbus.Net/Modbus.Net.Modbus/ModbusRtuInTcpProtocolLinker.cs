@@ -24,7 +24,18 @@ namespace Modbus.Net.Modbus
         public ModbusRtuInTcpProtocolLinker(string ip, int port)
             : base(ip, port)
         {
-            ((IConnectorWithController<byte[], byte[]>)BaseConnector).AddController(new FifoController(int.Parse(ConfigurationReader.GetValue("TCP:" + ip + ":" + port, "FetchSleepTime")), lengthCalc: content => { if (content[1] == 5 || content[1] == 6 || content[1] == 15 || content[1] == 16 || content[1] == 21) return 8; else return DuplicateWithCount.GetDuplcateFunc(new List<int> { 2 }, 5).Invoke(content); }, waitingListMaxCount: ConfigurationReader.GetValue("TCP:" + ip + ":" + port, "WaitingListCount") != null ? int.Parse(ConfigurationReader.GetValue("TCP:" + ip + ":" + port, "WaitingListCount")) : null));
+            ((IConnectorWithController<byte[], byte[]>)BaseConnector).AddController(new FifoController(
+                int.Parse(ConfigurationReader.GetValue("TCP:" + ip + ":" + port, "FetchSleepTime")),
+                lengthCalc: content =>
+                {
+                    if (content[1] == 5 || content[1] == 6 || content[1] == 15 || content[1] == 16 || content[1] == 21) return 8;
+                    else return DuplicateWithCount.GetDuplcateFunc(new List<int> { 2 }, 5).Invoke(content);
+                },
+                checkRightFunc: ContentCheck.Crc16CheckRight,
+                waitingListMaxCount: ConfigurationReader.GetValue("TCP:" + ip + ":" + port, "WaitingListCount") != null ?
+                  int.Parse(ConfigurationReader.GetValue("TCP:" + ip + ":" + port, "WaitingListCount")) :
+                  null
+             ));
         }
 
         /// <summary>
@@ -36,9 +47,6 @@ namespace Modbus.Net.Modbus
         {
             //ProtocolLinker的CheckRight不会返回null
             if (base.CheckRight(content) != true) return false;
-            //CRC校验失败
-            if (!Crc16.GetInstance().CrcEfficacy(content))
-                throw new ModbusProtocolErrorException(501);
             //Modbus协议错误
             if (content[1] > 127)
                 throw new ModbusProtocolErrorException(content[2]);

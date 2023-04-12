@@ -24,7 +24,22 @@ namespace Modbus.Net.Modbus
         public ModbusAsciiInUdpProtocolLinker(string ip, int port)
             : base(ip, port)
         {
-            ((IConnectorWithController<byte[], byte[]>)BaseConnector).AddController(new FifoController(int.Parse(ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "FetchSleepTime")), lengthCalc: content => { if (content[0] != 0x3a) return 0; for (int i = 1; i < content.Length; i++) { if (content[i - 1] == 0x0D && content[i] == 0x0A) return i + 1; } return -1; }, waitingListMaxCount: ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "WaitingListCount") != null ? int.Parse(ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "WaitingListCount")) : null));
+            ((IConnectorWithController<byte[], byte[]>)BaseConnector).AddController(new FifoController(int.Parse(ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "FetchSleepTime")),
+                lengthCalc: content =>
+                {
+                    if (content[0] != 0x3a) return 0;
+                    for (int i = 1; i < content.Length; i++)
+                    {
+                        if (content[i - 1] == 0x0D && content[i] == 0x0A)
+                            return i + 1;
+                    }
+                    return -1;
+                },
+                checkRightFunc: ContentCheck.LrcCheckRight,
+                waitingListMaxCount: ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "WaitingListCount") != null
+                  ? int.Parse(ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "WaitingListCount"))
+                  : null
+             ));
         }
 
         /// <summary>
@@ -36,11 +51,8 @@ namespace Modbus.Net.Modbus
         {
             //ProtocolLinker不会返回null
             if (base.CheckRight(content) != true) return false;
-            //CRC校验失败
-            var contentString = Encoding.ASCII.GetString(content);
-            if (!Crc16.GetInstance().LrcEfficacy(contentString))
-                throw new ModbusProtocolErrorException(501);
             //Modbus协议错误
+            var contentString = Encoding.ASCII.GetString(content);
             if (byte.Parse(contentString.Substring(3, 2)) > 127)
                 throw new ModbusProtocolErrorException(byte.Parse(contentString.Substring(5, 2)));
             return true;

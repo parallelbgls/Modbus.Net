@@ -22,18 +22,25 @@ namespace Modbus.Net
         protected Task SendingThread { get; set; }
 
         /// <summary>
-        ///     包切分位置
+        ///     包切分位置函数
         /// </summary>
         protected Func<byte[], int> LengthCalc { get; }
+
+        /// <summary>
+        ///     包校验函数
+        /// </summary>
+        protected Func<byte[], bool?> CheckRightFunc { get; }
 
         /// <summary>
         ///     构造器
         /// </summary>
         /// <param name="lengthCalc">包长度计算函数</param>
-        protected BaseController(Func<byte[], int> lengthCalc = null)
+        /// <param name="checkRightFunc">包校验函数</param>
+        protected BaseController(Func<byte[], int> lengthCalc = null, Func<byte[], bool?> checkRightFunc = null)
         {
             WaitingMessages = new List<MessageWaitingDef>();
             LengthCalc = lengthCalc;
+            CheckRightFunc = checkRightFunc;
         }
 
         /// <inheritdoc />
@@ -118,7 +125,13 @@ namespace Modbus.Net
                 duplicatedMessages = new List<byte[]>();
                 while (receiveMessageCopy.Length >= length)
                 {
-                    duplicatedMessages.Add(receiveMessageCopy.Take(length.Value).ToArray());
+                    var duplicateMessage = receiveMessageCopy.Take(length.Value).ToArray();
+                    if (CheckRightFunc != null && CheckRightFunc(duplicateMessage) == false)
+                    {
+                        receiveMessageCopy = receiveMessageCopy.TakeLast(receiveMessage.Length - 1).ToArray();
+                        continue;
+                    }
+                    duplicatedMessages.Add(duplicateMessage);
                     receiveMessageCopy = receiveMessageCopy.TakeLast(receiveMessage.Length - length.Value).ToArray();
                     if (receiveMessageCopy.Length == 0) break;
                     length = LengthCalc?.Invoke(receiveMessageCopy);
@@ -146,8 +159,6 @@ namespace Modbus.Net
             }
             return ans;
         }
-
-
 
         /// <summary>
         ///     从等待队列中匹配信息

@@ -31,9 +31,10 @@ namespace Modbus.Net
         /// <param name="acquireTime">间隔时间</param>
         /// <param name="activateSema">是否开启信号量</param>
         /// <param name="lengthCalc">包切分长度函数</param>
+        /// <param name="checkRightFunc">包校验函数</param>
         /// <param name="waitingListMaxCount">包等待队列长度</param>
-        public FifoController(int acquireTime, bool activateSema = true, Func<byte[], int> lengthCalc = null, int? waitingListMaxCount = null)
-            : base(lengthCalc)
+        public FifoController(int acquireTime, bool activateSema = true, Func<byte[], int> lengthCalc = null, Func<byte[], bool?> checkRightFunc = null, int? waitingListMaxCount = null)
+            : base(lengthCalc, checkRightFunc)
         {
             _waitingListMaxCount = int.Parse(waitingListMaxCount != null ? waitingListMaxCount.ToString() : null ?? ConfigurationReader.GetValueDirect("Controller", "WaitingListCount"));
             if (activateSema)

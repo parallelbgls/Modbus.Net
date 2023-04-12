@@ -559,9 +559,7 @@ namespace Modbus.Net.Modbus
             {6, "SLAVE_DEVICE_BUSY"},
             {8, "MEMORY_PARITY_ERROR" },
             {10, "GATEWAY_PATH_UNAVAILABLE"},
-            {11, "GATEWAY_TARGET_DEVICE_FAILED_TO_RESPOND"},
-            {500, "TCP_ILLEGAL_LENGTH"},
-            {501, "RTU_ILLEGAL_CRC"}
+            {11, "GATEWAY_TARGET_DEVICE_FAILED_TO_RESPOND"}
         };
 
         /// <summary>

@@ -11,8 +11,8 @@ namespace Modbus.Net
     {
         /// <inheritdoc />
         public ModbusTcpMatchDirectlySendController(ICollection<(int, int)>[] keyMatches,
-            Func<byte[], int> lengthCalc = null, int? waitingListMaxCount = null) : base(keyMatches,
-            lengthCalc, waitingListMaxCount)
+            Func<byte[], int> lengthCalc = null, Func<byte[], bool?> checkRightFunc = null, int? waitingListMaxCount = null) : base(keyMatches,
+            lengthCalc, checkRightFunc, waitingListMaxCount)
         {
         }
 

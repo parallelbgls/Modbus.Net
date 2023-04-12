@@ -18,7 +18,14 @@ namespace Modbus.Net.Siemens
         public SiemensPpiProtocolLinker(string com, int slaveAddress)
             : base(com, slaveAddress)
         {
-            ((IConnectorWithController<byte[], byte[]>)BaseConnector).AddController(new FifoController(int.Parse(ConfigurationReader.GetValue("COM:" + com + ":" + slaveAddress, "FetchSleepTime")), lengthCalc: DuplicateWithCount.GetDuplcateFunc(new List<int> { 1 }, 6), waitingListMaxCount: ConfigurationReader.GetValue("COM:" + com + ":" + slaveAddress, "WaitingListCount") != null ? int.Parse(ConfigurationReader.GetValue("COM:" + com + ":" + slaveAddress, "WaitingListCount")) : null));
+            ((IConnectorWithController<byte[], byte[]>)BaseConnector).AddController(new FifoController(
+                int.Parse(ConfigurationReader.GetValue("COM:" + com + ":" + slaveAddress, "FetchSleepTime")),
+                lengthCalc: DuplicateWithCount.GetDuplcateFunc(new List<int> { 1 }, 6),
+                checkRightFunc: ContentCheck.FcsCheckRight,
+                waitingListMaxCount: ConfigurationReader.GetValue("COM:" + com + ":" + slaveAddress, "WaitingListCount") != null ?
+                  int.Parse(ConfigurationReader.GetValue("COM:" + com + ":" + slaveAddress, "WaitingListCount")) :
+                  null
+             ));
         }
 
         /// <summary>
@@ -86,14 +93,9 @@ namespace Modbus.Net.Siemens
         public override bool? CheckRight(byte[] content)
         {
             if (base.CheckRight(content) != true) return false;
-            var fcsCheck = 0;
             if (content.Length == 1 && content[0] == 0xe5)
                 return true;
             if (content.Length == 6 && content[3] == 0) return true;
-            for (var i = 4; i < content.Length - 2; i++)
-                fcsCheck += content[i];
-            fcsCheck = fcsCheck % 256;
-            if (fcsCheck != content[content.Length - 2]) return false;
             if (content[content.Length - 1] != 0x16) return false;
             if (content[1] != content.Length - 6) return false;
             return true;

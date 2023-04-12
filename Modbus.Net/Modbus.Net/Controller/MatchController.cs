@@ -21,9 +21,10 @@ namespace Modbus.Net
         /// <param name="acquireTime">获取间隔</param>
         /// <param name="activateSema">是否开启信号量</param>
         /// <param name="lengthCalc">包长度计算</param>
+        /// <param name="checkRightFunc">包校验函数</param>
         /// <param name="waitingListMaxCount">包等待队列长度</param>
         public MatchController(ICollection<(int, int)>[] keyMatches, int acquireTime, bool activateSema = true,
-            Func<byte[], int> lengthCalc = null, int? waitingListMaxCount = null) : base(acquireTime, activateSema, lengthCalc, waitingListMaxCount)
+            Func<byte[], int> lengthCalc = null, Func<byte[], bool?> checkRightFunc = null, int? waitingListMaxCount = null) : base(acquireTime, activateSema, lengthCalc, checkRightFunc, waitingListMaxCount)
         {
             KeyMatches = keyMatches;
         }

@@ -15,7 +15,19 @@ namespace Modbus.Net.Modbus
         public ModbusRtuProtocolLinker(string com, int slaveAddress)
             : base(com, slaveAddress)
         {
-            ((IConnectorWithController<byte[], byte[]>)BaseConnector).AddController(new MatchController(new ICollection<(int, int)>[] { new List<(int, int)> { (0, 0) }, new List<(int, int)> { (1, 1) } }, int.Parse(ConfigurationReader.GetValue("COM:" + com + ":" + slaveAddress, "FetchSleepTime")), lengthCalc: content => { if (content[1] == 5 || content[1] == 6 || content[1] == 15 || content[1] == 16 || content[1] == 21) return 8; else return DuplicateWithCount.GetDuplcateFunc(new List<int> { 2 }, 5).Invoke(content); }, waitingListMaxCount: ConfigurationReader.GetValue("COM:" + com + ":" + slaveAddress, "WaitingListCount") != null ? int.Parse(ConfigurationReader.GetValue("COM:" + com + ":" + slaveAddress, "WaitingListCount")) : null));
+            ((IConnectorWithController<byte[], byte[]>)BaseConnector).AddController(new MatchController(
+                new ICollection<(int, int)>[] { new List<(int, int)> { (0, 0) }, new List<(int, int)> { (1, 1) } },
+                int.Parse(ConfigurationReader.GetValue("COM:" + com + ":" + slaveAddress, "FetchSleepTime")),
+                lengthCalc: content =>
+                {
+                    if (content[1] == 5 || content[1] == 6 || content[1] == 15 || content[1] == 16 || content[1] == 21) return 8;
+                    else return DuplicateWithCount.GetDuplcateFunc(new List<int> { 2 }, 5).Invoke(content);
+                },
+                checkRightFunc: ContentCheck.Crc16CheckRight,
+                waitingListMaxCount: ConfigurationReader.GetValue("COM:" + com + ":" + slaveAddress, "WaitingListCount") != null ?
+                  int.Parse(ConfigurationReader.GetValue("COM:" + com + ":" + slaveAddress, "WaitingListCount")) :
+                  null
+            ));
         }
 
         /// <summary>

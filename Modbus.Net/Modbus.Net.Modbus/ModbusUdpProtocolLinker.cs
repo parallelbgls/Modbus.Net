@@ -23,7 +23,13 @@ namespace Modbus.Net.Modbus
         /// <param name="port">端口</param>
         public ModbusUdpProtocolLinker(string ip, int port) : base(ip, port)
         {
-            ((IConnectorWithController<byte[], byte[]>)BaseConnector).AddController(new FifoController(int.Parse(ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "FetchSleepTime")), lengthCalc: DuplicateWithCount.GetDuplcateFunc(new List<int> { 4, 5 }, 6), waitingListMaxCount: ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "WaitingListCount") != null ? int.Parse(ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "WaitingListCount")) : null));
+            ((IConnectorWithController<byte[], byte[]>)BaseConnector).AddController(new FifoController(
+                int.Parse(ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "FetchSleepTime")),
+                lengthCalc: DuplicateWithCount.GetDuplcateFunc(new List<int> { 4, 5 }, 6),
+                waitingListMaxCount: ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "WaitingListCount") != null ?
+                  int.Parse(ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "WaitingListCount")) :
+                  null
+            ));
         }
 
         /// <summary>
@@ -35,9 +41,6 @@ namespace Modbus.Net.Modbus
         {
             //ProtocolLinker的CheckRight不会返回null
             if (base.CheckRight(content) != true) return false;
-            //长度校验失败
-            if (content[5] != content.Length - 6)
-                throw new ModbusProtocolErrorException(500);
             //Modbus协议错误
             if (content[7] > 127)
                 throw new ModbusProtocolErrorException(content[2] > 0 ? content[2] : content[8]);
