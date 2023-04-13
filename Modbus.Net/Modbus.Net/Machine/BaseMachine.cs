@@ -724,13 +724,6 @@ namespace Modbus.Net
     }
 
     /// <summary>
-    ///     数据单元扩展，返回数据时会同时将其返回
-    /// </summary>
-    public class UnitExtend
-    {
-    }
-
-    /// <summary>
     ///     返回的数据单元
     /// </summary>
     public class ReturnUnit<TReturn> where TReturn : struct
@@ -812,11 +805,6 @@ namespace Modbus.Net
         ///     是否可写，默认可写
         /// </summary>
         public bool CanWrite { get; set; } = true;
-
-        /// <summary>
-        ///     扩展
-        /// </summary>
-        public UnitExtend UnitExtend { get; set; }
 
         /// <summary>
         ///     两个地址是否一致

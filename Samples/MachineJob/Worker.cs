@@ -1,10 +1,6 @@
 using Modbus.Net;
-using Modbus.Net.Modbus;
-using Modbus.Net.Siemens;
 using DataReturnDef = Modbus.Net.DataReturnDef<string, double>;
-using ModbusMachine = Modbus.Net.Modbus.ModbusMachine<string, string>;
 using MultipleMachinesJobScheduler = Modbus.Net.MultipleMachinesJobScheduler<Modbus.Net.IMachineMethodDatas, string, double>;
-using SiemensMachine = Modbus.Net.Siemens.SiemensMachine<string, string>;
 
 namespace MachineJob.Service
 {
@@ -19,39 +15,7 @@ namespace MachineJob.Service
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-
-            List<AddressUnit> _addresses = new List<AddressUnit>
-            {
-                new AddressUnit() { Area = "4X", Address = 1, DataType = typeof(short), Id = "1", Name = "Test1" },
-                new AddressUnit() { Area = "4X", Address = 2, DataType = typeof(short), Id = "2", Name = "Test2" },
-                new AddressUnit() { Area = "4X", Address = 3, DataType = typeof(short), Id = "3", Name = "Test3" },
-                new AddressUnit() { Area = "4X", Address = 4, DataType = typeof(short), Id = "4", Name = "Test4" },
-                new AddressUnit() { Area = "4X", Address = 5, DataType = typeof(short), Id = "5", Name = "Test5" },
-                new AddressUnit() { Area = "4X", Address = 6, DataType = typeof(short), Id = "6", Name = "Test6" },
-                new AddressUnit() { Area = "4X", Address = 7, DataType = typeof(short), Id = "7", Name = "Test7" },
-                new AddressUnit() { Area = "4X", Address = 8, DataType = typeof(short), Id = "8", Name = "Test8" },
-                new AddressUnit() { Area = "4X", Address = 9, DataType = typeof(short), Id = "9", Name = "Test9" },
-                new AddressUnit() { Area = "4X", Address = 10, DataType = typeof(short), Id = "10", Name = "Test10" }
-            };
-
-            List<AddressUnit> _addresses2 = new List<AddressUnit>
-            {
-                new AddressUnit() { Area = "DB1", Address = 0, DataType = typeof(short), Id = "1", Name = "Test1" },
-                new AddressUnit() { Area = "DB1", Address = 2, DataType = typeof(short), Id = "2", Name = "Test2" },
-                new AddressUnit() { Area = "DB1", Address = 4, DataType = typeof(short), Id = "3", Name = "Test3" },
-                new AddressUnit() { Area = "DB1", Address = 6, DataType = typeof(short), Id = "4", Name = "Test4" },
-                new AddressUnit() { Area = "DB1", Address = 8, DataType = typeof(short), Id = "5", Name = "Test5" },
-                new AddressUnit() { Area = "DB1", Address = 10, DataType = typeof(short), Id = "6", Name = "Test6" },
-                new AddressUnit() { Area = "DB1", Address = 12, DataType = typeof(short), Id = "7", Name = "Test7" },
-                new AddressUnit() { Area = "DB1", Address = 14, DataType = typeof(short), Id = "8", Name = "Test8" },
-                new AddressUnit() { Area = "DB1", Address = 16, DataType = typeof(short), Id = "9", Name = "Test9" },
-                new AddressUnit() { Area = "DB1", Address = 18, DataType = typeof(short), Id = "10", Name = "Test10" }
-            };
-
-            IMachine<string> machine = new ModbusMachine("ModbusMachine1", ModbusType.Tcp, null, _addresses, true, 1, 2, Endian.BigEndianLsb);
-            IMachine<string> machine2 = new SiemensMachine("SiemensMachine1", SiemensType.Tcp, null, SiemensMachineModel.S7_1200, _addresses2, true, 1, 2);
-            IMachine<string> machine3 = new ModbusMachine("ModbusMachine2", ModbusType.Rtu, "COM1", _addresses, true, 3, 2);
-            var machines = new List<IMachine<string>>() { machine, machine2, machine3 };
+            var machines = MachineReader.ReadMachines();
             return Task.Run(() => MultipleMachinesJobScheduler.RunScheduler(machines, async (machine, scheduler) =>
             {
                 await scheduler.From(machine.Id, machine, MachineDataType.Name).Result.Query(machine.Id + ".ConsoleQuery", QueryConsole).Result.To(machine.Id + ".To", machine).Result.Deal(machine.Id + ".Deal", OnSuccess, OnFailure).Result.Run();

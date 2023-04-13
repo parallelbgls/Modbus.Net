@@ -50,7 +50,6 @@ namespace Modbus.Net
                 Name = addressUnit.Name,
                 Unit = addressUnit.Unit,
                 CanWrite = addressUnit.CanWrite,
-                UnitExtend = addressUnit.UnitExtend
             };
         }
     }
