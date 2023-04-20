@@ -10,12 +10,14 @@ namespace Modbus.Net.Tests
 
         private BaseMachine<string, string>? _modbusTcpMachine2;
 
+        private string _machineIp = "10.10.18.251";
+
         [TestInitialize]
         public void Init()
         {
-            _modbusTcpMachine = new ModbusMachine<string, string>("1", ModbusType.Tcp, "127.0.0.1", null, true, 1, 0);
+            _modbusTcpMachine = new ModbusMachine<string, string>("1", ModbusType.Tcp, _machineIp, null, true, 1, 0, Endian.BigEndianLsb);
 
-            _modbusTcpMachine2 = new ModbusMachine<string, string>("2", ModbusType.Tcp, "127.0.0.1", null, true, 1, 0, Endian.LittleEndianLsb);
+            _modbusTcpMachine2 = new ModbusMachine<string, string>("2", ModbusType.Tcp, _machineIp, null, true, 1, 0, Endian.LittleEndianLsb);
         }
 
         [TestMethod]
@@ -47,6 +49,7 @@ namespace Modbus.Net.Tests
             _modbusTcpMachine2!.GetAddresses = addresses;
             await _modbusTcpMachine.SetDatasAsync(MachineDataType.Address, dic1);
             var ans = await _modbusTcpMachine.GetDatasAsync(MachineDataType.Address);
+            _modbusTcpMachine.Disconnect();
             var ans2 = await _modbusTcpMachine2.GetDatasAsync(MachineDataType.Address);
             Assert.AreEqual(ans.Datas["4X 1.0"].DeviceValue, dic1["4X 1"]);
             Assert.AreEqual(ans2.Datas["4X 1.0"].DeviceValue, (ushort)dic1["4X 1"] % 256 * 256 + (ushort)dic1["4X 1"] / 256);

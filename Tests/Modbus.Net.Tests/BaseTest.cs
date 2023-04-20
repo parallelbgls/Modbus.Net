@@ -9,7 +9,9 @@ namespace Modbus.Net.Tests
     {
         private List<AddressUnit<int>>? _addressUnits;
 
-        private BaseMachine<int, int>? _baseMachine2;
+        private BaseMachine<int, int>? _baseMachine;
+
+        private string _machineIp = "10.10.18.251";
 
         [TestInitialize]
         public void Init()
@@ -122,13 +124,13 @@ namespace Modbus.Net.Tests
                 },
             };
 
-            _baseMachine2 = new SiemensMachine<int, int>(2, SiemensType.Tcp, "192.168.3.10", SiemensMachineModel.S7_1200, _addressUnits, true, 2, 0)
+            _baseMachine = new SiemensMachine<int, int>(2, SiemensType.Tcp, _machineIp, SiemensMachineModel.S7_1200, _addressUnits, true, 2, 0, 1, 0)
             {
                 ProjectName = "Project 1",
                 MachineName = "Test 2"
             };
 
-            _baseMachine2.ConnectAsync().Wait();
+            _baseMachine.ConnectAsync().Wait();
         }
 
         [TestMethod]
@@ -293,7 +295,7 @@ namespace Modbus.Net.Tests
         [TestCleanup]
         public void MachineClean()
         {
-            _baseMachine2?.Disconnect();
+            _baseMachine?.Disconnect();
         }
     }
 }

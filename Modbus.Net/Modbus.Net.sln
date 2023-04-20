@@ -34,7 +34,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CrossLamp", "..\Samples\Cro
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TripleAdd", "..\Samples\TripleAdd\TripleAdd.csproj", "{414956B8-DBD4-414C-ABD3-565580739646}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modbus.Net.Modbus.SelfDefinedSample", "Modbus.Net.Modbus.SelfDefinedSample\Modbus.Net.Modbus.SelfDefinedSample.csproj", "{C4FA55AF-80ED-4467-948F-8EF865C8A5A5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Modbus.Net.Modbus.SelfDefinedSample", "Modbus.Net.Modbus.SelfDefinedSample\Modbus.Net.Modbus.SelfDefinedSample.csproj", "{C4FA55AF-80ED-4467-948F-8EF865C8A5A5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

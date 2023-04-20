@@ -8,10 +8,12 @@ namespace Modbus.Net.Tests
     {
         private BaseMachine<string, string>? _siemensTcpMachine;
 
+        private string _machineIp = "10.10.18.251";
+
         [TestInitialize]
         public void Init()
         {
-            _siemensTcpMachine = new SiemensMachine<string, string>("1", SiemensType.Tcp, "192.168.3.10", SiemensMachineModel.S7_1200, null, true, 2, 0);
+            _siemensTcpMachine = new SiemensMachine<string, string>("1", SiemensType.Tcp, _machineIp, SiemensMachineModel.S7_1200, null, true, 2, 0);
         }
 
         [TestMethod]

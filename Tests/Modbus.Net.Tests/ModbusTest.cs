@@ -12,14 +12,18 @@ namespace Modbus.Net.Tests
 
         private BaseMachine<string, string>? _modbusAsciiMachine;
 
+        private string _machineIp = "10.10.18.251";
+
+        private string _machineCom = "COM1";
+
         [TestInitialize]
         public void Init()
         {
-            _modbusTcpMachine = new ModbusMachine<string, string>("1", ModbusType.Tcp, "192.168.3.10", null, true, 2, 0);
+            _modbusTcpMachine = new ModbusMachine<string, string>("1", ModbusType.Tcp, _machineIp, null, true, 2, 0);
 
-            _modbusRtuMachine = new ModbusMachine<string, string>("2", ModbusType.Rtu, "COM5", null, true, 2, 0);
+            _modbusRtuMachine = new ModbusMachine<string, string>("2", ModbusType.Rtu, _machineCom, null, true, 2, 0);
 
-            _modbusAsciiMachine = new ModbusMachine<string, string>("3", ModbusType.Ascii, "COM5", null, true, 2, 0);
+            _modbusAsciiMachine = new ModbusMachine<string, string>("3", ModbusType.Ascii, _machineCom, null, true, 2, 0);
         }
 
         [TestMethod]

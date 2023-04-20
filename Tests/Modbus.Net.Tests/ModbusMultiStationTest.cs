@@ -10,11 +10,13 @@ namespace Modbus.Net.Tests
 
         private BaseMachine<string, string>? _modbusRtuMachine2;
 
+        private string _machineCom = "COM1";
+
         [TestInitialize]
         public void Init()
         {
-            _modbusRtuMachine1 = new ModbusMachine<string, string>("1", ModbusType.Rtu, "COM1", null, true, 1, 0);
-            _modbusRtuMachine2 = new ModbusMachine<string, string>("2", ModbusType.Rtu, "COM1", null, true, 2, 0);
+            _modbusRtuMachine1 = new ModbusMachine<string, string>("1", ModbusType.Rtu, _machineCom, null, true, 1, 0);
+            _modbusRtuMachine2 = new ModbusMachine<string, string>("2", ModbusType.Rtu, _machineCom, null, true, 2, 0);
         }
 
         [TestMethod]

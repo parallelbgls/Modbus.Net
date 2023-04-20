@@ -44,7 +44,7 @@ namespace Modbus.Net
         }
 
         /// <inheritdoc />
-        public override string ConnectionToken => _host;
+        public override string ConnectionToken => _host + ":" + _port;
 
         /// <inheritdoc />
         protected override int TimeoutTime { get; set; }
@@ -145,7 +145,7 @@ namespace Modbus.Net
         /// <inheritdoc />
         public override bool Disconnect()
         {
-            if (Channel.Open)
+            if (!(Channel?.Open == true))
                 return true;
 
             try

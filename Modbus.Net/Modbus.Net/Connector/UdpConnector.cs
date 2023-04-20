@@ -43,7 +43,7 @@ namespace Modbus.Net
         }
 
         /// <inheritdoc />
-        public override string ConnectionToken => _host;
+        public override string ConnectionToken => _host + ":" + _port;
 
         /// <inheritdoc />
         protected override int TimeoutTime { get; set; }
