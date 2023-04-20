@@ -27,7 +27,5 @@
     <TestLink id="48af77ea-9315-04b2-0358-da5b371af3e6" name="SiemensMSingle" storage="bin\debug\modbus.net.tests.dll" type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel,   PublicKeyToken=b03f5f7f11d50a3a" />
     <TestLink id="3ff65ca6-f244-fda3-f8ba-d5c12a96b092" name="SiemensDbSingle" storage="bin\debug\modbus.net.tests.dll" type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel,   PublicKeyToken=b03f5f7f11d50a3a" />
     <TestLink id="0318ff48-7798-7715-00db-c4ff8ac8f735" name="SiemensDbMultiple" storage="bin\debug\modbus.net.tests.dll" type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel,   PublicKeyToken=b03f5f7f11d50a3a" />
-    <TestLink id="40dbef40-f566-82ba-377e-7ed3ce059399" name="TaskManagerGetMachineTest" storage="bin\debug\modbus.net.tests.dll" type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel,   PublicKeyToken=b03f5f7f11d50a3a" />
-    <TestLink id="e3245380-3a92-12a1-b38b-f31f7e50f5e6" name="TaskManagerValueReadWriteTest" storage="bin\debug\modbus.net.tests.dll" type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel,   PublicKeyToken=b03f5f7f11d50a3a" />
   </TestLinks>
 </OrderedTest>
