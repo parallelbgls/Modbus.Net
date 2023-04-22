@@ -28,7 +28,8 @@ namespace Modbus.Net.Modbus
                 int.Parse(ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "FetchSleepTime")),
                 lengthCalc: content =>
                 {
-                    if (content[1] == 5 || content[1] == 6 || content[1] == 15 || content[1] == 16 || content[1] == 21) return 8;
+                    if (content[1] > 128) return 5;
+                    else if (content[1] == 5 || content[1] == 6 || content[1] == 15 || content[1] == 16 || content[1] == 21) return 8;
                     else return DuplicateWithCount.GetDuplcateFunc(new List<int> { 2 }, 5).Invoke(content);
                 },
                 checkRightFunc: ContentCheck.Crc16CheckRight,

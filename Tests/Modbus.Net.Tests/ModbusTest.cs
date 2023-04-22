@@ -16,6 +16,8 @@ namespace Modbus.Net.Tests
 
         private string _machineCom = "COM1";
 
+        private string _machineCom2 = "COM3";
+
         [TestInitialize]
         public void Init()
         {
@@ -23,7 +25,7 @@ namespace Modbus.Net.Tests
 
             _modbusRtuMachine = new ModbusMachine<string, string>("2", ModbusType.Rtu, _machineCom, null, true, 2, 0);
 
-            _modbusAsciiMachine = new ModbusMachine<string, string>("3", ModbusType.Ascii, _machineCom, null, true, 2, 0);
+            _modbusAsciiMachine = new ModbusMachine<string, string>("3", ModbusType.Ascii, _machineCom2, null, true, 2, 0);
         }
 
         [TestMethod]
@@ -60,9 +62,9 @@ namespace Modbus.Net.Tests
             var ans = await _modbusTcpMachine.GetDatasAsync(MachineDataType.Address);
             var ans2 = await _modbusRtuMachine.GetDatasAsync(MachineDataType.Address);
             var ans3 = await _modbusAsciiMachine.GetDatasAsync(MachineDataType.Address);
-            Assert.AreEqual(ans.Datas["0X 1.0"].DeviceValue, dic1["0X 1.0"]);
-            Assert.AreEqual(ans2.Datas["0X 1.0"].DeviceValue, dic1["0X 1.0"]);
-            Assert.AreEqual(ans3.Datas["0X 1.0"].DeviceValue, dic1["0X 1.0"]);
+            Assert.AreEqual(ans.Datas?["0X 1.0"].DeviceValue, dic1["0X 1.0"]);
+            Assert.AreEqual(ans2.Datas?["0X 1.0"].DeviceValue, dic1["0X 1.0"]);
+            Assert.AreEqual(ans3.Datas?["0X 1.0"].DeviceValue, dic1["0X 1.0"]);
         }
 
         [TestMethod]
@@ -87,9 +89,9 @@ namespace Modbus.Net.Tests
             var ans = await _modbusTcpMachine.GetDatasAsync(MachineDataType.Address);
             var ans2 = await _modbusRtuMachine.GetDatasAsync(MachineDataType.Address);
             var ans3 = await _modbusAsciiMachine.GetDatasAsync(MachineDataType.Address);
-            Assert.AreEqual(ans.Datas["1X 1.0"].DeviceValue, 0);
-            Assert.AreEqual(ans2.Datas["1X 1.0"].DeviceValue, 0);
-            Assert.AreEqual(ans3.Datas["1X 1.0"].DeviceValue, 0);
+            Assert.AreEqual(ans.Datas?["1X 1.0"].DeviceValue, 0);
+            Assert.AreEqual(ans2.Datas?["1X 1.0"].DeviceValue, 0);
+            Assert.AreEqual(ans3.Datas?["1X 1.0"].DeviceValue, 0);
         }
 
         [TestMethod]
@@ -114,9 +116,9 @@ namespace Modbus.Net.Tests
             var ans = await _modbusTcpMachine.GetDatasAsync(MachineDataType.Address);
             var ans2 = await _modbusRtuMachine.GetDatasAsync(MachineDataType.Address);
             var ans3 = await _modbusAsciiMachine.GetDatasAsync(MachineDataType.Address);
-            Assert.AreEqual(ans.Datas["3X 1.0"].DeviceValue, 0);
-            Assert.AreEqual(ans2.Datas["3X 1.0"].DeviceValue, 0);
-            Assert.AreEqual(ans3.Datas["3X 1.0"].DeviceValue, 0);
+            Assert.AreEqual(ans.Datas?["3X 1.0"].DeviceValue, 0);
+            Assert.AreEqual(ans2.Datas?["3X 1.0"].DeviceValue, 0);
+            Assert.AreEqual(ans3.Datas?["3X 1.0"].DeviceValue, 0);
         }
 
         [TestMethod]
@@ -153,9 +155,9 @@ namespace Modbus.Net.Tests
             var ans = await _modbusTcpMachine.GetDatasAsync(MachineDataType.Address);
             var ans2 = await _modbusRtuMachine.GetDatasAsync(MachineDataType.Address);
             var ans3 = await _modbusAsciiMachine.GetDatasAsync(MachineDataType.Address);
-            Assert.AreEqual(ans.Datas["4X 1.0"].DeviceValue, dic1["4X 1"]);
-            Assert.AreEqual(ans2.Datas["4X 1.0"].DeviceValue, dic1["4X 1"]);
-            Assert.AreEqual(ans3.Datas["4X 1.0"].DeviceValue, dic1["4X 1"]);
+            Assert.AreEqual(ans.Datas?["4X 1.0"].DeviceValue, dic1["4X 1"]);
+            Assert.AreEqual(ans2.Datas?["4X 1.0"].DeviceValue, dic1["4X 1"]);
+            Assert.AreEqual(ans3.Datas?["4X 1.0"].DeviceValue, dic1["4X 1"]);
         }
 
         [TestMethod]
@@ -254,63 +256,24 @@ namespace Modbus.Net.Tests
             var ans2 = await _modbusRtuMachine.GetDatasAsync(MachineDataType.CommunicationTag);
             var ans3 = await _modbusAsciiMachine.GetDatasAsync(MachineDataType.CommunicationTag);
 
-            Assert.AreEqual(ans.Datas["A1"].DeviceValue, dic1["A1"]);
-            Assert.AreEqual(ans.Datas["A2"].DeviceValue, dic1["A2"]);
-            Assert.AreEqual(ans.Datas["A3"].DeviceValue, dic1["A3"]);
-            Assert.AreEqual(ans.Datas["A4"].DeviceValue, dic1["A4"]);
-            Assert.AreEqual(ans.Datas["A5"].DeviceValue, dic1["A5"]);
-            Assert.AreEqual(ans.Datas["A6"].DeviceValue, dic1["A6"]);
-            Assert.AreEqual(ans2.Datas["A1"].DeviceValue, dic1["A1"]);
-            Assert.AreEqual(ans2.Datas["A2"].DeviceValue, dic1["A2"]);
-            Assert.AreEqual(ans2.Datas["A3"].DeviceValue, dic1["A3"]);
-            Assert.AreEqual(ans2.Datas["A4"].DeviceValue, dic1["A4"]);
-            Assert.AreEqual(ans2.Datas["A5"].DeviceValue, dic1["A5"]);
-            Assert.AreEqual(ans2.Datas["A6"].DeviceValue, dic1["A6"]);
-            Assert.AreEqual(ans3.Datas["A1"].DeviceValue, dic1["A1"]);
-            Assert.AreEqual(ans3.Datas["A2"].DeviceValue, dic1["A2"]);
-            Assert.AreEqual(ans3.Datas["A3"].DeviceValue, dic1["A3"]);
-            Assert.AreEqual(ans3.Datas["A4"].DeviceValue, dic1["A4"]);
-            Assert.AreEqual(ans3.Datas["A5"].DeviceValue, dic1["A5"]);
-            Assert.AreEqual(ans3.Datas["A6"].DeviceValue, dic1["A6"]);
-        }
-
-        [TestMethod]
-        public async Task ModbusWriteSingleTest()
-        {
-            Random r = new Random();
-
-            var dic1 = new Dictionary<string, double>()
-            {
-                {
-                    "4X 1", r.Next(0, UInt16.MaxValue)
-                }
-            };
-
-            var dic2 = new Dictionary<string, double>()
-            {
-                {
-                    "0X 1", r.Next(0, 2)
-                }
-            };
-
-            await _modbusTcpMachine!.BaseUtility.GetUtilityMethods<IUtilityMethodWriteSingleCoil>().SetSingleCoilAsync("4X 1", dic1["4X 1"]);
-            await _modbusAsciiMachine!.BaseUtility.GetUtilityMethods<IUtilityMethodWriteSingleCoil>().SetSingleCoilAsync("4X 1", dic1["4X 1"]);
-            await _modbusRtuMachine!.BaseUtility.GetUtilityMethods<IUtilityMethodWriteSingleCoil>().SetSingleCoilAsync("4X 1", dic1["4X 1"]);
-            var ans = await _modbusTcpMachine.BaseUtility.GetUtilityMethods<IUtilityMethodDatas>().GetDatasAsync<ushort>("4X 1", 1);
-            var ans2 = await _modbusRtuMachine.BaseUtility.GetUtilityMethods<IUtilityMethodDatas>().GetDatasAsync<ushort>("4X 1", 1);
-            var ans3 = await _modbusAsciiMachine.BaseUtility.GetUtilityMethods<IUtilityMethodDatas>().GetDatasAsync<ushort>("4X 1", 1);
-            Assert.AreEqual(ans.Datas[0], dic1["4X 1"]);
-            Assert.AreEqual(ans2.Datas[0], dic1["4X 1"]);
-            Assert.AreEqual(ans3.Datas[0], dic1["4X 1"]);
-            await _modbusTcpMachine.BaseUtility.GetUtilityMethods<IUtilityMethodWriteSingleCoil>().SetSingleCoilAsync("0X 1", dic2["0X 1"] >= 1);
-            await _modbusAsciiMachine.BaseUtility.GetUtilityMethods<IUtilityMethodWriteSingleCoil>().SetSingleCoilAsync("0X 1", dic2["0X 1"] >= 1);
-            await _modbusRtuMachine.BaseUtility.GetUtilityMethods<IUtilityMethodWriteSingleCoil>().SetSingleCoilAsync("0X 1", dic2["0X 1"] >= 1);
-            var ans21 = await _modbusTcpMachine.BaseUtility.GetUtilityMethods<IUtilityMethodDatas>().GetDatasAsync<bool>("0X 1", 1);
-            var ans22 = await _modbusRtuMachine.BaseUtility.GetUtilityMethods<IUtilityMethodDatas>().GetDatasAsync<bool>("0X 1", 1);
-            var ans23 = await _modbusAsciiMachine.BaseUtility.GetUtilityMethods<IUtilityMethodDatas>().GetDatasAsync<bool>("0X 1", 1);
-            Assert.AreEqual(ans21.Datas[0] ? 1 : 0, dic2["0X 1"]);
-            Assert.AreEqual(ans22.Datas[0] ? 1 : 0, dic2["0X 1"]);
-            Assert.AreEqual(ans23.Datas[0] ? 1 : 0, dic2["0X 1"]);
+            Assert.AreEqual(ans.Datas?["A1"].DeviceValue, dic1["A1"]);
+            Assert.AreEqual(ans.Datas?["A2"].DeviceValue, dic1["A2"]);
+            Assert.AreEqual(ans.Datas?["A3"].DeviceValue, dic1["A3"]);
+            Assert.AreEqual(ans.Datas?["A4"].DeviceValue, dic1["A4"]);
+            Assert.AreEqual(ans.Datas?["A5"].DeviceValue, dic1["A5"]);
+            Assert.AreEqual(ans.Datas?["A6"].DeviceValue, dic1["A6"]);
+            Assert.AreEqual(ans2.Datas?["A1"].DeviceValue, dic1["A1"]);
+            Assert.AreEqual(ans2.Datas?["A2"].DeviceValue, dic1["A2"]);
+            Assert.AreEqual(ans2.Datas?["A3"].DeviceValue, dic1["A3"]);
+            Assert.AreEqual(ans2.Datas?["A4"].DeviceValue, dic1["A4"]);
+            Assert.AreEqual(ans2.Datas?["A5"].DeviceValue, dic1["A5"]);
+            Assert.AreEqual(ans2.Datas?["A6"].DeviceValue, dic1["A6"]);
+            Assert.AreEqual(ans3.Datas?["A1"].DeviceValue, dic1["A1"]);
+            Assert.AreEqual(ans3.Datas?["A2"].DeviceValue, dic1["A2"]);
+            Assert.AreEqual(ans3.Datas?["A3"].DeviceValue, dic1["A3"]);
+            Assert.AreEqual(ans3.Datas?["A4"].DeviceValue, dic1["A4"]);
+            Assert.AreEqual(ans3.Datas?["A5"].DeviceValue, dic1["A5"]);
+            Assert.AreEqual(ans3.Datas?["A6"].DeviceValue, dic1["A6"]);
         }
 
 

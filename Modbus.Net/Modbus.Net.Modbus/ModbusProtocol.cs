@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using ProtocolUnit = Modbus.Net.ProtocolUnit<byte[], byte[]>;
 
@@ -296,10 +297,14 @@ namespace Modbus.Net.Modbus
             FunctionCode = (byte)translateAddress.Area;
             StartAddress = (ushort)translateAddress.Address;
             var writeByteValue = ValueHelper.GetInstance(endian).ObjectArrayToByteArray(writeValue);
+            if (writeByteValue.Length % 2 == 1) writeByteValue = writeByteValue.ToList().Append<byte>(0).ToArray();
             WriteCount =
                 (ushort)(writeByteValue.Length / addressTranslator.GetAreaByteLength(translateAddress.AreaString));
             WriteByteCount = (byte)writeByteValue.Length;
             WriteValue = writeByteValue;
+            translateAddress = ((ModbusTranslatorBase)addressTranslator).AddressTranslate(startAddress, false, WriteCount == 1);
+            FunctionCode = (byte)translateAddress.Area;
+            StartAddress = (ushort)translateAddress.Address;
         }
 
         /// <summary>
@@ -389,8 +394,18 @@ namespace Modbus.Net.Modbus
         {
             var r_message = (WriteDataModbusInputStruct)message;
             var dataValue = Format(r_message.WriteValue);
-            var formattingBytes = Format(r_message.SlaveAddress, r_message.FunctionCode,
-                r_message.StartAddress, r_message.WriteCount, r_message.WriteByteCount, dataValue);
+            byte[] formattingBytes;
+            if (r_message.FunctionCode == (byte)ModbusProtocolFunctionCode.WriteSingleCoil || r_message.FunctionCode == (byte)ModbusProtocolFunctionCode.WriteSingleRegister)
+            {
+                formattingBytes = Format(r_message.SlaveAddress, r_message.FunctionCode,
+                    r_message.StartAddress, dataValue);
+            }
+            else
+            {
+                formattingBytes = Format(r_message.SlaveAddress, r_message.FunctionCode,
+                    r_message.StartAddress, r_message.WriteCount, r_message.WriteByteCount, dataValue);
+            }
+            
             return formattingBytes;
         }
 
@@ -406,139 +421,12 @@ namespace Modbus.Net.Modbus
             var functionCode = ValueHelper.GetInstance(Endian).GetByte(messageBytes, ref flag);
             var startAddress = ValueHelper.GetInstance(Endian).GetUShort(messageBytes, ref flag);
             var writeCount = ValueHelper.GetInstance(Endian).GetUShort(messageBytes, ref flag);
+            if (functionCode == (byte)ModbusProtocolFunctionCode.WriteSingleCoil || functionCode == (byte)ModbusProtocolFunctionCode.WriteSingleRegister)
+            {
+                writeCount = 1;
+            }
             return new WriteDataModbusOutputStruct(slaveAddress, functionCode, startAddress,
                 writeCount);
-        }
-    }
-
-    /// <summary>
-    ///     写数据输入
-    /// </summary>
-    public class WriteSingleCoilModbusInputStruct : IInputStruct
-    {
-        /// <summary>
-        ///     构造函数
-        /// </summary>
-        /// <param name="slaveAddress">从站号</param>
-        /// <param name="startAddress">开始地址</param>
-        /// <param name="writeValue">写入的数据</param>
-        /// <param name="addressTranslator">地址翻译器</param>
-        /// <param name="endian">端格式</param>
-        public WriteSingleCoilModbusInputStruct(byte slaveAddress, string startAddress, object writeValue,
-            ModbusTranslatorBase addressTranslator, Endian endian)
-        {
-            SlaveAddress = slaveAddress;
-            var translateAddress = addressTranslator.AddressTranslate(startAddress, false, true);
-            FunctionCode = (byte)translateAddress.Area;
-            StartAddress = (ushort)translateAddress.Address;
-            var writeByteValue =
-                FunctionCode == (byte)ModbusProtocolFunctionCode.WriteSingleCoil
-                    ? ((bool)writeValue
-                        ? new byte[] { 0xFF, 0x00 }
-                        : new byte[] { 0x00, 0x00 })
-                    : ValueHelper.GetInstance(endian).GetBytes(ushort.Parse(writeValue.ToString()));
-            WriteValue = writeByteValue;
-        }
-
-
-        /// <summary>
-        ///     从站号
-        /// </summary>
-        public byte SlaveAddress { get; }
-
-        /// <summary>
-        ///     功能码
-        /// </summary>
-        public byte FunctionCode { get; }
-
-        /// <summary>
-        ///     开始地址
-        /// </summary>
-        public ushort StartAddress { get; }
-
-        /// <summary>
-        ///     写入的数据
-        /// </summary>
-        public byte[] WriteValue { get; }
-    }
-
-    /// <summary>
-    ///     写数据输出
-    /// </summary>
-    public class WriteSingleCoilModbusOutputStruct : IOutputStruct
-    {
-        /// <summary>
-        ///     构造函数
-        /// </summary>
-        /// <param name="slaveAddress">从站号</param>
-        /// <param name="functionCode">功能码</param>
-        /// <param name="startAddress">开始地址</param>
-        /// <param name="writeValue">写入的数据</param>
-        public WriteSingleCoilModbusOutputStruct(byte slaveAddress, byte functionCode,
-            ushort startAddress, object writeValue)
-        {
-            SlaveAddress = slaveAddress;
-            FunctionCode = functionCode;
-            StartAddress = startAddress;
-            WriteValue = writeValue;
-        }
-
-        /// <summary>
-        ///     从站号
-        /// </summary>
-        public byte SlaveAddress { get; private set; }
-
-        /// <summary>
-        ///     功能码
-        /// </summary>
-        public byte FunctionCode { get; private set; }
-
-        /// <summary>
-        ///     开始地址
-        /// </summary>
-        public ushort StartAddress { get; private set; }
-
-        /// <summary>
-        ///     写入的数据
-        /// </summary>
-        public object WriteValue { get; private set; }
-    }
-
-    /// <summary>
-    ///     写多个寄存器协议
-    /// </summary>
-    public class WriteSingleCoilModbusProtocol : ProtocolUnit
-    {
-        /// <summary>
-        ///     格式化
-        /// </summary>
-        /// <param name="message">写寄存器参数</param>
-        /// <returns>写寄存器协议核心</returns>
-        public override byte[] Format(IInputStruct message)
-        {
-            var r_message = (WriteSingleCoilModbusInputStruct)message;
-            var dataValue = Format(r_message.WriteValue);
-            var formattingBytes = Format(r_message.SlaveAddress, r_message.FunctionCode,
-                r_message.StartAddress, dataValue);
-            return formattingBytes;
-        }
-
-        /// <summary>
-        ///     反格式化
-        /// </summary>
-        /// <param name="messageBytes">设备返回的信息</param>
-        /// <param name="flag">当前反格式化的位置</param>
-        /// <returns>反格式化的信息</returns>
-        public override IOutputStruct Unformat(byte[] messageBytes, ref int flag)
-        {
-            var slaveAddress = ValueHelper.GetInstance(Endian).GetByte(messageBytes, ref flag);
-            var functionCode = ValueHelper.GetInstance(Endian).GetByte(messageBytes, ref flag);
-            var startAddress = ValueHelper.GetInstance(Endian).GetUShort(messageBytes, ref flag);
-            var writeValue = ValueHelper.GetInstance(Endian).GetUShort(messageBytes, ref flag);
-            var returnValue = functionCode == (byte)ModbusProtocolFunctionCode.WriteSingleCoil
-                ? (object)(writeValue == 0xFF00) : writeValue;
-            return new WriteSingleCoilModbusOutputStruct(slaveAddress, functionCode, startAddress,
-                returnValue);
         }
     }
 

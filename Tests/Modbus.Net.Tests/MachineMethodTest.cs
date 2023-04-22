@@ -25,10 +25,10 @@ namespace Modbus.Net.Tests
         {
             BaseMachine<int, int> baseMachine = new ModbusMachine<int, int>(1, ModbusType.Tcp, _machineIp, null, true, 2, 0);
             await baseMachine.BaseUtility.ConnectAsync();
-            var success = await baseMachine.BaseUtility.GetUtilityMethods<IUtilityMethodDatas>().SetDatasAsync("4X 1", new object[] { (ushort)11 });
+            var success = await baseMachine.BaseUtility.GetUtilityMethods<IUtilityMethodDatas>().SetDatasAsync("4X 1", new object[] { (byte)11 });
             Assert.AreEqual(success.IsSuccess, true);
             var datas = await baseMachine.BaseUtility.GetUtilityMethods<IUtilityMethodDatas>().GetDatasAsync("4X 1", 1);
-            Assert.AreEqual(datas.Datas[1], 11);
+            Assert.AreEqual(datas.Datas[0], 11);
             baseMachine.Disconnect();
         }
 

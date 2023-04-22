@@ -51,23 +51,9 @@ namespace Modbus.Net.Modbus
     }
 
     /// <summary>
-    ///     写单个数据方法接口
-    /// </summary>
-    public interface IUtilityMethodWriteSingleCoil : IUtilityMethod
-    {
-        /// <summary>
-        ///     写数据
-        /// </summary>
-        /// <param name="startAddress">起始地址</param>
-        /// <param name="setContent">需要设置的数据</param>
-        /// <returns>设置是否成功</returns>
-        Task<ReturnStruct<bool>> SetSingleCoilAsync(string startAddress, object setContent);
-    }
-
-    /// <summary>
     ///     Modbus基础Api入口
     /// </summary>
-    public class ModbusUtility : BaseUtility<byte[], byte[], ProtocolUnit<byte[], byte[]>, PipeUnit>, IUtilityMethodWriteSingleCoil
+    public class ModbusUtility : BaseUtility<byte[], byte[], ProtocolUnit<byte[], byte[]>, PipeUnit>
     {
         private static readonly ILogger<ModbusUtility> logger = LogProvider.CreateLogger<ModbusUtility>();
 
@@ -318,42 +304,6 @@ namespace Modbus.Net.Modbus
             catch (ModbusProtocolErrorException e)
             {
                 logger.LogError(e, $"ModbusUtility -> SetDatas: {ConnectionString} error: {e.Message}");
-                return new ReturnStruct<bool>
-                {
-                    Datas = false,
-                    IsSuccess = false,
-                    ErrorCode = e.ErrorMessageNumber,
-                    ErrorMsg = e.Message
-                };
-            }
-        }
-
-        /// <summary>
-        ///     写数据
-        /// </summary>
-        /// <param name="startAddress">起始地址</param>
-        /// <param name="setContent">需要设置的数据</param>
-        /// <returns>设置是否成功</returns>
-        public async Task<ReturnStruct<bool>> SetSingleCoilAsync(string startAddress, object setContent)
-        {
-            try
-            {
-                var inputStruct = new WriteSingleCoilModbusInputStruct(SlaveAddress, startAddress, setContent,
-                    (ModbusTranslatorBase)AddressTranslator, Endian);
-                var outputStruct = await
-                    Wrapper.SendReceiveAsync<WriteSingleCoilModbusOutputStruct>(Wrapper[typeof(WriteSingleCoilModbusProtocol)],
-                        inputStruct);
-                return new ReturnStruct<bool>()
-                {
-                    Datas = outputStruct?.WriteValue.ToString() == setContent.ToString(),
-                    IsSuccess = outputStruct?.WriteValue.ToString() == setContent.ToString(),
-                    ErrorCode = outputStruct?.WriteValue.ToString() == setContent.ToString() ? 0 : -2,
-                    ErrorMsg = outputStruct?.WriteValue.ToString() == setContent.ToString() ? "" : "Data length mismatch"
-                };
-            }
-            catch (ModbusProtocolErrorException e)
-            {
-                logger.LogError(e, $"ModbusUtility -> SetSingleDatas: {ConnectionString} error: {e.Message}");
                 return new ReturnStruct<bool>
                 {
                     Datas = false,

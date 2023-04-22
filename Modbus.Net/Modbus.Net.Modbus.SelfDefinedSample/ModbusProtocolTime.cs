@@ -30,11 +30,11 @@ namespace Modbus.Net.Modbus.SelfDefinedSample
         ///     构造函数
         /// </summary>
         /// <param name="slaveAddress">从站号</param>
-        public GetSystemTimeModbusInputStruct(byte slaveAddress)
+        public GetSystemTimeModbusInputStruct(byte slaveAddress, ushort startAddress)
         {
             SlaveAddress = slaveAddress;
             FunctionCode = (byte)ModbusProtocolTimeFunctionCode.GetSystemTime;
-            StartAddress = 30000;
+            StartAddress = startAddress;
             GetCount = 5;
         }
 
@@ -162,11 +162,11 @@ namespace Modbus.Net.Modbus.SelfDefinedSample
         /// </summary>
         /// <param name="slaveAddress">从站号</param>
         /// <param name="time">时间</param>
-        public SetSystemTimeModbusInputStruct(byte slaveAddress, DateTime time)
+        public SetSystemTimeModbusInputStruct(byte slaveAddress, ushort startAddress, DateTime time)
         {
             SlaveAddress = slaveAddress;
             FunctionCode = (byte)ModbusProtocolTimeFunctionCode.SetSystemTime;
-            StartAddress = 30000;
+            StartAddress = startAddress;
             WriteCount = 5;
             WriteByteCount = 10;
             Year = (ushort)time.Year;

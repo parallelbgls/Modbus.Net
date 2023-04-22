@@ -39,11 +39,11 @@ namespace Modbus.Net.Modbus.SelfDefinedSample
         ///     读时间
         /// </summary>
         /// <returns>设备的时间</returns>
-        public async Task<ReturnStruct<DateTime>> GetTimeAsync()
+        public async Task<ReturnStruct<DateTime>> GetTimeAsync(ushort startAddress)
         {
             try
             {
-                var inputStruct = new GetSystemTimeModbusInputStruct(SlaveAddress);
+                var inputStruct = new GetSystemTimeModbusInputStruct(SlaveAddress, startAddress);
                 var outputStruct =
                     await Wrapper.SendReceiveAsync<GetSystemTimeModbusOutputStruct>(
                         Wrapper[typeof(GetSystemTimeModbusProtocol)], inputStruct);
@@ -73,11 +73,11 @@ namespace Modbus.Net.Modbus.SelfDefinedSample
         /// </summary>
         /// <param name="setTime">需要写入的时间</param>
         /// <returns>写入是否成功</returns>
-        public async Task<ReturnStruct<bool>> SetTimeAsync(DateTime setTime)
+        public async Task<ReturnStruct<bool>> SetTimeAsync(ushort startAddress, DateTime setTime)
         {
             try
             {
-                var inputStruct = new SetSystemTimeModbusInputStruct(SlaveAddress, setTime);
+                var inputStruct = new SetSystemTimeModbusInputStruct(SlaveAddress, startAddress, setTime);
                 var outputStruct =
                     await Wrapper.SendReceiveAsync<SetSystemTimeModbusOutputStruct>(
                         Wrapper[typeof(SetSystemTimeModbusProtocol)], inputStruct);
