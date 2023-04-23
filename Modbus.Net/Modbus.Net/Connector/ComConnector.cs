@@ -433,24 +433,36 @@ namespace Modbus.Net
         /// </summary>
         protected void CheckOpen()
         {
-            if (!SerialPort.IsOpen)
+            if (SerialPort == null)
             {
                 try
                 {
-                    SerialPort.Open();
+                    Connect();
                 }
-                catch (Exception err)
+                catch (Exception err1)
                 {
-                    logger.LogError(err, "Com client {ConnectionToken} open error", _com);
+                    logger.LogError(err1, "Com client {ConnectionToken} open error", _com);
                     Dispose();
+                }
+                if (!SerialPort.IsOpen)
+                {
                     try
                     {
-                        SerialPort.Open();
+                        Connect();
                     }
                     catch (Exception err2)
                     {
                         logger.LogError(err2, "Com client {ConnectionToken} open error", _com);
                         Dispose();
+                        try
+                        {
+                            Connect();
+                        }
+                        catch (Exception err3)
+                        {
+                            logger.LogError(err3, "Com client {ConnectionToken} open error", _com);
+                            Dispose();
+                        }
                     }
                 }
             }

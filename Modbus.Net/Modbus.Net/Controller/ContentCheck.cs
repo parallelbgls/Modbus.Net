@@ -58,7 +58,9 @@ namespace Modbus.Net
         public static bool? FcsCheckRight(byte[] content)
         {
             var fcsCheck = 0;
-            for (var i = 4; i < content.Length - 2; i++)
+            var start = content[0] == 0x10 ? 1 : 4;
+            if (content[0] == 0xE5) return true;
+            for (var i = start; i < content.Length - 2; i++)
                 fcsCheck += content[i];
             fcsCheck = fcsCheck % 256;
             if (fcsCheck != content[content.Length - 2]) return false;

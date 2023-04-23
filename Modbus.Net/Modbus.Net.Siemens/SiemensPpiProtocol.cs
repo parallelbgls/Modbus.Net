@@ -73,25 +73,12 @@ namespace Modbus.Net.Siemens
         /// <returns>是否连接成功</returns>
         public override async Task<bool> ConnectAsync()
         {
-            IOutputStruct outputStruct;
             using (await _lock.LockAsync())
             {
                 if (ProtocolLinker.IsConnected) return true;
                 if (!await ProtocolLinker.ConnectAsync()) return false;
-                var inputStruct = new ComCreateReferenceSiemensInputStruct(SlaveAddress, MasterAddress);
-                outputStruct =
-                (await (await
-                    ForceSendReceiveAsync(this[typeof(ComCreateReferenceSiemensProtocol)],
-                        inputStruct)).SendReceiveAsync(this[typeof(ComConfirmMessageSiemensProtocol)], answer =>
-                    answer != null
-                        ? new ComConfirmMessageSiemensInputStruct(SlaveAddress, MasterAddress)
-                        : null)).Unwrap<ComConfirmMessageSiemensOutputStruct>();
-                if (outputStruct == null && ProtocolLinker.IsConnected)
-                {
-                    ProtocolLinker.Disconnect();
-                }
             }
-            return outputStruct != null;
+            return true;
         }
     }
 }
