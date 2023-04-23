@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO.Ports;
 using System.Threading;
 using System.Threading.Tasks;
-using System.IO.Ports;
 
 namespace Modbus.Net.Siemens
 {
@@ -16,7 +17,11 @@ namespace Modbus.Net.Siemens
         /// <param name="com">串口地址</param>
         /// <param name="slaveAddress">从站号</param>
         public SiemensPpiProtocolLinker(string com, int slaveAddress)
-            : base(com, slaveAddress, parity:Parity.Even)
+            : base(com, slaveAddress, parity: 
+                  ConfigurationReader.GetValue("COM:Siemens", "Parity") != null 
+                  ? Enum.Parse<Parity>(ConfigurationReader.GetValue("COM:Siemens", "Parity")) 
+                  : null
+                  )
         {
             ((IConnectorWithController<byte[], byte[]>)BaseConnector).AddController(new FifoController(
                 int.Parse(ConfigurationReader.GetValue("COM:" + com + ":" + slaveAddress, "FetchSleepTime")),
