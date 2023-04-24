@@ -119,6 +119,7 @@ namespace Modbus.Net.Siemens
         }
     }
 
+    /*
     #region 串口连接建立
 
     internal class ComCreateReferenceSiemensInputStruct : IInputStruct
@@ -169,7 +170,7 @@ namespace Modbus.Net.Siemens
     }
 
     #endregion
-
+    */
     #region 以太网建立连接
 
     internal class CreateReferenceSiemensInputStruct : IInputStruct
