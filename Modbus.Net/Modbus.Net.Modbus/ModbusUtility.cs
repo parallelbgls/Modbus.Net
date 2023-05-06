@@ -53,7 +53,16 @@ namespace Modbus.Net.Modbus
     /// <summary>
     ///     Modbus基础Api入口
     /// </summary>
-    public class ModbusUtility : BaseUtility<byte[], byte[], ProtocolUnit<byte[], byte[]>, PipeUnit>
+    public class ModbusUtility : BaseUtility<byte[], byte[], ProtocolUnit<byte[], byte[]>, PipeUnit>, 
+        IUtilityMethodExceptionStatus, 
+        IUtilityMethodDiagnotics, 
+        IUtilityMethodCommEventCounter, 
+        IUtilityMethodCommEventLog, 
+        IUtilityMethodSlaveId, 
+        IUtilityMethodFileRecord, 
+        IUtilityMethodMaskRegister, 
+        IUtilityMethodMultipleRegister, 
+        IUtilityMethodFIFOQueue
     {
         private static readonly ILogger<ModbusUtility> logger = LogProvider.CreateLogger<ModbusUtility>();
 
@@ -242,12 +251,7 @@ namespace Modbus.Net.Modbus
             ModbusType = (ModbusType)connectionType;
         }
 
-        /// <summary>
-        ///     读数据
-        /// </summary>
-        /// <param name="startAddress">起始地址</param>
-        /// <param name="getByteCount">获取字节个数</param>
-        /// <returns>获取的结果</returns>
+        /// <inheritdoc />
         public override async Task<ReturnStruct<byte[]>> GetDatasAsync(string startAddress, int getByteCount)
         {
             try
@@ -278,12 +282,7 @@ namespace Modbus.Net.Modbus
             }
         }
 
-        /// <summary>
-        ///     写数据
-        /// </summary>
-        /// <param name="startAddress">起始地址</param>
-        /// <param name="setContents">需要设置的数据</param>
-        /// <returns>设置是否成功</returns>
+        /// <inheritdoc />
         public override async Task<ReturnStruct<bool>> SetDatasAsync(string startAddress, object[] setContents)
         {
             try
@@ -307,6 +306,306 @@ namespace Modbus.Net.Modbus
                 return new ReturnStruct<bool>
                 {
                     Datas = false,
+                    IsSuccess = false,
+                    ErrorCode = e.ErrorMessageNumber,
+                    ErrorMsg = e.Message
+                };
+            }
+        }
+
+        /// <inheritdoc />
+        public async Task<ReturnStruct<byte>> GetExceptionStatusAsync()
+        {
+            try
+            {
+                var inputStruct = new ReadExceptionStatusModbusInputStruct(SlaveAddress);
+                var outputStruct = await
+                    Wrapper.SendReceiveAsync<ReadExceptionStatusModbusOutputStruct>(Wrapper[typeof(ReadExceptionStatusModbusProtocol)],
+                        inputStruct);
+                return new ReturnStruct<byte>()
+                {
+                    Datas = outputStruct.OutputData,
+                    IsSuccess = true,
+                    ErrorCode = 0,
+                    ErrorMsg = null
+                };
+            }
+            catch (ModbusProtocolErrorException e)
+            {
+                logger.LogError(e, $"ModbusUtility -> SetDatas: {ConnectionString} error: {e.Message}");
+                return new ReturnStruct<byte>
+                {
+                    Datas = 0,
+                    IsSuccess = false,
+                    ErrorCode = e.ErrorMessageNumber,
+                    ErrorMsg = e.Message
+                };
+            }
+        }
+
+        /// <inheritdoc />
+        public async Task<ReturnStruct<DiagnoticsData>> GetDiagnoticsAsync(ushort subFunction, ushort[] data)
+        {
+            try
+            {
+                var inputStruct = new DiagnoticsModbusInputStruct(SlaveAddress, subFunction, data);
+                var outputStruct = await
+                    Wrapper.SendReceiveAsync<DiagnoticsModbusOutputStruct>(Wrapper[typeof(DiagnoticsModbusProtocol)],
+                        inputStruct);
+                return new ReturnStruct<DiagnoticsData>()
+                {
+                    Datas = new DiagnoticsData() { SubFunction = outputStruct.SubFunction, Data = outputStruct.Data },
+                    IsSuccess = true,
+                    ErrorCode = 0,
+                    ErrorMsg = null
+                };
+            }
+            catch (ModbusProtocolErrorException e)
+            {
+                logger.LogError(e, $"ModbusUtility -> SetDatas: {ConnectionString} error: {e.Message}");
+                return new ReturnStruct<DiagnoticsData>
+                {
+                    Datas = null,
+                    IsSuccess = false,
+                    ErrorCode = e.ErrorMessageNumber,
+                    ErrorMsg = e.Message
+                };
+            }
+        }
+
+        /// <inheritdoc />
+        public async Task<ReturnStruct<CommEventCounterData>> GetCommEventCounterAsync()
+        {
+            try
+            {
+                var inputStruct = new GetCommEventCounterModbusInputStruct(SlaveAddress);
+                var outputStruct = await
+                    Wrapper.SendReceiveAsync<GetCommEventCounterModbusOutputStruct>(Wrapper[typeof(GetCommEventCounterModbusProtocol)],
+                        inputStruct);
+                return new ReturnStruct<CommEventCounterData>()
+                {
+                    Datas = new CommEventCounterData() { EventCount = outputStruct.EventCount, Status = outputStruct.Status },
+                    IsSuccess = true,
+                    ErrorCode = 0,
+                    ErrorMsg = null
+                };
+            }
+            catch (ModbusProtocolErrorException e)
+            {
+                logger.LogError(e, $"ModbusUtility -> SetDatas: {ConnectionString} error: {e.Message}");
+                return new ReturnStruct<CommEventCounterData>
+                {
+                    Datas = null,
+                    IsSuccess = false,
+                    ErrorCode = e.ErrorMessageNumber,
+                    ErrorMsg = e.Message
+                };
+            }
+        }
+
+        /// <inheritdoc />
+        public async Task<ReturnStruct<CommEventLogData>> GetCommEventLogAsync()
+        {
+            try
+            {
+                var inputStruct = new GetCommEventLogModbusInputStruct(SlaveAddress);
+                var outputStruct = await
+                    Wrapper.SendReceiveAsync<GetCommEventLogModbusOutputStruct>(Wrapper[typeof(GetCommEventLogModbusProtocol)],
+                        inputStruct);
+                return new ReturnStruct<CommEventLogData>()
+                {
+                    Datas = new CommEventLogData() { Status = outputStruct.Status, Events = outputStruct.Events},
+                    IsSuccess = true,
+                    ErrorCode = 0,
+                    ErrorMsg = null
+                };
+            }
+            catch (ModbusProtocolErrorException e)
+            {
+                logger.LogError(e, $"ModbusUtility -> SetDatas: {ConnectionString} error: {e.Message}");
+                return new ReturnStruct<CommEventLogData>
+                {
+                    Datas = null,
+                    IsSuccess = false,
+                    ErrorCode = e.ErrorMessageNumber,
+                    ErrorMsg = e.Message
+                };
+            }
+        }
+
+        /// <inheritdoc />
+        public async Task<ReturnStruct<SlaveIdData>> GetSlaveIdAsync()
+        {
+            try
+            {
+                var inputStruct = new ReportSlaveIdModbusInputStruct(SlaveAddress);
+                var outputStruct = await
+                    Wrapper.SendReceiveAsync<ReportSlaveIdModbusOutputStruct>(Wrapper[typeof(ReportSlaveIdModbusProtocol)],
+                        inputStruct);
+                return new ReturnStruct<SlaveIdData>()
+                {
+                    Datas = new SlaveIdData() { SlaveId = outputStruct.SlaveId, IndicatorStatus = outputStruct.RunIndicatorStatus, AdditionalData = outputStruct.AdditionalData},
+                    IsSuccess = true,
+                    ErrorCode = 0,
+                    ErrorMsg = null
+                };
+            }
+            catch (ModbusProtocolErrorException e)
+            {
+                logger.LogError(e, $"ModbusUtility -> SetDatas: {ConnectionString} error: {e.Message}");
+                return new ReturnStruct<SlaveIdData>
+                {
+                    Datas = null,
+                    IsSuccess = false,
+                    ErrorCode = e.ErrorMessageNumber,
+                    ErrorMsg = e.Message
+                };
+            }
+        }
+
+        /// <inheritdoc />
+        public async Task<ReturnStruct<ReadFileRecordOutputDef[]>> GetFileRecordAsync(ReadFileRecordInputDef[] recordDefs)
+        {
+            try
+            {
+                var inputStruct = new ReadFileRecordModbusInputStruct(SlaveAddress, recordDefs);
+                var outputStruct = await
+                    Wrapper.SendReceiveAsync<ReadFileRecordModbusOutputStruct>(Wrapper[typeof(ReadFileRecordModbusProtocol)],
+                        inputStruct);
+                return new ReturnStruct<ReadFileRecordOutputDef[]>()
+                {
+                    Datas = outputStruct.RecordDefs,
+                    IsSuccess = true,
+                    ErrorCode = 0,
+                    ErrorMsg = null
+                };
+            }
+            catch (ModbusProtocolErrorException e)
+            {
+                logger.LogError(e, $"ModbusUtility -> SetDatas: {ConnectionString} error: {e.Message}");
+                return new ReturnStruct<ReadFileRecordOutputDef[]>
+                {
+                    Datas = null,
+                    IsSuccess = false,
+                    ErrorCode = e.ErrorMessageNumber,
+                    ErrorMsg = e.Message
+                };
+            }
+        }
+
+        /// <inheritdoc />
+        public async Task<ReturnStruct<WriteFileRecordOutputDef[]>> SetFileRecordAsync(WriteFileRecordInputDef[] recordDefs)
+        {
+            try
+            {
+                var inputStruct = new WriteFileRecordModbusInputStruct(SlaveAddress, recordDefs);
+                var outputStruct = await
+                    Wrapper.SendReceiveAsync<WriteFileRecordModbusOutputStruct>(Wrapper[typeof(WriteFileRecordModbusProtocol)],
+                        inputStruct);
+                return new ReturnStruct<WriteFileRecordOutputDef[]>()
+                {
+                    Datas = outputStruct.WriteRecords,
+                    IsSuccess = true,
+                    ErrorCode = 0,
+                    ErrorMsg = null
+                };
+            }
+            catch (ModbusProtocolErrorException e)
+            {
+                logger.LogError(e, $"ModbusUtility -> SetDatas: {ConnectionString} error: {e.Message}");
+                return new ReturnStruct<WriteFileRecordOutputDef[]>
+                {
+                    Datas = null,
+                    IsSuccess = false,
+                    ErrorCode = e.ErrorMessageNumber,
+                    ErrorMsg = e.Message
+                };
+            }
+        }
+
+        /// <inheritdoc />
+        public async Task<ReturnStruct<MaskRegisterData>> SetMaskRegister(ushort referenceAddress, ushort andMask, ushort orMask)
+        {
+            try
+            {
+                var inputStruct = new MaskWriteRegisterModbusInputStruct(SlaveAddress, referenceAddress, andMask, orMask);
+                var outputStruct = await
+                    Wrapper.SendReceiveAsync<MaskWriteRegisterModbusOutputStruct>(Wrapper[typeof(MaskWriteRegisterModbusProtocol)],
+                        inputStruct);
+                return new ReturnStruct<MaskRegisterData>()
+                {
+                    Datas = new MaskRegisterData() { ReferenceAddress = outputStruct.ReferenceAddress, AndMask = outputStruct.AndMask, OrMask = outputStruct.OrMask},
+                    IsSuccess = true,
+                    ErrorCode = 0,
+                    ErrorMsg = null
+                };
+            }
+            catch (ModbusProtocolErrorException e)
+            {
+                logger.LogError(e, $"ModbusUtility -> SetDatas: {ConnectionString} error: {e.Message}");
+                return new ReturnStruct<MaskRegisterData>
+                {
+                    Datas = null,
+                    IsSuccess = false,
+                    ErrorCode = e.ErrorMessageNumber,
+                    ErrorMsg = e.Message
+                };
+            }
+        }
+
+        /// <inheritdoc />
+        public async Task<ReturnStruct<ushort[]>> GetMultipleRegister(ushort readStartingAddress, ushort quantityToRead, ushort writeStartingAddress, ushort[] writeValues)
+        {
+            try
+            {
+                var inputStruct = new ReadWriteMultipleRegistersModbusInputStruct(SlaveAddress, readStartingAddress, quantityToRead, writeStartingAddress, writeValues);
+                var outputStruct = await
+                    Wrapper.SendReceiveAsync<ReadWriteMultipleRegistersModbusOutputStruct>(Wrapper[typeof(ReadWriteMultipleRegistersModbusProtocol)],
+                        inputStruct);
+                return new ReturnStruct<ushort[]>()
+                {
+                    Datas = outputStruct.ReadRegisterValues,
+                    IsSuccess = true,
+                    ErrorCode = 0,
+                    ErrorMsg = null
+                };
+            }
+            catch (ModbusProtocolErrorException e)
+            {
+                logger.LogError(e, $"ModbusUtility -> SetDatas: {ConnectionString} error: {e.Message}");
+                return new ReturnStruct<ushort[]>
+                {
+                    Datas = null,
+                    IsSuccess = false,
+                    ErrorCode = e.ErrorMessageNumber,
+                    ErrorMsg = e.Message
+                };
+            }
+        }
+
+        /// <inheritdoc />
+        public async Task<ReturnStruct<ushort[]>> GetFIFOQueue(ushort fifoPointerAddress)
+        {
+            try
+            {
+                var inputStruct = new ReadFIFOQueueModbusInputStruct(SlaveAddress, fifoPointerAddress);
+                var outputStruct = await
+                    Wrapper.SendReceiveAsync<ReadFIFOQueueModbusOutputStruct>(Wrapper[typeof(ReadFIFOQueueModbusProtocol)],
+                        inputStruct);
+                return new ReturnStruct<ushort[]>()
+                {
+                    Datas = outputStruct.FIFOValueRegister,
+                    IsSuccess = true,
+                    ErrorCode = 0,
+                    ErrorMsg = null
+                };
+            }
+            catch (ModbusProtocolErrorException e)
+            {
+                logger.LogError(e, $"ModbusUtility -> SetDatas: {ConnectionString} error: {e.Message}");
+                return new ReturnStruct<ushort[]>
+                {
+                    Datas = null,
                     IsSuccess = false,
                     ErrorCode = e.ErrorMessageNumber,
                     ErrorMsg = e.Message
