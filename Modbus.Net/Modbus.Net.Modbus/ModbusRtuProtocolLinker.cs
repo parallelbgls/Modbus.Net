@@ -20,7 +20,9 @@ namespace Modbus.Net.Modbus
                 lengthCalc: content =>
                 {
                     if (content[1] > 128) return 5;
-                    else if (content[1] == 5 || content[1] == 6 || content[1] == 15 || content[1] == 16 || content[1] == 21) return 8;
+                    else if (content[1] == 5 || content[1] == 6 || content[1] == 8 || content[1] == 11 || content[1] == 15 || content[1] == 16) return 8;
+                    else if (content[1] == 7) return 5;
+                    else if (content[1] == 22) return 10;
                     else return DuplicateWithCount.GetDuplcateFunc(new List<int> { 2 }, 5).Invoke(content);
                 },
                 checkRightFunc: ContentCheck.Crc16CheckRight,
