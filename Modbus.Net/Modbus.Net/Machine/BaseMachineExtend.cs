@@ -39,7 +39,7 @@ namespace Modbus.Net
         {
             return new AddressUnit()
             {
-                Id = addressUnit.ToString(),
+                Id = addressUnit.Id.ToString(),
                 Area = addressUnit.Area,
                 Address = addressUnit.Address,
                 SubAddress = addressUnit.SubAddress,
