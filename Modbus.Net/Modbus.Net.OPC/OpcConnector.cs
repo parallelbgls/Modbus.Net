@@ -109,7 +109,7 @@ namespace Modbus.Net.OPC
                     if (answerTag != null)
                     {
                         var result = await Client.ReadAsync<object>(answerTag);
-                        logger.LogDebug($"Opc Machine {ConnectionToken} Read opc tag {answerTag} for value {result}");
+                        logger.LogDebug($"Opc Machine {ConnectionToken} Read opc tag {answerTag} for value {result.Value}");
                         return new OpcParamOut
                         {
                             Success = true,
