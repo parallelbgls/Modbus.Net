@@ -113,7 +113,7 @@ namespace Modbus.Net.OPC
                         return new OpcParamOut
                         {
                             Success = true,
-                            Value = BigEndianValueHelper.Instance.GetBytes(result, result.GetType())
+                            Value = BigEndianValueHelper.Instance.GetBytes(result.Value, result.Value.GetType())
                         };
                     }
                     return new OpcParamOut
