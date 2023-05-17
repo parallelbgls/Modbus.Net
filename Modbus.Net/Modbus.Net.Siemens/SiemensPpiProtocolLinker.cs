@@ -1,4 +1,4 @@
-﻿using System;
+﻿using FastEnumUtility;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Threading;
@@ -17,9 +17,9 @@ namespace Modbus.Net.Siemens
         /// <param name="com">串口地址</param>
         /// <param name="slaveAddress">从站号</param>
         public SiemensPpiProtocolLinker(string com, int slaveAddress)
-            : base(com, slaveAddress, parity: 
-                  ConfigurationReader.GetValue("COM:Siemens", "Parity") != null 
-                  ? Enum.Parse<Parity>(ConfigurationReader.GetValue("COM:Siemens", "Parity")) 
+            : base(com, slaveAddress, parity:
+                  ConfigurationReader.GetValue("COM:Siemens", "Parity") != null
+                  ? FastEnum.Parse<Parity>(ConfigurationReader.GetValue("COM:Siemens", "Parity"))
                   : null
                   )
         {

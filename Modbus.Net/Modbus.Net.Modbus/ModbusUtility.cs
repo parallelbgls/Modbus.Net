@@ -53,15 +53,15 @@ namespace Modbus.Net.Modbus
     /// <summary>
     ///     Modbus基础Api入口
     /// </summary>
-    public class ModbusUtility : BaseUtility<byte[], byte[], ProtocolUnit<byte[], byte[]>, PipeUnit>, 
-        IUtilityMethodExceptionStatus, 
-        IUtilityMethodDiagnotics, 
-        IUtilityMethodCommEventCounter, 
-        IUtilityMethodCommEventLog, 
-        IUtilityMethodSlaveId, 
-        IUtilityMethodFileRecord, 
-        IUtilityMethodMaskRegister, 
-        IUtilityMethodMultipleRegister, 
+    public class ModbusUtility : BaseUtility<byte[], byte[], ProtocolUnit<byte[], byte[]>, PipeUnit>,
+        IUtilityMethodExceptionStatus,
+        IUtilityMethodDiagnotics,
+        IUtilityMethodCommEventCounter,
+        IUtilityMethodCommEventLog,
+        IUtilityMethodSlaveId,
+        IUtilityMethodFileRecord,
+        IUtilityMethodMaskRegister,
+        IUtilityMethodMultipleRegister,
         IUtilityMethodFIFOQueue
     {
         private static readonly ILogger<ModbusUtility> logger = LogProvider.CreateLogger<ModbusUtility>();
@@ -414,7 +414,7 @@ namespace Modbus.Net.Modbus
                         inputStruct);
                 return new ReturnStruct<CommEventLogData>()
                 {
-                    Datas = new CommEventLogData() { Status = outputStruct.Status, Events = outputStruct.Events},
+                    Datas = new CommEventLogData() { Status = outputStruct.Status, Events = outputStruct.Events },
                     IsSuccess = true,
                     ErrorCode = 0,
                     ErrorMsg = null
@@ -444,7 +444,7 @@ namespace Modbus.Net.Modbus
                         inputStruct);
                 return new ReturnStruct<SlaveIdData>()
                 {
-                    Datas = new SlaveIdData() { SlaveId = outputStruct.SlaveId, IndicatorStatus = outputStruct.RunIndicatorStatus, AdditionalData = outputStruct.AdditionalData},
+                    Datas = new SlaveIdData() { SlaveId = outputStruct.SlaveId, IndicatorStatus = outputStruct.RunIndicatorStatus, AdditionalData = outputStruct.AdditionalData },
                     IsSuccess = true,
                     ErrorCode = 0,
                     ErrorMsg = null
@@ -534,7 +534,7 @@ namespace Modbus.Net.Modbus
                         inputStruct);
                 return new ReturnStruct<MaskRegisterData>()
                 {
-                    Datas = new MaskRegisterData() { ReferenceAddress = outputStruct.ReferenceAddress, AndMask = outputStruct.AndMask, OrMask = outputStruct.OrMask},
+                    Datas = new MaskRegisterData() { ReferenceAddress = outputStruct.ReferenceAddress, AndMask = outputStruct.AndMask, OrMask = outputStruct.OrMask },
                     IsSuccess = true,
                     ErrorCode = 0,
                     ErrorMsg = null

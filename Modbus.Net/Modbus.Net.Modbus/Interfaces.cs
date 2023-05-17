@@ -203,7 +203,7 @@ namespace Modbus.Net.Modbus
         /// <returns></returns>
         Task<ReturnStruct<ushort[]>> GetMultipleRegister(ushort readStartingAddress, ushort quantityToRead, ushort writeStartingAddress, ushort[] writeValues);
     }
-    
+
     /// <summary>
     ///     FIFO队列读取方法
     /// </summary>

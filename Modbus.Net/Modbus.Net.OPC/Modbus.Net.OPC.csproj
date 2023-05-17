@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0</TargetFrameworks>
+    <TargetFramework>net462</TargetFramework>
+    <LangVersion>11.0</LangVersion>
     <AssemblyName>Modbus.Net.OPC</AssemblyName>
     <RootNamespace>Modbus.Net.OPC</RootNamespace>
     <PackageId>Modbus.Net.OPC</PackageId>
@@ -29,15 +30,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Opc.UaFx.Client" Version="2.30.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\Libraries\h-opc\h-opc.csproj" />
     <ProjectReference Include="..\Modbus.Net\Modbus.Net.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath=""/>
+    <Reference Include="System.Configuration" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="H.Opc" Version="0.9.3" />
   </ItemGroup>
 </Project>

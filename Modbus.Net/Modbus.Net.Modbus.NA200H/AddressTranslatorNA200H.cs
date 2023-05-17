@@ -218,7 +218,7 @@ namespace Modbus.Net.Modbus.NA200H
             var head = splitString[0];
             var tail = splitString[1];
             string sub;
-            if (tail.Contains('.'))
+            if (tail.Contains("."))
             {
                 var splitString2 = tail.Split('.');
                 sub = splitString2[1];

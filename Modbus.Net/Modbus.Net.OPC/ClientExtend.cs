@@ -1,4 +1,5 @@
 ﻿using Hylasoft.Opc.Common;
+using Hylasoft.Opc.Da;
 using Hylasoft.Opc.Ua;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,7 @@ namespace Modbus.Net.OPC
         /// <summary>
         ///     Connect the client to the OPC Server
         /// </summary>
-        Task Connect();
+        void Connect();
 
         /// <summary>
         ///     Read a tag
@@ -62,6 +63,25 @@ namespace Modbus.Net.OPC
         ///     Explore a folder on the Opc Server asynchronously
         /// </summary>
         Task<IEnumerable<Node>> ExploreFolderAsync(string tag);
+    }
+
+    /// <summary>
+    ///     UaClient Extend
+    /// </summary>
+    public class MyDaClient : DaClient, IClientExtend
+    {
+        /// <summary>
+        ///     UaClient Extend
+        /// </summary>
+        /// <param name="serverUrl">Url address of Opc UA server</param>
+        public MyDaClient(Uri serverUrl) : base(serverUrl)
+        {
+        }
+
+        /// <summary>
+        ///     Unified root node
+        /// </summary>
+        public Node RootNodeBase => RootNode;
     }
 
     /// <summary>

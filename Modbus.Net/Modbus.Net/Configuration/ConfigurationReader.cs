@@ -13,7 +13,7 @@ namespace Modbus.Net
         private static readonly IConfigurationRoot configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.default.json", optional: false, reloadOnChange: true)
-            .AddJsonFile("appsettings.json", optional:false, reloadOnChange: true)
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true, reloadOnChange: true)
             .Build();
 
@@ -26,7 +26,7 @@ namespace Modbus.Net
         /// <returns>元素的值</returns>
         public static string? GetValue(string path, string key)
         {
-            var split = path.Split(":");
+            var split = path.Split(':');
             string? ans = null;
             while (split.Length > 0)
             {

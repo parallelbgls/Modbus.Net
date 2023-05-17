@@ -1,4 +1,4 @@
-﻿using System;
+﻿using FastEnumUtility;
 using System.IO.Ports;
 
 namespace Modbus.Net
@@ -63,11 +63,11 @@ namespace Modbus.Net
         protected ComProtocolLinker(string com, int slaveAddress, BaudRate? baudRate = null, Parity? parity = null, StopBits? stopBits = null, DataBits? dataBits = null, Handshake? handshake = null,
             int? connectionTimeout = null, bool? isFullDuplex = null)
         {
-            baudRate = Enum.Parse<BaudRate>(baudRate != null ? baudRate.ToString() : null ?? ConfigurationReader.GetValue("COM:" + com, "BaudRate"));
-            parity = Enum.Parse<Parity>(parity != null ? parity.ToString() : null ?? ConfigurationReader.GetValue("COM:" + com, "Parity"));
-            stopBits = Enum.Parse<StopBits>(stopBits != null ? stopBits.ToString() : null ?? ConfigurationReader.GetValue("COM:" + com, "StopBits"));
-            dataBits = Enum.Parse<DataBits>(dataBits != null ? dataBits.ToString() : null ?? ConfigurationReader.GetValue("COM:" + com, "DataBits"));
-            handshake = Enum.Parse<Handshake>(handshake != null ? handshake.ToString() : null ?? ConfigurationReader.GetValue("COM:" + com, "Handshake"));
+            baudRate = FastEnum.Parse<BaudRate>(baudRate != null ? baudRate.ToString() : null ?? ConfigurationReader.GetValue("COM:" + com, "BaudRate"));
+            parity = FastEnum.Parse<Parity>(parity != null ? parity.ToString() : null ?? ConfigurationReader.GetValue("COM:" + com, "Parity"));
+            stopBits = FastEnum.Parse<StopBits>(stopBits != null ? stopBits.ToString() : null ?? ConfigurationReader.GetValue("COM:" + com, "StopBits"));
+            dataBits = FastEnum.Parse<DataBits>(dataBits != null ? dataBits.ToString() : null ?? ConfigurationReader.GetValue("COM:" + com, "DataBits"));
+            handshake = FastEnum.Parse<Handshake>(handshake != null ? handshake.ToString() : null ?? ConfigurationReader.GetValue("COM:" + com, "Handshake"));
             connectionTimeout = int.Parse(connectionTimeout != null ? connectionTimeout.ToString() : null ?? ConfigurationReader.GetValue("COM:" + com, "ConnectionTimeout"));
             isFullDuplex = bool.Parse(isFullDuplex != null ? isFullDuplex.ToString() : null ?? ConfigurationReader.GetValue("COM:" + com, "FullDuplex"));
             BaseConnector = new ComConnector(com + ":" + slaveAddress, baudRate.Value, parity.Value, stopBits.Value, dataBits.Value, handshake.Value, connectionTimeout.Value, isFullDuplex.Value);

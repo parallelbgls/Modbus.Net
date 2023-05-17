@@ -19,11 +19,11 @@ namespace Modbus.Net
         /// <returns>返回的数据</returns>
         public static Task<ReturnStruct<T>> InvokeGet<TMachineMethod, T>(this IMachineMethod machineMethod, object[] parameters) where TMachineMethod : IMachineMethod
         {
-            if (typeof(TMachineMethod).Name[..14] != "IMachineMethod")
+            if (typeof(TMachineMethod).Name.Substring(0, 14) != "IMachineMethod")
             {
                 throw new NotSupportedException("IMachineMethod type name not begin with IMachineMethod");
             }
-            var functionName = "Get" + typeof(TMachineMethod).Name[14..] + "Async";
+            var functionName = "Get" + typeof(TMachineMethod).Name.Substring(14) + "Async";
             return InvokeGet<T>(machineMethod, functionName, parameters);
         }
 
@@ -54,11 +54,11 @@ namespace Modbus.Net
         /// <returns>设置是否成功</returns>
         public static Task<ReturnStruct<bool>> InvokeSet<TMachineMethod, T>(this IMachineMethod machineMethod, object[] parameters, T datas) where TMachineMethod : IMachineMethod
         {
-            if (typeof(TMachineMethod).Name[..14] != "IMachineMethod")
+            if (typeof(TMachineMethod).Name.Substring(0, 14) != "IMachineMethod")
             {
                 throw new NotSupportedException("IMachineMethod type name not begin with IMachineMethod");
             }
-            var functionName = "Set" + typeof(TMachineMethod).Name[14..] + "Async";
+            var functionName = "Set" + typeof(TMachineMethod).Name.Substring(14) + "Async";
             return InvokeSet(machineMethod, functionName, parameters, datas);
         }
 

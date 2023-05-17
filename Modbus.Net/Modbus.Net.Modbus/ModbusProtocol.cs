@@ -389,7 +389,7 @@ namespace Modbus.Net.Modbus
                 formattingBytes = Format(r_message.SlaveAddress, r_message.FunctionCode,
                     r_message.StartAddress, r_message.WriteCount, r_message.WriteByteCount, dataValue);
             }
-            
+
             return formattingBytes;
         }
 
@@ -493,7 +493,7 @@ namespace Modbus.Net.Modbus
         {
             var r_message = (ReadExceptionStatusModbusInputStruct)message;
             byte[] formattingBytes;
-            
+
             formattingBytes = Format(r_message.SlaveAddress, r_message.FunctionCode);
 
             return formattingBytes;
@@ -613,10 +613,10 @@ namespace Modbus.Net.Modbus
         public override byte[] Format(IInputStruct message)
         {
             var r_message = (DiagnoticsModbusInputStruct)message;
-            
+
             var formattingBytes = Format(r_message.SlaveAddress, r_message.FunctionCode,
                 r_message.SubFunction, r_message.Data);
-            
+
             return formattingBytes;
         }
 
@@ -1260,7 +1260,7 @@ namespace Modbus.Net.Modbus
             SlaveAddress = slaveAddress;
             FunctionCode = (byte)ModbusProtocolFunctionCode.WriteFileRecord;
             byte count = 0;
-            foreach(var writeRecord in writeRecords)
+            foreach (var writeRecord in writeRecords)
             {
                 count += (byte)(writeRecord.RecordData.Length * 2 + 7);
             }
@@ -1574,7 +1574,7 @@ namespace Modbus.Net.Modbus
         ///     读起始地址
         /// </summary>
         public ushort ReadStartingAddress { get; }
-        
+
         /// <summary>
         ///     读个数
         /// </summary>
@@ -1656,8 +1656,8 @@ namespace Modbus.Net.Modbus
         {
             var r_message = (ReadWriteMultipleRegistersModbusInputStruct)message;
 
-            var formattingBytes = Format(r_message.SlaveAddress, r_message.FunctionCode, r_message.ReadStartingAddress, 
-                r_message.QuantityToRead, r_message.WriteStartingAddress, r_message.QuantityToWrite, 
+            var formattingBytes = Format(r_message.SlaveAddress, r_message.FunctionCode, r_message.ReadStartingAddress,
+                r_message.QuantityToRead, r_message.WriteStartingAddress, r_message.QuantityToWrite,
                 r_message.WriteByteCount, r_message.WriteValues);
 
             return formattingBytes;
@@ -1674,8 +1674,8 @@ namespace Modbus.Net.Modbus
             var slaveAddress = ValueHelper.GetInstance(Endian).GetByte(messageBytes, ref flag);
             var functionCode = ValueHelper.GetInstance(Endian).GetByte(messageBytes, ref flag);
             var byteCount = ValueHelper.GetInstance(Endian).GetByte(messageBytes, ref flag);
-            ushort[] readValues= new ushort[byteCount / 2];
-            for (int i = 0; i< byteCount / 2; i++)
+            ushort[] readValues = new ushort[byteCount / 2];
+            for (int i = 0; i < byteCount / 2; i++)
             {
                 readValues[i] = ValueHelper.GetInstance(Endian).GetUShort(messageBytes, ref flag);
             }

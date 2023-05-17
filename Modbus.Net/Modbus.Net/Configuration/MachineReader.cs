@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using FastEnumUtility;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -66,7 +67,7 @@ namespace Modbus.Net
                             }
                         case "endian":
                             {
-                                paramsSet.Add(Enum.Parse<Endian>(dic["endian"]));
+                                paramsSet.Add(FastEnum.Parse<Endian>(dic["endian"]));
                                 break;
                             }
                         default:

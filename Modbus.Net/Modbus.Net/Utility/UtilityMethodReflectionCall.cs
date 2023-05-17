@@ -18,11 +18,11 @@ namespace Modbus.Net
         /// <returns>返回的数据</returns>
         public static Task<ReturnStruct<T>> InvokeGet<TUtilityMethod, T>(this IUtilityMethod utilityMethod, object[] parameters) where TUtilityMethod : IUtilityMethod
         {
-            if (typeof(TUtilityMethod).Name[..14] != "IUtilityMethod")
+            if (typeof(TUtilityMethod).Name.Substring(0, 14) != "IUtilityMethod")
             {
                 throw new NotSupportedException("IUtilityMethod type name not begin with IUtilityMethod");
             }
-            var functionName = "Get" + typeof(TUtilityMethod).Name[14..] + "Async";
+            var functionName = "Get" + typeof(TUtilityMethod).Name.Substring(14) + "Async";
             return InvokeGet<T>(utilityMethod, functionName, parameters);
         }
 
@@ -53,11 +53,11 @@ namespace Modbus.Net
         /// <returns>设置是否成功</returns>
         public static Task<ReturnStruct<bool>> InvokeSet<TUtilityMethod, T>(this IUtilityMethod utilityMethod, object[] parameters, T datas) where TUtilityMethod : IUtilityMethod
         {
-            if (typeof(TUtilityMethod).Name[..14] != "IUtilityMethod")
+            if (typeof(TUtilityMethod).Name.Substring(0, 14) != "IUtilityMethod")
             {
                 throw new NotSupportedException("IUtilityMethod type name not begin with IUtilityMethod");
             }
-            var functionName = "Set" + typeof(TUtilityMethod).Name[14..] + "Async";
+            var functionName = "Set" + typeof(TUtilityMethod).Name.Substring(14) + "Async";
             return InvokeSet(utilityMethod, functionName, parameters, datas);
         }
 

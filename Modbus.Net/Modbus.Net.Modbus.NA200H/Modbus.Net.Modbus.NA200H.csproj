@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;net462</TargetFrameworks>
+    <LangVersion>11.0</LangVersion>
     <AssemblyName>Modbus.Net.Modbus.NA200H</AssemblyName>
     <RootNamespace>Modbus.Net.Modbus.NA200H</RootNamespace>
     <PackageId>Modbus.Net.Modbus.NA200H</PackageId>

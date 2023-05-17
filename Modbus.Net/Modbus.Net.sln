@@ -28,8 +28,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnyType", "..\Samples\AnyTy
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Modbus.Net.OPC", "Modbus.Net.OPC\Modbus.Net.OPC.csproj", "{C854A379-C5EA-4CAC-9C5F-7291372D1D3F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "h-opc", "..\Libraries\h-opc\h-opc.csproj", "{347D0027-45F6-48C9-A917-1B1DF6C66DC5}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CrossLamp", "..\Samples\CrossLamp\CrossLamp.csproj", "{AA3A42D2-0502-41D3-929A-BAB729DF07D6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TripleAdd", "..\Samples\TripleAdd\TripleAdd.csproj", "{414956B8-DBD4-414C-ABD3-565580739646}"
@@ -74,10 +72,6 @@ Global
 		{C854A379-C5EA-4CAC-9C5F-7291372D1D3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C854A379-C5EA-4CAC-9C5F-7291372D1D3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C854A379-C5EA-4CAC-9C5F-7291372D1D3F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{347D0027-45F6-48C9-A917-1B1DF6C66DC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{347D0027-45F6-48C9-A917-1B1DF6C66DC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{347D0027-45F6-48C9-A917-1B1DF6C66DC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{347D0027-45F6-48C9-A917-1B1DF6C66DC5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AA3A42D2-0502-41D3-929A-BAB729DF07D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AA3A42D2-0502-41D3-929A-BAB729DF07D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA3A42D2-0502-41D3-929A-BAB729DF07D6}.Release|Any CPU.ActiveCfg = Release|Any CPU

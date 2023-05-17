@@ -191,15 +191,11 @@ namespace Modbus.Net.OPC
             return null;
         }
 
-        /// <summary>
-        ///     连接PLC
-        /// </summary>
-        /// <returns>是否连接成功</returns>
-        public override async Task<bool> ConnectAsync()
+        private bool Connect()
         {
             try
             {
-                await Client.Connect();
+                Client.Connect();
                 _connect = true;
                 logger.LogInformation("opc client {ConnectionToken} connect success", ConnectionToken);
                 return true;
@@ -210,6 +206,15 @@ namespace Modbus.Net.OPC
                 _connect = false;
                 return false;
             }
+        }
+
+        /// <summary>
+        ///     连接PLC，异步
+        /// </summary>
+        /// <returns>是否连接成功</returns>
+        public override Task<bool> ConnectAsync()
+        {
+            return Task.FromResult(Connect());
         }
     }
 }
