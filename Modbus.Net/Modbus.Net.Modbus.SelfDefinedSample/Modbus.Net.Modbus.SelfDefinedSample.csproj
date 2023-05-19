@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net6.0;net462</TargetFrameworks>
-    <LangVersion>11.0</LangVersion>
+    <LangVersion>10.0</LangVersion>
     <AssemblyName>Modbus.Net.Modbus.SelfDefinedSample</AssemblyName>
     <RootNamespace>Modbus.Net.Modbus.SelfDefinedSample</RootNamespace>
     <PackageId>Modbus.Net.Modbus.SelfDefinedSample</PackageId>

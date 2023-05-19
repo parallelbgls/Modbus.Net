@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework>
-    <LangVersion>11.0</LangVersion>
+    <LangVersion>10.0</LangVersion>
     <AssemblyName>Modbus.Net.OPC</AssemblyName>
     <RootNamespace>Modbus.Net.OPC</RootNamespace>
     <PackageId>Modbus.Net.OPC</PackageId>
