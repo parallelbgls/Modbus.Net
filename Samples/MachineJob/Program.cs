@@ -2,23 +2,29 @@ using MachineJob;
 using MachineJob.Service;
 using Serilog;
 
-var configuration = new ConfigurationBuilder()
-        .SetBasePath(Directory.GetCurrentDirectory())
-        .AddJsonFile("appsettings.json")
-        .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? "Production"}.json", true)
-        .Build();
+IHost host = Host.CreateDefaultBuilder(args).UseWindowsService()
+    .ConfigureAppConfiguration((hostingContext, config) =>
+    {
+        var configuration = config
+            .SetBasePath(hostingContext.HostingEnvironment.ContentRootPath)
+            .AddJsonFile("appsettings.json")
+            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? "Production"}.json", true)
+            .AddEnvironmentVariables()
+            .Build();
 
-Log.Logger = new LoggerConfiguration()
-      .ReadFrom.Configuration(configuration)
-      .WriteTo.Console()
-      .CreateLogger();
+        Directory.SetCurrentDirectory(hostingContext.HostingEnvironment.ContentRootPath);
 
-var loggerFactory = new LoggerFactory().AddSerilog(Log.Logger);
+        Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(configuration)
+            .WriteTo.Console()
+            .CreateLogger();
 
-Quartz.Logging.LogProvider.SetCurrentLogProvider(new ConsoleLogProvider());
-Modbus.Net.LogProvider.SetLogProvider(loggerFactory);
+        var loggerFactory = new LoggerFactory().AddSerilog(Log.Logger);
 
-IHost host = Host.CreateDefaultBuilder(args)
+        Quartz.Logging.LogProvider.SetCurrentLogProvider(new ConsoleLogProvider());
+        Modbus.Net.LogProvider.SetLogProvider(loggerFactory);
+    }
+        )
     .ConfigureServices(services =>
     {
         services.AddHostedService<Worker>();
