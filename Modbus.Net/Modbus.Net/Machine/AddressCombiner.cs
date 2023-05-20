@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Quartz.Util;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -158,17 +159,29 @@ namespace Modbus.Net
                     OriginalAddresses = originalAddresses.ToList()
                 });
             }
+            var newAns = MaxExclude(ans);
+            return newAns;
+        }
+
+        /// <summary>
+        ///     将单个超长连续地址池拆分
+        /// </summary>
+        /// <param name="ans">拆分前的连续地址池</param>
+        /// <returns>拆分后的连续地址池</returns>
+        protected List<CommunicationUnit<TKey>> MaxExclude(List<CommunicationUnit<TKey>> ans)
+        {
             var newAns = new List<CommunicationUnit<TKey>>();
             foreach (var communicationUnit in ans)
             {
                 var oldByteCount = communicationUnit.GetCount *
                                    BigEndianValueHelper.Instance.ByteLength[communicationUnit.DataType.FullName];
+                var oldOriginalAddresses = communicationUnit.OriginalAddresses.ToList();
                 while (oldByteCount * BigEndianValueHelper.Instance.ByteLength[communicationUnit.DataType.FullName] >
                        MaxLength)
                 {
                     var newOriginalAddresses = new List<AddressUnit<TKey>>();
-                    var oldOriginalAddresses = communicationUnit.OriginalAddresses.ToList();
                     var newByteCount = 0.0;
+                    var newAddressUnitStart = oldOriginalAddresses.First();
                     do
                     {
                         var currentAddressUnit = oldOriginalAddresses.First();
@@ -180,10 +193,10 @@ namespace Modbus.Net
                     } while (newByteCount < MaxLength);
                     var newCommunicationUnit = new CommunicationUnit<TKey>
                     {
-                        Area = communicationUnit.Area,
-                        Address = communicationUnit.Address,
-                        SubAddress = communicationUnit.SubAddress,
-                        DataType = communicationUnit.DataType,
+                        Area = newAddressUnitStart.Area,
+                        Address = newAddressUnitStart.Address,
+                        SubAddress = newAddressUnitStart.SubAddress,
+                        DataType = typeof(byte),
                         GetCount =
                             (int)
                             Math.Ceiling(newByteCount /
@@ -193,10 +206,17 @@ namespace Modbus.Net
 
                     newAns.Add(newCommunicationUnit);
                 }
+                var addressUnitStart = oldOriginalAddresses.First();
+                communicationUnit.Area = addressUnitStart.Area;
+                communicationUnit.Address = addressUnitStart.Address;
+                communicationUnit.SubAddress = addressUnitStart.SubAddress;
+                communicationUnit.Address = addressUnitStart.Address;
+                communicationUnit.DataType = typeof(byte);
                 communicationUnit.GetCount =
                     (int)
                     Math.Ceiling(oldByteCount /
                                  BigEndianValueHelper.Instance.ByteLength[communicationUnit.DataType.FullName]);
+                communicationUnit.OriginalAddresses = oldOriginalAddresses;
                 newAns.Add(communicationUnit);
             }
             return newAns;
