@@ -4,41 +4,28 @@ using System.Collections.Generic;
 namespace Modbus.Net.OPC
 {
     /// <summary>
-    ///     Opc Da设备
+    ///     Opc设备
     /// </summary>
-    public abstract class OpcMachine<TKey, TUnitKey> : BaseMachine<TKey, TUnitKey> where TKey : IEquatable<TKey>
+    public class OpcMachine<TKey, TUnitKey> : BaseMachine<TKey, TUnitKey> where TKey : IEquatable<TKey>
         where TUnitKey : IEquatable<TUnitKey>
     {
         /// <summary>
         ///     构造函数
         /// </summary>
         /// <param name="id">设备的ID号</param>
+        /// <param name="connectionType">连接类型</param>
+        /// <param name="connectionString">连接地址</param>
         /// <param name="getAddresses">需要读写的地址</param>
-        /// <param name="keepConnect">是否保持连接</param>
-        protected OpcMachine(TKey id, IEnumerable<AddressUnit<TUnitKey>> getAddresses, bool keepConnect)
-            : base(id, getAddresses, keepConnect)
+        /// <param name="isRegexOn">开启正则匹配</param>
+        protected OpcMachine(TKey id, OpcType connectionType, string connectionString, IEnumerable<AddressUnit<TUnitKey>> getAddresses, bool isRegexOn = false)
+            : base(id, getAddresses, true)
         {
+            BaseUtility = new OpcUtility(connectionType, connectionString, isRegexOn);
+            AddressFormater = new AddressFormaterOpc<TKey, TUnitKey>((machine, unit) => { return new string[] { unit.Area }; }, this);
+            ((OpcUtility)BaseUtility).GetSeperator +=
+                () => ((AddressFormaterOpc<TKey, TUnitKey>)AddressFormater).Seperator;
             AddressCombiner = new AddressCombinerSingle<TUnitKey>();
             AddressCombinerSet = new AddressCombinerSingle<TUnitKey>();
-        }
-    }
-
-    /// <summary>
-    ///     Opc Da设备
-    /// </summary>
-    public abstract class OpcMachine : BaseMachine<string, string>
-    {
-        /// <summary>
-        ///     构造函数
-        /// </summary>
-        /// <param name="id">设备的ID号</param>
-        /// <param name="getAddresses">需要读写的地址</param>
-        /// <param name="keepConnect">是否保持连接</param>
-        protected OpcMachine(string id, IEnumerable<AddressUnit> getAddresses, bool keepConnect)
-            : base(id, getAddresses, keepConnect)
-        {
-            AddressCombiner = new AddressCombinerSingle<string>();
-            AddressCombinerSet = new AddressCombinerSingle<string>();
         }
     }
 }

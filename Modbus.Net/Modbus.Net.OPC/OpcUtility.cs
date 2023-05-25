@@ -5,13 +5,59 @@ using System.Threading.Tasks;
 namespace Modbus.Net.OPC
 {
     /// <summary>
+    ///     Opc类型
+    /// </summary>
+    public enum OpcType
+    {
+        /// <summary>
+        ///     DA连接
+        /// </summary>
+        Da=0,
+        /// <summary>
+        ///     UA连接
+        /// </summary>
+        Ua=1
+    }
+
+    /// <summary>
     ///     Opc通用Api入口
     /// </summary>
-    public abstract class OpcUtility : BaseUtility<OpcParamIn, OpcParamOut, ProtocolUnit<OpcParamIn, OpcParamOut>,
+    public class OpcUtility : BaseUtility<OpcParamIn, OpcParamOut, ProtocolUnit<OpcParamIn, OpcParamOut>,
         PipeUnit<OpcParamIn, OpcParamOut, IProtocolLinker<OpcParamIn, OpcParamOut>,
             ProtocolUnit<OpcParamIn, OpcParamOut>>>
     {
         private static readonly ILogger<OpcUtility> logger = LogProvider.CreateLogger<OpcUtility>();
+
+        private OpcType _opcType;
+
+        private bool IsRegexOn { get; set; }
+
+        /// <summary>
+        ///     协议类型
+        /// </summary>
+        public OpcType OpcType
+        {
+            get { return _opcType; }
+            set
+            {
+                _opcType = value;
+                switch (_opcType)
+                {
+                    //Da协议
+                    case OpcType.Da:
+                        {
+                            Wrapper = new OpcDaProtocol(ConnectionString, IsRegexOn);
+                            break;
+                        }
+                    //Ua协议
+                    case OpcType.Ua:
+                        {
+                            Wrapper = new OpcUaProtocol(ConnectionString, IsRegexOn);
+                            break;
+                        }
+                }
+            }
+        }
 
         /// <summary>
         ///     获取分隔符
@@ -22,10 +68,28 @@ namespace Modbus.Net.OPC
         /// <summary>
         ///     构造函数
         /// </summary>
+        /// <param name="connectionType">连接类型</param>
         /// <param name="connectionString">连接地址</param>
-        protected OpcUtility(string connectionString) : base(0, 0)
+        /// <param name="isRegexOn">是否开启正则匹配</param>
+        public OpcUtility(int connectionType, string connectionString, bool isRegexOn = false) : base(0, 0)
         {
+            OpcType = (OpcType)connectionType;
             ConnectionString = connectionString;
+            IsRegexOn = isRegexOn;
+            AddressTranslator = new AddressTranslatorOpc();
+        }
+
+        /// <summary>
+        ///     构造函数
+        /// </summary>
+        /// <param name="connectionType">连接类型</param>
+        /// <param name="connectionString">连接地址</param>
+        /// <param name="isRegexOn">是否开启正则匹配</param>
+        public OpcUtility(OpcType connectionType, string connectionString, bool isRegexOn = false) : base(0, 0)
+        {
+            OpcType = connectionType;
+            ConnectionString = connectionString;
+            IsRegexOn = isRegexOn;
             AddressTranslator = new AddressTranslatorOpc();
         }
 

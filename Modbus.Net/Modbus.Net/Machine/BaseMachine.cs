@@ -281,10 +281,10 @@ namespace Modbus.Net
                                     new ReturnUnit<double>
                                     {
                                         DeviceValue =
-                                            Convert.ToDouble(
+                                            Math.Round(Convert.ToDouble(
                                                 ValueHelper.GetInstance(BaseUtility.Endian)
                                                     .GetValue(datas.Datas, ref localMainPos, ref localSubPos,
-                                                        address.DataType)) * address.Zoom,
+                                                        address.DataType)) * address.Zoom, address.DecimalPos),
                                         AddressUnit = address.MapAddressUnitTUnitKeyToAddressUnit(),
                                     });
                         }
