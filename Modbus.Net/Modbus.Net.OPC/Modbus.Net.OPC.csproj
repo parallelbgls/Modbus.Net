@@ -30,18 +30,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="H.Opc" Version="0.9.3" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <ProjectReference Include="..\Modbus.Net\Modbus.Net.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="System.Configuration" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="H.Opc" Version="0.9.3" />
   </ItemGroup>
 </Project>

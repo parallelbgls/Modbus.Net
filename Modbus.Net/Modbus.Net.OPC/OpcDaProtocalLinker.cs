@@ -1,4 +1,4 @@
-﻿using System.Configuration;
+﻿
 
 namespace Modbus.Net.OPC
 {
@@ -11,7 +11,7 @@ namespace Modbus.Net.OPC
         ///     构造函数
         /// </summary>
         /// <param name="isRegexOn">是否开启正则匹配</param>
-        public OpcDaProtocolLinker(bool isRegexOn) : this(ConfigurationManager.AppSettings["OpcDaHost"], isRegexOn)
+        public OpcDaProtocolLinker(bool isRegexOn) : this(ConfigurationReader.GetValueDirect("OpcDa", "Host"), isRegexOn)
         {
         }
 
