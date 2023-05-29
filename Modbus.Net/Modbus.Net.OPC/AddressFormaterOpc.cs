@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace Modbus.Net.OPC
+namespace Modbus.Net.Opc
 {
     /// <summary>
     ///     Opc地址编码器

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Modbus.Net.OPC
+namespace Modbus.Net.Opc
 {
     /// <summary>
     ///     Opc设备
@@ -17,7 +17,7 @@ namespace Modbus.Net.OPC
         /// <param name="connectionString">连接地址</param>
         /// <param name="getAddresses">需要读写的地址</param>
         /// <param name="isRegexOn">开启正则匹配</param>
-        protected OpcMachine(TKey id, OpcType connectionType, string connectionString, IEnumerable<AddressUnit<TUnitKey>> getAddresses, bool isRegexOn = false)
+        public OpcMachine(TKey id, OpcType connectionType, string connectionString, IEnumerable<AddressUnit<TUnitKey>> getAddresses, bool isRegexOn = false)
             : base(id, getAddresses, true)
         {
             BaseUtility = new OpcUtility(connectionType, connectionString, isRegexOn);

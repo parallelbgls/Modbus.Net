@@ -26,7 +26,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Modbus.Net.Modbus.NA200H", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnyType", "..\Samples\AnyType\AnyType.csproj", "{1857DA63-3335-428F-84D8-1FA4F8178643}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Modbus.Net.OPC", "Modbus.Net.OPC\Modbus.Net.OPC.csproj", "{C854A379-C5EA-4CAC-9C5F-7291372D1D3F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Modbus.Net.Opc", "Modbus.Net.OPC\Modbus.Net.Opc.csproj", "{C854A379-C5EA-4CAC-9C5F-7291372D1D3F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CrossLamp", "..\Samples\CrossLamp\CrossLamp.csproj", "{AA3A42D2-0502-41D3-929A-BAB729DF07D6}"
 EndProject

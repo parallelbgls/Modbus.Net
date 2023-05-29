@@ -1,6 +1,4 @@
-﻿using System.Configuration;
-
-namespace Modbus.Net.OPC
+﻿namespace Modbus.Net.Opc
 {
     /// <summary>
     ///     Opc UA协议连接器

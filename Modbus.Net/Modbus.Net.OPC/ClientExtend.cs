@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Modbus.Net.OPC
+namespace Modbus.Net.Opc
 {
     /// <summary>
     ///     Opc Client Extend interface, Unified for DA and UA
@@ -18,7 +18,7 @@ namespace Modbus.Net.OPC
         Node RootNodeBase { get; }
 
         /// <summary>
-        ///     Connect the client to the OPC Server
+        ///     Connect the client to the Opc Server
         /// </summary>
         void Connect();
 
@@ -30,11 +30,11 @@ namespace Modbus.Net.OPC
         ///     The fully-qualified identifier of the tag. You can specify a subfolder by using a comma delimited name.
         ///     E.g: the tag `foo.bar` reads the tag `bar` on the folder `foo`
         /// </param>
-        /// <returns>The value retrieved from the OPC</returns>
+        /// <returns>The value retrieved from the Opc</returns>
         ReadEvent<T> Read<T>(string tag);
 
         /// <summary>
-        ///     Write a value on the specified opc tag
+        ///     Write a value on the specified Opc tag
         /// </summary>
         /// <typeparam name="T">The type of tag to write on</typeparam>
         /// <param name="tag">
@@ -50,7 +50,7 @@ namespace Modbus.Net.OPC
         Task<ReadEvent<T>> ReadAsync<T>(string tag);
 
         /// <summary>
-        ///     Write a value on the specified opc tag asynchronously
+        ///     Write a value on the specified Opc tag asynchronously
         /// </summary>
         Task WriteAsync<T>(string tag, T item);
 

@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Modbus.Net.OPC
+namespace Modbus.Net.Opc
 {
     /// <summary>
     ///     Opc连接器
@@ -62,12 +62,12 @@ namespace Modbus.Net.OPC
                 Client?.Dispose();
                 Client = null;
                 _connect = false;
-                logger.LogInformation("opc client {ConnectionToken} disconnected success", ConnectionToken);
+                logger.LogInformation("Opc client {ConnectionToken} disconnected success", ConnectionToken);
                 return true;
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "opc client {ConnectionToken} disconnected error", ConnectionToken);
+                logger.LogError(ex, "Opc client {ConnectionToken} disconnected error", ConnectionToken);
                 _connect = false;
                 return false;
             }
@@ -109,7 +109,7 @@ namespace Modbus.Net.OPC
                     if (answerTag != null)
                     {
                         var result = await Client.ReadAsync<object>(answerTag);
-                        logger.LogDebug($"Opc Machine {ConnectionToken} Read opc tag {answerTag} for value {result.Value}");
+                        logger.LogDebug($"Opc Machine {ConnectionToken} Read Opc tag {answerTag} for value {result.Value}");
                         return new OpcParamOut
                         {
                             Success = true,
@@ -135,11 +135,11 @@ namespace Modbus.Net.OPC
                         try
                         {
                             await Client.WriteAsync(answerTag, value);
-                            logger.LogDebug($"Opc Machine {ConnectionToken} Write opc tag {answerTag} for value {value}");
+                            logger.LogDebug($"Opc Machine {ConnectionToken} Write Opc tag {answerTag} for value {value}");
                         }
                         catch (Exception e)
                         {
-                            logger.LogError(e, "opc client {ConnectionToken} write exception", ConnectionToken);
+                            logger.LogError(e, "Opc client {ConnectionToken} write exception", ConnectionToken);
                             return new OpcParamOut
                             {
                                 Success = false
@@ -158,7 +158,7 @@ namespace Modbus.Net.OPC
             }
             catch (Exception e)
             {
-                logger.LogError(e, "opc client {ConnectionToken} read exception", ConnectionToken);
+                logger.LogError(e, "Opc client {ConnectionToken} read exception", ConnectionToken);
                 return new OpcParamOut
                 {
                     Success = false,
@@ -197,12 +197,12 @@ namespace Modbus.Net.OPC
             {
                 Client.Connect();
                 _connect = true;
-                logger.LogInformation("opc client {ConnectionToken} connect success", ConnectionToken);
+                logger.LogInformation("Opc client {ConnectionToken} connect success", ConnectionToken);
                 return true;
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "opc client {ConnectionToken} connected failed", ConnectionToken);
+                logger.LogError(ex, "Opc client {ConnectionToken} connected failed", ConnectionToken);
                 _connect = false;
                 return false;
             }

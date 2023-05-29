@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Modbus.Net.OPC
+namespace Modbus.Net.Opc
 {
     /// <summary>
     ///     Opc地址解析器

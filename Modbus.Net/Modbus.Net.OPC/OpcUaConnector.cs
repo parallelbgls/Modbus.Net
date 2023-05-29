@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Modbus.Net.OPC
+namespace Modbus.Net.Opc
 {
     /// <summary>
     ///     Opc UA连接实现
@@ -28,7 +28,7 @@ namespace Modbus.Net.OPC
         /// </summary>
         /// <param name="host">Opc UA服务地址</param>
         /// <param name="isRegexOn">是否开启正则匹配</param>
-        /// <returns>OPC UA实例</returns>
+        /// <returns>Opc UA实例</returns>
         public static OpcUaConnector Instance(string host, bool isRegexOn)
         {
             if (!_instances.ContainsKey(host))

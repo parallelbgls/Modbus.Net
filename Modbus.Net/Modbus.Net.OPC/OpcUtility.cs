@@ -2,7 +2,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Modbus.Net.OPC
+namespace Modbus.Net.Opc
 {
     /// <summary>
     ///     Opc类型
@@ -12,11 +12,11 @@ namespace Modbus.Net.OPC
         /// <summary>
         ///     DA连接
         /// </summary>
-        Da=0,
+        Da = 0,
         /// <summary>
         ///     UA连接
         /// </summary>
-        Ua=1
+        Ua = 1
     }
 
     /// <summary>
@@ -73,9 +73,9 @@ namespace Modbus.Net.OPC
         /// <param name="isRegexOn">是否开启正则匹配</param>
         public OpcUtility(int connectionType, string connectionString, bool isRegexOn = false) : base(0, 0)
         {
-            OpcType = (OpcType)connectionType;
             ConnectionString = connectionString;
             IsRegexOn = isRegexOn;
+            OpcType = (OpcType)connectionType;
             AddressTranslator = new AddressTranslatorOpc();
         }
 
@@ -87,9 +87,9 @@ namespace Modbus.Net.OPC
         /// <param name="isRegexOn">是否开启正则匹配</param>
         public OpcUtility(OpcType connectionType, string connectionString, bool isRegexOn = false) : base(0, 0)
         {
-            OpcType = connectionType;
             ConnectionString = connectionString;
             IsRegexOn = isRegexOn;
+            OpcType = connectionType;
             AddressTranslator = new AddressTranslatorOpc();
         }
 

@@ -1,6 +1,4 @@
-﻿
-
-namespace Modbus.Net.OPC
+﻿namespace Modbus.Net.Opc
 {
     /// <summary>
     ///     Opc Da协议连接器

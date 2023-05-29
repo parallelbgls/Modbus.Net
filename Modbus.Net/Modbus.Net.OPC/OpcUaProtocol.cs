@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Modbus.Net.OPC
+namespace Modbus.Net.Opc
 {
     /// <summary>
     ///     Opc UA协议
