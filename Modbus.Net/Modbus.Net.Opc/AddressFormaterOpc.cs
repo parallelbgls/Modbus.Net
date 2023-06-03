@@ -14,14 +14,11 @@ namespace Modbus.Net.Opc
         /// </summary>
         /// <param name="tagGeter">如何通过BaseMachine和AddressUnit构造Opc的标签</param>
         /// <param name="machine">调用这个编码器的设备</param>
-        /// <param name="seperator">每两个标签之间用什么符号隔开，默认为/</param>
         public AddressFormaterOpc(Func<BaseMachine<TMachineKey, TUnitKey>, AddressUnit<TUnitKey>, string[]> tagGeter,
-            BaseMachine<TMachineKey, TUnitKey> machine,
-            char seperator = '/')
+            BaseMachine<TMachineKey, TUnitKey> machine)
         {
             Machine = machine;
             TagGeter = tagGeter;
-            Seperator = seperator;
         }
 
         /// <summary>
@@ -34,11 +31,6 @@ namespace Modbus.Net.Opc
         ///     (设备,地址)->不具备分隔符的标签数组
         /// </summary>
         protected Func<BaseMachine<TMachineKey, TUnitKey>, AddressUnit<TUnitKey>, string[]> TagGeter { get; set; }
-
-        /// <summary>
-        ///     分割符
-        /// </summary>
-        public char Seperator { get; protected set; }
 
         /// <summary>
         ///     编码地址

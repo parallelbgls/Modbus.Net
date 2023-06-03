@@ -17,8 +17,7 @@ namespace Modbus.Net.Opc
         ///     构造函数
         /// </summary>
         /// <param name="host">Opc DA 服务地址</param>
-        /// <param name="isRegexOn">是否开启正则匹配</param>
-        protected OpcDaConnector(string host, bool isRegexOn) : base(host, isRegexOn)
+        protected OpcDaConnector(string host) : base(host)
         {
             Client = new MyDaClient(new Uri(ConnectionToken));
         }
@@ -27,13 +26,12 @@ namespace Modbus.Net.Opc
         ///     根据服务地址生成DA单例
         /// </summary>
         /// <param name="host">Opc DA 服务地址</param>
-        /// <param name="isRegexOn">是否开启正则匹配</param>
         /// <returns>Opc DA 连接器实例</returns>
-        public static OpcDaConnector Instance(string host, bool isRegexOn)
+        public static OpcDaConnector Instance(string host)
         {
             if (!_instances.ContainsKey(host))
             {
-                var connector = new OpcDaConnector(host, isRegexOn);
+                var connector = new OpcDaConnector(host);
                 _instances.Add(host, connector);
             }
             return _instances[host];

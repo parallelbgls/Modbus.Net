@@ -8,8 +8,7 @@
         /// <summary>
         ///     构造函数
         /// </summary>
-        /// <param name="isRegexOn">是否开启正则匹配</param>
-        public OpcUaProtocolLinker(bool isRegexOn) : this(ConfigurationReader.GetValueDirect("OpcUa", "Host"), isRegexOn)
+        public OpcUaProtocolLinker() : this(ConfigurationReader.GetValueDirect("OpcUa", "Host"))
         {
         }
 
@@ -17,10 +16,9 @@
         ///     构造函数
         /// </summary>
         /// <param name="host">Opc UA服务地址</param>
-        /// <param name="isRegexOn">是否开启正则匹配</param>
-        public OpcUaProtocolLinker(string host, bool isRegexOn)
+        public OpcUaProtocolLinker(string host)
         {
-            BaseConnector = OpcUaConnector.Instance(host, isRegexOn);
+            BaseConnector = OpcUaConnector.Instance(host);
         }
     }
 }

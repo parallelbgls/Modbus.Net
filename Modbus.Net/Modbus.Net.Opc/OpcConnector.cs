@@ -1,9 +1,6 @@
-﻿using Hylasoft.Opc.Common;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Modbus.Net.Opc
@@ -26,19 +23,12 @@ namespace Modbus.Net.Opc
         protected IClientExtend Client;
 
         /// <summary>
-        ///     是否开启正则匹配
-        /// </summary>
-        protected bool RegexOn { get; set; }
-
-        /// <summary>
         ///     构造函数
         /// </summary>
         /// <param name="host">服务端url</param>
-        /// <param name="isRegexOn">是否开启正则匹配</param>
-        protected OpcConnector(string host, bool isRegexOn)
+        protected OpcConnector(string host)
         {
             ConnectionToken = host;
-            RegexOn = isRegexOn;
         }
 
         /// <summary>
@@ -102,14 +92,11 @@ namespace Modbus.Net.Opc
             {
                 if (message.IsRead)
                 {
-                    var split = message.Split;
                     var tag = message.Tag;
-                    var rootDirectory = await Client.ExploreFolderAsync("");
-                    var answerTag = await SearchTag(tag, split, 0, rootDirectory);
-                    if (answerTag != null)
+                    if (tag != null)
                     {
-                        var result = await Client.ReadAsync<object>(answerTag);
-                        logger.LogDebug($"Opc Machine {ConnectionToken} Read Opc tag {answerTag} for value {result.Value}");
+                        var result = await Client.ReadAsync<object>(tag);
+                        logger.LogInformation($"Opc Machine {ConnectionToken} Read Opc tag {tag} for value {result.Value}");
                         return new OpcParamOut
                         {
                             Success = true,
@@ -125,17 +112,14 @@ namespace Modbus.Net.Opc
                 else
                 {
                     var tag = message.Tag;
-                    var split = message.Split;
                     var value = message.SetValue;
-
-                    var rootDirectory = await Client.ExploreFolderAsync("");
-                    var answerTag = await SearchTag(tag, split, 0, rootDirectory);
-                    if (answerTag != null)
+                    ;
+                    if (tag != null)
                     {
                         try
                         {
-                            await Client.WriteAsync(answerTag, value);
-                            logger.LogDebug($"Opc Machine {ConnectionToken} Write Opc tag {answerTag} for value {value}");
+                            await Client.WriteAsync(tag, value);
+                            logger.LogInformation($"Opc Machine {ConnectionToken} Write Opc tag {tag} for value {value}");
                         }
                         catch (Exception e)
                         {
@@ -165,30 +149,6 @@ namespace Modbus.Net.Opc
                     Value = Encoding.ASCII.GetBytes("NoData")
                 };
             }
-        }
-
-        /// <summary>
-        ///     搜索标签
-        /// </summary>
-        /// <param name="tags">标签</param>
-        /// <param name="split">分隔符</param>
-        /// <param name="deep">递归深度（第几级标签）</param>
-        /// <param name="nodes">当前搜索的节点</param>
-        /// <returns>搜索到的标签</returns>
-        private async Task<string> SearchTag(string[] tags, char split, int deep, IEnumerable<Node> nodes)
-        {
-            foreach (var node in nodes)
-            {
-                var currentTag = node.Tag.Substring(node.Tag.LastIndexOf(split) + 1);
-                if (RegexOn && Regex.IsMatch(currentTag, tags[deep]) || !RegexOn && currentTag == tags[deep])
-                {
-                    if (deep == tags.Length - 1) return node.Tag;
-                    var subDirectories = await Client.ExploreFolderAsync(node.Tag);
-                    var answerTag = await SearchTag(tags, split, deep + 1, subDirectories);
-                    if (answerTag != null) return answerTag;
-                }
-            }
-            return null;
         }
 
         private bool Connect()

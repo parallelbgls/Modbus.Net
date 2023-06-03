@@ -9,7 +9,7 @@ namespace MachineJob
         {
             return (level, func, exception, parameters) =>
             {
-                if (level >= Quartz.Logging.LogLevel.Info && func != null)
+                if (func != null)
                 {
                     Console.WriteLine("[" + DateTime.Now.ToLongTimeString() + "] [" + level + "] " + func(), parameters);
                 }

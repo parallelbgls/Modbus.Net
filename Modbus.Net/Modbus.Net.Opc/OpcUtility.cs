@@ -30,8 +30,6 @@ namespace Modbus.Net.Opc
 
         private OpcType _opcType;
 
-        private bool IsRegexOn { get; set; }
-
         /// <summary>
         ///     协议类型
         /// </summary>
@@ -46,13 +44,13 @@ namespace Modbus.Net.Opc
                     //Da协议
                     case OpcType.Da:
                         {
-                            Wrapper = new OpcDaProtocol(ConnectionString, IsRegexOn);
+                            Wrapper = new OpcDaProtocol(ConnectionString);
                             break;
                         }
                     //Ua协议
                     case OpcType.Ua:
                         {
-                            Wrapper = new OpcUaProtocol(ConnectionString, IsRegexOn);
+                            Wrapper = new OpcUaProtocol(ConnectionString);
                             break;
                         }
                 }
@@ -60,21 +58,13 @@ namespace Modbus.Net.Opc
         }
 
         /// <summary>
-        ///     获取分隔符
-        /// </summary>
-        /// <returns>分隔符</returns>
-        public delegate char GetSeperatorDelegate();
-
-        /// <summary>
         ///     构造函数
         /// </summary>
         /// <param name="connectionType">连接类型</param>
         /// <param name="connectionString">连接地址</param>
-        /// <param name="isRegexOn">是否开启正则匹配</param>
-        public OpcUtility(int connectionType, string connectionString, bool isRegexOn = false) : base(0, 0)
+        public OpcUtility(int connectionType, string connectionString) : base(0, 0)
         {
             ConnectionString = connectionString;
-            IsRegexOn = isRegexOn;
             OpcType = (OpcType)connectionType;
             AddressTranslator = new AddressTranslatorOpc();
         }
@@ -84,11 +74,9 @@ namespace Modbus.Net.Opc
         /// </summary>
         /// <param name="connectionType">连接类型</param>
         /// <param name="connectionString">连接地址</param>
-        /// <param name="isRegexOn">是否开启正则匹配</param>
-        public OpcUtility(OpcType connectionType, string connectionString, bool isRegexOn = false) : base(0, 0)
+        public OpcUtility(OpcType connectionType, string connectionString) : base(0, 0)
         {
             ConnectionString = connectionString;
-            IsRegexOn = isRegexOn;
             OpcType = connectionType;
             AddressTranslator = new AddressTranslatorOpc();
         }
@@ -97,11 +85,6 @@ namespace Modbus.Net.Opc
         ///     端格式（大端）
         /// </summary>
         public override Endian Endian => Endian.BigEndianLsb;
-
-        /// <summary>
-        ///     获取分隔符
-        /// </summary>
-        public event GetSeperatorDelegate GetSeperator;
 
         /// <summary>
         ///     设置连接方式(Opc忽略该函数)
@@ -122,8 +105,7 @@ namespace Modbus.Net.Opc
         {
             try
             {
-                var split = GetSeperator?.Invoke() ?? '/';
-                var readRequestOpcInputStruct = new ReadRequestOpcInputStruct(startAddress.Split('\r'), split);
+                var readRequestOpcInputStruct = new ReadRequestOpcInputStruct(startAddress);
                 var readRequestOpcOutputStruct =
                     await
                         Wrapper.SendReceiveAsync<ReadRequestOpcOutputStruct>(Wrapper[typeof(ReadRequestOpcProtocol)],
@@ -159,9 +141,8 @@ namespace Modbus.Net.Opc
         {
             try
             {
-                var split = GetSeperator?.Invoke() ?? '/';
                 var writeRequestOpcInputStruct =
-                    new WriteRequestOpcInputStruct(startAddress.Split('\r'), split, setContents[0]);
+                    new WriteRequestOpcInputStruct(startAddress, setContents[0]);
                 var writeRequestOpcOutputStruct =
                     await
                         Wrapper.SendReceiveAsync<WriteRequestOpcOutputStruct>(Wrapper[typeof(WriteRequestOpcProtocol)],

@@ -8,8 +8,7 @@
         /// <summary>
         ///     构造函数
         /// </summary>
-        /// <param name="isRegexOn">是否开启正则匹配</param>
-        public OpcDaProtocolLinker(bool isRegexOn) : this(ConfigurationReader.GetValueDirect("OpcDa", "Host"), isRegexOn)
+        public OpcDaProtocolLinker() : this(ConfigurationReader.GetValueDirect("OpcDa", "Host"))
         {
         }
 
@@ -17,10 +16,9 @@
         ///     构造函数
         /// </summary>
         /// <param name="host">Opc DA服务地址</param>
-        /// <param name="isRegexOn">是否开启正则匹配</param>
-        public OpcDaProtocolLinker(string host, bool isRegexOn)
+        public OpcDaProtocolLinker(string host)
         {
-            BaseConnector = OpcDaConnector.Instance(host, isRegexOn);
+            BaseConnector = OpcDaConnector.Instance(host);
         }
     }
 }

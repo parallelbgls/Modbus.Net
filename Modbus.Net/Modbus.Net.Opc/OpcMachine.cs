@@ -16,14 +16,11 @@ namespace Modbus.Net.Opc
         /// <param name="connectionType">连接类型</param>
         /// <param name="connectionString">连接地址</param>
         /// <param name="getAddresses">需要读写的地址</param>
-        /// <param name="isRegexOn">开启正则匹配</param>
-        public OpcMachine(TKey id, OpcType connectionType, string connectionString, IEnumerable<AddressUnit<TUnitKey>> getAddresses, bool isRegexOn = false)
+        public OpcMachine(TKey id, OpcType connectionType, string connectionString, IEnumerable<AddressUnit<TUnitKey>> getAddresses)
             : base(id, getAddresses, true)
         {
-            BaseUtility = new OpcUtility(connectionType, connectionString, isRegexOn);
+            BaseUtility = new OpcUtility(connectionType, connectionString);
             AddressFormater = new AddressFormaterOpc<TKey, TUnitKey>((machine, unit) => { return new string[] { unit.Area }; }, this);
-            ((OpcUtility)BaseUtility).GetSeperator +=
-                () => ((AddressFormaterOpc<TKey, TUnitKey>)AddressFormater).Seperator;
             AddressCombiner = new AddressCombinerSingle<TUnitKey>();
             AddressCombinerSet = new AddressCombinerSingle<TUnitKey>();
         }

@@ -26,22 +26,15 @@
         ///     构造函数
         /// </summary>
         /// <param name="tag">标签</param>
-        /// <param name="split">分隔符</param>
-        public ReadRequestOpcInputStruct(string[] tag, char split)
+        public ReadRequestOpcInputStruct(string tag)
         {
             Tag = tag;
-            Split = split;
         }
 
         /// <summary>
         ///     标签
         /// </summary>
-        public string[] Tag { get; }
-
-        /// <summary>
-        ///     分隔符
-        /// </summary>
-        public char Split { get; }
+        public string Tag { get; }
     }
 
     /// <summary>
@@ -82,7 +75,6 @@
             {
                 IsRead = true,
                 Tag = r_message.Tag,
-                Split = r_message.Split
             };
         }
 
@@ -111,24 +103,17 @@
         ///     构造函数
         /// </summary>
         /// <param name="tag">标签</param>
-        /// <param name="split">分隔符</param>
         /// <param name="setValue">写入的数据</param>
-        public WriteRequestOpcInputStruct(string[] tag, char split, object setValue)
+        public WriteRequestOpcInputStruct(string tag, object setValue)
         {
             Tag = tag;
-            Split = split;
             SetValue = setValue;
         }
 
         /// <summary>
         ///     标签
         /// </summary>
-        public string[] Tag { get; }
-
-        /// <summary>
-        ///     分隔符
-        /// </summary>
-        public char Split { get; }
+        public string Tag { get; }
 
         /// <summary>
         ///     写入的数据
@@ -174,7 +159,6 @@
             {
                 IsRead = false,
                 Tag = r_message.Tag,
-                Split = r_message.Split,
                 SetValue = r_message.SetValue
             };
         }
