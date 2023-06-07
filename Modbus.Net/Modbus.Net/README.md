@@ -84,6 +84,7 @@ Combine duplicated addresses to organized addresses, each organized addresses co
 This platform has three level APIs that you could use: Low level API called "BaseUtility"; Middle level API called "BaseMachine"
 
 ### Utility
+
 IUtilityProperty is a low level api, in this level you can get or set data only by byte array or object array. Here is an example.
 
 ```C#
@@ -201,8 +202,8 @@ There are 4 AddressCombiners implemented in the platform.
 
 3.Use GetDatas Api.
 ```C#
-var result = machine.InvokeMachineMethods<IMachineMethodData>?.GetDatas(MachineDataType.CommunicationTag);
-//var result = await machine.InvokeMachineMethods<IMachineMethodData>?.GetDatasAsync(MachineDataType.CommunicationTag);
+var result = machine.InvokeMachineMethods<IMachineMethodDatas>?.GetDatas(MachineDataType.CommunicationTag);
+//var result = await machine.InvokeMachineMethods<IMachineMethodDatas>?.GetDatasAsync(MachineDataType.CommunicationTag);
 ```
 
 4.Retrive data from result.
@@ -226,6 +227,62 @@ machine.SetDatas has four types. It is referenced as the first parameter.
 2. MachineDataType.CommunicationTag: the key of the dictionary of the second parameter is communication tag.
 3. MachineDataType.Id: the key of the dictionary of the second paramenter is ID.
 4. MachineDataType.Name: the key of the dictionary of the second paramenter is name.
+
+### Job
+
+You can use MachineJobSchedulerCreator to create a job scheduler then write a job chain and run this chain.
+```C#
+var scheduler = await MachineJobSchedulerCreator<IMachineMethodDatas, string, double>.CreateScheduler(machine.Id, -1, 10);
+var job = scheduler.From(machine.Id + ".From", machine, MachineDataType.Name).Result.Query(machine.Id + ".ConsoleQuery", QueryConsole).Result.To(machine.Id + ".To", machine).Result.Deal(machine.Id + ".Deal", OnSuccess, OnFailure).Result;
+await job.Run();
+```
+
+Also you can use MultipleMachinesJobScheduler to run multiple machines in a same chain.
+```C#
+MultipleMachinesJobScheduler.RunScheduler(machines, async (machine, scheduler) =>
+{
+    await scheduler.From(machine.Id + ".From", machine, MachineDataType.Name).Result.Query(machine.Id + ".ConsoleQuery", QueryConsole).Result.To(machine.Id + ".To", machine).Result.Deal(machine.Id + ".Deal", OnSuccess, OnFailure).Result.Run();
+}, -1, 10)
+```
+
+### Read Machine Parameter from appsettings.json
+
+First writing C# Code to read machines.
+```C#
+var machines = MachineReader.ReadMachines();
+```
+Then writing json config in appsettings.json
+```Json
+"Machine": [
+      {
+        "a:id": "ModbusMachine1",
+        "b:protocol": "Modbus",
+        "c:type": "Tcp",
+        "d:connectionString": "10.10.18.251",
+        "e:addressMap": "AddressMapModbus",
+        "f:keepConnect": true,
+        "g:slaveAddress": 1,
+        "h:masterAddress": 2,
+        "i:endian": "BigEndianLsb"
+      },
+...
+]
+"addressMap": {
+      "AddressMapModbus": [
+        {
+          "Area": "4X",
+          "Address": 1,
+          "DataType": "Int16",
+          "Id": "1",
+          "Name": "Test1"
+        },
+...
+      ],
+...
+}
+```
+For some reasons, you need to add e.g. "a:" "b:" to let property ordered in machine configuration, anything can be used here before ":".
+But after ":", property should match constructor except protocol, which refer to class name.
 
 ## <a name="implement"></a> Implementing Your Own Protocol
 
@@ -327,7 +384,11 @@ public class ModbusTcpProtocolLinkerBytesExtend : ProtocolLinkerBytesExtend
 ```
 For example modbus tcp has a 6 bytes head: 4 bytes 0 and 2 bytes length. And when you get the bytes, please remove the head to fit the ModbusProtocol Unformat function.
 
-5.Implement BaseUtility.cs (ModbusUtility.cs)
+5.Implement BaseController.cs (FIFOController.cs)
+Implement message dispatching api like first in first out.
+There are no rules for implementation, but you can refer IController and FIFOController to implement your own controller like RBTreeController.
+
+6.Implement BaseUtility.cs (ModbusUtility.cs)
 Implement low level api for Modbus.
 You need to implement three functions.
 ```C#
@@ -345,7 +406,7 @@ public ModbusUtility(int connectionType, byte slaveAddress, byte masterAddress) 
 }
 ```
 
-6.Implement BaseMachine.cs (ModbusMachine.cs)
+7.Implement BaseMachine.cs (ModbusMachine.cs)
 Implement middle level api for Modbus.
 ```C#
 public ModbusMachine(ModbusType connectionType, string connectionString,
@@ -360,7 +421,7 @@ public ModbusMachine(ModbusType connectionType, string connectionString,
 ```
 Set BaseUtility, default AddressFormater, AddressCombiner and AddressCombinerSet.
 
-7.Implement your own AddressFormater, AddressTranslator and AddressCombiner. (AddressFormaterModbus.cs, AddressTranslatorModbus.cs) (Optional)
+8.Implement your own AddressFormater, AddressTranslator and AddressCombiner. (AddressFormaterModbus.cs, AddressTranslatorModbus.cs) (Optional)
 If some devices have its own address rule, you should implement your own address formating system.
 ```C#
 public class AddressFormaterModbus : AddressFormater
@@ -415,3 +476,15 @@ type = typeof(byte)
 SubAddress 8 means it starts from the 8th bit in that short value.
 
 Remember subpos system cannot cross a byte in current version. If you want to cross a byte, you can change the function "GetValue" in ValueHelper.cs 
+
+### For configurations
+
+You can replace any configuration in appsettings.default.json, and remember, you can change settings only for one connection or one physical port.
+Like
+```Json
+{
+    "Modbus.Net:TCP:192.168.1.100:502:FetchSleepTime": 50,
+    "Modbus.Net:TCP:192.168.1.101:FetchSleepTime": 50,
+    "Modbus.Net:COM:COM1:FetchSleepTime": 2000
+}
+```

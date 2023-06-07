@@ -5,3 +5,7 @@ Modbus.Net.Modbus
 Modbus Implementation of Modbus.Net
 
 Doc has been moved to wiki.
+
+Important
+------------------
+Currently protocols are not being tested except IMachineMethodDatas and IUtilityMethodDatas

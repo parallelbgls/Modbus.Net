@@ -1,6 +1,6 @@
 ﻿Modbus.Net.OPC
 ===================
-[![NuGet](https://img.shields.io/nuget/v/Modbus.Net.OPC.svg)](https://www.nuget.org/packages/Modbus.Net.OPC/)
+[![NuGet](https://img.shields.io/nuget/v/Modbus.Net.Opc.svg)](https://www.nuget.org/packages/Modbus.Net.Opc/)
 
 OPC Implementation of Modbus.Net
 
