@@ -4,46 +4,6 @@ using System.IO.Ports;
 namespace Modbus.Net
 {
     /// <summary>
-    ///     波特率
-    /// </summary>
-    public enum BaudRate
-    {
-#pragma warning disable
-        BaudRate75 = 75,
-        BaudRate110 = 110,
-        BaudRate134 = 134,
-        BaudRate150 = 150,
-        BaudRate300 = 300,
-        BaudRate600 = 600,
-        BaudRate1200 = 1200,
-        BaudRate1800 = 1800,
-        BaudRate2400 = 2400,
-        BaudRate4800 = 4800,
-        BaudRate9600 = 9600,
-        BaudRate14400 = 14400,
-        BaudRate19200 = 19200,
-        BaudRate38400 = 38400,
-        BaudRate57600 = 57600,
-        BaudRate115200 = 115200,
-        BaudRate128000 = 128000,
-        BaudRate230400 = 230400,
-        BaudRate460800 = 460800,
-        BaudRate921600 = 921600,
-#pragma warning restore
-    }
-
-    /// <summary>
-    ///     数据位
-    /// </summary>
-    public enum DataBits
-    {
-#pragma warning disable
-        Seven = 7,
-        Eight = 8,
-#pragma warning restore
-    }
-
-    /// <summary>
     ///     串口连接对象
     /// </summary>
     public abstract class ComProtocolLinker : ProtocolLinker

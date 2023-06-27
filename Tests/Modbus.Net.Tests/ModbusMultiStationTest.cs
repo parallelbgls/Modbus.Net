@@ -15,8 +15,8 @@ namespace Modbus.Net.Tests
         [TestInitialize]
         public void Init()
         {
-            _modbusRtuMachine1 = new ModbusMachine<string, string>("1", ModbusType.Rtu, _machineCom, null, true, 1, 0);
-            _modbusRtuMachine2 = new ModbusMachine<string, string>("2", ModbusType.Rtu, _machineCom, null, true, 2, 0);
+            _modbusRtuMachine1 = new ModbusMachine<string, string>("1", ModbusType.Rtu, _machineCom, null, true, 1, 0, Endian.BigEndianLsb);
+            _modbusRtuMachine2 = new ModbusMachine<string, string>("2", ModbusType.Rtu, _machineCom, null, true, 2, 0, Endian.BigEndianLsb);
         }
 
         [TestMethod]

@@ -79,7 +79,7 @@ namespace Modbus.Net.Modbus
         /// <param name="masterAddress">主站号</param>
         /// <param name="endian">端格式</param>
         public ModbusUtility(int connectionType, byte slaveAddress, byte masterAddress,
-            Endian endian = Endian.BigEndianLsb)
+            Endian endian)
             : base(slaveAddress, masterAddress)
         {
             Endian = endian;
@@ -97,7 +97,7 @@ namespace Modbus.Net.Modbus
         /// <param name="masterAddress">主站号</param>
         /// <param name="endian">端格式</param>
         public ModbusUtility(ModbusType connectionType, string connectionString, byte slaveAddress, byte masterAddress,
-            Endian endian = Endian.BigEndianLsb)
+            Endian endian)
             : base(slaveAddress, masterAddress)
         {
             Endian = endian;

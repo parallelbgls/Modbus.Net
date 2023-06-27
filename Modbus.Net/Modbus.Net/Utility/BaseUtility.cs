@@ -4,27 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-/// <summary>
-///     端格式
-/// </summary>
-public enum Endian
-{
-    /// <summary>
-    ///     小端
-    /// </summary>
-    LittleEndianLsb,
-
-    /// <summary>
-    ///     大端-小端位
-    /// </summary>
-    BigEndianLsb,
-
-    /// <summary>
-    ///     大端-大端位
-    /// </summary>
-    BigEndianMsb
-}
-
 namespace Modbus.Net
 {
     /// <summary>

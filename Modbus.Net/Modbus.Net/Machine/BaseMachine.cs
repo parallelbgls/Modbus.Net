@@ -7,32 +7,6 @@ using System.Threading.Tasks;
 namespace Modbus.Net
 {
     /// <summary>
-    ///     读写设备值的方式
-    /// </summary>
-    public enum MachineDataType
-    {
-        /// <summary>
-        ///     地址
-        /// </summary>
-        Address,
-
-        /// <summary>
-        ///     通讯标识
-        /// </summary>
-        CommunicationTag,
-
-        /// <summary>
-        ///     名称
-        /// </summary>
-        Name,
-
-        /// <summary>
-        ///     Id
-        /// </summary>
-        Id
-    }
-
-    /// <summary>
     ///     设备
     /// </summary>
     /// <typeparam name="TKey">设备的Id类型</typeparam>

@@ -16,7 +16,7 @@ namespace Modbus.Net.Modbus.SelfDefinedSample
         /// <param name="masterAddress">主站号</param>
         /// <param name="endian">端格式</param>
         public ModbusUtilityTime(int connectionType, byte slaveAddress, byte masterAddress,
-            Endian endian = Endian.BigEndianLsb)
+            Endian endian)
             : base(connectionType, slaveAddress, masterAddress, endian)
         {
         }
@@ -30,7 +30,7 @@ namespace Modbus.Net.Modbus.SelfDefinedSample
         /// <param name="masterAddress">主站号</param>
         /// <param name="endian">端格式</param>
         public ModbusUtilityTime(ModbusType connectionType, string connectionString, byte slaveAddress, byte masterAddress,
-            Endian endian = Endian.BigEndianLsb)
+            Endian endian)
             : base(connectionType, connectionString, slaveAddress, masterAddress, endian)
         {
         }

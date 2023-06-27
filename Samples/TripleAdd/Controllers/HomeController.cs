@@ -41,7 +41,7 @@ namespace TripleAdd.Controllers
         {
             if (utility == null)
             {
-                utility = new ModbusUtility(ModbusType.Tcp, "10.10.18.251", 2, 0);
+                utility = new ModbusUtility(ModbusType.Tcp, "10.10.18.251", 2, 0, Endian.BigEndianLsb);
                 utility.AddressTranslator = new AddressTranslatorModbus();
                 await utility.ConnectAsync();
             }
@@ -60,7 +60,7 @@ namespace TripleAdd.Controllers
                     new AddressUnit() {Id = "2", Area = "4X", Address = 2, CommunicationTag = "Add2", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
                     new AddressUnit() {Id = "3", Area = "4X", Address = 3, CommunicationTag = "Add3", DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
                     new AddressUnit() {Id = "4", Area = "4X", Address = 4, CommunicationTag = "Ans",  DataType = typeof(ushort), Zoom = 1, DecimalPos = 0},
-                }, 2, 0);
+                }, 2, 0, Endian.BigEndianLsb);
                 machine.AddressCombiner = new AddressCombinerContinus<string>(machine.AddressTranslator, 100000);
                 machine.AddressCombinerSet = new AddressCombinerContinus<string>(machine.AddressTranslator, 100000);
             }

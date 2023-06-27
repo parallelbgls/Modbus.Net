@@ -21,11 +21,11 @@ namespace Modbus.Net.Tests
         [TestInitialize]
         public void Init()
         {
-            _modbusTcpMachine = new ModbusMachine<string, string>("1", ModbusType.Tcp, _machineIp, null, true, 2, 0);
+            _modbusTcpMachine = new ModbusMachine<string, string>("1", ModbusType.Tcp, _machineIp, null, true, 2, 0, Endian.BigEndianLsb);
 
-            _modbusRtuMachine = new ModbusMachine<string, string>("2", ModbusType.Rtu, _machineCom, null, true, 2, 0);
+            _modbusRtuMachine = new ModbusMachine<string, string>("2", ModbusType.Rtu, _machineCom, null, true, 2, 0, Endian.BigEndianLsb);
 
-            _modbusAsciiMachine = new ModbusMachine<string, string>("3", ModbusType.Ascii, _machineCom2, null, true, 2, 0);
+            _modbusAsciiMachine = new ModbusMachine<string, string>("3", ModbusType.Ascii, _machineCom2, null, true, 2, 0, Endian.BigEndianLsb);
         }
 
         [TestMethod]

@@ -30,7 +30,7 @@ namespace CrossLamp.Controllers
             {
                 if (_utility == null)
                 {
-                    _utility = new ModbusUtility(ModbusType.Tcp, "10.10.18.251", 2, 0);
+                    _utility = new ModbusUtility(ModbusType.Tcp, "10.10.18.251", 2, 0, Endian.BigEndianLsb);
                     await _utility.ConnectAsync();
                 }
                 Lamp light = new Lamp();

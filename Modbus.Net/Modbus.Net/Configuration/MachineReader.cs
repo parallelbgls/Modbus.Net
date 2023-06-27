@@ -67,7 +67,7 @@ namespace Modbus.Net
                             }
                         case "endian":
                             {
-                                paramsSet.Add(FastEnum.Parse<Endian>(dic["endian"]));
+                                paramsSet.Add(Endian.Parse(dic["endian"]));
                                 break;
                             }
                         default:
