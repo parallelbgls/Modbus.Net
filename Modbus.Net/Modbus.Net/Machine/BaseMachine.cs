@@ -192,7 +192,7 @@ namespace Modbus.Net
                                     communicateAddress.SubAddress),
                                 (int)
                                 Math.Ceiling(communicateAddress.GetCount *
-                                             BigEndianValueHelper.Instance.ByteLength[
+                                             ValueHelper.ByteLength[
                                                  communicateAddress.DataType.FullName]));
 
 
@@ -210,7 +210,7 @@ namespace Modbus.Net
                     else if (datas.Datas.Length != 0 && datas.Datas.Length <
                         (int)
                         Math.Ceiling(communicateAddress.GetCount *
-                                     BigEndianValueHelper.Instance.ByteLength[
+                                     ValueHelper.ByteLength[
                                          communicateAddress.DataType.FullName]))
                     {
                         return new ReturnStruct<Dictionary<string, ReturnUnit<double>>>()
@@ -437,7 +437,7 @@ namespace Modbus.Net
                             AddressFormater.FormatAddress(communicateAddress.Area, communicateAddress.Address, 0),
                             (int)
                             Math.Ceiling(communicateAddress.GetCount *
-                                         BigEndianValueHelper.Instance.ByteLength[
+                                         ValueHelper.ByteLength[
                                              communicateAddress.DataType.FullName]));
 
                     var valueHelper = ValueHelper.GetInstance(BaseUtility.Endian);
@@ -458,7 +458,7 @@ namespace Modbus.Net
                     else if (datas.Datas.Length <
                     (int)
                     Math.Ceiling(communicateAddress.GetCount *
-                                 BigEndianValueHelper.Instance.ByteLength[
+                                 ValueHelper.ByteLength[
                                      communicateAddress.DataType.FullName]))
                         return new ReturnStruct<bool>()
                         {

@@ -96,11 +96,24 @@ namespace Modbus.Net.Opc
                     if (tag != null)
                     {
                         var result = await Client.ReadAsync<object>(tag);
-                        logger.LogInformation($"Opc Machine {ConnectionToken} Read Opc tag {tag} for value {result.Value}");
+                        object resultTrans;
+                        if (result.Value.ToString() == "False")
+                        {
+                            resultTrans = (byte)0;
+                        }
+                        else if (result.Value.ToString() == "True")
+                        {
+                            resultTrans = (byte)1;
+                        }
+                        else
+                        {
+                            resultTrans = result.Value;
+                        }
+                        logger.LogInformation($"Opc Machine {ConnectionToken} Read Opc tag {tag} for value {result.Value} {result.Value.GetType().FullName}");
                         return new OpcParamOut
                         {
                             Success = true,
-                            Value = BigEndianValueHelper.Instance.GetBytes(result.Value, result.Value.GetType())
+                            Value = BigEndianLsbValueHelper.Instance.GetBytes(resultTrans, resultTrans.GetType())
                         };
                     }
                     return new OpcParamOut

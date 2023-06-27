@@ -109,7 +109,7 @@ namespace Modbus.Net
             try
             {
                 var typeName = getTypeAndCount.Key.FullName;
-                var bCount = BigEndianValueHelper.Instance.ByteLength[typeName];
+                var bCount = ValueHelper.ByteLength[typeName];
                 var getReturnValue = await GetDatasAsync(startAddress,
                     (int)Math.Ceiling(bCount * getTypeAndCount.Value));
                 var getBytes = getReturnValue;
@@ -230,7 +230,7 @@ namespace Modbus.Net
                 var bAllCount = (
                     from getTypeAndCount in translateTypeAndCount
                     let typeName = getTypeAndCount.Key.FullName
-                    let bCount = BigEndianValueHelper.Instance.ByteLength[typeName]
+                    let bCount = ValueHelper.ByteLength[typeName]
                     select (int)Math.Ceiling(bCount * getTypeAndCount.Value)).Sum();
                 var getReturnValue = await GetDatasAsync(startAddress, bAllCount);
                 var getBytes = getReturnValue;

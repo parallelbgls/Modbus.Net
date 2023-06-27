@@ -124,7 +124,7 @@ namespace Modbus.Net
                                         AddressHelper.MapProtocolGetCountToAbstractByteCount(
                                             preNum - (int)Math.Floor(initNum),
                                             AddressTranslator.GetAreaByteLength(address.Area),
-                                            BigEndianValueHelper.Instance.ByteLength[preType.FullName])),
+                                            ValueHelper.ByteLength[preType.FullName])),
                                 DataType = typeof(byte),
                                 OriginalAddresses = originalAddresses.ToList()
                             });
@@ -153,7 +153,7 @@ namespace Modbus.Net
                         Math.Ceiling(
                             AddressHelper.MapProtocolGetCountToAbstractByteCount(
                                 preNum - (int)Math.Floor(initNum), AddressTranslator.GetAreaByteLength(area),
-                                BigEndianValueHelper.Instance.ByteLength[preType.FullName])),
+                                ValueHelper.ByteLength[preType.FullName])),
                     DataType = typeof(byte),
                     OriginalAddresses = originalAddresses.ToList()
                 });
@@ -173,9 +173,9 @@ namespace Modbus.Net
             foreach (var communicationUnit in ans)
             {
                 var oldByteCount = communicationUnit.GetCount *
-                                   BigEndianValueHelper.Instance.ByteLength[communicationUnit.DataType.FullName];
+                                   ValueHelper.ByteLength[communicationUnit.DataType.FullName];
                 var oldOriginalAddresses = communicationUnit.OriginalAddresses.ToList();
-                while (oldByteCount * BigEndianValueHelper.Instance.ByteLength[communicationUnit.DataType.FullName] >
+                while (oldByteCount * ValueHelper.ByteLength[communicationUnit.DataType.FullName] >
                        MaxLength)
                 {
                     var newOriginalAddresses = new List<AddressUnit<TKey>>();
@@ -184,9 +184,9 @@ namespace Modbus.Net
                     do
                     {
                         var currentAddressUnit = oldOriginalAddresses.First();
-                        newByteCount += BigEndianValueHelper.Instance.ByteLength[currentAddressUnit.DataType.FullName];
+                        newByteCount += ValueHelper.ByteLength[currentAddressUnit.DataType.FullName];
                         if (newByteCount > MaxLength) break;
-                        oldByteCount -= BigEndianValueHelper.Instance.ByteLength[currentAddressUnit.DataType.FullName];
+                        oldByteCount -= ValueHelper.ByteLength[currentAddressUnit.DataType.FullName];
                         newOriginalAddresses.Add(currentAddressUnit);
                         oldOriginalAddresses.RemoveAt(0);
                     } while (newByteCount < MaxLength);
@@ -199,7 +199,7 @@ namespace Modbus.Net
                         GetCount =
                             (int)
                             Math.Ceiling(newByteCount /
-                                         BigEndianValueHelper.Instance.ByteLength[communicationUnit.DataType.FullName]),
+                                         ValueHelper.ByteLength[communicationUnit.DataType.FullName]),
                         OriginalAddresses = newOriginalAddresses
                     };
 
@@ -214,7 +214,7 @@ namespace Modbus.Net
                 communicationUnit.GetCount =
                     (int)
                     Math.Ceiling(oldByteCount /
-                                 BigEndianValueHelper.Instance.ByteLength[communicationUnit.DataType.FullName]);
+                                 ValueHelper.ByteLength[communicationUnit.DataType.FullName]);
                 communicationUnit.OriginalAddresses = oldOriginalAddresses;
                 newAns.Add(communicationUnit);
             }
@@ -309,7 +309,7 @@ namespace Modbus.Net
                                              continusAddress.Address, preCommunicationUnit.Address,
                                              AddressTranslator.GetAreaByteLength(continusAddress.Area)) -
                                          preCommunicationUnit.GetCount *
-                                         BigEndianValueHelper.Instance.ByteLength[
+                                         ValueHelper.ByteLength[
                                              preCommunicationUnit.DataType.FullName])
                     };
                     addressesGaps.Add(gap);
@@ -327,8 +327,8 @@ namespace Modbus.Net
                 nowAddress = continusAddresses[index];
                 index--;
                 var preAddress = continusAddresses[index];
-                if (nowAddress.GetCount * BigEndianValueHelper.Instance.ByteLength[nowAddress.DataType.FullName] +
-                    preAddress.GetCount * BigEndianValueHelper.Instance.ByteLength[preAddress.DataType.FullName] +
+                if (nowAddress.GetCount * ValueHelper.ByteLength[nowAddress.DataType.FullName] +
+                    preAddress.GetCount * ValueHelper.ByteLength[preAddress.DataType.FullName] +
                     orderedGap.GapNumber > MaxLength) continue;
                 jumpNumberInner -= orderedGap.GapNumber;
                 if (jumpNumberInner < 0) break;
@@ -341,10 +341,10 @@ namespace Modbus.Net
                     Address = preAddress.Address,
                     GetCount =
                         (int)
-                        (preAddress.GetCount * BigEndianValueHelper.Instance.ByteLength[preAddress.DataType.FullName]) +
+                        (preAddress.GetCount * ValueHelper.ByteLength[preAddress.DataType.FullName]) +
                         orderedGap.GapNumber +
                         (int)
-                        (nowAddress.GetCount * BigEndianValueHelper.Instance.ByteLength[nowAddress.DataType.FullName]),
+                        (nowAddress.GetCount * ValueHelper.ByteLength[nowAddress.DataType.FullName]),
                     DataType = typeof(byte),
                     OriginalAddresses = preAddress.OriginalAddresses.ToList().Union(nowAddress.OriginalAddresses)
                 };
@@ -385,7 +385,7 @@ namespace Modbus.Net
         public override IEnumerable<CommunicationUnit<TKey>> Combine(IEnumerable<AddressUnit<TKey>> addresses)
         {
             var addressUnits = addresses as IList<AddressUnit<TKey>> ?? addresses.ToList();
-            var count = addressUnits.Sum(address => BigEndianValueHelper.Instance.ByteLength[address.DataType.FullName]);
+            var count = addressUnits.Sum(address => ValueHelper.ByteLength[address.DataType.FullName]);
             return
                 new AddressCombinerNumericJump<TKey>((int)(count * Percentage / 100.0), MaxLength, AddressTranslator)
                     .Combine(

@@ -15,7 +15,7 @@ namespace Modbus.Net.Siemens
         public byte[] BytesExtend(byte[] content)
         {
             Array.Copy(new byte[] { 0x03, 0x00, 0x00, 0x00, 0x02, 0xf0, 0x80 }, 0, content, 0, 7);
-            Array.Copy(BigEndianValueHelper.Instance.GetBytes((ushort)content.Length), 0, content, 2, 2);
+            Array.Copy(BigEndianLsbValueHelper.Instance.GetBytes((ushort)content.Length), 0, content, 2, 2);
             return content;
         }
 

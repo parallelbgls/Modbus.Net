@@ -46,7 +46,7 @@ namespace TripleAdd.Controllers
                 await utility.ConnectAsync();
             }
             object[] getNum = (await utility.GetDatasAsync("4X 1", new KeyValuePair<Type, int>(typeof(ushort), 4))).Datas;
-            ushort[] getNumUshorts = BigEndianValueHelper.Instance.ObjectArrayToDestinationArray<ushort>(getNum);
+            ushort[] getNumUshorts = BigEndianLsbValueHelper.Instance.ObjectArrayToDestinationArray<ushort>(getNum);
             return SetValue(getNumUshorts);
         }
 
