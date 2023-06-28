@@ -39,16 +39,6 @@ namespace Modbus.Net.Siemens
         /// </summary>
         /// <param name="content">写入的内容，使用对象数组描述</param>
         /// <returns>从设备获取的字节流</returns>
-        public override PipeUnit SendReceive(params object[] content)
-        {
-            return AsyncHelper.RunSync(() => SendReceiveAsync(Endian, content));
-        }
-
-        /// <summary>
-        ///     发送协议内容并接收，一般方法
-        /// </summary>
-        /// <param name="content">写入的内容，使用对象数组描述</param>
-        /// <returns>从设备获取的字节流</returns>
         public override async Task<PipeUnit> SendReceiveAsync(params object[] content)
         {
             if (ProtocolLinker == null || !ProtocolLinker.IsConnected)

@@ -5,6 +5,7 @@ using Modbus.Net.Modbus;
 using System.Diagnostics;
 using MachineJobSchedulerCreator = Modbus.Net.MachineJobSchedulerCreator<Modbus.Net.IMachineMethodDatas, string, double>;
 using ModbusMachine = Modbus.Net.Modbus.ModbusMachine<string, string>;
+using AddressUnit = Modbus.Net.AddressUnit<string, int, int>;
 
 namespace AnyType.Controllers
 {

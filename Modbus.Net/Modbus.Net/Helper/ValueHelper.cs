@@ -307,13 +307,27 @@ namespace Modbus.Net
         /// <returns>对应的ValueHelper实例</returns>
         public static ValueHelper GetInstance(Endian endian)
         {
+            if (EndianInstanceCache.ContainsKey(endian.ToString()))
+            {
+                return EndianInstanceCache[endian.ToString()];
+            }
             foreach (var assembly in AssemblyHelper.GetAllLibraryAssemblies())
             {
                 var valueHelper = assembly.GetType("Modbus.Net."+endian.ToString() + "ValueHelper")?.GetProperty("Instance")?.GetValue(null, null) as ValueHelper;
-                if (valueHelper != null) return valueHelper;
+                if (valueHelper != null)
+                {
+                    EndianInstanceCache[endian.ToString()] = valueHelper;
+                    return valueHelper;
+                }
+                
             }
-            return null;
+            throw new NotImplementedException("ValueHelper " + endian.ToString() + " doesn't exist.");
         }
+
+        /// <summary>
+        ///     ValueHelper实例的缓存
+        /// </summary>
+        protected static Dictionary<string, ValueHelper> EndianInstanceCache = new Dictionary<string, ValueHelper>();
     }
 
     /// <summary>

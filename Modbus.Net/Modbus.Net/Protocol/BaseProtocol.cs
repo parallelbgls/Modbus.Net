@@ -152,18 +152,6 @@ namespace Modbus.Net
         /// <param name="unit">协议的实例</param>
         /// <param name="content">输入信息的结构化描述</param>
         /// <returns>输出信息的结构化描述</returns>
-        public virtual TPipeUnit SendReceive(
-            TProtocolUnit unit, IInputStruct content)
-        {
-            return AsyncHelper.RunSync(() => SendReceiveAsync(unit, content));
-        }
-
-        /// <summary>
-        ///     发送协议，通过传入需要使用的协议内容和输入结构
-        /// </summary>
-        /// <param name="unit">协议的实例</param>
-        /// <param name="content">输入信息的结构化描述</param>
-        /// <returns>输出信息的结构化描述</returns>
         public virtual async Task<TPipeUnit>
             SendReceiveAsync(TProtocolUnit unit, IInputStruct content)
         {
@@ -178,16 +166,6 @@ namespace Modbus.Net
         }
 
         /// <summary>
-        ///     发送协议内容并接收，一般方法
-        /// </summary>
-        /// <param name="content">写入的内容，使用对象数组描述</param>
-        /// <returns>从设备获取的字节流</returns>
-        public virtual TPipeUnit SendReceive(params object[] content)
-        {
-            return AsyncHelper.RunSync(() => SendReceiveAsync(content));
-        }
-
-        /// <summary>
         ///     发送协议内容并接收，一般方法（不能使用，如需使用请继承）
         /// </summary>
         /// <param name="content">写入的内容，使用对象数组描述</param>
@@ -195,18 +173,6 @@ namespace Modbus.Net
         public virtual Task<TPipeUnit> SendReceiveAsync(params object[] content)
         {
             throw new NotImplementedException();
-        }
-
-        /// <summary>
-        ///     发送协议，通过传入需要使用的协议内容和输入结构
-        /// </summary>
-        /// <param name="unit">协议的实例</param>
-        /// <param name="content">输入信息的结构化描述</param>
-        /// <returns>输出信息的结构化描述</returns>
-        /// <typeparam name="T">IOutputStruct的具体类型</typeparam>
-        public virtual T SendReceive<T>(TProtocolUnit unit, IInputStruct content) where T : class, IOutputStruct
-        {
-            return AsyncHelper.RunSync(() => SendReceiveAsync<T>(unit, content));
         }
 
         /// <summary>

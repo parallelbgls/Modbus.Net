@@ -7,20 +7,20 @@ namespace Modbus.Net
     /// <summary>
     ///     地址组合器，组合后的每一组地址将只需一次向设备进行通讯
     /// </summary>
-    public abstract class AddressCombiner<TKey> where TKey : IEquatable<TKey>
+    public abstract class AddressCombiner<TKey, TAddressKey, TSubAddressKey> where TKey : IEquatable<TKey> where TAddressKey : IEquatable<TAddressKey> where TSubAddressKey : IEquatable<TSubAddressKey>
     {
         /// <summary>
         ///     组合地址
         /// </summary>
         /// <param name="addresses">需要进行组合的地址</param>
         /// <returns>组合完成后与设备通讯的地址</returns>
-        public abstract IEnumerable<CommunicationUnit<TKey>> Combine(IEnumerable<AddressUnit<TKey>> addresses);
+        public abstract IEnumerable<CommunicationUnit<TKey, TAddressKey, TSubAddressKey>> Combine(IEnumerable<AddressUnit<TKey, TAddressKey, TSubAddressKey>> addresses);
     }
 
     /// <summary>
     ///     连续的地址将组合成一组，向设备进行通讯
     /// </summary>
-    public class AddressCombinerContinus<TKey> : AddressCombiner<TKey> where TKey : IEquatable<TKey>
+    public class AddressCombinerContinus<TKey> : AddressCombiner<TKey, int, int> where TKey : IEquatable<TKey>
     {
         /// <summary>
         ///     构造函数
@@ -48,7 +48,7 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="addresses">需要组合的地址</param>
         /// <returns>组合后的地址</returns>
-        public override IEnumerable<CommunicationUnit<TKey>> Combine(IEnumerable<AddressUnit<TKey>> addresses)
+        public override IEnumerable<CommunicationUnit<TKey, int, int>> Combine(IEnumerable<AddressUnit<TKey, int, int>> addresses)
         {
             //按从小到大的顺序对地址进行排序
             var groupedAddresses = from address in addresses
@@ -58,7 +58,7 @@ namespace Modbus.Net
                                    group address by address.Area
                 into grouped
                                    select grouped;
-            var ans = new List<CommunicationUnit<TKey>>();
+            var ans = new List<CommunicationUnit<TKey, int, int>>();
             foreach (var groupedAddress in groupedAddresses)
             {
                 var area = groupedAddress.Key;
@@ -69,7 +69,7 @@ namespace Modbus.Net
                 //上一个地址类型
                 Type preType = null;
                 //记录一个地址组合当中的所有原始地址
-                var originalAddresses = new List<AddressUnit<TKey>>();
+                var originalAddresses = new List<AddressUnit<TKey, int, int>>();
                 //对组合内地址从小到大进行排序
                 var orderedAddresses =
                     groupedAddress.OrderBy(
@@ -114,7 +114,7 @@ namespace Modbus.Net
                                      AddressTranslator.GetAreaByteLength(address.Area)))
                         {
                             //上一个地址域压入返回结果，并把当前记录的结果清空。
-                            ans.Add(new CommunicationUnit<TKey>
+                            ans.Add(new CommunicationUnit<TKey, int, int>
                             {
                                 Area = area,
                                 Address = (int)Math.Floor(initNum),
@@ -144,7 +144,7 @@ namespace Modbus.Net
                     preType = address.DataType;
                 }
                 //最后一个地址域压入返回结果
-                ans.Add(new CommunicationUnit<TKey>
+                ans.Add(new CommunicationUnit<TKey, int, int>
                 {
                     Area = area,
                     Address = (int)Math.Floor(initNum),
@@ -167,9 +167,9 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="ans">拆分前的连续地址池</param>
         /// <returns>拆分后的连续地址池</returns>
-        protected List<CommunicationUnit<TKey>> MaxExclude(List<CommunicationUnit<TKey>> ans)
+        protected List<CommunicationUnit<TKey, int, int>> MaxExclude(List<CommunicationUnit<TKey, int, int>> ans)
         {
-            var newAns = new List<CommunicationUnit<TKey>>();
+            var newAns = new List<CommunicationUnit<TKey, int, int>>();
             foreach (var communicationUnit in ans)
             {
                 var oldByteCount = communicationUnit.GetCount *
@@ -178,7 +178,7 @@ namespace Modbus.Net
                 while (oldByteCount * ValueHelper.ByteLength[communicationUnit.DataType.FullName] >
                        MaxLength)
                 {
-                    var newOriginalAddresses = new List<AddressUnit<TKey>>();
+                    var newOriginalAddresses = new List<AddressUnit<TKey, int, int>>();
                     var newByteCount = 0.0;
                     var newAddressUnitStart = oldOriginalAddresses.First();
                     do
@@ -190,7 +190,7 @@ namespace Modbus.Net
                         newOriginalAddresses.Add(currentAddressUnit);
                         oldOriginalAddresses.RemoveAt(0);
                     } while (newByteCount < MaxLength);
-                    var newCommunicationUnit = new CommunicationUnit<TKey>
+                    var newCommunicationUnit = new CommunicationUnit<TKey, int, int>
                     {
                         Area = newAddressUnitStart.Area,
                         Address = newAddressUnitStart.Address,
@@ -225,26 +225,26 @@ namespace Modbus.Net
     /// <summary>
     ///     单个地址变为一组，每一个地址都进行一次查询
     /// </summary>
-    public class AddressCombinerSingle<TKey> : AddressCombiner<TKey> where TKey : IEquatable<TKey>
+    public class AddressCombinerSingle<TKey, TAddressKey, TSubAddressKey> : AddressCombiner<TKey, TAddressKey, TSubAddressKey> where TKey : IEquatable<TKey> where TAddressKey : IEquatable<TAddressKey> where TSubAddressKey : IEquatable<TSubAddressKey>
     {
         /// <summary>
         ///     组合地址
         /// </summary>
         /// <param name="addresses">需要组合的地址</param>
         /// <returns>组合后的地址</returns>
-        public override IEnumerable<CommunicationUnit<TKey>> Combine(IEnumerable<AddressUnit<TKey>> addresses)
+        public override IEnumerable<CommunicationUnit<TKey, TAddressKey, TSubAddressKey>> Combine(IEnumerable<AddressUnit<TKey, TAddressKey, TSubAddressKey>> addresses)
         {
             return
                 addresses.Select(
                     address =>
-                        new CommunicationUnit<TKey>
+                        new CommunicationUnit<TKey, TAddressKey, TSubAddressKey>
                         {
                             Area = address.Area,
                             Address = address.Address,
                             SubAddress = address.SubAddress,
                             DataType = address.DataType,
                             GetCount = 1,
-                            OriginalAddresses = new List<AddressUnit<TKey>> { address }
+                            OriginalAddresses = new List<AddressUnit<TKey, TAddressKey, TSubAddressKey>> { address }
                         }).ToList();
         }
     }
@@ -254,7 +254,7 @@ namespace Modbus.Net
     /// </summary>
     internal class CommunicationUnitGap<TKey> where TKey : IEquatable<TKey>
     {
-        public CommunicationUnit<TKey> EndUnit { get; set; }
+        public CommunicationUnit<TKey, int, int> EndUnit { get; set; }
         public int GapNumber { get; set; }
     }
 
@@ -285,11 +285,11 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="addresses">需要组合的地址</param>
         /// <returns>组合后的地址</returns>
-        public override IEnumerable<CommunicationUnit<TKey>> Combine(IEnumerable<AddressUnit<TKey>> addresses)
+        public override IEnumerable<CommunicationUnit<TKey, int, int>> Combine(IEnumerable<AddressUnit<TKey, int, int>> addresses)
         {
             var continusAddresses = base.Combine(addresses).ToList();
             var addressesGaps = new List<CommunicationUnitGap<TKey>>();
-            CommunicationUnit<TKey> preCommunicationUnit = null;
+            CommunicationUnit<TKey, int, int> preCommunicationUnit = null;
             foreach (var continusAddress in continusAddresses)
             {
                 if (preCommunicationUnit == null)
@@ -335,7 +335,7 @@ namespace Modbus.Net
                 continusAddresses.RemoveAt(index);
                 continusAddresses.RemoveAt(index);
                 //合并两个已有的地址段，变为一个新的地址段
-                var newAddress = new CommunicationUnit<TKey>
+                var newAddress = new CommunicationUnit<TKey, int, int>
                 {
                     Area = nowAddress.Area,
                     Address = preAddress.Address,
@@ -382,9 +382,9 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="addresses">需要组合的地址</param>
         /// <returns>组合后的地址</returns>
-        public override IEnumerable<CommunicationUnit<TKey>> Combine(IEnumerable<AddressUnit<TKey>> addresses)
+        public override IEnumerable<CommunicationUnit<TKey, int, int>> Combine(IEnumerable<AddressUnit<TKey, int, int>> addresses)
         {
-            var addressUnits = addresses as IList<AddressUnit<TKey>> ?? addresses.ToList();
+            var addressUnits = addresses as IList<AddressUnit<TKey, int, int>> ?? addresses.ToList();
             var count = addressUnits.Sum(address => ValueHelper.ByteLength[address.DataType.FullName]);
             return
                 new AddressCombinerNumericJump<TKey>((int)(count * Percentage / 100.0), MaxLength, AddressTranslator)

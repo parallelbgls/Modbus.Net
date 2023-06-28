@@ -3,7 +3,7 @@
     /// <summary>
     ///     Modbus标准AddressFormater
     /// </summary>
-    public class AddressFormaterModbus : AddressFormater
+    public class AddressFormaterModbus : AddressFormater<int, int>
     {
         /// <summary>
         ///     格式化地址

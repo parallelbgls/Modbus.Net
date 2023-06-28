@@ -23,7 +23,7 @@ namespace Modbus.Net.Siemens
         /// <param name="src">本机模块位，0到7，仅200使用，其它型号不要填写</param>
         /// <param name="dst">PLC模块位，0到7，仅200使用，其它型号不要填写</param>
         public SiemensMachine(TKey id, SiemensType connectionType, string connectionString, SiemensMachineModel model,
-            IEnumerable<AddressUnit<TUnitKey>> getAddresses, bool keepConnect, byte slaveAddress, byte masterAddress, byte src = 1, byte dst = 0)
+            IEnumerable<AddressUnit<TUnitKey, int, int>> getAddresses, bool keepConnect, byte slaveAddress, byte masterAddress, byte src = 1, byte dst = 0)
             : base(id, getAddresses, keepConnect, slaveAddress, masterAddress)
         {
             BaseUtility = new SiemensUtility(connectionType, connectionString, model, slaveAddress, masterAddress, src, dst);
@@ -45,7 +45,7 @@ namespace Modbus.Net.Siemens
         /// <param name="src">本机模块位，0到7，仅200使用，其它型号不要填写</param>
         /// <param name="dst">PLC模块位，0到7，仅200使用，其它型号不要填写</param>
         public SiemensMachine(TKey id, SiemensType connectionType, string connectionString, SiemensMachineModel model,
-            IEnumerable<AddressUnit<TUnitKey>> getAddresses, byte slaveAddress, byte masterAddress, byte src = 1, byte dst = 0)
+            IEnumerable<AddressUnit<TUnitKey, int, int>> getAddresses, byte slaveAddress, byte masterAddress, byte src = 1, byte dst = 0)
             : this(id, connectionType, connectionString, model, getAddresses, true, slaveAddress, masterAddress, src, dst)
         {
         }

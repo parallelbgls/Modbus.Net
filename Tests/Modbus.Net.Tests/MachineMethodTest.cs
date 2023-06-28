@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Modbus.Net.Modbus;
 using System.Reflection;
+using AddressUnit = Modbus.Net.AddressUnit<int, int, int>;
 
 namespace Modbus.Net.Tests
 {
@@ -35,9 +36,9 @@ namespace Modbus.Net.Tests
         [TestMethod]
         public async Task InvokeMachine()
         {
-            BaseMachine<int, int> baseMachine = new ModbusMachine<int, int>(1, ModbusType.Tcp, _machineIp, new List<AddressUnit<int>>
+            BaseMachine<int, int> baseMachine = new ModbusMachine<int, int>(1, ModbusType.Tcp, _machineIp, new List<AddressUnit>
             {
-                new AddressUnit<int>
+                new AddressUnit
                 {
                     Id = 0,
                     Area = "0X",

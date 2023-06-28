@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Modbus.Net.Siemens;
+using AddressUnit = Modbus.Net.AddressUnit<string, int, int>;
 
 namespace Modbus.Net.Tests
 {

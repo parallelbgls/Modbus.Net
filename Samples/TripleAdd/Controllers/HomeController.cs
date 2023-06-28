@@ -3,6 +3,7 @@ using Modbus.Net;
 using Modbus.Net.Modbus;
 using System.Diagnostics;
 using TripleAdd.Models;
+using AddressUnit = Modbus.Net.AddressUnit<string, int, int>;
 
 namespace TripleAdd.Controllers
 {

@@ -3,9 +3,7 @@ using Hylasoft.Opc.Da;
 using Hylasoft.Opc.Ua;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading.Tasks;
-using URL = Opc.URL;
 
 namespace Modbus.Net.Opc
 {
@@ -73,18 +71,11 @@ namespace Modbus.Net.Opc
     public class MyDaClient : DaClient, IClientExtend
     {
         /// <summary>
-        ///     UaClient Extend
+        ///     构造函数
         /// </summary>
-        /// <param name="serverUrl">Url address of Opc UA server</param>
+        /// <param name="serverUrl">OpcDa服务端Url</param>
         public MyDaClient(Uri serverUrl) : base(serverUrl)
         {
-            var url = new URL(serverUrl.OriginalString)
-            {
-                Scheme = serverUrl.Scheme,
-                HostName = serverUrl.Host
-            };
-
-            typeof(DaClient).GetField("_url", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(this, url);
         }
 
         /// <summary>

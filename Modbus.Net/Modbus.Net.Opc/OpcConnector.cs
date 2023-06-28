@@ -97,7 +97,7 @@ namespace Modbus.Net.Opc
                     {
                         var result = await Client.ReadAsync<object>(tag);
                         object resultTrans;
-                        if (result.Value.ToString() == "False")
+                        if (result.Value?.ToString() == "False")
                         {
                             resultTrans = (byte)0;
                         }
