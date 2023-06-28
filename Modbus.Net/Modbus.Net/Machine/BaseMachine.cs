@@ -12,7 +12,7 @@ namespace Modbus.Net
     /// </summary>
     /// <typeparam name="TKey">设备的Id类型</typeparam>
     /// <typeparam name="TUnitKey">设备中使用的AddressUnit的Id类型</typeparam>
-    public abstract class BaseMachine<TKey, TUnitKey> : BaseMachine<TKey, TUnitKey, int, int>, IMachine<TKey>
+    public abstract class BaseMachine<TKey, TUnitKey> : BaseMachine<TKey, TUnitKey, int, int>
         where TKey : IEquatable<TKey>
         where TUnitKey : IEquatable<TUnitKey>
     {

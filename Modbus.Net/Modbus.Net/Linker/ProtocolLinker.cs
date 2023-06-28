@@ -7,7 +7,7 @@ namespace Modbus.Net
     /// <summary>
     ///     基本的协议连接器
     /// </summary>
-    public abstract class ProtocolLinker : ProtocolLinker<byte[], byte[]>, IProtocolLinkerBytesExtend<byte[], byte[]>
+    public abstract class ProtocolLinker : ProtocolLinker<byte[], byte[]>
     {
         /// <summary>
         ///     发送并接收数据
