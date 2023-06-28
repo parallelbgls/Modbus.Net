@@ -55,20 +55,32 @@ namespace Modbus.Net
 
         public static Endian Parse(string value)
         {
-            if (typeof(Endian).GetField(value) != null)
+            var Assemblies = AssemblyHelper.GetAllLibraryAssemblies();
+            foreach (var assembly in Assemblies)
             {
-                return (int)typeof(Endian).GetField(value).GetValue(null);
+                if (assembly.GetType("Modbus.Net.Endian")?.GetField(value) != null)
+                {
+                    return (int)assembly.GetType("Modbus.Net.Endian").GetField(value).GetValue(null);
+                }
             }
             throw new NotSupportedException("Endian name " + value + " is not supported.");
         }
 
         public override string ToString()
         {
-            foreach (var field in typeof(Endian).GetFields())
+            var Assemblies = AssemblyHelper.GetAllLibraryAssemblies();
+            foreach (var assembly in Assemblies)
             {
-                if ((int)field.GetValue(null) == Value)
+                var endianType = assembly.GetType("Modbus.Net.Endian");
+                if (endianType != null)
                 {
-                    return field.Name;
+                    foreach (var field in endianType.GetFields())
+                    {
+                        if ((int)field.GetValue(null) == Value)
+                        {
+                            return field.Name;
+                        }
+                    }
                 }
             }
             return null;
