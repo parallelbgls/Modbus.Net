@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MachineJob
 {
@@ -23,6 +23,7 @@ namespace MachineJob
         }
     }
 
+    [Table(name: "databasewrites")]
     public class DatabaseWriteEntity
     {
         [Key]
