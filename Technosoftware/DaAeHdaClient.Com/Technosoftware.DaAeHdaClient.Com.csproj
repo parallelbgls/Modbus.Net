@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>Technosoftware.DaAeHdaClient.Com</AssemblyName>
+    <TargetFrameworks>net6.0</TargetFrameworks>
+    <LangVersion>9.0</LangVersion>
+    <PackageId>Technosoftware.DaAeHdaSolution.DaAeHdaClient.Com</PackageId>
+    <Description>OPC DA/AE/HDA Client Solution .NET</Description>
+    <Platforms>AnyCPU</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Runtime.InteropServices" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OpcRcw\Technosoftware.OpcRcw.csproj" />
+    <ProjectReference Include="..\DaAeHdaClient\Technosoftware.DaAeHdaClient.csproj" />
+  </ItemGroup>
+
+</Project>

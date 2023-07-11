@@ -506,7 +506,7 @@ namespace Modbus.Net
             _taskCancel = true;
         }
 
-        private void ReceiveMessage()
+        private async Task ReceiveMessage()
         {
             while (!_taskCancel)
             {
@@ -549,9 +549,19 @@ namespace Modbus.Net
                                         CacheBytes.RemoveRange(0, confirmed.Item1.Length);
                                     }
                                 }
-                                else if (confirmed.Item2 == false)
+                                else
                                 {
+                                    lock (CacheBytes)
+                                    {
+                                        CacheBytes.RemoveRange(0, confirmed.Item1.Length);
+                                    }
+
+                                    var sendMessage = InvokeReturnMessage(confirmed.Item1);
                                     //主动传输事件
+                                    if (sendMessage != null)
+                                    {
+                                        await SendMsgWithoutConfirm(sendMessage);
+                                    }
                                 }
                             }
                         }

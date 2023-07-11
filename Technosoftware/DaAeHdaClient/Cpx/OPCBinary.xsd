@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xs:schema id="OPCBinary" targetNamespace="http://opcfoundation.org/OPCBinary/1.0/" elementFormDefault="qualified"
+  xmlns="http://opcfoundation.org/OPCBinary/1.0/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="TypeDictionary">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="TypeDescription" type="TypeDescription" minOccurs="1" maxOccurs="unbounded" />
+      </xs:sequence>
+      <xs:attribute name="DictionaryName" type="xs:string" use="required" />
+      <xs:attribute name="DefaultBigEndian" type="xs:boolean" default="true" />
+      <xs:attribute name="DefaultStringEncoding" type="xs:string" default="UCS-2" />
+      <xs:attribute name="DefaultCharWidth" type="xs:int" default="2" />
+      <xs:attribute name="DefaultFloatFormat" type="xs:string" default="IEEE-754" />
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="TypeDescription">
+    <xs:sequence>
+      <xs:element name="Field" type="FieldType" minOccurs="1" maxOccurs="unbounded" />
+    </xs:sequence>
+    <xs:attribute name="TypeID" type="xs:string" use="required" />
+    <xs:attribute name="DefaultBigEndian" type="xs:boolean" use="optional" />
+    <xs:attribute name="DefaultStringEncoding" type="xs:string" use="optional" />
+    <xs:attribute name="DefaultCharWidth" type="xs:int" use="optional" />
+    <xs:attribute name="DefaultFloatFormat" type="xs:string" use="optional" />
+  </xs:complexType>
+  <xs:complexType name="FieldType">
+    <xs:attribute name="Name" type="xs:string" use="optional" />
+    <xs:attribute name="Format" type="xs:string" use="optional" />
+    <xs:attribute name="Length" type="xs:int" use="optional" />
+    <xs:attribute name="ElementCount" type="xs:int" use="optional" />
+    <xs:attribute name="ElementCountRef" type="xs:string" use="optional" />
+    <xs:attribute name="FieldTerminator" type="xs:string" use="optional" />
+  </xs:complexType>
+  <xs:complexType name="BitString">
+    <xs:complexContent>
+      <xs:extension base="FieldType"></xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="Integer">
+    <xs:complexContent>
+      <xs:extension base="FieldType">
+        <xs:attribute name="Signed" type="xs:boolean" default="true" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="FloatingPoint">
+    <xs:complexContent>
+      <xs:extension base="FieldType">
+        <xs:attribute name="FloatFormat" type="xs:string" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="CharString">
+    <xs:complexContent>
+      <xs:extension base="FieldType">
+        <xs:attribute name="CharWidth" type="xs:int" />
+        <xs:attribute name="StringEncoding" type="xs:string" />
+        <xs:attribute name="CharCountRef" type="xs:string" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="TypeReference">
+    <xs:complexContent>
+      <xs:extension base="FieldType">
+        <xs:attribute name="TypeID" type="xs:string" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="Int8">
+    <xs:complexContent>
+      <xs:restriction base="Integer">
+        <xs:attribute name="Length" type="xs:int" fixed="1" />
+        <xs:attribute name="Signed" type="xs:boolean" fixed="true" />
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="Int16">
+    <xs:complexContent>
+      <xs:restriction base="Integer">
+        <xs:attribute name="Length" type="xs:int" fixed="2" />
+        <xs:attribute name="Signed" type="xs:boolean" fixed="true" />
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="Int32">
+    <xs:complexContent>
+      <xs:restriction base="Integer">
+        <xs:attribute name="Length" type="xs:int" fixed="4" />
+        <xs:attribute name="Signed" type="xs:boolean" fixed="true" />
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="Int64">
+    <xs:complexContent>
+      <xs:restriction base="Integer">
+        <xs:attribute name="Length" type="xs:int" fixed="8" />
+        <xs:attribute name="Signed" type="xs:boolean" fixed="true" />
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="UInt8">
+    <xs:complexContent>
+      <xs:restriction base="Integer">
+        <xs:attribute name="Length" type="xs:int" fixed="1" />
+        <xs:attribute name="Signed" type="xs:boolean" fixed="false" />
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="UInt16">
+    <xs:complexContent>
+      <xs:restriction base="Integer">
+        <xs:attribute name="Length" type="xs:int" fixed="2" />
+        <xs:attribute name="Signed" type="xs:boolean" fixed="false" />
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="UInt32">
+    <xs:complexContent>
+      <xs:restriction base="Integer">
+        <xs:attribute name="Length" type="xs:int" fixed="4" />
+        <xs:attribute name="Signed" type="xs:boolean" fixed="false" />
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="UInt64">
+    <xs:complexContent>
+      <xs:restriction base="Integer">
+        <xs:attribute name="Length" type="xs:int" fixed="8" />
+        <xs:attribute name="Signed" type="xs:boolean" fixed="false" />
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="Single">
+    <xs:complexContent>
+      <xs:restriction base="FloatingPoint">
+        <xs:attribute name="Length" type="xs:int" fixed="4" />
+        <xs:attribute name="FloatFormat" type="xs:string" fixed="IEEE-754" />
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="Double">
+    <xs:complexContent>
+      <xs:restriction base="FloatingPoint">
+        <xs:attribute name="Length" type="xs:int" fixed="8" />
+        <xs:attribute name="FloatFormat" type="xs:string" fixed="IEEE-754" />
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="Ascii">
+    <xs:complexContent>
+      <xs:restriction base="CharString">
+        <xs:attribute name="CharWidth" type="xs:int" fixed="1" />
+        <xs:attribute name="StringEncoding" type="xs:string" fixed="ASCII" />
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="Unicode">
+    <xs:complexContent>
+      <xs:restriction base="CharString">
+        <xs:attribute name="CharWidth" type="xs:int" fixed="2" />
+        <xs:attribute name="StringEncoding" type="xs:string" fixed="UCS-2" />
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+</xs:schema>
