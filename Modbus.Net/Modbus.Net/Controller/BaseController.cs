@@ -156,7 +156,10 @@ namespace Modbus.Net
                     def.ReceiveMessage = receiveMessage;
                     lock (WaitingMessages)
                     {
-                        WaitingMessages.Remove(def);
+                        if (WaitingMessages.IndexOf(def) >= 0)
+                        {
+                            WaitingMessages.Remove(def);
+                        }
                     }
                     def.ReceiveMutex.Set();
                     ans.Add((message, true));
@@ -181,7 +184,10 @@ namespace Modbus.Net
         {
             lock (WaitingMessages)
             {
-                WaitingMessages.Remove(def);
+                if (WaitingMessages.IndexOf(def) >= 0)
+                {
+                    WaitingMessages.Remove(def);
+                }
             }
         }
     }
