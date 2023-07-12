@@ -76,9 +76,9 @@ namespace Modbus.Net
                                 _taskCycleSema?.Close();
                                 sendSuccess = true;
                             }
-                            else if (WaitingMessages.Count > WaitingMessages.IndexOf(_currentSendingPos) + 1)
+                            else if (WaitingMessages.IndexOf(_currentSendingPos) == -1)
                             {
-                                _currentSendingPos = WaitingMessages[WaitingMessages.IndexOf(_currentSendingPos) + 1];
+                                _currentSendingPos = WaitingMessages.First();
                                 _currentSendingPos.SendMutex.Set();
                                 sendSuccess = true;
                             }

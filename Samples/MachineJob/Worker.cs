@@ -94,6 +94,7 @@ namespace MachineJob.Service
                     _logger.LogInformation(dataReturnDef.MachineId + " " + value.Key + " " + value.Value.DeviceValue);
                 }
 
+                /*
                 try
                 {
                     using (var context = new DatabaseWriteContext())
@@ -119,7 +120,7 @@ namespace MachineJob.Service
                 {
                     //ignore
                 }
-
+                */
                 Random r = new Random();
                 foreach (var value in values)
                 {

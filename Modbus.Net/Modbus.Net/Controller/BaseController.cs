@@ -92,15 +92,16 @@ namespace Modbus.Net
         /// <param name="def">需要添加的信息信息</param>
         protected virtual bool AddMessageToList(MessageWaitingDef def)
         {
+            var ans = false;
             lock (WaitingMessages)
             {
                 if (WaitingMessages.FirstOrDefault(p => p.Key == def.Key) == null || def.Key == null)
                 {
                     WaitingMessages.Add(def);
-                    return true;
+                    ans = true;
                 }
-                return false;
             }
+            return ans;
         }
 
         /// <summary>
@@ -116,10 +117,18 @@ namespace Modbus.Net
             var ans = new List<(byte[], bool)>();
             byte[] receiveMessageCopy = new byte[receiveMessage.Length];
             Array.Copy(receiveMessage, receiveMessageCopy, receiveMessage.Length);
-            var length = LengthCalc?.Invoke(receiveMessageCopy);
+            int? length = -1;
+            try
+            {
+                length = LengthCalc?.Invoke(receiveMessageCopy);
+            }
+            catch
+            {
+                //ignore
+            }
             List<byte[]> duplicatedMessages;
             if (length == null || length == -1) return ans;
-            if (length == 0) return null;
+            else if (length == 0) return null;
             else
             {
                 duplicatedMessages = new List<byte[]>();

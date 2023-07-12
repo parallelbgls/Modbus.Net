@@ -39,7 +39,7 @@ namespace Modbus.Net
                 int tmpCount = 0, tmpCount2 = 0;
                 foreach (var matchPos in matchPoses)
                 {
-                    if (matchPos.Item1 >= message.Length || matchPos.Item2 >= message.Length) return null;
+                    if (matchPos.Item1 > message.Length - 1 || matchPos.Item2 > message.Length - 1) return null;
                     tmpCount = tmpCount * 256 + message[matchPos.Item1];
                     tmpCount2 = tmpCount2 * 256 + message[matchPos.Item2];
                 }
