@@ -47,17 +47,17 @@ namespace Modbus.Net
         /// <inheritdoc />
         protected override void SendingMessageControlInner()
         {
-            try
+            _taskCycleSema?.WaitOne();
+            while (!_taskCancel)
             {
-                _taskCycleSema?.WaitOne();
-                while (!_taskCancel)
+                if (AcquireTime > 0)
                 {
-                    if (AcquireTime > 0)
-                    {
-                        Thread.Sleep(AcquireTime);
-                    }
-                    bool sendSuccess = false;
-                    lock (WaitingMessages)
+                    Thread.Sleep(AcquireTime);
+                }
+                bool sendSuccess = false;
+                lock (WaitingMessages)
+                {
+                    try
                     {
                         if (_currentSendingPos == null)
                         {
@@ -84,21 +84,23 @@ namespace Modbus.Net
                             }
                         }
                     }
-                    if (sendSuccess)
+                    catch (ObjectDisposedException e)
                     {
-                        _taskCycleSema?.WaitOne();
+                        logger.LogError(e, "Controller _currentSendingPos disposed");
+                        _currentSendingPos = null;
+                        sendSuccess = true;
+                    }
+                    catch (Exception e)
+                    {
+                        logger.LogError(e, "Controller throws exception");
+                        _taskCancel = true;
                     }
                 }
+                if (sendSuccess)
+                {
+                    _taskCycleSema?.WaitOne();
+                }
             }
-            catch (ObjectDisposedException)
-            {
-                //ignore
-            }
-            catch (Exception e)
-            {
-                logger.LogError(e, "Controller throws exception");
-            }
-
         }
 
         /// <inheritdoc />
