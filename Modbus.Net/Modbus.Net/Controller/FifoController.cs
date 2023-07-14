@@ -76,7 +76,6 @@ namespace Modbus.Net
                             if (WaitingMessages.Count <= 0)
                             {
                                 _currentSendingPos = null;
-                                _taskCycleSema?.Close();
                                 sendSuccess = true;
                             }
                             else if (WaitingMessages.IndexOf(_currentSendingPos) == -1)

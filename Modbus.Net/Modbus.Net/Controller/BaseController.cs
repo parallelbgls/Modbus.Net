@@ -142,11 +142,11 @@ namespace Modbus.Net
                     var duplicateMessage = receiveMessageCopy.Take(length.Value).ToArray();
                     if (CheckRightFunc != null && CheckRightFunc(duplicateMessage) == false)
                     {
-                        receiveMessageCopy = receiveMessageCopy.TakeLast(receiveMessage.Length - 1).ToArray();
+                        receiveMessageCopy = receiveMessageCopy.TakeLast(receiveMessageCopy.Length - 1).ToArray();
                         continue;
                     }
                     duplicatedMessages.Add(duplicateMessage);
-                    receiveMessageCopy = receiveMessageCopy.TakeLast(receiveMessage.Length - length.Value).ToArray();
+                    receiveMessageCopy = receiveMessageCopy.TakeLast(receiveMessageCopy.Length - length.Value).ToArray();
                     if (receiveMessageCopy.Length == 0) break;
                     length = LengthCalc?.Invoke(receiveMessageCopy);
                     if (length == -1) break;
