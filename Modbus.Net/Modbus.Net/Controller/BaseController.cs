@@ -131,21 +131,28 @@ namespace Modbus.Net
             {
                 //ignore
             }
-            List<byte[]> duplicatedMessages;
+            List<(byte[], bool)> duplicatedMessages;
             if (length == null || length == -1) return ans;
             else if (length == 0) return null;
             else
             {
-                duplicatedMessages = new List<byte[]>();
+                duplicatedMessages = new List<(byte[],bool)>();
+                var skipLength = 0;
                 while (receiveMessageCopy.Length >= length)
                 {
                     var duplicateMessage = receiveMessageCopy.Take(length.Value).ToArray();
                     if (CheckRightFunc != null && CheckRightFunc(duplicateMessage) == false)
                     {
                         receiveMessageCopy = receiveMessageCopy.TakeLast(receiveMessageCopy.Length - 1).ToArray();
+                        skipLength++;
                         continue;
                     }
-                    duplicatedMessages.Add(duplicateMessage);
+                    if (skipLength > 0)
+                    {
+                        duplicatedMessages.Add((new byte[skipLength], false));
+                    }
+                    skipLength = 0;
+                    duplicatedMessages.Add((duplicateMessage, true));
                     receiveMessageCopy = receiveMessageCopy.TakeLast(receiveMessageCopy.Length - length.Value).ToArray();
                     if (receiveMessageCopy.Length == 0) break;
                     length = LengthCalc?.Invoke(receiveMessageCopy);
@@ -155,23 +162,30 @@ namespace Modbus.Net
             }
             foreach (var message in duplicatedMessages)
             {
-                var def = GetMessageFromWaitingList(message);
-                if (def != null)
+                if (!message.Item2)
                 {
-                    def.ReceiveMessage = receiveMessage;
-                    lock (WaitingMessages)
-                    {
-                        if (WaitingMessages.IndexOf(def) >= 0)
-                        {
-                            WaitingMessages.Remove(def);
-                        }
-                    }
-                    def.ReceiveMutex.Set();
-                    ans.Add((message, true));
+                    ans.Add((message.Item1, true));
                 }
                 else
                 {
-                    ans.Add((message, false));
+                    var def = GetMessageFromWaitingList(message.Item1);
+                    if (def != null)
+                    {
+                        def.ReceiveMessage = message.Item1;
+                        lock (WaitingMessages)
+                        {
+                            if (WaitingMessages.IndexOf(def) >= 0)
+                            {
+                                WaitingMessages.Remove(def);
+                            }
+                        }
+                        def.ReceiveMutex.Set();
+                        ans.Add((message.Item1, true));
+                    }
+                    else
+                    {
+                        ans.Add((message.Item1, false));
+                    }
                 }
             }
             return ans;
