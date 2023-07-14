@@ -16,9 +16,11 @@ namespace Modbus.Net
 
         private bool _taskCancel = false;
 
+        private bool _activeSema = false;
+
         private int _waitingListMaxCount;
 
-        private readonly Semaphore _taskCycleSema;
+        private Semaphore _taskCycleSema;
 
         /// <summary>
         ///     间隔时间
@@ -37,16 +39,17 @@ namespace Modbus.Net
             : base(lengthCalc, checkRightFunc)
         {
             _waitingListMaxCount = int.Parse(waitingListMaxCount != null ? waitingListMaxCount.ToString() : null ?? ConfigurationReader.GetValueDirect("Controller", "WaitingListCount"));
-            if (activateSema)
-            {
-                _taskCycleSema = new Semaphore(0, _waitingListMaxCount);
-            }
+            _activeSema = activateSema;
             AcquireTime = acquireTime;
         }
 
         /// <inheritdoc />
         protected override void SendingMessageControlInner()
         {
+            if (_activeSema)
+            {
+                _taskCycleSema = new Semaphore(0, _waitingListMaxCount);
+            }
             _taskCycleSema?.WaitOne();
             while (!_taskCancel)
             {
@@ -101,6 +104,9 @@ namespace Modbus.Net
                     _taskCycleSema?.WaitOne();
                 }
             }
+            _taskCycleSema.Dispose();
+            _taskCycleSema = null;
+            Clear();
         }
 
         /// <inheritdoc />
