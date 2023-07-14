@@ -22,6 +22,11 @@ namespace Modbus.Net
         protected Task SendingThread { get; set; }
 
         /// <summary>
+        ///     消息维护线程是否在运行
+        /// </summary>
+        public virtual bool IsSending => SendingThread.Status.Equals(TaskStatus.Running);
+
+        /// <summary>
         ///     包切分位置函数
         /// </summary>
         protected Func<byte[], int> LengthCalc { get; }

@@ -8,6 +8,11 @@ namespace Modbus.Net
     public interface IController
     {
         /// <summary>
+        ///     消息维护线程是否在运行
+        /// </summary>
+        bool IsSending { get; }
+
+        /// <summary>
         ///     增加信息
         /// </summary>
         /// <param name="sendMessage">需要发送的信息</param>

@@ -30,7 +30,7 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="timeoutTime">发送超时时间</param>
         /// <param name="isFullDuplex">是否为全双工</param>
-        protected BaseConnector(int timeoutTime = 10000, bool isFullDuplex = true)
+        protected BaseConnector(int timeoutTime = 10000, bool isFullDuplex = false)
         {
             IsFullDuplex = isFullDuplex;
             if (timeoutTime < -1) timeoutTime = -1;
@@ -55,6 +55,10 @@ namespace Modbus.Net
             IDisposable asyncLock = null;
             try
             {
+                if (!Controller.IsSending)
+                {
+                    Controller.SendStart();
+                }
                 var messageSendingdef = Controller.AddMessage(message);
                 if (messageSendingdef != null)
                 {

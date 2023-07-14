@@ -59,6 +59,10 @@ namespace Modbus.Net
             IDisposable asyncLock = null;
             try
             {
+                if (!Controller.IsSending)
+                {
+                    Controller.SendStart();
+                }
                 var messageSendingdef = Controller.AddMessage(message);
                 if (messageSendingdef != null)
                 {

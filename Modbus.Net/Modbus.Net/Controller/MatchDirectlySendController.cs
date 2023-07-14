@@ -8,6 +8,11 @@ namespace Modbus.Net
     /// </summary>
     public class MatchDirectlySendController : MatchController
     {
+        /// <summary>
+        ///     消息维护线程是否在运行
+        /// </summary>
+        public override bool IsSending => true;
+
         /// <inheritdoc />
         public MatchDirectlySendController(ICollection<(int, int)>[] keyMatches,
             Func<byte[], int> lengthCalc = null, Func<byte[], bool?> checkRightFunc = null, int? waitingListMaxCount = null) : base(keyMatches,
