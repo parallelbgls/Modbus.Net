@@ -16,7 +16,7 @@ namespace Modbus.Net
 
         private bool _taskCancel = false;
 
-        private bool _activeSema = false;
+        private bool _activateSema = false;
 
         private int _waitingListMaxCount;
 
@@ -39,17 +39,17 @@ namespace Modbus.Net
             : base(lengthCalc, checkRightFunc)
         {
             _waitingListMaxCount = int.Parse(waitingListMaxCount != null ? waitingListMaxCount.ToString() : null ?? ConfigurationReader.GetValueDirect("Controller", "WaitingListCount"));
-            _activeSema = activateSema;
+            _activateSema = activateSema;
+            if (_activateSema)
+            {
+                _taskCycleSema = new Semaphore(0, _waitingListMaxCount);
+            }
             AcquireTime = acquireTime;
         }
 
         /// <inheritdoc />
         protected override void SendingMessageControlInner()
         {
-            if (_activeSema)
-            {
-                _taskCycleSema = new Semaphore(0, _waitingListMaxCount);
-            }
             _taskCycleSema?.WaitOne();
             while (!_taskCancel)
             {
@@ -112,6 +112,10 @@ namespace Modbus.Net
         /// <inheritdoc />
         public override void SendStart()
         {
+            if (_taskCycleSema == null && _activateSema)
+            {
+                _taskCycleSema = new Semaphore(0, _waitingListMaxCount);
+            }
             _taskCancel = false;
             base.SendStart();
         }
@@ -143,6 +147,10 @@ namespace Modbus.Net
         protected override bool AddMessageToList(MessageWaitingDef def)
         {
             if (WaitingMessages.Count > _waitingListMaxCount)
+            {
+                return false;
+            }
+            if (_taskCancel)
             {
                 return false;
             }
