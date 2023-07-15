@@ -23,10 +23,13 @@ namespace Modbus.Net
         {
             Name = name;
             OverWriteKeys = overwriteKeys;
-            chainLinks = new Dictionary<JobKey, JobKey>();
+            ChainLinks = new Dictionary<JobKey, JobKey>();
         }
 
-        private readonly Dictionary<JobKey, JobKey> chainLinks;
+        /// <summary>
+        /// Job chain links
+        /// </summary>
+        protected readonly Dictionary<JobKey, JobKey> ChainLinks;
 
         /// <inheritdoc />
         public override string Name { get; }
@@ -44,7 +47,7 @@ namespace Modbus.Net
         /// <param name="secondJob">a JobKey with the name and group of the follow-up job</param>
         public void AddJobChainLink(JobKey firstJob, JobKey secondJob)
         {
-            chainLinks.Add(firstJob, secondJob);
+            ChainLinks.Add(firstJob, secondJob);
         }
 
 #nullable enable
@@ -53,7 +56,7 @@ namespace Modbus.Net
             JobExecutionException? jobException,
             CancellationToken cancellationToken = default)
         {
-            chainLinks.TryGetValue(context.JobDetail.Key, out var sj);
+            ChainLinks.TryGetValue(context.JobDetail.Key, out var sj);
 
             if (sj == null)
             {
