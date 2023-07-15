@@ -13,13 +13,17 @@ namespace Modbus.Net
     /// </summary>
     public class JobChainingJobLIstenerWithDataMapRepeated : JobChainingJobListenerWithDataMap
     {
+        protected int RepeatCount { get; set; }
+
         /// <summary>
         /// JobChaningJobListener with DataMap passing from parent job to next job
         /// </summary>
         /// <param name="name">Job name</param>
         /// <param name="overwriteKeys">If key is overwritable, parent job will pass the value to next job event next job contains that key</param>
-        public JobChainingJobLIstenerWithDataMapRepeated(string name, ICollection<string> overwriteKeys) : base(name, overwriteKeys)
+        /// <param name="repeatCount">Repeatation count for job chain</param>
+        public JobChainingJobLIstenerWithDataMapRepeated(string name, ICollection<string> overwriteKeys, int repeatCount) : base(name, overwriteKeys)
         {
+            RepeatCount = repeatCount;
         }
 
 #nullable enable
@@ -29,6 +33,7 @@ namespace Modbus.Net
             CancellationToken cancellationToken = default)
         {
             await base.JobWasExecuted(context, jobException, cancellationToken);
+            if (RepeatCount == 0) return;
             ChainLinks.TryGetValue(context.JobDetail.Key, out var sj);
             if (sj == null)
             {
@@ -39,7 +44,10 @@ namespace Modbus.Net
                     chainRoot = chainParent;
                     chainParent = ChainLinks.FirstOrDefault(p => p.Value == chainParent).Key;
                 }
-
+                if (RepeatCount > 0)
+                {
+                    RepeatCount--;
+                }
                 var sjJobDetail = await context.Scheduler.GetJobDetail(chainRoot);
                 await context.Scheduler.AddJob(sjJobDetail!, true, false);
                 await context.Scheduler.TriggerJob(chainRoot, cancellationToken).ConfigureAwait(false);

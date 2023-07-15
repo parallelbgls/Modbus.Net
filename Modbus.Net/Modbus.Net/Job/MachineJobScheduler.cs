@@ -80,7 +80,7 @@ namespace Modbus.Net
             IJobListener listener;
             if (interval <= 0)
             {
-                listener = new JobChainingJobLIstenerWithDataMapRepeated("Modbus.Net.DataQuery.Chain." + triggerKey, new string[2] { "Value", "SetValue" });
+                listener = new JobChainingJobLIstenerWithDataMapRepeated("Modbus.Net.DataQuery.Chain." + triggerKey, new string[2] { "Value", "SetValue" }, count);
             }
             else
             {

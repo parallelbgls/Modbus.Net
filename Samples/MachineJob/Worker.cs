@@ -69,7 +69,7 @@ namespace MachineJob.Service
             //5. 不设置固定时间，连续触发Job
             foreach (var machine in machines)
             {
-                var scheduler = await MachineJobSchedulerCreator<IMachineMethodDatas, string, double>.CreateScheduler(machine.Id, 0, 0);
+                var scheduler = await MachineJobSchedulerCreator<IMachineMethodDatas, string, double>.CreateScheduler(machine.Id, -1, 0);
                 var job = scheduler.From(machine.Id + ".From", machine, MachineDataType.Name).Result.Query(machine.Id + ".ConsoleQuery", QueryConsole).Result.To(machine.Id + ".To", machine).Result.Deal(machine.Id + ".Deal", OnSuccess, OnFailure).Result;
                 await job.Run();
             }
