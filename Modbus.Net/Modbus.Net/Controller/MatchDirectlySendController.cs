@@ -16,7 +16,7 @@ namespace Modbus.Net
         /// <inheritdoc />
         public MatchDirectlySendController(ICollection<(int, int)>[] keyMatches,
             Func<byte[], int> lengthCalc = null, Func<byte[], bool?> checkRightFunc = null, int? waitingListMaxCount = null) : base(keyMatches,
-            0, false, lengthCalc, checkRightFunc, waitingListMaxCount)
+            0, lengthCalc, checkRightFunc, waitingListMaxCount)
         {
         }
 

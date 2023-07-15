@@ -49,8 +49,9 @@ namespace Modbus.Net
         ///     发送内部
         /// </summary>
         /// <param name="message">发送的信息</param>
+        /// <param name="repeat">是否为重发消息</param>
         /// <returns>发送信息的定义</returns>
-        protected async Task<MessageWaitingDef> SendMsgInner(byte[] message)
+        protected async Task<MessageWaitingDef> SendMsgInner(byte[] message, bool repeat = false)
         {
             IDisposable asyncLock = null;
             try
@@ -73,6 +74,10 @@ namespace Modbus.Net
                         success = messageSendingdef.ReceiveMutex.WaitOne(TimeoutTime);
                         if (success)
                         {
+                            if (!repeat && messageSendingdef.ReceiveMessage == null)
+                            {
+                                return await SendMsgInner(message, true);
+                            }
                             return messageSendingdef;
                         }
                     }

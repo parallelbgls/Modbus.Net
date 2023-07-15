@@ -16,11 +16,7 @@ namespace Modbus.Net
 
         private bool _taskCancel = false;
 
-        private bool _activateSema = false;
-
         private int _waitingListMaxCount;
-
-        private Semaphore _taskCycleSema;
 
         /// <summary>
         ///     间隔时间
@@ -31,33 +27,25 @@ namespace Modbus.Net
         ///     构造器
         /// </summary>
         /// <param name="acquireTime">间隔时间</param>
-        /// <param name="activateSema">是否开启信号量</param>
         /// <param name="lengthCalc">包切分长度函数</param>
         /// <param name="checkRightFunc">包校验函数</param>
         /// <param name="waitingListMaxCount">包等待队列长度</param>
-        public FifoController(int acquireTime, bool activateSema = true, Func<byte[], int> lengthCalc = null, Func<byte[], bool?> checkRightFunc = null, int? waitingListMaxCount = null)
+        public FifoController(int acquireTime, Func<byte[], int> lengthCalc = null, Func<byte[], bool?> checkRightFunc = null, int? waitingListMaxCount = null)
             : base(lengthCalc, checkRightFunc)
         {
             _waitingListMaxCount = int.Parse(waitingListMaxCount != null ? waitingListMaxCount.ToString() : null ?? ConfigurationReader.GetValueDirect("Controller", "WaitingListCount"));
-            _activateSema = activateSema;
-            if (_activateSema)
-            {
-                _taskCycleSema = new Semaphore(0, _waitingListMaxCount);
-            }
             AcquireTime = acquireTime;
         }
 
         /// <inheritdoc />
         protected override void SendingMessageControlInner()
         {
-            _taskCycleSema?.WaitOne();
             while (!_taskCancel)
             {
                 if (AcquireTime > 0)
                 {
                     Thread.Sleep(AcquireTime);
                 }
-                bool sendSuccess = false;
                 lock (WaitingMessages)
                 {
                     try
@@ -68,7 +56,6 @@ namespace Modbus.Net
                             {
                                 _currentSendingPos = WaitingMessages.First();
                                 _currentSendingPos.SendMutex.Set();
-                                sendSuccess = true;
                             }
                         }
                         else
@@ -76,13 +63,11 @@ namespace Modbus.Net
                             if (WaitingMessages.Count <= 0)
                             {
                                 _currentSendingPos = null;
-                                sendSuccess = true;
                             }
                             else if (WaitingMessages.IndexOf(_currentSendingPos) == -1)
                             {
                                 _currentSendingPos = WaitingMessages.First();
                                 _currentSendingPos.SendMutex.Set();
-                                sendSuccess = true;
                             }
                         }
                     }
@@ -90,7 +75,6 @@ namespace Modbus.Net
                     {
                         logger.LogError(e, "Controller _currentSendingPos disposed");
                         _currentSendingPos = null;
-                        sendSuccess = true;
                     }
                     catch (Exception e)
                     {
@@ -98,23 +82,13 @@ namespace Modbus.Net
                         _taskCancel = true;
                     }
                 }
-                if (sendSuccess)
-                {
-                    _taskCycleSema?.WaitOne();
-                }
             }
-            _taskCycleSema.Dispose();
-            _taskCycleSema = null;
             Clear();
         }
 
         /// <inheritdoc />
         public override void SendStart()
         {
-            if (_taskCycleSema == null && _activateSema)
-            {
-                _taskCycleSema = new Semaphore(0, _waitingListMaxCount);
-            }
             _taskCancel = false;
             base.SendStart();
         }
@@ -154,10 +128,6 @@ namespace Modbus.Net
                 return false;
             }
             var success = base.AddMessageToList(def);
-            if (success)
-            {
-                _taskCycleSema?.Release();
-            }
             return success;
         }
     }

@@ -159,6 +159,25 @@ namespace Modbus.Net
                     if (length == -1) break;
                     if (length == 0) return null;
                 }
+                if (skipLength > 0)
+                {                   
+                    lock (WaitingMessages)
+                    {
+                        var def = GetMessageFromWaitingList(null);
+                        if (def != null)
+                        {
+                            lock (WaitingMessages)
+                            {
+                                if (WaitingMessages.IndexOf(def) >= 0)
+                                {
+                                    WaitingMessages.Remove(def);
+                                }
+                            }
+                            def.ReceiveMutex.Set();
+                        }
+                    }                  
+                    return null;
+                }
             }
             foreach (var message in duplicatedMessages)
             {
