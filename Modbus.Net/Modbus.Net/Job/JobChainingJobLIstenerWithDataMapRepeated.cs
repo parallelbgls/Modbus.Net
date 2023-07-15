@@ -13,6 +13,9 @@ namespace Modbus.Net
     /// </summary>
     public class JobChainingJobLIstenerWithDataMapRepeated : JobChainingJobListenerWithDataMap
     {
+        /// <summary>
+        ///     Job repeat count, -1 means infinity, 0 means 1 time.
+        /// </summary>
         protected int RepeatCount { get; set; }
 
         /// <summary>

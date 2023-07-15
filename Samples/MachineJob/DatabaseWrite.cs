@@ -15,7 +15,7 @@ namespace MachineJob
 
         private static readonly string connectionString = configuration.GetConnectionString("DatabaseWriteConnectionString")!;
 
-        public DbSet<DatabaseWriteEntity> DatabaseWrites { get; set; }
+        public DbSet<DatabaseWriteEntity>? DatabaseWrites { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
