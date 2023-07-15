@@ -76,6 +76,7 @@ namespace Modbus.Net
                         {
                             if (!repeat && messageSendingdef.ReceiveMessage == null)
                             {
+                                asyncLock?.Dispose();
                                 return await SendMsgInner(message, true);
                             }
                             return messageSendingdef;
