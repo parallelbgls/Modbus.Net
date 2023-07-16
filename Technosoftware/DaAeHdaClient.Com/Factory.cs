@@ -22,14 +22,9 @@
 
 #region Using Directives
 using System;
-using System.Xml;
-using System.Net;
-using System.Text;
-using System.Collections;
-using System.Globalization;
-using System.Runtime.Serialization;
-using System.Runtime.InteropServices;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
+using System.Text;
 
 #endregion
 

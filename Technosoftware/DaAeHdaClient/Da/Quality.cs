@@ -27,225 +27,225 @@ using System;
 namespace Technosoftware.DaAeHdaClient.Da
 {
 
-	/// <summary>
-	/// Contains the quality field for an item value.
-	/// </summary>
-	[Serializable]
-	public struct TsCDaQuality
-	{
-		#region Fields
+    /// <summary>
+    /// Contains the quality field for an item value.
+    /// </summary>
+    [Serializable]
+    public struct TsCDaQuality
+    {
+        #region Fields
         private TsDaQualityBits qualityBits_;
-		private TsDaLimitBits limitBits_;
-		private byte vendorBits_;
+        private TsDaLimitBits limitBits_;
+        private byte vendorBits_;
         #endregion
 
-		#region Constructors, Destructor, Initialization
+        #region Constructors, Destructor, Initialization
         /// <summary>
-		/// Initializes the object with the specified quality.
-		/// </summary>
-		public TsCDaQuality(TsDaQualityBits quality)
-		{
-			qualityBits_ = quality;
-			limitBits_ = TsDaLimitBits.None;
-			vendorBits_ = 0;
-		}
+        /// Initializes the object with the specified quality.
+        /// </summary>
+        public TsCDaQuality(TsDaQualityBits quality)
+        {
+            qualityBits_ = quality;
+            limitBits_ = TsDaLimitBits.None;
+            vendorBits_ = 0;
+        }
 
-		/// <summary>
-		/// Initializes the object from the contents of a 16 bit integer.
-		/// </summary>
-		public TsCDaQuality(short code)
-		{
-			qualityBits_ = (TsDaQualityBits)(code & (short)TsDaQualityMasks.QualityMask);
-			limitBits_ = (TsDaLimitBits)(code & (short)TsDaQualityMasks.LimitMask);
-			vendorBits_ = (byte)((code & (short)TsDaQualityMasks.VendorMask) >> 8);
-		}
+        /// <summary>
+        /// Initializes the object from the contents of a 16 bit integer.
+        /// </summary>
+        public TsCDaQuality(short code)
+        {
+            qualityBits_ = (TsDaQualityBits)(code & (short)TsDaQualityMasks.QualityMask);
+            limitBits_ = (TsDaLimitBits)(code & (short)TsDaQualityMasks.LimitMask);
+            vendorBits_ = (byte)((code & (short)TsDaQualityMasks.VendorMask) >> 8);
+        }
         #endregion
 
-		#region Properties
+        #region Properties
         /// <summary>
-		/// The value in the quality bits field.
-		/// </summary>
-		public TsDaQualityBits QualityBits
-		{
-			get => qualityBits_;
+        /// The value in the quality bits field.
+        /// </summary>
+        public TsDaQualityBits QualityBits
+        {
+            get => qualityBits_;
             set => qualityBits_ = value;
         }
 
-		/// <summary>
-		/// The value in the limit bits field.
-		/// </summary>
-		public TsDaLimitBits LimitBits
-		{
-			get => limitBits_;
+        /// <summary>
+        /// The value in the limit bits field.
+        /// </summary>
+        public TsDaLimitBits LimitBits
+        {
+            get => limitBits_;
             set => limitBits_ = value;
         }
 
-		/// <summary>
-		/// The value in the quality bits field.
-		/// </summary>
-		public byte VendorBits
-		{
-			get => vendorBits_;
+        /// <summary>
+        /// The value in the quality bits field.
+        /// </summary>
+        public byte VendorBits
+        {
+            get => vendorBits_;
             set => vendorBits_ = value;
         }
 
-		/// <summary>
-		/// A 'good' quality value.
-		/// </summary>
-		public static readonly TsCDaQuality Good = new TsCDaQuality(TsDaQualityBits.Good);
+        /// <summary>
+        /// A 'good' quality value.
+        /// </summary>
+        public static readonly TsCDaQuality Good = new TsCDaQuality(TsDaQualityBits.Good);
 
-		/// <summary>
-		/// An 'bad' quality value.
-		/// </summary>
-		public static readonly TsCDaQuality Bad = new TsCDaQuality(TsDaQualityBits.Bad);
+        /// <summary>
+        /// An 'bad' quality value.
+        /// </summary>
+        public static readonly TsCDaQuality Bad = new TsCDaQuality(TsDaQualityBits.Bad);
         #endregion
 
-		#region Public Methods
+        #region Public Methods
         /// <summary>
-		/// Returns the quality as a 16 bit integer.
-		/// </summary>
-		public short GetCode()
-		{
-			ushort code = 0;
+        /// Returns the quality as a 16 bit integer.
+        /// </summary>
+        public short GetCode()
+        {
+            ushort code = 0;
 
-			code |= (ushort)QualityBits;
-			code |= (ushort)LimitBits;
-			code |= (ushort)(VendorBits << 8);
+            code |= (ushort)QualityBits;
+            code |= (ushort)LimitBits;
+            code |= (ushort)(VendorBits << 8);
 
-			return (code <= short.MaxValue) ? (short)code : (short)-((ushort.MaxValue + 1 - code));
-		}
+            return (code <= short.MaxValue) ? (short)code : (short)-((ushort.MaxValue + 1 - code));
+        }
 
-		/// <summary>
-		/// Initializes the quality from a 16 bit integer.
-		/// </summary>
-		public void SetCode(short code)
-		{
-			qualityBits_ = (TsDaQualityBits)(code & (short)TsDaQualityMasks.QualityMask);
-			limitBits_ = (TsDaLimitBits)(code & (short)TsDaQualityMasks.LimitMask);
-			vendorBits_ = (byte)((code & (short)TsDaQualityMasks.VendorMask) >> 8);
-		}
+        /// <summary>
+        /// Initializes the quality from a 16 bit integer.
+        /// </summary>
+        public void SetCode(short code)
+        {
+            qualityBits_ = (TsDaQualityBits)(code & (short)TsDaQualityMasks.QualityMask);
+            limitBits_ = (TsDaLimitBits)(code & (short)TsDaQualityMasks.LimitMask);
+            vendorBits_ = (byte)((code & (short)TsDaQualityMasks.VendorMask) >> 8);
+        }
 
-		/// <summary>
-		/// Returns true if the objects are equal.
-		/// </summary>
-		public static bool operator ==(TsCDaQuality a, TsCDaQuality b)
-		{
-			return a.Equals(b);
-		}
+        /// <summary>
+        /// Returns true if the objects are equal.
+        /// </summary>
+        public static bool operator ==(TsCDaQuality a, TsCDaQuality b)
+        {
+            return a.Equals(b);
+        }
 
-		/// <summary>
-		/// Returns true if the objects are not equal.
-		/// </summary>
-		public static bool operator !=(TsCDaQuality a, TsCDaQuality b)
-		{
-			return !a.Equals(b);
-		}
+        /// <summary>
+        /// Returns true if the objects are not equal.
+        /// </summary>
+        public static bool operator !=(TsCDaQuality a, TsCDaQuality b)
+        {
+            return !a.Equals(b);
+        }
         #endregion
 
-		#region Object Member Overrides
+        #region Object Member Overrides
         /// <summary>
-		/// Converts a quality to a string with the format: 'quality[limit]:vendor'.
-		/// </summary>
-		public override string ToString()
-		{
-			string text = null;
+        /// Converts a quality to a string with the format: 'quality[limit]:vendor'.
+        /// </summary>
+        public override string ToString()
+        {
+            string text = null;
 
-			switch (QualityBits)
-			{
-				case TsDaQualityBits.Good:
-					text += "(Good";
-					break;
-				case TsDaQualityBits.GoodLocalOverride:
-					text += "(Good:Local Override";
-					break;
-				case TsDaQualityBits.Bad:
-					text += "(Bad";
-					break;
-				case TsDaQualityBits.BadConfigurationError:
-					text += "(Bad:Configuration Error";
-					break;
-				case TsDaQualityBits.BadNotConnected:
-					text += "(Bad:Not Connected";
-					break;
-				case TsDaQualityBits.BadDeviceFailure:
-					text += "(Bad:Device Failure";
-					break;
-				case TsDaQualityBits.BadSensorFailure:
-					text += "(Bad:Sensor Failure";
-					break;
-				case TsDaQualityBits.BadLastKnownValue:
-					text += "(Bad:Last Known Value";
-					break;
-				case TsDaQualityBits.BadCommFailure:
-					text += "(Bad:Communication Failure";
-					break;
-				case TsDaQualityBits.BadOutOfService:
-					text += "(Bad:Out of Service";
-					break;
-				case TsDaQualityBits.BadWaitingForInitialData:
-					text += "(Bad:Waiting for Initial Data";
-					break;
-				case TsDaQualityBits.Uncertain:
-					text += "(Uncertain";
-					break;
-				case TsDaQualityBits.UncertainLastUsableValue:
-					text += "(Uncertain:Last Usable Value";
-					break;
-				case TsDaQualityBits.UncertainSensorNotAccurate:
-					text += "(Uncertain:Sensor not Accurate";
-					break;
-				case TsDaQualityBits.UncertainEUExceeded:
-					text += "(Uncertain:Engineering Unit exceeded";
-					break;
-				case TsDaQualityBits.UncertainSubNormal:
-					text += "(Uncertain:Sub Normal";
-					break;
-			}
+            switch (QualityBits)
+            {
+                case TsDaQualityBits.Good:
+                    text += "(Good";
+                    break;
+                case TsDaQualityBits.GoodLocalOverride:
+                    text += "(Good:Local Override";
+                    break;
+                case TsDaQualityBits.Bad:
+                    text += "(Bad";
+                    break;
+                case TsDaQualityBits.BadConfigurationError:
+                    text += "(Bad:Configuration Error";
+                    break;
+                case TsDaQualityBits.BadNotConnected:
+                    text += "(Bad:Not Connected";
+                    break;
+                case TsDaQualityBits.BadDeviceFailure:
+                    text += "(Bad:Device Failure";
+                    break;
+                case TsDaQualityBits.BadSensorFailure:
+                    text += "(Bad:Sensor Failure";
+                    break;
+                case TsDaQualityBits.BadLastKnownValue:
+                    text += "(Bad:Last Known Value";
+                    break;
+                case TsDaQualityBits.BadCommFailure:
+                    text += "(Bad:Communication Failure";
+                    break;
+                case TsDaQualityBits.BadOutOfService:
+                    text += "(Bad:Out of Service";
+                    break;
+                case TsDaQualityBits.BadWaitingForInitialData:
+                    text += "(Bad:Waiting for Initial Data";
+                    break;
+                case TsDaQualityBits.Uncertain:
+                    text += "(Uncertain";
+                    break;
+                case TsDaQualityBits.UncertainLastUsableValue:
+                    text += "(Uncertain:Last Usable Value";
+                    break;
+                case TsDaQualityBits.UncertainSensorNotAccurate:
+                    text += "(Uncertain:Sensor not Accurate";
+                    break;
+                case TsDaQualityBits.UncertainEUExceeded:
+                    text += "(Uncertain:Engineering Unit exceeded";
+                    break;
+                case TsDaQualityBits.UncertainSubNormal:
+                    text += "(Uncertain:Sub Normal";
+                    break;
+            }
 
-			if (LimitBits != TsDaLimitBits.None)
-			{
-				text += $":[{LimitBits.ToString()}]";
-			}
-			else
-			{
-				text += ":Not Limited";
-			}
+            if (LimitBits != TsDaLimitBits.None)
+            {
+                text += $":[{LimitBits.ToString()}]";
+            }
+            else
+            {
+                text += ":Not Limited";
+            }
 
-			if (VendorBits != 0)
-			{
-				text += $":{VendorBits,0:X})";
-			}
-			else
-			{
-				text += ")";
-			}
+            if (VendorBits != 0)
+            {
+                text += $":{VendorBits,0:X})";
+            }
+            else
+            {
+                text += ")";
+            }
 
-			return text;
-		}
+            return text;
+        }
 
-		/// <summary>
-		/// Determines whether the specified Object is equal to the current Quality
-		/// </summary>
-		public override bool Equals(object target)
-		{
-			if (target == null || target.GetType() != typeof(TsCDaQuality)) return false;
+        /// <summary>
+        /// Determines whether the specified Object is equal to the current Quality
+        /// </summary>
+        public override bool Equals(object target)
+        {
+            if (target == null || target.GetType() != typeof(TsCDaQuality)) return false;
 
-			var quality = (TsCDaQuality)target;
+            var quality = (TsCDaQuality)target;
 
-			if (QualityBits != quality.QualityBits) return false;
-			if (LimitBits != quality.LimitBits) return false;
-			if (VendorBits != quality.VendorBits) return false;
+            if (QualityBits != quality.QualityBits) return false;
+            if (LimitBits != quality.LimitBits) return false;
+            if (VendorBits != quality.VendorBits) return false;
 
-			return true;
-		}
+            return true;
+        }
 
-		/// <summary>
-		/// Returns hash code for the current Quality.
-		/// </summary>
-		public override int GetHashCode()
-		{
-			return GetCode();
-		}
-		#endregion
-	}
+        /// <summary>
+        /// Returns hash code for the current Quality.
+        /// </summary>
+        public override int GetHashCode()
+        {
+            return GetCode();
+        }
+        #endregion
+    }
 }

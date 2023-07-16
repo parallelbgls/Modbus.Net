@@ -25,20 +25,20 @@
 
 namespace Technosoftware.DaAeHdaClient.Da
 {
-	/// <summary>
-	///     <para>Defines the possible limit status bits.</para>
-	///     <para>The Limit Field is valid regardless of the Quality and Substatus. In some
-	///     cases such as Sensor Failure it can provide useful diagnostic information.</para>
-	/// </summary>
-	public enum TsDaLimitBits
+    /// <summary>
+    ///     <para>Defines the possible limit status bits.</para>
+    ///     <para>The Limit Field is valid regardless of the Quality and Substatus. In some
+    ///     cases such as Sensor Failure it can provide useful diagnostic information.</para>
+    /// </summary>
+    public enum TsDaLimitBits
     {
-		/// <summary>The value is free to move up or down</summary>
-		None = 0x0,
-		/// <summary>The value has ‘pegged’ at some lower limit</summary>
-		Low = 0x1,
-		/// <summary>The value has ‘pegged’ at some high limit</summary>
-		High = 0x2,
-		/// <summary>The value is a constant and cannot move</summary>
-		Constant = 0x3
-	}
+        /// <summary>The value is free to move up or down</summary>
+        None = 0x0,
+        /// <summary>The value has ‘pegged’ at some lower limit</summary>
+        Low = 0x1,
+        /// <summary>The value has ‘pegged’ at some high limit</summary>
+        High = 0x2,
+        /// <summary>The value is a constant and cannot move</summary>
+        Constant = 0x3
+    }
 }

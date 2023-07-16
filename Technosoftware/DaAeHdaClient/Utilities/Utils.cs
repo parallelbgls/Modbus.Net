@@ -22,10 +22,10 @@
 
 #region Using Directives
 using System;
-using System.Text;
-using System.Globalization;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
+using System.Text;
 // ReSharper disable UnusedMember.Global
 
 #endregion

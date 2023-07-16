@@ -26,72 +26,72 @@ using System;
 
 namespace Technosoftware.DaAeHdaClient.Da
 {
-	/// <summary>
-	/// Defines a set of filters to apply when browsing.
-	/// </summary>
-	[Serializable]
-	public class TsCDaBrowseFilters : ICloneable
-	{
-		#region Fields
+    /// <summary>
+    /// Defines a set of filters to apply when browsing.
+    /// </summary>
+    [Serializable]
+    public class TsCDaBrowseFilters : ICloneable
+    {
+        #region Fields
         private TsCDaBrowseFilter browseFilter_ = TsCDaBrowseFilter.All;
-		private TsDaPropertyID[] propertyIds_;
+        private TsDaPropertyID[] propertyIds_;
         #endregion
 
-		#region Properties
+        #region Properties
         /// <summary>
-		/// The maximum number of elements to return. Zero means no limit.
-		/// </summary>
-		public int MaxElementsReturned { get; set; }
+        /// The maximum number of elements to return. Zero means no limit.
+        /// </summary>
+        public int MaxElementsReturned { get; set; }
 
-		/// <summary>
-		/// The type of element to return.
-		/// </summary>
-		public TsCDaBrowseFilter BrowseFilter
-		{
-			get => browseFilter_;
+        /// <summary>
+        /// The type of element to return.
+        /// </summary>
+        public TsCDaBrowseFilter BrowseFilter
+        {
+            get => browseFilter_;
             set => browseFilter_ = value;
         }
 
-		/// <summary>
-		/// An expression used to match the name of the element.
-		/// </summary>
-		public string ElementNameFilter { get; set; }
+        /// <summary>
+        /// An expression used to match the name of the element.
+        /// </summary>
+        public string ElementNameFilter { get; set; }
 
-		/// <summary>
-		/// A filter which has semantics that defined by the server.
-		/// </summary>
-		public string VendorFilter { get; set; }
+        /// <summary>
+        /// A filter which has semantics that defined by the server.
+        /// </summary>
+        public string VendorFilter { get; set; }
 
-		/// <summary>
-		/// Whether all supported properties to return with each element.
-		/// </summary>
-		public bool ReturnAllProperties { get; set; }
+        /// <summary>
+        /// Whether all supported properties to return with each element.
+        /// </summary>
+        public bool ReturnAllProperties { get; set; }
 
-		/// <summary>
-		/// A list of names of the properties to return with each element.
-		/// </summary>
-		public TsDaPropertyID[] PropertyIDs
-		{
-			get => propertyIds_;
+        /// <summary>
+        /// A list of names of the properties to return with each element.
+        /// </summary>
+        public TsDaPropertyID[] PropertyIDs
+        {
+            get => propertyIds_;
             set => propertyIds_ = value;
         }
 
-		/// <summary>
-		/// Whether property values should be returned with the properties.
-		/// </summary>
-		public bool ReturnPropertyValues { get; set; }
+        /// <summary>
+        /// Whether property values should be returned with the properties.
+        /// </summary>
+        public bool ReturnPropertyValues { get; set; }
         #endregion
 
-		#region ICloneable Members
+        #region ICloneable Members
         /// <summary>
-		/// Creates a deep copy of the object.
-		/// </summary>
-		public virtual object Clone()
-		{
-			var clone = (TsCDaBrowseFilters)MemberwiseClone();
-			clone.PropertyIDs = (TsDaPropertyID[])PropertyIDs?.Clone();
-			return clone;
-		}
+        /// Creates a deep copy of the object.
+        /// </summary>
+        public virtual object Clone()
+        {
+            var clone = (TsCDaBrowseFilters)MemberwiseClone();
+            clone.PropertyIDs = (TsDaPropertyID[])PropertyIDs?.Clone();
+            return clone;
+        }
         #endregion
-	}
+    }
 }

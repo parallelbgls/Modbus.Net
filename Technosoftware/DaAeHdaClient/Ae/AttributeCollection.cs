@@ -26,37 +26,37 @@ using System;
 
 namespace Technosoftware.DaAeHdaClient.Ae
 {
-	/// <summary>
-	/// Contains a writable collection attribute ids.
-	/// </summary>
-	[Serializable]
-	public class TsCAeAttributeCollection : OpcWriteableCollection
-	{
-		#region Constructors, Destructor, Initialization
+    /// <summary>
+    /// Contains a writable collection attribute ids.
+    /// </summary>
+    [Serializable]
+    public class TsCAeAttributeCollection : OpcWriteableCollection
+    {
+        #region Constructors, Destructor, Initialization
         /// <summary>
-		/// Creates an empty collection.
-		/// </summary>
-		internal TsCAeAttributeCollection() : base(null, typeof(int)) { }
+        /// Creates an empty collection.
+        /// </summary>
+        internal TsCAeAttributeCollection() : base(null, typeof(int)) { }
 
-		/// <summary>
-		/// Creates a collection from an array.
-		/// </summary>
-		internal TsCAeAttributeCollection(int[] attributeIDs) : base(attributeIDs, typeof(int)) { }
+        /// <summary>
+        /// Creates a collection from an array.
+        /// </summary>
+        internal TsCAeAttributeCollection(int[] attributeIDs) : base(attributeIDs, typeof(int)) { }
         #endregion
 
-		#region Public Methods
+        #region Public Methods
         /// <summary>
-		/// An indexer for the collection.
-		/// </summary>
-		public new int this[int index] => (int)Array[index];
+        /// An indexer for the collection.
+        /// </summary>
+        public new int this[int index] => (int)Array[index];
 
         /// <summary>
 		/// Returns a copy of the collection as an array.
 		/// </summary>
 		public new int[] ToArray()
-		{
-			return (int[])Array.ToArray(typeof(int));
-		}
+        {
+            return (int[])Array.ToArray(typeof(int));
+        }
         #endregion
-	}
+    }
 }

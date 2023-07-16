@@ -22,59 +22,58 @@
 
 #region Using Directives
 using System;
-using System.Reflection;
-using System.Net;
-using System.Globalization;
-using System.Runtime.InteropServices;
 using System.Collections.Generic;
-
+using System.Globalization;
+using System.Net;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using Technosoftware.DaAeHdaClient.Utilities;
 #endregion
 
 namespace Technosoftware.DaAeHdaClient.Com
 {
-	/// <summary>
-	/// Exposes WIN32 and COM API functions.
-	/// </summary>
-	internal class ComUtils
-	{
-		#region NetApi Function Declarations
-		[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Auto)]
-			private struct SERVER_INFO_100
-		{
-			public uint   sv100_platform_id;
-			[MarshalAs(UnmanagedType.LPWStr)]
-			public string sv100_name;
-		} 	
+    /// <summary>
+    /// Exposes WIN32 and COM API functions.
+    /// </summary>
+    internal class ComUtils
+    {
+        #region NetApi Function Declarations
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+        private struct SERVER_INFO_100
+        {
+            public uint sv100_platform_id;
+            [MarshalAs(UnmanagedType.LPWStr)]
+            public string sv100_name;
+        }
 
-		private const uint LEVEL_SERVER_INFO_100 = 100;
-		private const uint LEVEL_SERVER_INFO_101 = 101;
+        private const uint LEVEL_SERVER_INFO_100 = 100;
+        private const uint LEVEL_SERVER_INFO_101 = 101;
 
-		private const int  MAX_PREFERRED_LENGTH  = -1;
+        private const int MAX_PREFERRED_LENGTH = -1;
 
-		private const uint SV_TYPE_WORKSTATION   = 0x00000001;
-		private const uint SV_TYPE_SERVER        = 0x00000002;
+        private const uint SV_TYPE_WORKSTATION = 0x00000001;
+        private const uint SV_TYPE_SERVER = 0x00000002;
 
-		[DllImport("Netapi32.dll")]
-		private static extern int NetServerEnum(
-			IntPtr     servername,
-			uint       level,
-			out IntPtr bufptr,
-			int        prefmaxlen,
-			out int    entriesread,
-			out int    totalentries,
-			uint       servertype,
-			IntPtr     domain,
-			IntPtr     resume_handle);
+        [DllImport("Netapi32.dll")]
+        private static extern int NetServerEnum(
+            IntPtr servername,
+            uint level,
+            out IntPtr bufptr,
+            int prefmaxlen,
+            out int entriesread,
+            out int totalentries,
+            uint servertype,
+            IntPtr domain,
+            IntPtr resume_handle);
 
-		[DllImport("Netapi32.dll")]	
-		private static extern int NetApiBufferFree(IntPtr buffer);
+        [DllImport("Netapi32.dll")]
+        private static extern int NetApiBufferFree(IntPtr buffer);
 
-		/// <summary>
-		/// Enumerates computers on the local network.
-		/// </summary>
-		public static List<string> EnumComputers()
-		{
+        /// <summary>
+        /// Enumerates computers on the local network.
+        /// </summary>
+        public static List<string> EnumComputers()
+        {
             IntPtr pInfo;
             int totalEntries;
 
@@ -91,160 +90,160 @@ namespace Technosoftware.DaAeHdaClient.Com
                 IntPtr.Zero);
 
             if (result != 0)
-			{
-				throw new ApplicationException("NetApi Error = " + string.Format("0x{0:X8}", result));
-			}
+            {
+                throw new ApplicationException("NetApi Error = " + string.Format("0x{0:X8}", result));
+            }
 
-			var computers = new List<string>();
+            var computers = new List<string>();
 
-			var pos = pInfo;
+            var pos = pInfo;
 
-			for (var ii = 0; ii < entriesRead; ii++)
-			{
-				var info = (SERVER_INFO_100)Marshal.PtrToStructure(pos, typeof(SERVER_INFO_100));
-				
-				computers.Add(info.sv100_name);
+            for (var ii = 0; ii < entriesRead; ii++)
+            {
+                var info = (SERVER_INFO_100)Marshal.PtrToStructure(pos, typeof(SERVER_INFO_100));
 
-				pos = (IntPtr)(pos.ToInt64() + Marshal.SizeOf(typeof(SERVER_INFO_100)));
-			}
+                computers.Add(info.sv100_name);
 
-			NetApiBufferFree(pInfo);
+                pos = (IntPtr)(pos.ToInt64() + Marshal.SizeOf(typeof(SERVER_INFO_100)));
+            }
 
-			return computers;
-		}
-		#endregion
+            NetApiBufferFree(pInfo);
 
-		#region OLE32 Function/Interface Declarations
-		private const int MAX_MESSAGE_LENGTH = 1024;
+            return computers;
+        }
+        #endregion
 
-		private const uint FORMAT_MESSAGE_IGNORE_INSERTS = 0x00000200;
-		private const uint FORMAT_MESSAGE_FROM_SYSTEM    = 0x00001000;
+        #region OLE32 Function/Interface Declarations
+        private const int MAX_MESSAGE_LENGTH = 1024;
 
-		[DllImport("Kernel32.dll")]
-		private static extern int FormatMessageW(
-			int    dwFlags,
-			IntPtr lpSource,
-			int    dwMessageId,
-			int    dwLanguageId,
-			IntPtr lpBuffer,
-			int    nSize,
-			IntPtr Arguments);
-        
-		[DllImport("Kernel32.dll")]
+        private const uint FORMAT_MESSAGE_IGNORE_INSERTS = 0x00000200;
+        private const uint FORMAT_MESSAGE_FROM_SYSTEM = 0x00001000;
+
+        [DllImport("Kernel32.dll")]
+        private static extern int FormatMessageW(
+            int dwFlags,
+            IntPtr lpSource,
+            int dwMessageId,
+            int dwLanguageId,
+            IntPtr lpBuffer,
+            int nSize,
+            IntPtr Arguments);
+
+        [DllImport("Kernel32.dll")]
         private static extern int GetSystemDefaultLangID();
-                
-		[DllImport("Kernel32.dll")]
+
+        [DllImport("Kernel32.dll")]
         private static extern int GetUserDefaultLangID();
 
-		/// <summary>
-		/// The WIN32 system default locale.
-		/// </summary>
-		public const int LOCALE_SYSTEM_DEFAULT = 0x800;
+        /// <summary>
+        /// The WIN32 system default locale.
+        /// </summary>
+        public const int LOCALE_SYSTEM_DEFAULT = 0x800;
 
-		/// <summary>
-		/// The WIN32 user default locale.
-		/// </summary>
-		public const int LOCALE_USER_DEFAULT   = 0x400; 
+        /// <summary>
+        /// The WIN32 user default locale.
+        /// </summary>
+        public const int LOCALE_USER_DEFAULT = 0x400;
 
-		/// <summary>
-		/// The base for the WIN32 FILETIME structure.
-		/// </summary>
-		private static readonly DateTime FILETIME_BaseTime = new DateTime(1601, 1, 1);
+        /// <summary>
+        /// The base for the WIN32 FILETIME structure.
+        /// </summary>
+        private static readonly DateTime FILETIME_BaseTime = new DateTime(1601, 1, 1);
 
-		/// <summary>
-		/// WIN32 GUID struct declaration.
-		/// </summary>
-		[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Auto)]
-			private struct GUID
-		{
-			public int Data1;
-			public short Data2;
-			public short Data3;
-			[MarshalAs(UnmanagedType.ByValArray, SizeConst=8)]
-			public byte[] Data4;
-		}
+        /// <summary>
+        /// WIN32 GUID struct declaration.
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+        private struct GUID
+        {
+            public int Data1;
+            public short Data2;
+            public short Data3;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+            public byte[] Data4;
+        }
 
-		/// <summary>
-		/// The size, in bytes, of a VARIANT structure.
-		/// </summary>
-		private const int VARIANT_SIZE = 0x10;
-                
-		[DllImport("OleAut32.dll")]	
-		private static extern int VariantChangeTypeEx( 
-			IntPtr pvargDest,  
-			IntPtr pvarSrc,  
-			int    lcid,             
-			ushort wFlags,  
-			short  vt);
-        
-		/// <summary>
-		/// Intializes a pointer to a VARIANT.
-		/// </summary>
-		[DllImport("oleaut32.dll")]
-		private static extern void VariantInit(IntPtr pVariant);
-        
-		/// <summary>
-		/// Frees all memory referenced by a VARIANT stored in unmanaged memory.
-		/// </summary>
-		[DllImport("oleaut32.dll")]
-		public static extern void VariantClear(IntPtr pVariant);
+        /// <summary>
+        /// The size, in bytes, of a VARIANT structure.
+        /// </summary>
+        private const int VARIANT_SIZE = 0x10;
 
-		private const int DISP_E_TYPEMISMATCH = -0x7FFDFFFB; // 0x80020005
-		private const int DISP_E_OVERFLOW     = -0x7FFDFFF6; // 0x8002000A
+        [DllImport("OleAut32.dll")]
+        private static extern int VariantChangeTypeEx(
+            IntPtr pvargDest,
+            IntPtr pvarSrc,
+            int lcid,
+            ushort wFlags,
+            short vt);
 
-		private const int VARIANT_NOVALUEPROP = 0x01;
-		private const int VARIANT_ALPHABOOL   = 0x02; // For VT_BOOL to VT_BSTR conversions convert to "True"/"False" instead of
+        /// <summary>
+        /// Intializes a pointer to a VARIANT.
+        /// </summary>
+        [DllImport("oleaut32.dll")]
+        private static extern void VariantInit(IntPtr pVariant);
 
-		[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Auto)]
-			private struct SOLE_AUTHENTICATION_SERVICE
-		{
-			public uint   dwAuthnSvc;
-			public uint   dwAuthzSvc;
-			[MarshalAs(UnmanagedType.LPWStr)]
-			public string pPrincipalName;
-			public int    hr;
-		} 	
-		
-		private const uint RPC_C_AUTHN_NONE                = 0;
-		private const uint RPC_C_AUTHN_DCE_PRIVATE         = 1;
-		private const uint RPC_C_AUTHN_DCE_PUBLIC          = 2;
-		private const uint RPC_C_AUTHN_DEC_PUBLIC          = 4;
-		private const uint RPC_C_AUTHN_GSS_NEGOTIATE       = 9;
-		private const uint RPC_C_AUTHN_WINNT               = 10;
-		private const uint RPC_C_AUTHN_GSS_SCHANNEL        = 14;
-		private const uint RPC_C_AUTHN_GSS_KERBEROS        = 16;
-		private const uint RPC_C_AUTHN_DPA                 = 17;
-		private const uint RPC_C_AUTHN_MSN                 = 18;
-		private const uint RPC_C_AUTHN_DIGEST              = 21;
-		private const uint RPC_C_AUTHN_MQ                  = 100;
-		private const uint RPC_C_AUTHN_DEFAULT             = 0xFFFFFFFF;
+        /// <summary>
+        /// Frees all memory referenced by a VARIANT stored in unmanaged memory.
+        /// </summary>
+        [DllImport("oleaut32.dll")]
+        public static extern void VariantClear(IntPtr pVariant);
 
-		private const uint RPC_C_AUTHZ_NONE                = 0;
-		private const uint RPC_C_AUTHZ_NAME                = 1;
-		private const uint RPC_C_AUTHZ_DCE                 = 2;
-		private const uint RPC_C_AUTHZ_DEFAULT             = 0xffffffff;
+        private const int DISP_E_TYPEMISMATCH = -0x7FFDFFFB; // 0x80020005
+        private const int DISP_E_OVERFLOW = -0x7FFDFFF6; // 0x8002000A
 
-		private const uint RPC_C_AUTHN_LEVEL_DEFAULT       = 0;
-		private const uint RPC_C_AUTHN_LEVEL_NONE          = 1;
-		private const uint RPC_C_AUTHN_LEVEL_CONNECT       = 2;
-		private const uint RPC_C_AUTHN_LEVEL_CALL          = 3;
-		private const uint RPC_C_AUTHN_LEVEL_PKT           = 4;
-		private const uint RPC_C_AUTHN_LEVEL_PKT_INTEGRITY = 5;
-		private const uint RPC_C_AUTHN_LEVEL_PKT_PRIVACY   = 6;
+        private const int VARIANT_NOVALUEPROP = 0x01;
+        private const int VARIANT_ALPHABOOL = 0x02; // For VT_BOOL to VT_BSTR conversions convert to "True"/"False" instead of
 
-		private const uint RPC_C_IMP_LEVEL_ANONYMOUS       = 1;
-		private const uint RPC_C_IMP_LEVEL_IDENTIFY        = 2;
-		private const uint RPC_C_IMP_LEVEL_IMPERSONATE     = 3;
-		private const uint RPC_C_IMP_LEVEL_DELEGATE        = 4;
-		
-		private const uint EOAC_NONE	                   = 0x00;
-		private const uint EOAC_MUTUAL_AUTH                = 0x01;
-		private const uint EOAC_CLOAKING                   = 0x10;
-		private const uint EOAC_STATIC_CLOAKING            = 0x20;
-		private const uint EOAC_DYNAMIC_CLOAKING           = 0x40;
-		private const uint EOAC_SECURE_REFS	               = 0x02;
-		private const uint EOAC_ACCESS_CONTROL             = 0x04;
-		private const uint EOAC_APPID	                   = 0x08;
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+        private struct SOLE_AUTHENTICATION_SERVICE
+        {
+            public uint dwAuthnSvc;
+            public uint dwAuthzSvc;
+            [MarshalAs(UnmanagedType.LPWStr)]
+            public string pPrincipalName;
+            public int hr;
+        }
+
+        private const uint RPC_C_AUTHN_NONE = 0;
+        private const uint RPC_C_AUTHN_DCE_PRIVATE = 1;
+        private const uint RPC_C_AUTHN_DCE_PUBLIC = 2;
+        private const uint RPC_C_AUTHN_DEC_PUBLIC = 4;
+        private const uint RPC_C_AUTHN_GSS_NEGOTIATE = 9;
+        private const uint RPC_C_AUTHN_WINNT = 10;
+        private const uint RPC_C_AUTHN_GSS_SCHANNEL = 14;
+        private const uint RPC_C_AUTHN_GSS_KERBEROS = 16;
+        private const uint RPC_C_AUTHN_DPA = 17;
+        private const uint RPC_C_AUTHN_MSN = 18;
+        private const uint RPC_C_AUTHN_DIGEST = 21;
+        private const uint RPC_C_AUTHN_MQ = 100;
+        private const uint RPC_C_AUTHN_DEFAULT = 0xFFFFFFFF;
+
+        private const uint RPC_C_AUTHZ_NONE = 0;
+        private const uint RPC_C_AUTHZ_NAME = 1;
+        private const uint RPC_C_AUTHZ_DCE = 2;
+        private const uint RPC_C_AUTHZ_DEFAULT = 0xffffffff;
+
+        private const uint RPC_C_AUTHN_LEVEL_DEFAULT = 0;
+        private const uint RPC_C_AUTHN_LEVEL_NONE = 1;
+        private const uint RPC_C_AUTHN_LEVEL_CONNECT = 2;
+        private const uint RPC_C_AUTHN_LEVEL_CALL = 3;
+        private const uint RPC_C_AUTHN_LEVEL_PKT = 4;
+        private const uint RPC_C_AUTHN_LEVEL_PKT_INTEGRITY = 5;
+        private const uint RPC_C_AUTHN_LEVEL_PKT_PRIVACY = 6;
+
+        private const uint RPC_C_IMP_LEVEL_ANONYMOUS = 1;
+        private const uint RPC_C_IMP_LEVEL_IDENTIFY = 2;
+        private const uint RPC_C_IMP_LEVEL_IMPERSONATE = 3;
+        private const uint RPC_C_IMP_LEVEL_DELEGATE = 4;
+
+        private const uint EOAC_NONE = 0x00;
+        private const uint EOAC_MUTUAL_AUTH = 0x01;
+        private const uint EOAC_CLOAKING = 0x10;
+        private const uint EOAC_STATIC_CLOAKING = 0x20;
+        private const uint EOAC_DYNAMIC_CLOAKING = 0x40;
+        private const uint EOAC_SECURE_REFS = 0x02;
+        private const uint EOAC_ACCESS_CONTROL = 0x04;
+        private const uint EOAC_APPID = 0x08;
 
 
         /// <returns>If function succeeds, it returns 0(S_OK). Otherwise, it returns an error code.</returns>
@@ -255,42 +254,42 @@ namespace Technosoftware.DaAeHdaClient.Com
             );
 
         [DllImport("ole32.dll")]
-		private static extern int CoInitializeSecurity(
-			IntPtr                        pSecDesc,
-			int                           cAuthSvc,
-			SOLE_AUTHENTICATION_SERVICE[] asAuthSvc,
-			IntPtr                        pReserved1,
-			uint                          dwAuthnLevel,
-			uint                          dwImpLevel,
-			IntPtr                        pAuthList,
-			uint                          dwCapabilities,
-			IntPtr                        pReserved3);
+        private static extern int CoInitializeSecurity(
+            IntPtr pSecDesc,
+            int cAuthSvc,
+            SOLE_AUTHENTICATION_SERVICE[] asAuthSvc,
+            IntPtr pReserved1,
+            uint dwAuthnLevel,
+            uint dwImpLevel,
+            IntPtr pAuthList,
+            uint dwCapabilities,
+            IntPtr pReserved3);
 
-		[DllImport("ole32.dll")]
-		private static extern int CoQueryProxyBlanket(
-			[MarshalAs(UnmanagedType.IUnknown)]
-			object pProxy,
-			ref uint pAuthnSvc,
-			ref uint pAuthzSvc,
-			[MarshalAs(UnmanagedType.LPWStr)]
-			ref string pServerPrincName,
-			ref uint pAuthnLevel, 
-			ref uint pImpLevel, 
-			ref IntPtr pAuthInfo,
-			ref uint pCapabilities); 
+        [DllImport("ole32.dll")]
+        private static extern int CoQueryProxyBlanket(
+            [MarshalAs(UnmanagedType.IUnknown)]
+            object pProxy,
+            ref uint pAuthnSvc,
+            ref uint pAuthzSvc,
+            [MarshalAs(UnmanagedType.LPWStr)]
+            ref string pServerPrincName,
+            ref uint pAuthnLevel,
+            ref uint pImpLevel,
+            ref IntPtr pAuthInfo,
+            ref uint pCapabilities);
 
-		[DllImport("ole32.dll")]
-		private static extern int CoSetProxyBlanket(
-			[MarshalAs(UnmanagedType.IUnknown)]
-			object pProxy,
-			uint pAuthnSvc,
+        [DllImport("ole32.dll")]
+        private static extern int CoSetProxyBlanket(
+            [MarshalAs(UnmanagedType.IUnknown)]
+            object pProxy,
+            uint pAuthnSvc,
             uint pAuthzSvc,
-			IntPtr pServerPrincName,
-			uint pAuthnLevel, 
-			uint pImpLevel, 
-			IntPtr pAuthInfo,
-			uint pCapabilities); 
-        
+            IntPtr pServerPrincName,
+            uint pAuthnLevel,
+            uint pImpLevel,
+            IntPtr pAuthInfo,
+            uint pCapabilities);
+
         private static readonly IntPtr COLE_DEFAULT_PRINCIPAL = new IntPtr(-1);
         private static readonly IntPtr COLE_DEFAULT_AUTHINFO = new IntPtr(-1);
 
@@ -303,262 +302,262 @@ namespace Technosoftware.DaAeHdaClient.Com
             COINIT_SPEED_OVER_MEMORY = 0x8, //Trade memory for speed
         }
 
-        [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Auto)]
-		private struct COSERVERINFO
-		{
-			public uint         dwReserved1;
-			[MarshalAs(UnmanagedType.LPWStr)]
-			public string       pwszName;
-			public IntPtr       pAuthInfo;
-			public uint         dwReserved2;
-		};
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+        private struct COSERVERINFO
+        {
+            public uint dwReserved1;
+            [MarshalAs(UnmanagedType.LPWStr)]
+            public string pwszName;
+            public IntPtr pAuthInfo;
+            public uint dwReserved2;
+        };
 
-		[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Auto)]
-		private struct COAUTHINFO
-		{
-			public uint   dwAuthnSvc;
-			public uint   dwAuthzSvc;
-			public IntPtr pwszServerPrincName;
-			public uint   dwAuthnLevel;
-			public uint   dwImpersonationLevel;
-			public IntPtr pAuthIdentityData;
-			public uint   dwCapabilities;
-		}
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+        private struct COAUTHINFO
+        {
+            public uint dwAuthnSvc;
+            public uint dwAuthzSvc;
+            public IntPtr pwszServerPrincName;
+            public uint dwAuthnLevel;
+            public uint dwImpersonationLevel;
+            public IntPtr pAuthIdentityData;
+            public uint dwCapabilities;
+        }
 
-		[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Auto)]
-		private struct COAUTHIDENTITY
-		{
-			public IntPtr User;
-			public uint   UserLength;
-			public IntPtr Domain;
-			public uint   DomainLength;
-			public IntPtr Password;
-			public uint   PasswordLength;
-			public uint   Flags;
-		}
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+        private struct COAUTHIDENTITY
+        {
+            public IntPtr User;
+            public uint UserLength;
+            public IntPtr Domain;
+            public uint DomainLength;
+            public IntPtr Password;
+            public uint PasswordLength;
+            public uint Flags;
+        }
 
-		[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Auto)]
-		private struct MULTI_QI
-		{
-			public IntPtr iid;
-			[MarshalAs(UnmanagedType.IUnknown)]
-			public object pItf;
-			public uint   hr;
-		}
-		
-		private const uint CLSCTX_INPROC_SERVER	 = 0x1;
-		private const uint CLSCTX_INPROC_HANDLER = 0x2;
-		private const uint CLSCTX_LOCAL_SERVER	 = 0x4;
-		private const uint CLSCTX_REMOTE_SERVER	 = 0x10;
-		private const uint CLSCTX_DISABLE_AAA 	 = 0x8000;
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+        private struct MULTI_QI
+        {
+            public IntPtr iid;
+            [MarshalAs(UnmanagedType.IUnknown)]
+            public object pItf;
+            public uint hr;
+        }
 
-		private static readonly Guid IID_IUnknown = new Guid("00000000-0000-0000-C000-000000000046");
-		
-		private const uint SEC_WINNT_AUTH_IDENTITY_ANSI    = 0x1;
-		private const uint SEC_WINNT_AUTH_IDENTITY_UNICODE = 0x2;
+        private const uint CLSCTX_INPROC_SERVER = 0x1;
+        private const uint CLSCTX_INPROC_HANDLER = 0x2;
+        private const uint CLSCTX_LOCAL_SERVER = 0x4;
+        private const uint CLSCTX_REMOTE_SERVER = 0x10;
+        private const uint CLSCTX_DISABLE_AAA = 0x8000;
 
-		[DllImport("ole32.dll")]
-		private static extern void CoCreateInstanceEx(
-			ref Guid         clsid,
-			[MarshalAs(UnmanagedType.IUnknown)]
-			object           punkOuter,
-			uint             dwClsCtx,
-			[In]
-			ref COSERVERINFO pServerInfo,
-			uint             dwCount,
-			[In, Out]
-			MULTI_QI[]       pResults);
+        private static readonly Guid IID_IUnknown = new Guid("00000000-0000-0000-C000-000000000046");
 
-		[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Auto)]
-		private struct LICINFO
-		{
-			public int cbLicInfo; 
-			[MarshalAs(UnmanagedType.Bool)]
-			public bool fRuntimeKeyAvail;
-			[MarshalAs(UnmanagedType.Bool)]
-			public bool fLicVerified;
-		}
+        private const uint SEC_WINNT_AUTH_IDENTITY_ANSI = 0x1;
+        private const uint SEC_WINNT_AUTH_IDENTITY_UNICODE = 0x2;
 
-		[ComImport]
-		[GuidAttribute("00000001-0000-0000-C000-000000000046")]
-		[InterfaceTypeAttribute(ComInterfaceType.InterfaceIsIUnknown)] 
-		private interface IClassFactory 
-		{
-			void CreateInstance(
-				[MarshalAs(UnmanagedType.IUnknown)]
-				object punkOuter,
-				[MarshalAs(UnmanagedType.LPStruct)] 
-				Guid riid, 
-				[MarshalAs(UnmanagedType.Interface)]
-				[Out] out object ppvObject); 
+        [DllImport("ole32.dll")]
+        private static extern void CoCreateInstanceEx(
+            ref Guid clsid,
+            [MarshalAs(UnmanagedType.IUnknown)]
+            object           punkOuter,
+            uint dwClsCtx,
+            [In]
+            ref COSERVERINFO pServerInfo,
+            uint dwCount,
+            [In, Out]
+            MULTI_QI[]       pResults);
 
-			void LockServer(
-				[MarshalAs(UnmanagedType.Bool)]
-				bool fLock);
-		}
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+        private struct LICINFO
+        {
+            public int cbLicInfo;
+            [MarshalAs(UnmanagedType.Bool)]
+            public bool fRuntimeKeyAvail;
+            [MarshalAs(UnmanagedType.Bool)]
+            public bool fLicVerified;
+        }
 
-		[ComImport]
-		[GuidAttribute("B196B28F-BAB4-101A-B69C-00AA00341D07")]
-		[InterfaceTypeAttribute(ComInterfaceType.InterfaceIsIUnknown)] 
-		private interface IClassFactory2 
-		{
-			void CreateInstance(
-				[MarshalAs(UnmanagedType.IUnknown)]
-				object punkOuter,
-				[MarshalAs(UnmanagedType.LPStruct)] 
-				Guid riid, 
-				[MarshalAs(UnmanagedType.Interface)]
-				[Out] out object ppvObject); 
+        [ComImport]
+        [GuidAttribute("00000001-0000-0000-C000-000000000046")]
+        [InterfaceTypeAttribute(ComInterfaceType.InterfaceIsIUnknown)]
+        private interface IClassFactory
+        {
+            void CreateInstance(
+                [MarshalAs(UnmanagedType.IUnknown)]
+                object punkOuter,
+                [MarshalAs(UnmanagedType.LPStruct)]
+                Guid riid,
+                [MarshalAs(UnmanagedType.Interface)]
+                [Out] out object ppvObject);
 
-			void LockServer(
-				[MarshalAs(UnmanagedType.Bool)]
-				bool fLock);
+            void LockServer(
+                [MarshalAs(UnmanagedType.Bool)]
+                bool fLock);
+        }
 
-			void GetLicInfo(
-				[In,Out] ref LICINFO pLicInfo);
+        [ComImport]
+        [GuidAttribute("B196B28F-BAB4-101A-B69C-00AA00341D07")]
+        [InterfaceTypeAttribute(ComInterfaceType.InterfaceIsIUnknown)]
+        private interface IClassFactory2
+        {
+            void CreateInstance(
+                [MarshalAs(UnmanagedType.IUnknown)]
+                object punkOuter,
+                [MarshalAs(UnmanagedType.LPStruct)]
+                Guid riid,
+                [MarshalAs(UnmanagedType.Interface)]
+                [Out] out object ppvObject);
 
-			void RequestLicKey(
-				int dwReserved, 
-				[MarshalAs(UnmanagedType.BStr)]
-				string pbstrKey);
-		 
-			void CreateInstanceLic(
-				[MarshalAs(UnmanagedType.IUnknown)]
-				object punkOuter,
-				[MarshalAs(UnmanagedType.IUnknown)]
-				object punkReserved,
-				[MarshalAs(UnmanagedType.LPStruct)]  
-				Guid riid, 
-				[MarshalAs(UnmanagedType.BStr)]
-				string bstrKey,
-				[MarshalAs(UnmanagedType.IUnknown)]
-				[Out] out object ppvObject);		
-		}
+            void LockServer(
+                [MarshalAs(UnmanagedType.Bool)]
+                bool fLock);
 
-		[DllImport("ole32.dll")]
-		private static extern void CoGetClassObject(
-			[MarshalAs(UnmanagedType.LPStruct)] 
-			Guid clsid,
-			uint dwClsContext,
-			[In] ref COSERVERINFO pServerInfo,
-			[MarshalAs(UnmanagedType.LPStruct)] 
-			Guid riid,
-			[MarshalAs(UnmanagedType.IUnknown)]
-			[Out] out object ppv); 
+            void GetLicInfo(
+                [In, Out] ref LICINFO pLicInfo);
 
-		private const int LOGON32_PROVIDER_DEFAULT  = 0;
-		private const int LOGON32_LOGON_INTERACTIVE = 2;
-		private const int LOGON32_LOGON_NETWORK     = 3;
+            void RequestLicKey(
+                int dwReserved,
+                [MarshalAs(UnmanagedType.BStr)]
+                string pbstrKey);
 
-		private const int SECURITY_ANONYMOUS      = 0;
-		private const int SECURITY_IDENTIFICATION = 1;
-		private const int SECURITY_IMPERSONATION  = 2;
-		private const int SECURITY_DELEGATION     = 3;
+            void CreateInstanceLic(
+                [MarshalAs(UnmanagedType.IUnknown)]
+                object punkOuter,
+                [MarshalAs(UnmanagedType.IUnknown)]
+                object punkReserved,
+                [MarshalAs(UnmanagedType.LPStruct)]
+                Guid riid,
+                [MarshalAs(UnmanagedType.BStr)]
+                string bstrKey,
+                [MarshalAs(UnmanagedType.IUnknown)]
+                [Out] out object ppvObject);
+        }
 
-		[DllImport("advapi32.dll", SetLastError=true)]
-		private static extern bool LogonUser(
-			string     lpszUsername, 
-			string     lpszDomain, 
-			string     lpszPassword, 
-			int        dwLogonType, 
-			int        dwLogonProvider, 
-			ref IntPtr phToken);
+        [DllImport("ole32.dll")]
+        private static extern void CoGetClassObject(
+            [MarshalAs(UnmanagedType.LPStruct)]
+            Guid clsid,
+            uint dwClsContext,
+            [In] ref COSERVERINFO pServerInfo,
+            [MarshalAs(UnmanagedType.LPStruct)]
+            Guid riid,
+            [MarshalAs(UnmanagedType.IUnknown)]
+            [Out] out object ppv);
 
-		[DllImport("kernel32.dll", CharSet=CharSet.Auto)]
-		private extern static bool CloseHandle(IntPtr handle);
+        private const int LOGON32_PROVIDER_DEFAULT = 0;
+        private const int LOGON32_LOGON_INTERACTIVE = 2;
+        private const int LOGON32_LOGON_NETWORK = 3;
 
-		[DllImport("advapi32.dll", CharSet=CharSet.Auto, SetLastError=true)]
-		private extern static bool DuplicateToken(
-			IntPtr ExistingTokenHandle, 
-			int SECURITY_IMPERSONATION_LEVEL, 
-			ref IntPtr DuplicateTokenHandle);
-		#endregion
+        private const int SECURITY_ANONYMOUS = 0;
+        private const int SECURITY_IDENTIFICATION = 1;
+        private const int SECURITY_IMPERSONATION = 2;
+        private const int SECURITY_DELEGATION = 3;
 
-		#region ServerInfo Class
-		/// <summary>
-		/// A class used to allocate and deallocate the elements of a COSERVERINFO structure.
-		/// </summary>
-		class ServerInfo
-		{
-			#region internal interface
-			/// <summary>
-			/// Allocates a COSERVERINFO structure.
-			/// </summary>
-			public COSERVERINFO Allocate(string hostName, OpcUserIdentity identity)
-			{
-				// initialize server info structure.
-				var serverInfo = new COSERVERINFO();
+        [DllImport("advapi32.dll", SetLastError = true)]
+        private static extern bool LogonUser(
+            string lpszUsername,
+            string lpszDomain,
+            string lpszPassword,
+            int dwLogonType,
+            int dwLogonProvider,
+            ref IntPtr phToken);
 
-				serverInfo.pwszName     = hostName;
-				serverInfo.pAuthInfo    = IntPtr.Zero;
-				serverInfo.dwReserved1  = 0;
-				serverInfo.dwReserved2  = 0;
-                
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+        private extern static bool CloseHandle(IntPtr handle);
+
+        [DllImport("advapi32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private extern static bool DuplicateToken(
+            IntPtr ExistingTokenHandle,
+            int SECURITY_IMPERSONATION_LEVEL,
+            ref IntPtr DuplicateTokenHandle);
+        #endregion
+
+        #region ServerInfo Class
+        /// <summary>
+        /// A class used to allocate and deallocate the elements of a COSERVERINFO structure.
+        /// </summary>
+        class ServerInfo
+        {
+            #region internal interface
+            /// <summary>
+            /// Allocates a COSERVERINFO structure.
+            /// </summary>
+            public COSERVERINFO Allocate(string hostName, OpcUserIdentity identity)
+            {
+                // initialize server info structure.
+                var serverInfo = new COSERVERINFO();
+
+                serverInfo.pwszName = hostName;
+                serverInfo.pAuthInfo = IntPtr.Zero;
+                serverInfo.dwReserved1 = 0;
+                serverInfo.dwReserved2 = 0;
+
                 // no authentication for default identity
-				if (OpcUserIdentity.IsDefault(identity))
+                if (OpcUserIdentity.IsDefault(identity))
                 {
-					return serverInfo;
+                    return serverInfo;
                 }
 
-				m_hUserName  = GCHandle.Alloc(identity.Username, GCHandleType.Pinned);
-				m_hPassword  = GCHandle.Alloc(identity.Password, GCHandleType.Pinned);
-				m_hDomain    = GCHandle.Alloc(identity.Domain,   GCHandleType.Pinned);
+                m_hUserName = GCHandle.Alloc(identity.Username, GCHandleType.Pinned);
+                m_hPassword = GCHandle.Alloc(identity.Password, GCHandleType.Pinned);
+                m_hDomain = GCHandle.Alloc(identity.Domain, GCHandleType.Pinned);
 
-				m_hIdentity = new GCHandle();
+                m_hIdentity = new GCHandle();
 
-				// create identity structure.
-				var authIdentity = new COAUTHIDENTITY();
+                // create identity structure.
+                var authIdentity = new COAUTHIDENTITY();
 
-				authIdentity.User           = m_hUserName.AddrOfPinnedObject();
-				authIdentity.UserLength     = (uint)((identity.Username != null)?identity.Username.Length:0);
-				authIdentity.Password       = m_hPassword.AddrOfPinnedObject();
-				authIdentity.PasswordLength = (uint)((identity.Password != null)?identity.Password.Length:0);
-				authIdentity.Domain         = m_hDomain.AddrOfPinnedObject();
-				authIdentity.DomainLength   = (uint)((identity.Domain != null)?identity.Domain.Length:0);
-				authIdentity.Flags          = SEC_WINNT_AUTH_IDENTITY_UNICODE;
+                authIdentity.User = m_hUserName.AddrOfPinnedObject();
+                authIdentity.UserLength = (uint)((identity.Username != null) ? identity.Username.Length : 0);
+                authIdentity.Password = m_hPassword.AddrOfPinnedObject();
+                authIdentity.PasswordLength = (uint)((identity.Password != null) ? identity.Password.Length : 0);
+                authIdentity.Domain = m_hDomain.AddrOfPinnedObject();
+                authIdentity.DomainLength = (uint)((identity.Domain != null) ? identity.Domain.Length : 0);
+                authIdentity.Flags = SEC_WINNT_AUTH_IDENTITY_UNICODE;
 
-				m_hIdentity = GCHandle.Alloc(authIdentity, GCHandleType.Pinned);
-					
-				// create authorization info structure.
-				var authInfo = new COAUTHINFO();
+                m_hIdentity = GCHandle.Alloc(authIdentity, GCHandleType.Pinned);
 
-				authInfo.dwAuthnSvc           = RPC_C_AUTHN_WINNT;
-				authInfo.dwAuthzSvc           = RPC_C_AUTHZ_NONE;
-				authInfo.pwszServerPrincName  = IntPtr.Zero;
-				authInfo.dwAuthnLevel         = RPC_C_AUTHN_LEVEL_CONNECT;
-				authInfo.dwImpersonationLevel = RPC_C_IMP_LEVEL_IMPERSONATE;
-				authInfo.pAuthIdentityData    = m_hIdentity.AddrOfPinnedObject();
-                authInfo.dwCapabilities       = EOAC_NONE; // EOAC_DYNAMIC_CLOAKING;
+                // create authorization info structure.
+                var authInfo = new COAUTHINFO();
 
-				m_hAuthInfo = GCHandle.Alloc(authInfo, GCHandleType.Pinned);
-			
-				// update server info structure.
-				serverInfo.pAuthInfo = m_hAuthInfo.AddrOfPinnedObject();
+                authInfo.dwAuthnSvc = RPC_C_AUTHN_WINNT;
+                authInfo.dwAuthzSvc = RPC_C_AUTHZ_NONE;
+                authInfo.pwszServerPrincName = IntPtr.Zero;
+                authInfo.dwAuthnLevel = RPC_C_AUTHN_LEVEL_CONNECT;
+                authInfo.dwImpersonationLevel = RPC_C_IMP_LEVEL_IMPERSONATE;
+                authInfo.pAuthIdentityData = m_hIdentity.AddrOfPinnedObject();
+                authInfo.dwCapabilities = EOAC_NONE; // EOAC_DYNAMIC_CLOAKING;
 
-				return serverInfo;
-			}
+                m_hAuthInfo = GCHandle.Alloc(authInfo, GCHandleType.Pinned);
 
-			/// <summary>
-			/// Deallocated memory allocated when the COSERVERINFO structure was created.
-			/// </summary>
-			public void Deallocate()
-			{
-				if (m_hUserName.IsAllocated) m_hUserName.Free();
-				if (m_hPassword.IsAllocated) m_hPassword.Free();
-				if (m_hDomain.IsAllocated)   m_hDomain.Free();
-				if (m_hIdentity.IsAllocated) m_hIdentity.Free();
-				if (m_hAuthInfo.IsAllocated) m_hAuthInfo.Free();
-			}
-			#endregion
+                // update server info structure.
+                serverInfo.pAuthInfo = m_hAuthInfo.AddrOfPinnedObject();
 
-			#region Private Members
-			private GCHandle m_hUserName;
-			private GCHandle m_hPassword;
-			private GCHandle m_hDomain;
-			private GCHandle m_hIdentity;
-			private GCHandle m_hAuthInfo;
-			#endregion
-		}
+                return serverInfo;
+            }
+
+            /// <summary>
+            /// Deallocated memory allocated when the COSERVERINFO structure was created.
+            /// </summary>
+            public void Deallocate()
+            {
+                if (m_hUserName.IsAllocated) m_hUserName.Free();
+                if (m_hPassword.IsAllocated) m_hPassword.Free();
+                if (m_hDomain.IsAllocated) m_hDomain.Free();
+                if (m_hIdentity.IsAllocated) m_hIdentity.Free();
+                if (m_hAuthInfo.IsAllocated) m_hAuthInfo.Free();
+            }
+            #endregion
+
+            #region Private Members
+            private GCHandle m_hUserName;
+            private GCHandle m_hPassword;
+            private GCHandle m_hDomain;
+            private GCHandle m_hIdentity;
+            private GCHandle m_hAuthInfo;
+            #endregion
+        }
         #endregion
 
         #region Initialization Functions
@@ -566,138 +565,138 @@ namespace Technosoftware.DaAeHdaClient.Com
         /// Initializes COM security.
         /// </summary>
         public static void InitializeSecurity()
-		{
-			var error = CoInitializeSecurity(
-				IntPtr.Zero,
-				-1,
-				null,
-				IntPtr.Zero,
-				RPC_C_AUTHN_LEVEL_CONNECT,
-				RPC_C_IMP_LEVEL_IMPERSONATE,
-				IntPtr.Zero,
-				EOAC_DYNAMIC_CLOAKING,
-				IntPtr.Zero);		
+        {
+            var error = CoInitializeSecurity(
+                IntPtr.Zero,
+                -1,
+                null,
+                IntPtr.Zero,
+                RPC_C_AUTHN_LEVEL_CONNECT,
+                RPC_C_IMP_LEVEL_IMPERSONATE,
+                IntPtr.Zero,
+                EOAC_DYNAMIC_CLOAKING,
+                IntPtr.Zero);
 
             // this call will fail in the debugger if the 
             // 'Debug | Enable Visual Studio Hosting Process'  
             // option is checked in the project properties. 
-			if (error != 0)
-			{
-				// throw new ExternalException("CoInitializeSecurity: " + GetSystemMessage(error), error);
-			}
-		}
+            if (error != 0)
+            {
+                // throw new ExternalException("CoInitializeSecurity: " + GetSystemMessage(error), error);
+            }
+        }
 
-		/// <summary>
-		/// Determines if the host is the local host.
-		/// </summary>
-		private static bool IsLocalHost(string hostName)
-		{
-			// lookup requested host.
-		    var requestedHost = Dns.GetHostEntry(hostName);
+        /// <summary>
+        /// Determines if the host is the local host.
+        /// </summary>
+        private static bool IsLocalHost(string hostName)
+        {
+            // lookup requested host.
+            var requestedHost = Dns.GetHostEntry(hostName);
 
-		    if (requestedHost == null || requestedHost.AddressList == null)
-		    {
-			    return true;
-		    }
+            if (requestedHost == null || requestedHost.AddressList == null)
+            {
+                return true;
+            }
 
-	        // check for loopback.
-	        for (var ii = 0; ii < requestedHost.AddressList.Length; ii++)
-	        {
-		        var requestedIP = requestedHost.AddressList[ii];
+            // check for loopback.
+            for (var ii = 0; ii < requestedHost.AddressList.Length; ii++)
+            {
+                var requestedIP = requestedHost.AddressList[ii];
 
-		        if (requestedIP == null || requestedIP.Equals(IPAddress.Loopback))
-		        {
-			        return true;
-		        }
-	        }
+                if (requestedIP == null || requestedIP.Equals(IPAddress.Loopback))
+                {
+                    return true;
+                }
+            }
 
-	        // lookup local host.
-	        var localHost = Dns.GetHostEntry(Dns.GetHostName());
+            // lookup local host.
+            var localHost = Dns.GetHostEntry(Dns.GetHostName());
 
-	        if (localHost == null || localHost.AddressList == null)
-	        {
-		        return false;
-	        }
-    		
-	        // check for localhost.
-	        for (var ii = 0; ii < requestedHost.AddressList.Length; ii++)
-	        {
-		        var requestedIP = requestedHost.AddressList[ii];
+            if (localHost == null || localHost.AddressList == null)
+            {
+                return false;
+            }
 
-		        for (var jj = 0; jj < localHost.AddressList.Length; jj++)
-		        {
-			        if (requestedIP.Equals(localHost.AddressList[jj]))
-			        {
-				        return true;
-			        }
-		        }
-	        }
+            // check for localhost.
+            for (var ii = 0; ii < requestedHost.AddressList.Length; ii++)
+            {
+                var requestedIP = requestedHost.AddressList[ii];
 
-	        // must be remote.
-	        return false;
-		}
+                for (var jj = 0; jj < localHost.AddressList.Length; jj++)
+                {
+                    if (requestedIP.Equals(localHost.AddressList[jj]))
+                    {
+                        return true;
+                    }
+                }
+            }
 
-		/// <summary>
-		/// Creates an instance of a COM server using the specified license key.
-		/// </summary>
-		public static object CreateInstance(Guid clsid, string hostName, OpcUserIdentity identity)
-		{			
-			return CreateInstance1(clsid, hostName, identity);
-		}
+            // must be remote.
+            return false;
+        }
 
-		/// <summary>
-		/// Creates an instance of a COM server.
-		/// </summary>
-		public static object CreateInstance1(Guid clsid, string hostName, OpcUserIdentity identity)
-		{
-			var   serverInfo   = new ServerInfo();
-			var coserverInfo = serverInfo.Allocate(hostName, identity);
+        /// <summary>
+        /// Creates an instance of a COM server using the specified license key.
+        /// </summary>
+        public static object CreateInstance(Guid clsid, string hostName, OpcUserIdentity identity)
+        {
+            return CreateInstance1(clsid, hostName, identity);
+        }
 
-			var hIID = GCHandle.Alloc(IID_IUnknown, GCHandleType.Pinned);
+        /// <summary>
+        /// Creates an instance of a COM server.
+        /// </summary>
+        public static object CreateInstance1(Guid clsid, string hostName, OpcUserIdentity identity)
+        {
+            var serverInfo = new ServerInfo();
+            var coserverInfo = serverInfo.Allocate(hostName, identity);
 
-			var results = new MULTI_QI[1];
+            var hIID = GCHandle.Alloc(IID_IUnknown, GCHandleType.Pinned);
 
-			results[0].iid  = hIID.AddrOfPinnedObject();
-			results[0].pItf = null;
-			results[0].hr   = 0;
+            var results = new MULTI_QI[1];
 
-			try
-			{
-				// check whether connecting locally or remotely.
-				var clsctx = CLSCTX_INPROC_SERVER | CLSCTX_LOCAL_SERVER;
+            results[0].iid = hIID.AddrOfPinnedObject();
+            results[0].pItf = null;
+            results[0].hr = 0;
 
-				if (!string.IsNullOrEmpty(hostName) && hostName != "localhost")
-				{
-					clsctx = CLSCTX_LOCAL_SERVER | CLSCTX_REMOTE_SERVER;
-				}
+            try
+            {
+                // check whether connecting locally or remotely.
+                var clsctx = CLSCTX_INPROC_SERVER | CLSCTX_LOCAL_SERVER;
 
-				// create an instance.
-				CoCreateInstanceEx(
-					ref clsid,
-					null,
-					clsctx,
-					ref coserverInfo,
-					1,
-					results);
-			}
-			finally
-			{
-				if (hIID.IsAllocated) hIID.Free();
-				serverInfo.Deallocate();
-			}
+                if (!string.IsNullOrEmpty(hostName) && hostName != "localhost")
+                {
+                    clsctx = CLSCTX_LOCAL_SERVER | CLSCTX_REMOTE_SERVER;
+                }
 
-			if (results[0].hr != 0)
-			{
+                // create an instance.
+                CoCreateInstanceEx(
+                    ref clsid,
+                    null,
+                    clsctx,
+                    ref coserverInfo,
+                    1,
+                    results);
+            }
+            finally
+            {
+                if (hIID.IsAllocated) hIID.Free();
+                serverInfo.Deallocate();
+            }
+
+            if (results[0].hr != 0)
+            {
                 throw new OpcResultException(new OpcResult(OpcResult.CONNECT_E_NOCONNECTION.Code, OpcResult.FuncCallType.SysFuncCall, null), string.Format("Could not create COM server '{0}' on host '{1}'. Reason: {2}.", clsid, hostName, GetSystemMessage((int)results[0].hr, LOCALE_SYSTEM_DEFAULT)));
-			}
+            }
 
-			return results[0].pItf;
-		}
+            return results[0].pItf;
+        }
 
         // COM impersonation is a nice feature but variations between behavoirs on different
         // windows platforms make it virtually impossible to support. This code is left here 
         // in case it becomes a critical requirement in the future.
-        #if COM_IMPERSONATION_SUPPORT
+#if COM_IMPERSONATION_SUPPORT
         /// <summary>
         /// Returns the WindowsIdentity associated with a UserIdentity.
         /// </summary>
@@ -937,11 +936,11 @@ namespace Technosoftware.DaAeHdaClient.Com
 			  
 			return instance;
 		}	
-		#endif
-		#endregion
+#endif
+        #endregion
 
 
-		#region Conversion Functions
+        #region Conversion Functions
 #if TEST
 
 		/// <summary>
@@ -2550,18 +2549,18 @@ namespace Technosoftware.DaAeHdaClient.Com
         /// Returns the symbolic name for the specified error.
         /// </summary>
         public static string GetErrorText(Type type, int error)
-        {                       
-			var fields = type.GetFields(BindingFlags.Public | BindingFlags.Static);
-            
-			foreach (var field in fields)
-			{
-                if (error == (int)field.GetValue(type))
-				{
-					return field.Name;
-				}
-			}
+        {
+            var fields = type.GetFields(BindingFlags.Public | BindingFlags.Static);
 
-		    return string.Format("0x{0:X8}", error);
+            foreach (var field in fields)
+            {
+                if (error == (int)field.GetValue(type))
+                {
+                    return field.Name;
+                }
+            }
+
+            return string.Format("0x{0:X8}", error);
         }
 
         /// <summary>
@@ -2580,63 +2579,63 @@ namespace Technosoftware.DaAeHdaClient.Com
 		/// Releases the server if it is a true COM server.
 		/// </summary>
 		public static void ReleaseServer(object server)
-		{
-			if (server != null && server.GetType().IsCOMObject)
-			{
-				Marshal.ReleaseComObject(server);
-			}
-		}
+        {
+            if (server != null && server.GetType().IsCOMObject)
+            {
+                Marshal.ReleaseComObject(server);
+            }
+        }
 
-		/// <summary>
-		/// Retrieves the system message text for the specified error.
-		/// </summary>
-		public static string GetSystemMessage(int error, int localeId)
-		{
+        /// <summary>
+        /// Retrieves the system message text for the specified error.
+        /// </summary>
+        public static string GetSystemMessage(int error, int localeId)
+        {
             int langId;
             switch (localeId)
             {
                 case LOCALE_SYSTEM_DEFAULT:
-                {
-                    langId = GetSystemDefaultLangID();
-                    break;
-                }
+                    {
+                        langId = GetSystemDefaultLangID();
+                        break;
+                    }
 
                 case LOCALE_USER_DEFAULT:
-                {
-                    langId = GetUserDefaultLangID();
-                    break;
-                }
+                    {
+                        langId = GetUserDefaultLangID();
+                        break;
+                    }
 
                 default:
-                {
-                    langId = (0xFFFF & localeId);
-                    break;
-                }
+                    {
+                        langId = (0xFFFF & localeId);
+                        break;
+                    }
             }
 
-			var buffer = Marshal.AllocCoTaskMem(MAX_MESSAGE_LENGTH);
+            var buffer = Marshal.AllocCoTaskMem(MAX_MESSAGE_LENGTH);
 
-			var result = FormatMessageW(
-				(int)FORMAT_MESSAGE_FROM_SYSTEM,
-				IntPtr.Zero,
-				error,
-				langId,
-				buffer,
-				MAX_MESSAGE_LENGTH-1,
-				IntPtr.Zero);
+            var result = FormatMessageW(
+                (int)FORMAT_MESSAGE_FROM_SYSTEM,
+                IntPtr.Zero,
+                error,
+                langId,
+                buffer,
+                MAX_MESSAGE_LENGTH - 1,
+                IntPtr.Zero);
 
             if (result > 0)
             {
-			    var msg = Marshal.PtrToStringUni(buffer);
-			    Marshal.FreeCoTaskMem(buffer);
+                var msg = Marshal.PtrToStringUni(buffer);
+                Marshal.FreeCoTaskMem(buffer);
 
-			    if (msg != null && msg.Length > 0)
-			    {
-				    return msg.Trim();
-			    }
+                if (msg != null && msg.Length > 0)
+                {
+                    return msg.Trim();
+                }
             }
 
-			return string.Format("0x{0:X8}", error);
+            return string.Format("0x{0:X8}", error);
         }
 
         /// <summary>
@@ -2646,46 +2645,46 @@ namespace Technosoftware.DaAeHdaClient.Com
         {
             return new COMException(e.Message, errorId);
         }
-        
-		/// <summary>
-		/// Creates a COM exception.
+
+        /// <summary>
+        /// Creates a COM exception.
         /// </summary>
-		public static Exception CreateComException(string message, int errorId)
-		{
-			return new COMException(message, errorId);
-		}
+        public static Exception CreateComException(string message, int errorId)
+        {
+            return new COMException(message, errorId);
+        }
 
-		/// <summary>
-		/// Converts an exception to an exception that returns a COM error code.
-		/// </summary>
-		public static Exception CreateComException(int errorId)
-		{
-			return new COMException(string.Format("0x{0:X8}", errorId), errorId);
-		}
+        /// <summary>
+        /// Converts an exception to an exception that returns a COM error code.
+        /// </summary>
+        public static Exception CreateComException(int errorId)
+        {
+            return new COMException(string.Format("0x{0:X8}", errorId), errorId);
+        }
 
-		/// <summary>
-		/// Converts an exception to an exception that returns a COM error code.
-		/// </summary>
-		public static Exception CreateComException(Exception e)
-		{
-			// nothing special required for external exceptions.
-			if (e is COMException)
-			{
-				return e;
-			}
+        /// <summary>
+        /// Converts an exception to an exception that returns a COM error code.
+        /// </summary>
+        public static Exception CreateComException(Exception e)
+        {
+            // nothing special required for external exceptions.
+            if (e is COMException)
+            {
+                return e;
+            }
 
-			// convert other exceptions to E_FAIL.
-			return new COMException(e.Message, OpcResult.E_FAIL.Code);
-		}
+            // convert other exceptions to E_FAIL.
+            return new COMException(e.Message, OpcResult.E_FAIL.Code);
+        }
 
         /// <summary>
         /// Creates an error message for a failed COM function call.
         /// </summary>
         public static Exception CreateException(Exception e, string function)
         {
-			return new OpcResultException(new OpcResult((int)OpcResult.E_NETWORK_ERROR.Code, OpcResult.FuncCallType.SysFuncCall, null), string.Format("Call to {0} failed. Error: {1}.", function, GetSystemMessage(Marshal.GetHRForException(e), LOCALE_SYSTEM_DEFAULT)));
+            return new OpcResultException(new OpcResult((int)OpcResult.E_NETWORK_ERROR.Code, OpcResult.FuncCallType.SysFuncCall, null), string.Format("Call to {0} failed. Error: {1}.", function, GetSystemMessage(Marshal.GetHRForException(e), LOCALE_SYSTEM_DEFAULT)));
         }
-                
+
         /// <summary>
         /// Checks if the error is an RPC error.
         /// </summary>
@@ -2724,29 +2723,29 @@ namespace Technosoftware.DaAeHdaClient.Com
                     {
                         return false;
                     }
-                }            
+                }
             }
 
             return true;
         }
-		#endregion
+        #endregion
 
-		#region Utility Functions
-		/// <summary>
-		/// Compares a string locale to a WIN32 localeId
-		/// </summary>
-		public static bool CompareLocales(int localeId, string locale, bool ignoreRegion)
-		{
+        #region Utility Functions
+        /// <summary>
+        /// Compares a string locale to a WIN32 localeId
+        /// </summary>
+        public static bool CompareLocales(int localeId, string locale, bool ignoreRegion)
+        {
             // parse locale.
             CultureInfo culture;
-            try   
-			{ 
+            try
+            {
                 culture = new CultureInfo(locale);
-			}
-			catch (Exception)
-			{ 
+            }
+            catch (Exception)
+            {
                 return false;
-			}
+            }
 
             // only match the language portion of the locale id.
             if (ignoreRegion)
@@ -2759,15 +2758,15 @@ namespace Technosoftware.DaAeHdaClient.Com
 
             // check for exact match.
             else
-            {   
+            {
                 if (localeId == culture.LCID)
                 {
                     return true;
                 }
             }
 
-			return false; 
-		}
+            return false;
+        }
 
         /// <summary>
         /// Reports an unexpected exception during a COM operation. 
@@ -2777,7 +2776,7 @@ namespace Technosoftware.DaAeHdaClient.Com
             var message = Utils.Format(format, args);
 
             var code = Marshal.GetHRForException(e);
-            
+
             var error = code.ToString();
 
             if (error == null)
@@ -2788,5 +2787,5 @@ namespace Technosoftware.DaAeHdaClient.Com
         #endregion
 
 
-	}
+    }
 }

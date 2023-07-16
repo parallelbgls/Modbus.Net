@@ -32,29 +32,29 @@ namespace Technosoftware.DaAeHdaClient.Ae
     [Serializable]
     public class TsCAeItemUrl : OpcItem
     {
-		#region Fields
+        #region Fields
         private OpcUrl url_ = new OpcUrl();
         #endregion
 
-		#region Constructors, Destructor, Initialization
+        #region Constructors, Destructor, Initialization
         /// <summary>
         /// Initializes the object with default values.
         /// </summary>
-        public TsCAeItemUrl() {}
+        public TsCAeItemUrl() { }
 
         /// <summary>
         /// Initializes the object with an ItemIdentifier object.
         /// </summary>
-        public TsCAeItemUrl(OpcItem item) : base(item) {}
-        
+        public TsCAeItemUrl(OpcItem item) : base(item) { }
+
         /// <summary>
         /// Initializes the object with an ItemIdentifier object and url.
         /// </summary>
-		public TsCAeItemUrl(OpcItem item, OpcUrl url)
-			: base(item)
-		{
-			Url = url;
-		}
+        public TsCAeItemUrl(OpcItem item, OpcUrl url)
+            : base(item)
+        {
+            Url = url;
+        }
 
         /// <summary>
         /// Initializes object with the specified ItemResult object.
@@ -65,26 +65,26 @@ namespace Technosoftware.DaAeHdaClient.Ae
             {
                 Url = item.Url;
             }
-		}
+        }
         #endregion
 
-		#region Properties
+        #region Properties
         /// <summary>
-		/// The url of the server that contains the item.
-		/// </summary>
-		public OpcUrl Url
-		{
-			get => url_;
+        /// The url of the server that contains the item.
+        /// </summary>
+        public OpcUrl Url
+        {
+            get => url_;
             set => url_ = value;
         }
         #endregion
 
-		#region ICloneable Members
+        #region ICloneable Members
         /// <summary>
         /// Creates a deep copy of the object.
         /// </summary>
-        public override object Clone() 
-        { 
+        public override object Clone()
+        {
             return new TsCAeItemUrl(this);
         }
         #endregion

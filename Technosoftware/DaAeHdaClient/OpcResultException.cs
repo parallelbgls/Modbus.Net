@@ -27,28 +27,28 @@ using System.Runtime.Serialization;
 
 namespace Technosoftware.DaAeHdaClient
 {
-	/// <summary>Used to raise an exception associated with a specified result code.</summary>
-	/// <remarks>
-	/// The OpcResultException includes the OPC result code within the Result
-	/// property.
-	/// </remarks>
-	/// <seealso cref="OpcResult">OpcResult Structure</seealso>
-	[Serializable]
-	public class OpcResultException : ApplicationException
-	{   
+    /// <summary>Used to raise an exception associated with a specified result code.</summary>
+    /// <remarks>
+    /// The OpcResultException includes the OPC result code within the Result
+    /// property.
+    /// </remarks>
+    /// <seealso cref="OpcResult">OpcResult Structure</seealso>
+    [Serializable]
+    public class OpcResultException : ApplicationException
+    {
         /// <remarks/>
-		public OpcResult Result => result_;
+        public OpcResult Result => result_;
 
         /// <remarks/>
 		public OpcResultException(OpcResult result) : base(result.Description()) { result_ = result; }
-		/// <remarks/>
-		public OpcResultException(OpcResult result, string message) : base(message + ": " + result.ToString() + Environment.NewLine) { result_ = result; }
-		/// <remarks/>
-		public OpcResultException(OpcResult result, string message, Exception e) : base(message + ": " + result.ToString() + Environment.NewLine, e) { result_ = result; }
-		/// <remarks/>
-		protected OpcResultException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+        /// <remarks/>
+        public OpcResultException(OpcResult result, string message) : base(message + ": " + result.ToString() + Environment.NewLine) { result_ = result; }
+        /// <remarks/>
+        public OpcResultException(OpcResult result, string message, Exception e) : base(message + ": " + result.ToString() + Environment.NewLine, e) { result_ = result; }
+        /// <remarks/>
+        protected OpcResultException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 
-		/// <remarks/>
-		private OpcResult result_ = OpcResult.E_FAIL;
-	}
+        /// <remarks/>
+        private OpcResult result_ = OpcResult.E_FAIL;
+    }
 }

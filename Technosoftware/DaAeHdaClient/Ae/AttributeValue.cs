@@ -26,54 +26,54 @@ using System;
 
 namespace Technosoftware.DaAeHdaClient.Ae
 {
-	/// <summary>
-	/// The value of an attribute for an event source.
-	/// </summary>
-	[Serializable]
-	public class TsCAeAttributeValue : ICloneable, IOpcResult
-	{
-		#region Fields
+    /// <summary>
+    /// The value of an attribute for an event source.
+    /// </summary>
+    [Serializable]
+    public class TsCAeAttributeValue : ICloneable, IOpcResult
+    {
+        #region Fields
         private OpcResult result_ = OpcResult.S_OK;
         #endregion
 
-		#region Properties
+        #region Properties
         /// <summary>
-		/// A unique identifier for the attribute.
-		/// </summary>
-		public int ID { get; set; }
+        /// A unique identifier for the attribute.
+        /// </summary>
+        public int ID { get; set; }
 
-		/// <summary>
-		/// The attribute value.
-		/// </summary>
-		public object Value { get; set; }
+        /// <summary>
+        /// The attribute value.
+        /// </summary>
+        public object Value { get; set; }
         #endregion
 
-		#region IOpcResult Members
+        #region IOpcResult Members
         /// <summary>
-		/// The error id for the result of an operation on an property.
-		/// </summary>
-		public OpcResult Result
-		{
-			get => result_;
+        /// The error id for the result of an operation on an property.
+        /// </summary>
+        public OpcResult Result
+        {
+            get => result_;
             set => result_ = value;
         }
 
-		/// <summary>
-		/// Vendor specific diagnostic information (not the localized error text).
-		/// </summary>
-		public string DiagnosticInfo { get; set; }
+        /// <summary>
+        /// Vendor specific diagnostic information (not the localized error text).
+        /// </summary>
+        public string DiagnosticInfo { get; set; }
         #endregion
 
-		#region ICloneable Members
+        #region ICloneable Members
         /// <summary>
-		/// Creates a deep copy of the object.
-		/// </summary>
-		public virtual object Clone()
-		{
-			var clone = (TsCAeAttributeValue)MemberwiseClone();
-			clone.Value = OpcConvert.Clone(Value);
-			return clone;
-		}
+        /// Creates a deep copy of the object.
+        /// </summary>
+        public virtual object Clone()
+        {
+            var clone = (TsCAeAttributeValue)MemberwiseClone();
+            clone.Value = OpcConvert.Clone(Value);
+            return clone;
+        }
         #endregion
-	}
+    }
 }

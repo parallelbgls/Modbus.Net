@@ -210,8 +210,10 @@ namespace Technosoftware.DaAeHdaClient.Da
         /// <summary>
         /// The items belonging to the subscription.
         /// </summary>
-        public TsCDaItem[] Items {
-            get {
+        public TsCDaItem[] Items
+        {
+            get
+            {
                 if (daItems_ == null) return new TsCDaItem[0];
                 var items = new TsCDaItem[daItems_.Length];
                 for (var ii = 0; ii < daItems_.Length; ii++) items[ii] = (TsCDaItem)daItems_[ii].Clone();
@@ -562,7 +564,8 @@ namespace Technosoftware.DaAeHdaClient.Da
         /// <summary>
         /// An event to receive data change updates.
         /// </summary>
-        public event TsCDaDataChangedEventHandler DataChangedEvent {
+        public event TsCDaDataChangedEventHandler DataChangedEvent
+        {
             add => Subscription.DataChangedEvent += value;
             remove => Subscription.DataChangedEvent -= value;
         }

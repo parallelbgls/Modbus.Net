@@ -27,22 +27,22 @@ using System.Runtime.Serialization;
 
 namespace Technosoftware.DaAeHdaClient.Cpx
 {
-	/// <summary>
-	/// Raised if the data in buffer is not consistent with the schema.
-	/// </summary>
-	[Serializable]
-	public class TsCCpxInvalidDataToWriteException : ApplicationException
-	{
-		private const string Default = "The object cannot be written because it is not consistent with the schema.";
-		/// <remarks/>
-		public TsCCpxInvalidDataToWriteException() : base(Default) { }
-		/// <remarks/>
-		public TsCCpxInvalidDataToWriteException(string message) : base(Default + Environment.NewLine + message) { }
-		/// <remarks/>
-		public TsCCpxInvalidDataToWriteException(Exception e) : base(Default, e) { }
-		/// <remarks/>
-		public TsCCpxInvalidDataToWriteException(string message, Exception innerException) : base(Default + Environment.NewLine + message, innerException) { }
-		/// <remarks/>
-		protected TsCCpxInvalidDataToWriteException(SerializationInfo info, StreamingContext context) : base(info, context) { }
-	}
+    /// <summary>
+    /// Raised if the data in buffer is not consistent with the schema.
+    /// </summary>
+    [Serializable]
+    public class TsCCpxInvalidDataToWriteException : ApplicationException
+    {
+        private const string Default = "The object cannot be written because it is not consistent with the schema.";
+        /// <remarks/>
+        public TsCCpxInvalidDataToWriteException() : base(Default) { }
+        /// <remarks/>
+        public TsCCpxInvalidDataToWriteException(string message) : base(Default + Environment.NewLine + message) { }
+        /// <remarks/>
+        public TsCCpxInvalidDataToWriteException(Exception e) : base(Default, e) { }
+        /// <remarks/>
+        public TsCCpxInvalidDataToWriteException(string message, Exception innerException) : base(Default + Environment.NewLine + message, innerException) { }
+        /// <remarks/>
+        protected TsCCpxInvalidDataToWriteException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+    }
 }

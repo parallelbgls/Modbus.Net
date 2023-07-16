@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Quartz.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -646,7 +645,7 @@ namespace Modbus.Net
                             ErrorMsg = "Data length mismatch"
                         };
                     }
-                    
+
                     //字节坐标的主地址位置
                     var localMainPos = 0;
                     //字节坐标的子地址位置
@@ -720,7 +719,7 @@ namespace Modbus.Net
                         };
                     }
                 }
-                
+
                 //如果不保持连接，断开连接
                 if (!KeepConnect)
                     BaseUtility.Disconnect();
@@ -873,7 +872,7 @@ namespace Modbus.Net
                     }
                     //将要写入的值加入队列
                     var data = Convert.ChangeType(value.Value / addressUnit.Zoom, dataType);
-                    
+
                     //写入数据
                     await
                         BaseUtility.GetUtilityMethods<IUtilityMethodDatas>().SetDatasAsync(address,

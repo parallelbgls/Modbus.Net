@@ -26,58 +26,58 @@ using System;
 
 namespace Technosoftware.DaAeHdaClient.Ae
 {
-	/// <summary>
-	/// The description of an item sub-condition supported by the server.
-	/// </summary>
-	[Serializable]
-	public class TsCAeSubCondition : ICloneable
-	{
-		#region Fields
+    /// <summary>
+    /// The description of an item sub-condition supported by the server.
+    /// </summary>
+    [Serializable]
+    public class TsCAeSubCondition : ICloneable
+    {
+        #region Fields
         private int severity_ = 1;
         #endregion
 
-		#region Properties
+        #region Properties
         /// <summary>
-		/// The name assigned to the sub-condition.
-		/// </summary>
-		public string Name { get; set; }
+        /// The name assigned to the sub-condition.
+        /// </summary>
+        public string Name { get; set; }
 
-		/// <summary>
-		/// A server-specific expression which defines the sub-state represented by the sub-condition.
-		/// </summary>
-		public string Definition { get; set; }
+        /// <summary>
+        /// A server-specific expression which defines the sub-state represented by the sub-condition.
+        /// </summary>
+        public string Definition { get; set; }
 
-		/// <summary>
-		/// The severity of any event notifications generated on behalf of this sub-condition.
-		/// </summary>
-		public int Severity
-		{
-			get => severity_;
+        /// <summary>
+        /// The severity of any event notifications generated on behalf of this sub-condition.
+        /// </summary>
+        public int Severity
+        {
+            get => severity_;
             set => severity_ = value;
         }
 
-		/// <summary>
-		/// The text string to be included in any event notification generated on behalf of this sub-condition.
-		/// </summary>
-		public string Description { get; set; }
+        /// <summary>
+        /// The text string to be included in any event notification generated on behalf of this sub-condition.
+        /// </summary>
+        public string Description { get; set; }
         #endregion
 
-		#region Helper Methods
+        #region Helper Methods
         /// <summary>
-		/// Returns a string that represents the current object.
-		/// </summary>
-		/// <returns></returns>
-		public override string ToString()
-		{
-			return Name;
-		}
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return Name;
+        }
         #endregion
 
-		#region ICloneable Members
+        #region ICloneable Members
         /// <summary>
-		/// Creates a shallow copy of the object.
-		/// </summary>
-		public virtual object Clone() { return MemberwiseClone(); }
+        /// Creates a shallow copy of the object.
+        /// </summary>
+        public virtual object Clone() { return MemberwiseClone(); }
         #endregion
-	}
+    }
 }

@@ -26,98 +26,98 @@ using System;
 
 namespace Technosoftware.DaAeHdaClient.Da
 {
-	/// <summary>
-	/// The results of an operation on a uniquely identifiable item value.
-	/// </summary>
-	[Serializable]
-	public class TsCDaItemValueResult : TsCDaItemValue, IOpcResult
-	{
-		#region Fields
+    /// <summary>
+    /// The results of an operation on a uniquely identifiable item value.
+    /// </summary>
+    [Serializable]
+    public class TsCDaItemValueResult : TsCDaItemValue, IOpcResult
+    {
+        #region Fields
         private OpcResult result_ = OpcResult.S_OK;
         #endregion
 
-		#region Constructors, Destructor, Initialization
+        #region Constructors, Destructor, Initialization
         /// <summary>
-		/// Initializes the object with default values.
-		/// </summary>
-		public TsCDaItemValueResult() { }
+        /// Initializes the object with default values.
+        /// </summary>
+        public TsCDaItemValueResult() { }
 
-		/// <summary>
-		/// Initializes the object with an ItemIdentifier object.
-		/// </summary>
-		public TsCDaItemValueResult(OpcItem item) : base(item) { }
+        /// <summary>
+        /// Initializes the object with an ItemIdentifier object.
+        /// </summary>
+        public TsCDaItemValueResult(OpcItem item) : base(item) { }
 
-		/// <summary>
-		/// Initializes the object with an ItemValue object.
-		/// </summary>
-		public TsCDaItemValueResult(TsCDaItemValue item) : base(item) { }
+        /// <summary>
+        /// Initializes the object with an ItemValue object.
+        /// </summary>
+        public TsCDaItemValueResult(TsCDaItemValue item) : base(item) { }
 
-		/// <summary>
-		/// Initializes object with the specified ItemValueResult object.
-		/// </summary>
-		public TsCDaItemValueResult(TsCDaItemValueResult item)
-			: base(item)
-		{
-			if (item != null)
-			{
-				Result = item.Result;
-				DiagnosticInfo = item.DiagnosticInfo;
-			}
-		}
+        /// <summary>
+        /// Initializes object with the specified ItemValueResult object.
+        /// </summary>
+        public TsCDaItemValueResult(TsCDaItemValueResult item)
+            : base(item)
+        {
+            if (item != null)
+            {
+                Result = item.Result;
+                DiagnosticInfo = item.DiagnosticInfo;
+            }
+        }
 
-		/// <summary>
-		/// Initializes the object with the specified item name and result code.
-		/// </summary>
-		public TsCDaItemValueResult(string itemName, OpcResult resultId)
-			: base(itemName)
-		{
-			Result = resultId;
-		}
+        /// <summary>
+        /// Initializes the object with the specified item name and result code.
+        /// </summary>
+        public TsCDaItemValueResult(string itemName, OpcResult resultId)
+            : base(itemName)
+        {
+            Result = resultId;
+        }
 
-		/// <summary>
-		/// Initializes the object with the specified item name, result code and diagnostic info.
-		/// </summary>
-		public TsCDaItemValueResult(string itemName, OpcResult resultId, string diagnosticInfo)
-			: base(itemName)
-		{
-			Result = resultId;
-			DiagnosticInfo = diagnosticInfo;
-		}
+        /// <summary>
+        /// Initializes the object with the specified item name, result code and diagnostic info.
+        /// </summary>
+        public TsCDaItemValueResult(string itemName, OpcResult resultId, string diagnosticInfo)
+            : base(itemName)
+        {
+            Result = resultId;
+            DiagnosticInfo = diagnosticInfo;
+        }
 
-		/// <summary>
-		/// Initialize object with the specified ItemIdentifier and result code.
-		/// </summary>
-		public TsCDaItemValueResult(OpcItem item, OpcResult resultId)
-			: base(item)
-		{
-			Result = resultId;
-		}
+        /// <summary>
+        /// Initialize object with the specified ItemIdentifier and result code.
+        /// </summary>
+        public TsCDaItemValueResult(OpcItem item, OpcResult resultId)
+            : base(item)
+        {
+            Result = resultId;
+        }
 
-		/// <summary>
-		/// Initializes the object with the specified ItemIdentifier, result code and diagnostic info.
-		/// </summary>
-		public TsCDaItemValueResult(OpcItem item, OpcResult resultId, string diagnosticInfo)
-			: base(item)
-		{
-			Result = resultId;
-			DiagnosticInfo = diagnosticInfo;
-		}
+        /// <summary>
+        /// Initializes the object with the specified ItemIdentifier, result code and diagnostic info.
+        /// </summary>
+        public TsCDaItemValueResult(OpcItem item, OpcResult resultId, string diagnosticInfo)
+            : base(item)
+        {
+            Result = resultId;
+            DiagnosticInfo = diagnosticInfo;
+        }
         #endregion
 
-		#region IOpcResult Members
+        #region IOpcResult Members
         /// <summary>
-		/// The error id for the result of an operation on an property.
-		/// </summary>
-		public OpcResult Result
-		{
-			get => result_;
+        /// The error id for the result of an operation on an property.
+        /// </summary>
+        public OpcResult Result
+        {
+            get => result_;
             set => result_ = value;
         }
 
-		/// <summary>
-		/// Vendor specific diagnostic information (not the localized error text).
-		/// </summary>
-		public string DiagnosticInfo { get; set; }
+        /// <summary>
+        /// Vendor specific diagnostic information (not the localized error text).
+        /// </summary>
+        public string DiagnosticInfo { get; set; }
         #endregion
-	}
+    }
 }

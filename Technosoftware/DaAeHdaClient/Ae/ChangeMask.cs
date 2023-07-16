@@ -26,50 +26,50 @@ using System;
 
 namespace Technosoftware.DaAeHdaClient.Ae
 {
-	/// <summary>
-	/// The bits indicating what changes generated an event notification.
-	/// </summary>
-	[Flags]
-	public enum TsCAeChangeMask
-	{
-		/// <summary>
-		/// The condition’s active state has changed.
-		/// </summary>
-		ActiveState = 0x0001,
+    /// <summary>
+    /// The bits indicating what changes generated an event notification.
+    /// </summary>
+    [Flags]
+    public enum TsCAeChangeMask
+    {
+        /// <summary>
+        /// The condition’s active state has changed.
+        /// </summary>
+        ActiveState = 0x0001,
 
-		/// <summary>
-		/// The condition’s acknowledgment state has changed.
-		/// </summary>
-		AcknowledgeState = 0x0002,
+        /// <summary>
+        /// The condition’s acknowledgment state has changed.
+        /// </summary>
+        AcknowledgeState = 0x0002,
 
-		/// <summary>
-		/// The condition’s enabled state has changed.
-		/// </summary>
-		EnableState = 0x0004,
+        /// <summary>
+        /// The condition’s enabled state has changed.
+        /// </summary>
+        EnableState = 0x0004,
 
-		/// <summary>
-		/// The condition quality has changed.
-		/// </summary>
-		Quality = 0x0008,
+        /// <summary>
+        /// The condition quality has changed.
+        /// </summary>
+        Quality = 0x0008,
 
-		/// <summary>
-		/// The severity level has changed.
-		/// </summary>
-		Severity = 0x0010,
+        /// <summary>
+        /// The severity level has changed.
+        /// </summary>
+        Severity = 0x0010,
 
-		/// <summary>
-		/// The condition has transitioned into a new sub-condition.
-		/// </summary>
-		SubCondition = 0x0020,
+        /// <summary>
+        /// The condition has transitioned into a new sub-condition.
+        /// </summary>
+        SubCondition = 0x0020,
 
-		/// <summary>
-		/// The event message has changed.
-		/// </summary>
-		Message = 0x0040,
+        /// <summary>
+        /// The event message has changed.
+        /// </summary>
+        Message = 0x0040,
 
-		/// <summary>
-		/// One or more event attributes have changed.
-		/// </summary>
-		Attribute = 0x0080
-	}
+        /// <summary>
+        /// One or more event attributes have changed.
+        /// </summary>
+        Attribute = 0x0080
+    }
 }

@@ -32,21 +32,21 @@ namespace Technosoftware.DaAeHdaClient.Da
     [Serializable]
     public class TsCDaItem : OpcItem
     {
-		#region Fields
+        #region Fields
         private bool active_ = true;
-		private float deadband_;
+        private float deadband_;
         #endregion
 
-		#region Constructors, Destructor, Initialization
+        #region Constructors, Destructor, Initialization
         /// <summary>
-		/// Initializes the object with default values.
-		/// </summary>
-		public TsCDaItem() { }
+        /// Initializes the object with default values.
+        /// </summary>
+        public TsCDaItem() { }
 
-		/// <summary>
-		/// Initializes object with the specified ItemIdentifier object.
-		/// </summary>
-		public TsCDaItem(OpcItem item)
+        /// <summary>
+        /// Initializes object with the specified ItemIdentifier object.
+        /// </summary>
+        public TsCDaItem(OpcItem item)
         {
             if (item == null)
             {
@@ -58,11 +58,11 @@ namespace Technosoftware.DaAeHdaClient.Da
             ServerHandle = item.ServerHandle;
         }
 
-		/// <summary>
-		/// Initializes object with the specified Item object.
-		/// </summary>
-		public TsCDaItem(TsCDaItem item)
-			: base(item)
+        /// <summary>
+        /// Initializes object with the specified Item object.
+        /// </summary>
+        public TsCDaItem(TsCDaItem item)
+            : base(item)
         {
             if (item == null)
             {
@@ -80,13 +80,13 @@ namespace Technosoftware.DaAeHdaClient.Da
             EnableBuffering = item.EnableBuffering;
             EnableBufferingSpecified = item.EnableBufferingSpecified;
         }
-        #endregion    
+        #endregion
 
-		#region Properties
+        #region Properties
         /// <summary>
         /// The data type to use when returning the item value.
         /// </summary>
-		public Type ReqType { get; set; }
+        public Type ReqType { get; set; }
 
         /// <summary>
         /// The oldest (in milliseconds) acceptable cached value when reading an item.

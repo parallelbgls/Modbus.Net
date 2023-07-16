@@ -27,149 +27,149 @@ using System.Collections;
 
 namespace Technosoftware.DaAeHdaClient.Da
 {
-	/// <summary>
-	/// A list of properties for a single item.
-	/// </summary>
-	[Serializable]
-	public class TsCDaItemPropertyCollection : ArrayList, IOpcResult
-	{
-		#region Fields
+    /// <summary>
+    /// A list of properties for a single item.
+    /// </summary>
+    [Serializable]
+    public class TsCDaItemPropertyCollection : ArrayList, IOpcResult
+    {
+        #region Fields
         private OpcResult result_ = OpcResult.S_OK;
         #endregion
 
-		#region Constructors, Destructor, Initialization
+        #region Constructors, Destructor, Initialization
         /// <summary>
-		/// Initializes the object with its default values.
-		/// </summary>
-		public TsCDaItemPropertyCollection()
-		{
-		}
+        /// Initializes the object with its default values.
+        /// </summary>
+        public TsCDaItemPropertyCollection()
+        {
+        }
 
-		/// <summary>
-		/// Initializes the object with the specified item identifier.
-		/// </summary>
-		public TsCDaItemPropertyCollection(OpcItem itemId)
-		{
-			if (itemId != null)
-			{
-				ItemName = itemId.ItemName;
-				ItemPath = itemId.ItemPath;
-			}
-		}
+        /// <summary>
+        /// Initializes the object with the specified item identifier.
+        /// </summary>
+        public TsCDaItemPropertyCollection(OpcItem itemId)
+        {
+            if (itemId != null)
+            {
+                ItemName = itemId.ItemName;
+                ItemPath = itemId.ItemPath;
+            }
+        }
 
-		/// <summary>
-		/// Initializes the object with the specified item identifier and result.
-		/// </summary>
-		public TsCDaItemPropertyCollection(OpcItem itemId, OpcResult result)
-		{
-			if (itemId != null)
-			{
-				ItemName = itemId.ItemName;
-				ItemPath = itemId.ItemPath;
-			}
+        /// <summary>
+        /// Initializes the object with the specified item identifier and result.
+        /// </summary>
+        public TsCDaItemPropertyCollection(OpcItem itemId, OpcResult result)
+        {
+            if (itemId != null)
+            {
+                ItemName = itemId.ItemName;
+                ItemPath = itemId.ItemPath;
+            }
 
-			result_ = result;
-		}
+            result_ = result;
+        }
         #endregion
 
-		#region Properties
+        #region Properties
         /// <summary>
-		/// The primary identifier for the item within the server namespace.
-		/// </summary>
-		public string ItemName { get; set; }
+        /// The primary identifier for the item within the server namespace.
+        /// </summary>
+        public string ItemName { get; set; }
 
-		/// <summary>
-		/// An secondary identifier for the item within the server namespace.
-		/// </summary>
-		public string ItemPath { get; set; }
+        /// <summary>
+        /// An secondary identifier for the item within the server namespace.
+        /// </summary>
+        public string ItemPath { get; set; }
 
-		/// <summary>
-		/// Accesses the items at the specified index.
-		/// </summary>
-		public new TsCDaItemProperty this[int index]
-		{
-			get => (TsCDaItemProperty)base[index];
+        /// <summary>
+        /// Accesses the items at the specified index.
+        /// </summary>
+        public new TsCDaItemProperty this[int index]
+        {
+            get => (TsCDaItemProperty)base[index];
             set => base[index] = value;
         }
         #endregion
 
-		#region IOpcResult Members
+        #region IOpcResult Members
         /// <summary>
-		/// The error id for the result of an operation on an item.
-		/// </summary>
-		public OpcResult Result
-		{
-			get => result_;
+        /// The error id for the result of an operation on an item.
+        /// </summary>
+        public OpcResult Result
+        {
+            get => result_;
             set => result_ = value;
         }
 
-		/// <summary>
-		/// Vendor specific diagnostic information (not the localized error text).
-		/// </summary>
-		public string DiagnosticInfo { get; set; }
-        #endregion
-
-		#region ICollection Members
         /// <summary>
-		/// Copies the objects to an Array, starting at a the specified index.
-		/// </summary>
-		/// <param name="array">The one-dimensional Array that is the destination for the objects.</param>
-		/// <param name="index">The zero-based index in the Array at which copying begins.</param>
-		public void CopyTo(TsCDaItemProperty[] array, int index)
-		{
-			CopyTo((Array)array, index);
-		}
+        /// Vendor specific diagnostic information (not the localized error text).
+        /// </summary>
+        public string DiagnosticInfo { get; set; }
         #endregion
 
-		#region IList Members
+        #region ICollection Members
         /// <summary>
-		/// Inserts an item to the IList at the specified position.
-		/// </summary>
-		/// <param name="index">The zero-based index at which value should be inserted.</param>
-		/// <param name="value">The Object to insert into the IList. </param>
-		public void Insert(int index, TsCDaItemProperty value)
-		{
-			Insert(index, (object)value);
-		}
-
-		/// <summary>
-		/// Removes the first occurrence of a specific object from the IList.
-		/// </summary>
-		/// <param name="value">The Object to remove from the IList.</param>
-		public void Remove(TsCDaItemProperty value)
-		{
-			Remove((object)value);
-		}
-
-		/// <summary>
-		/// Determines whether the IList contains a specific value.
-		/// </summary>
-		/// <param name="value">The Object to locate in the IList.</param>
-		/// <returns>true if the Object is found in the IList; otherwise, false.</returns>
-		public bool Contains(TsCDaItemProperty value)
-		{
-			return Contains((object)value);
-		}
-
-		/// <summary>
-		/// Determines the index of a specific item in the IList.
-		/// </summary>
-		/// <param name="value">The Object to locate in the IList.</param>
-		/// <returns>The index of value if found in the list; otherwise, -1.</returns>
-		public int IndexOf(TsCDaItemProperty value)
-		{
-			return IndexOf((object)value);
-		}
-
-		/// <summary>
-		/// Adds an item to the IList.
-		/// </summary>
-		/// <param name="value">The Object to add to the IList. </param>
-		/// <returns>The position into which the new element was inserted.</returns>
-		public int Add(TsCDaItemProperty value)
-		{
-			return Add((object)value);
-		}
+        /// Copies the objects to an Array, starting at a the specified index.
+        /// </summary>
+        /// <param name="array">The one-dimensional Array that is the destination for the objects.</param>
+        /// <param name="index">The zero-based index in the Array at which copying begins.</param>
+        public void CopyTo(TsCDaItemProperty[] array, int index)
+        {
+            CopyTo((Array)array, index);
+        }
         #endregion
-	}
+
+        #region IList Members
+        /// <summary>
+        /// Inserts an item to the IList at the specified position.
+        /// </summary>
+        /// <param name="index">The zero-based index at which value should be inserted.</param>
+        /// <param name="value">The Object to insert into the IList. </param>
+        public void Insert(int index, TsCDaItemProperty value)
+        {
+            Insert(index, (object)value);
+        }
+
+        /// <summary>
+        /// Removes the first occurrence of a specific object from the IList.
+        /// </summary>
+        /// <param name="value">The Object to remove from the IList.</param>
+        public void Remove(TsCDaItemProperty value)
+        {
+            Remove((object)value);
+        }
+
+        /// <summary>
+        /// Determines whether the IList contains a specific value.
+        /// </summary>
+        /// <param name="value">The Object to locate in the IList.</param>
+        /// <returns>true if the Object is found in the IList; otherwise, false.</returns>
+        public bool Contains(TsCDaItemProperty value)
+        {
+            return Contains((object)value);
+        }
+
+        /// <summary>
+        /// Determines the index of a specific item in the IList.
+        /// </summary>
+        /// <param name="value">The Object to locate in the IList.</param>
+        /// <returns>The index of value if found in the list; otherwise, -1.</returns>
+        public int IndexOf(TsCDaItemProperty value)
+        {
+            return IndexOf((object)value);
+        }
+
+        /// <summary>
+        /// Adds an item to the IList.
+        /// </summary>
+        /// <param name="value">The Object to add to the IList. </param>
+        /// <returns>The position into which the new element was inserted.</returns>
+        public int Add(TsCDaItemProperty value)
+        {
+            return Add((object)value);
+        }
+        #endregion
+    }
 }

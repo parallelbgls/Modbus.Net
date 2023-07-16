@@ -32,11 +32,11 @@ namespace Technosoftware.DaAeHdaClient.Ae
     [Serializable]
     public class TsCAeCategory : ICloneable
     {
-		#region Properties
+        #region Properties
         /// <summary>
         /// A unique identifier for the category.
         /// </summary>
-		public int ID { get; set; }
+        public int ID { get; set; }
 
         /// <summary>
         /// The unique name for the category.
@@ -53,7 +53,7 @@ namespace Technosoftware.DaAeHdaClient.Ae
         }
         #endregion
 
-		#region ICloneable Members
+        #region ICloneable Members
         /// <summary>
         /// Creates a shallow copy of the object.
         /// </summary>

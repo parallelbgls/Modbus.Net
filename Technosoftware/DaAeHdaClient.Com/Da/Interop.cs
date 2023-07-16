@@ -23,9 +23,8 @@
 #region Using Directives
 using System;
 using System.Collections;
-using System.Runtime.InteropServices;
 using System.Reflection;
-
+using System.Runtime.InteropServices;
 using Technosoftware.DaAeHdaClient.Da;
 #endregion
 
@@ -134,9 +133,9 @@ namespace Technosoftware.DaAeHdaClient.Com.Da
                 output.ProductVersion = string.Format("{0}.{1}.{2}", status.wMajorVersion, status.wMinorVersion, status.wBuildNumber);
                 output.ServerState = (OpcServerState)status.dwServerState;
                 output.StatusInfo = null;
-				output.StartTime      = Technosoftware.DaAeHdaClient.Com.Interop.GetFILETIME(Convert(status.ftStartTime));
-				output.CurrentTime    = Technosoftware.DaAeHdaClient.Com.Interop.GetFILETIME(Convert(status.ftCurrentTime));
-				output.LastUpdateTime = Technosoftware.DaAeHdaClient.Com.Interop.GetFILETIME(Convert(status.ftLastUpdateTime));
+                output.StartTime = Technosoftware.DaAeHdaClient.Com.Interop.GetFILETIME(Convert(status.ftStartTime));
+                output.CurrentTime = Technosoftware.DaAeHdaClient.Com.Interop.GetFILETIME(Convert(status.ftCurrentTime));
+                output.LastUpdateTime = Technosoftware.DaAeHdaClient.Com.Interop.GetFILETIME(Convert(status.ftLastUpdateTime));
 
                 if (deallocate)
                 {
@@ -622,9 +621,9 @@ namespace Technosoftware.DaAeHdaClient.Com.Da
                         case OpcRcw.Da.Constants.OPC_WRITEABLE: return TsDaAccessRights.Writable;
 
                         case OpcRcw.Da.Constants.OPC_READABLE | OpcRcw.Da.Constants.OPC_WRITEABLE:
-                        {
-                            return TsDaAccessRights.ReadWritable;
-                        }
+                            {
+                                return TsDaAccessRights.ReadWritable;
+                            }
                     }
 
                     return null;

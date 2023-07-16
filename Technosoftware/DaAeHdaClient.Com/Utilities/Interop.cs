@@ -22,10 +22,9 @@
 
 #region Using Directives
 using System;
-using System.Net;
 using System.Globalization;
+using System.Net;
 using System.Runtime.InteropServices;
-
 using Technosoftware.DaAeHdaClient.Da;
 #pragma warning disable 618
 #endregion

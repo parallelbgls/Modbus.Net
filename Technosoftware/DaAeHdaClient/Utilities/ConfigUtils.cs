@@ -22,9 +22,6 @@
 
 #region Using Directives
 using System;
-using System.Text;
-using System.Globalization;
-using System.Diagnostics;
 using System.IO;
 // ReSharper disable UnusedMember.Global
 

@@ -25,22 +25,22 @@ using System;
 #endregion
 
 namespace Technosoftware.DaAeHdaClient.Ae
-{   
+{
     /// <summary>
     /// Contains a description of an element in the server address space.
     /// </summary>
     [Serializable]
     public class TsCAeBrowseElement
     {
-		#region Fields
+        #region Fields
         private TsCAeBrowseType browseType_ = TsCAeBrowseType.Area;
         #endregion
 
-		#region Properties
+        #region Properties
         /// <summary>
         /// A descriptive name for element that is unique within a branch.
         /// </summary>
-		public string Name { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// The fully qualified name for the element.
@@ -57,12 +57,12 @@ namespace Technosoftware.DaAeHdaClient.Ae
         }
         #endregion
 
-		#region ICloneable Members
+        #region ICloneable Members
         /// <summary>
         /// Creates a deep copy of the object.
         /// </summary>
-        public virtual object Clone() 
-        { 
+        public virtual object Clone()
+        {
             return MemberwiseClone();
         }
         #endregion

@@ -26,33 +26,33 @@ using System;
 
 namespace Technosoftware.DaAeHdaClient.Da
 {
-	/// <summary>
-	/// Describes the state of a subscription.
-	/// </summary>
-	[Serializable]
-	public class TsCDaRequest : IOpcRequest
-	{
-		#region Fields
+    /// <summary>
+    /// Describes the state of a subscription.
+    /// </summary>
+    [Serializable]
+    public class TsCDaRequest : IOpcRequest
+    {
+        #region Fields
         private ITsCDaSubscription subscription_;
-		private object handle_;
+        private object handle_;
         #endregion
 
-		#region Constructors, Destructor, Initialization
+        #region Constructors, Destructor, Initialization
         /// <summary>
-		/// Initializes the object with a subscription and a unique id.
-		/// </summary>
-		public TsCDaRequest(ITsCDaSubscription subscription, object handle)
-		{
-			subscription_ = subscription;
-			handle_ = handle;
-		}
+        /// Initializes the object with a subscription and a unique id.
+        /// </summary>
+        public TsCDaRequest(ITsCDaSubscription subscription, object handle)
+        {
+            subscription_ = subscription;
+            handle_ = handle;
+        }
         #endregion
 
-		#region Properties
+        #region Properties
         /// <summary>
-		/// The subscription processing the request.
-		/// </summary>
-		public ITsCDaSubscription Subscription => subscription_;
+        /// The subscription processing the request.
+        /// </summary>
+        public ITsCDaSubscription Subscription => subscription_;
 
         /// <summary>
 		/// An unique identifier, assigned by the client, for the request.
@@ -66,5 +66,5 @@ namespace Technosoftware.DaAeHdaClient.Da
         /// </summary>
         public void Cancel(TsCDaCancelCompleteEventHandler callback) { subscription_.Cancel(this, callback); }
         #endregion
-	}
+    }
 }

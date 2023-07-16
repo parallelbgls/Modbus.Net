@@ -77,7 +77,7 @@ namespace Technosoftware.DaAeHdaClient.Hda
         /// <param name="items">The identifiers for the items to validate.</param>
         /// <returns>The results for each item containing the result code.</returns>
         OpcItemResult[] ValidateItems(OpcItem[] items);
-        
+
         /// <summary>
         /// Reads raw (unprocessed) data from the historian database for a set of items.
         /// </summary>
@@ -88,10 +88,10 @@ namespace Technosoftware.DaAeHdaClient.Hda
         /// <param name="items">The set of items to read (must include the item name).</param>
         /// <returns>A set of values, qualities and timestamps within the requested time range for each item.</returns>
         TsCHdaItemValueCollection[] ReadRaw(
-            TsCHdaTime             startTime,
-            TsCHdaTime             endTime,
-            int              maxValues,
-            bool             includeBounds,
+            TsCHdaTime startTime,
+            TsCHdaTime endTime,
+            int maxValues,
+            bool includeBounds,
             OpcItem[] items);
 
         /// <summary>
@@ -167,10 +167,10 @@ namespace Technosoftware.DaAeHdaClient.Hda
         /// <param name="items">The set of items to read (must include the item name).</param>
         /// <returns>A set of values, qualities and timestamps within the requested time range for each item.</returns>
         TsCHdaItemValueCollection[] ReadProcessed(
-            TsCHdaTime    startTime,
-            TsCHdaTime    endTime,
+            TsCHdaTime startTime,
+            TsCHdaTime endTime,
             decimal resampleInterval,
-            TsCHdaItem[]  items);
+            TsCHdaItem[] items);
 
         /// <summary>
         /// Sends an asynchronous request to read processed data from the historian database for a set of items.
@@ -260,7 +260,7 @@ namespace Technosoftware.DaAeHdaClient.Hda
             TsCHdaReadValuesCompleteEventHandler callback,
             out IOpcRequest request);
 
-           
+
         /// <summary>
         /// Reads item values that have been deleted or replaced.
         /// </summary>
@@ -270,10 +270,10 @@ namespace Technosoftware.DaAeHdaClient.Hda
         /// <param name="items">The set of items to read (must include the item name).</param>
         /// <returns>A set of values, qualities and timestamps within the requested time range for each item.</returns>
         TsCHdaModifiedValueCollection[] ReadModified(
-            TsCHdaTime             startTime,
-            TsCHdaTime             endTime,
-            int              maxValues,
-            OpcItem[] items); 
+            TsCHdaTime startTime,
+            TsCHdaTime endTime,
+            int maxValues,
+            OpcItem[] items);
 
         /// <summary>
         /// Sends an asynchronous request to read item values that have been deleted or replaced.
@@ -304,11 +304,11 @@ namespace Technosoftware.DaAeHdaClient.Hda
         /// <param name="attributeIDs">The attributes to read.</param>
         /// <returns>A set of attribute values for each requested attribute.</returns>
         TsCHdaItemAttributeCollection ReadAttributes(
-            TsCHdaTime           startTime,
-            TsCHdaTime           endTime,
+            TsCHdaTime startTime,
+            TsCHdaTime endTime,
             OpcItem item,
-            int[]          attributeIDs);
-        
+            int[] attributeIDs);
+
         /// <summary>
         /// Sends an asynchronous request to read the attributes of an item.
         /// </summary>
@@ -337,8 +337,8 @@ namespace Technosoftware.DaAeHdaClient.Hda
         /// <param name="items">The set of items to read (must include the item name).</param>
         /// <returns>A set of annotations within the requested time range for each item.</returns>
         TsCHdaAnnotationValueCollection[] ReadAnnotations(
-            TsCHdaTime             startTime,
-            TsCHdaTime             endTime,
+            TsCHdaTime startTime,
+            TsCHdaTime endTime,
             OpcItem[] items);
 
         /// <summary>
@@ -387,7 +387,7 @@ namespace Technosoftware.DaAeHdaClient.Hda
         /// <param name="replace">Whether existing values should be replaced.</param>
         /// <returns></returns>
         TsCHdaResultCollection[] Insert(TsCHdaItemValueCollection[] items, bool replace);
-        
+
         /// <summary>
         /// Sends an asynchronous request to inserts values for one or more items.
         /// </summary>
@@ -410,7 +410,7 @@ namespace Technosoftware.DaAeHdaClient.Hda
         /// <param name="items">The set of values to replace.</param>
         /// <returns></returns>
         TsCHdaResultCollection[] Replace(TsCHdaItemValueCollection[] items);
-        
+
         /// <summary>
         /// Sends an asynchronous request to replace values for one or more items.
         /// </summary>
@@ -433,10 +433,10 @@ namespace Technosoftware.DaAeHdaClient.Hda
         /// <param name="items">The set of items to delete (must include the item name).</param>
         /// <returns>The results of the delete operation for each item.</returns>
         OpcItemResult[] Delete(
-            TsCHdaTime             startTime,
-            TsCHdaTime             endTime,
+            TsCHdaTime startTime,
+            TsCHdaTime endTime,
             OpcItem[] items);
-        
+
         /// <summary>
         /// Sends an asynchronous request to delete values for one or more items.
         /// </summary>
@@ -461,7 +461,7 @@ namespace Technosoftware.DaAeHdaClient.Hda
         /// <param name="items">The set of timestamps to delete for one or more items.</param>
         /// <returns>The results of the operation for each timestamp.</returns>
         TsCHdaResultCollection[] DeleteAtTime(TsCHdaItemTimeCollection[] items);
-        
+
         /// <summary>
         /// Sends an asynchronous request to delete values for one or more items at a specified times.
         /// </summary>
@@ -481,7 +481,7 @@ namespace Technosoftware.DaAeHdaClient.Hda
         /// </summary>
         /// <param name="request">The state object for the request to cancel.</param>
         void CancelRequest(IOpcRequest request);
-        
+
         /// <summary>
         /// Cancels an asynchronous request.
         /// </summary>

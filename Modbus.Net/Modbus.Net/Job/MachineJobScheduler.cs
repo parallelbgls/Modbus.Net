@@ -90,7 +90,7 @@ namespace Modbus.Net
             var jobKeys = await scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals("Modbus.Net.DataQuery.Group." + triggerKey));
             await scheduler.DeleteJobs(jobKeys);
 
-            return new MachineGetJobScheduler<TMachineMethod, TMachineKey, TReturnUnit>(scheduler, trigger);          
+            return new MachineGetJobScheduler<TMachineMethod, TMachineKey, TReturnUnit>(scheduler, trigger);
         }
 
         /// <summary>

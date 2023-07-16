@@ -22,8 +22,6 @@
 
 #region Using Directives
 using System;
-using System.Linq;
-using static System.String;
 using System.Diagnostics;
 using Technosoftware.DaAeHdaClient.Utilities;
 #endregion
@@ -290,7 +288,7 @@ namespace Technosoftware.DaAeHdaClient
             return CheckLicense(serialNumber);
         }
         #endregion
-        
+
         #region Protected Methods
         /// <summary>
         /// Validate the license.

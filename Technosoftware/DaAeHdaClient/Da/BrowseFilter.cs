@@ -25,24 +25,24 @@
 
 namespace Technosoftware.DaAeHdaClient.Da
 {
-	/// <summary>
-	/// The type of browse elements to return during a browse.
-	/// </summary>
-	public enum TsCDaBrowseFilter
-	{
-		/// <summary>
-		/// Return all types of browse elements.
-		/// </summary>
-		All,
+    /// <summary>
+    /// The type of browse elements to return during a browse.
+    /// </summary>
+    public enum TsCDaBrowseFilter
+    {
+        /// <summary>
+        /// Return all types of browse elements.
+        /// </summary>
+        All,
 
-		/// <summary>
-		/// Return only elements that contain other elements.
-		/// </summary>
-		Branch,
+        /// <summary>
+        /// Return only elements that contain other elements.
+        /// </summary>
+        Branch,
 
-		/// <summary>
-		/// Return only elements that represent items.
-		/// </summary>
-		Item
-	}
+        /// <summary>
+        /// Return only elements that represent items.
+        /// </summary>
+        Item
+    }
 }

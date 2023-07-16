@@ -26,25 +26,25 @@ using System;
 
 namespace Technosoftware.DaAeHdaClient.Ae
 {
-	/// <summary>
-	/// The possible states for a condition.
-	/// </summary>
-	[Flags]
-	public enum TsCAeConditionState
-	{
-		/// <summary>
-		/// The server is currently checking the state of the condition.
-		/// </summary>
-		Enabled = 0x0001,
+    /// <summary>
+    /// The possible states for a condition.
+    /// </summary>
+    [Flags]
+    public enum TsCAeConditionState
+    {
+        /// <summary>
+        /// The server is currently checking the state of the condition.
+        /// </summary>
+        Enabled = 0x0001,
 
-		/// <summary>
-		/// The associated object is in the state represented by the condition.
-		/// </summary>
-		Active = 0x0002,
+        /// <summary>
+        /// The associated object is in the state represented by the condition.
+        /// </summary>
+        Active = 0x0002,
 
-		/// <summary>
-		/// The condition has been acknowledged.
-		/// </summary>
-		Acknowledged = 0x0004
-	}
+        /// <summary>
+        /// The condition has been acknowledged.
+        /// </summary>
+        Acknowledged = 0x0004
+    }
 }

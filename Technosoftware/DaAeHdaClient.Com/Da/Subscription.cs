@@ -247,7 +247,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Da
                     var localeID = 0;
                     var clientHandle = 0;
                     var serverHandle = 0;
-              
+
                     var subscription = BeginComCall<IOPCGroupStateMgt>(methodName, true);
                     subscription.GetState(
                         out updateRate,
@@ -289,7 +289,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Da
                 {
                     methodName = "IOPCGroupStateMgt2.GetKeepAlive";
                     try
-                    {                
+                    {
                         var keepAlive = 0;
                         var subscription = BeginComCall<IOPCGroupStateMgt2>(methodName, true);
                         subscription.GetKeepAlive(out keepAlive);
@@ -328,7 +328,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Da
             if (subscription_ == null) throw new NotConnectedException();
 
             lock (lock_)
-            {               
+            {
                 var methodName = "IOPCGroupStateMgt.SetName";
                 // update the subscription name.
                 if ((masks & (int)TsCDaStateMask.Name) != 0 && state.Name != name_)
@@ -378,7 +378,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Da
 
                 methodName = "IOPCGroupStateMgt.SetState";
                 try
-                {                
+                {
                     var subscription = BeginComCall<IOPCGroupStateMgt>(methodName, true);
                     subscription.SetState(
                         ((masks & (int)TsCDaStateMask.UpdateRate) != 0) ? hUpdateRate.AddrOfPinnedObject() : IntPtr.Zero,
@@ -415,7 +415,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Da
 
                     methodName = "IOPCGroupStateMgt2.SetKeepAlive";
                     try
-                    {           
+                    {
                         var subscription = BeginComCall<IOPCGroupStateMgt2>(methodName, true);
                         subscription.SetKeepAlive(state.KeepAlive, out keepAlive);
 
@@ -477,7 +477,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Da
 
                     var methodName = "IOPCItemMgt.AddItems";
                     try
-                    {          
+                    {
                         var subscription = BeginComCall<IOPCItemMgt>(methodName, true);
                         subscription.AddItems(
                             count,
@@ -647,7 +647,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Da
 
                 var methodName = "IOPCItemMgt.RemoveItems";
                 try
-                {         
+                {
                     var subscription = BeginComCall<IOPCItemMgt>(methodName, true);
                     subscription.RemoveItems(itemIDs.Length, serverHandles, out pErrors);
 

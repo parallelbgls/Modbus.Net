@@ -27,89 +27,89 @@ using System;
 namespace Technosoftware.DaAeHdaClient.Da
 {
 
-	/// <summary>
-	/// A subscription for a set of items on a single OPC server.
-	/// </summary>
-	public interface ITsCDaSubscription : IDisposable
-	{
-		#region Events
+    /// <summary>
+    /// A subscription for a set of items on a single OPC server.
+    /// </summary>
+    public interface ITsCDaSubscription : IDisposable
+    {
+        #region Events
         /// <summary>
         /// An event to receive data change updates.
         /// </summary>
         event TsCDaDataChangedEventHandler DataChangedEvent;
         #endregion
 
-		#region Result Filters
+        #region Result Filters
         /// <summary>
-		/// Returns the filters applied by the server to any item results returned to the client.
-		/// </summary>
-		/// <returns>A bit mask indicating which fields should be returned in any item results.</returns>
-		int GetResultFilters();
+        /// Returns the filters applied by the server to any item results returned to the client.
+        /// </summary>
+        /// <returns>A bit mask indicating which fields should be returned in any item results.</returns>
+        int GetResultFilters();
 
-		/// <summary>
-		/// Sets the filters applied by the server to any item results returned to the client.
-		/// </summary>
-		/// <param name="filters">A bit mask indicating which fields should be returned in any item results.</param>
-		void SetResultFilters(int filters);
+        /// <summary>
+        /// Sets the filters applied by the server to any item results returned to the client.
+        /// </summary>
+        /// <param name="filters">A bit mask indicating which fields should be returned in any item results.</param>
+        void SetResultFilters(int filters);
         #endregion
 
-		#region State Management
+        #region State Management
         /// <summary>
-		/// Returns the current state of the subscription.
-		/// </summary>
-		/// <returns>The current state of the subscription.</returns>
-		TsCDaSubscriptionState GetState();
+        /// Returns the current state of the subscription.
+        /// </summary>
+        /// <returns>The current state of the subscription.</returns>
+        TsCDaSubscriptionState GetState();
 
-		/// <summary>
-		/// Changes the state of a subscription.
-		/// </summary>
-		/// <param name="masks">A bit mask that indicates which elements of the subscription state are changing.</param>
-		/// <param name="state">The new subscription state.</param>
-		/// <returns>The actual subscription state after applying the changes.</returns>
-		TsCDaSubscriptionState ModifyState(int masks, TsCDaSubscriptionState state);
+        /// <summary>
+        /// Changes the state of a subscription.
+        /// </summary>
+        /// <param name="masks">A bit mask that indicates which elements of the subscription state are changing.</param>
+        /// <param name="state">The new subscription state.</param>
+        /// <returns>The actual subscription state after applying the changes.</returns>
+        TsCDaSubscriptionState ModifyState(int masks, TsCDaSubscriptionState state);
         #endregion
 
-		#region Item Management
+        #region Item Management
         /// <summary>
-		/// Adds items to the subscription.
-		/// </summary>
-		/// <param name="items">The set of items to add to the subscription.</param>
-		/// <returns>The results of the add item operation for each item.</returns>
-		TsCDaItemResult[] AddItems(TsCDaItem[] items);
+        /// Adds items to the subscription.
+        /// </summary>
+        /// <param name="items">The set of items to add to the subscription.</param>
+        /// <returns>The results of the add item operation for each item.</returns>
+        TsCDaItemResult[] AddItems(TsCDaItem[] items);
 
-		/// <summary>
-		/// Modifies the state of items in the subscription
-		/// </summary>
-		/// <param name="masks">Specifies which item state parameters are being modified.</param>
-		/// <param name="items">The new state for each item.</param>
-		/// <returns>The results of the modify item operation for each item.</returns>
-		TsCDaItemResult[] ModifyItems(int masks, TsCDaItem[] items);
+        /// <summary>
+        /// Modifies the state of items in the subscription
+        /// </summary>
+        /// <param name="masks">Specifies which item state parameters are being modified.</param>
+        /// <param name="items">The new state for each item.</param>
+        /// <returns>The results of the modify item operation for each item.</returns>
+        TsCDaItemResult[] ModifyItems(int masks, TsCDaItem[] items);
 
-		/// <summary>
-		/// Removes items from the subscription.
-		/// </summary>
-		/// <param name="items">The identifiers (i.e. server handles) for the items being removed.</param>
-		/// <returns>The results of the remove item operation for each item.</returns>
-		OpcItemResult[] RemoveItems(OpcItem[] items);
+        /// <summary>
+        /// Removes items from the subscription.
+        /// </summary>
+        /// <param name="items">The identifiers (i.e. server handles) for the items being removed.</param>
+        /// <returns>The results of the remove item operation for each item.</returns>
+        OpcItemResult[] RemoveItems(OpcItem[] items);
         #endregion
 
-		#region Synchronous I/O
+        #region Synchronous I/O
         /// <summary>
-		/// Reads the values for a set of items in the subscription.
-		/// </summary>
-		/// <param name="items">The identifiers (i.e. server handles) for the items being read.</param>
-		/// <returns>The value for each of items.</returns>
-		TsCDaItemValueResult[] Read(TsCDaItem[] items);
+        /// Reads the values for a set of items in the subscription.
+        /// </summary>
+        /// <param name="items">The identifiers (i.e. server handles) for the items being read.</param>
+        /// <returns>The value for each of items.</returns>
+        TsCDaItemValueResult[] Read(TsCDaItem[] items);
 
-		/// <summary>
-		/// Writes the value, quality and timestamp for a set of items in the subscription.
-		/// </summary>
-		/// <param name="items">The item values to write.</param>
-		/// <returns>The results of the write operation for each item.</returns>
-		OpcItemResult[] Write(TsCDaItemValue[] items);
+        /// <summary>
+        /// Writes the value, quality and timestamp for a set of items in the subscription.
+        /// </summary>
+        /// <param name="items">The item values to write.</param>
+        /// <returns>The results of the write operation for each item.</returns>
+        OpcItemResult[] Write(TsCDaItemValue[] items);
         #endregion
 
-		#region Asynchronous I/O
+        #region Asynchronous I/O
         /// <summary>
         /// Begins an asynchronous read operation for a set of items.
         /// </summary>
@@ -145,36 +145,36 @@ namespace Technosoftware.DaAeHdaClient.Da
         /// <param name="callback">The function to invoke when the cancel completes.</param>
         void Cancel(IOpcRequest request, TsCDaCancelCompleteEventHandler callback);
 
-		/// <summary>
-		/// Causes the server to send a data changed notification for all active items. 
-		/// </summary>
-		void Refresh();
+        /// <summary>
+        /// Causes the server to send a data changed notification for all active items. 
+        /// </summary>
+        void Refresh();
 
-		/// <summary>
-		/// Causes the server to send a data changed notification for all active items. 
-		/// </summary>
-		/// <param name="requestHandle">An identifier for the request assigned by the caller.</param>
-		/// <param name="request">An object that contains the state of the request (used to cancel the request).</param>
-		/// <returns>A set of results containing any errors encountered when the server validated the items.</returns>
-		void Refresh(
-			object requestHandle,
-			out IOpcRequest request);
+        /// <summary>
+        /// Causes the server to send a data changed notification for all active items. 
+        /// </summary>
+        /// <param name="requestHandle">An identifier for the request assigned by the caller.</param>
+        /// <param name="request">An object that contains the state of the request (used to cancel the request).</param>
+        /// <returns>A set of results containing any errors encountered when the server validated the items.</returns>
+        void Refresh(
+            object requestHandle,
+            out IOpcRequest request);
 
-		/// <summary>
-		/// Enables or disables data change notifications from the server.
-		/// </summary>
-		/// <param name="enabled">Whether data change notifications are enabled.</param>
-		void SetEnabled(bool enabled);
+        /// <summary>
+        /// Enables or disables data change notifications from the server.
+        /// </summary>
+        /// <param name="enabled">Whether data change notifications are enabled.</param>
+        void SetEnabled(bool enabled);
 
-		/// <summary>
-		/// Checks whether data change notifications from the server are enabled.
-		/// </summary>
-		/// <returns>Whether data change notifications are enabled.</returns>
-		bool GetEnabled();
+        /// <summary>
+        /// Checks whether data change notifications from the server are enabled.
+        /// </summary>
+        /// <returns>Whether data change notifications are enabled.</returns>
+        bool GetEnabled();
         #endregion
-	}
+    }
 
-	#region Delegate Declarations
+    #region Delegate Declarations
     /// <summary>
     /// A delegate to receive data change updates from the server.
     /// </summary>

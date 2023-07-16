@@ -25,21 +25,21 @@
 
 namespace Technosoftware.DaAeHdaClient.Da
 {
-	/// <summary><para>Defines possible item engineering unit types</para></summary>
-	public enum TsDaEuType
+    /// <summary><para>Defines possible item engineering unit types</para></summary>
+    public enum TsDaEuType
     {
-		/// <summary>No engineering unit information available</summary>
-		NoEnum = 0x01,
-		/// <summary>
-		/// Analog engineering unit - will contain a SAFE ARRAY of exactly two doubles
-		/// (VT_ARRAY | VT_R8) corresponding to the LOW and HI EU range.
-		/// </summary>
-		Analog = 0x02,
-		/// <summary>
-		/// Enumerated engineering unit - will contain a SAFE ARRAY of strings (VT_ARRAY |
-		/// VT_BSTR) which contains a list of strings (Example: “OPEN”, “CLOSE”, “IN TRANSIT”,
-		/// etc.) corresponding to sequential numeric values (0, 1, 2, etc.)
-		/// </summary>
-		Enumerated = 0x03
-	}
+        /// <summary>No engineering unit information available</summary>
+        NoEnum = 0x01,
+        /// <summary>
+        /// Analog engineering unit - will contain a SAFE ARRAY of exactly two doubles
+        /// (VT_ARRAY | VT_R8) corresponding to the LOW and HI EU range.
+        /// </summary>
+        Analog = 0x02,
+        /// <summary>
+        /// Enumerated engineering unit - will contain a SAFE ARRAY of strings (VT_ARRAY |
+        /// VT_BSTR) which contains a list of strings (Example: “OPEN”, “CLOSE”, “IN TRANSIT”,
+        /// etc.) corresponding to sequential numeric values (0, 1, 2, etc.)
+        /// </summary>
+        Enumerated = 0x03
+    }
 }

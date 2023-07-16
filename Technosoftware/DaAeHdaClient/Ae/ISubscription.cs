@@ -31,20 +31,20 @@ namespace Technosoftware.DaAeHdaClient.Ae
     /// </summary>
     public interface ITsCAeSubscription : IDisposable
     {
-		#region Events
+        #region Events
         /// <summary>
         /// An event to receive event change updates.
         /// </summary>
         event TsCAeDataChangedEventHandler DataChangedEvent;
         #endregion
 
-		#region State Management
+        #region State Management
         /// <summary>
         /// Returns the current state of the subscription.
         /// </summary>
         /// <returns>The current state of the subscription.</returns>
         TsCAeSubscriptionState GetState();
-        
+
         /// <summary>
         /// Changes the state of a subscription.
         /// </summary>
@@ -54,7 +54,7 @@ namespace Technosoftware.DaAeHdaClient.Ae
         TsCAeSubscriptionState ModifyState(int masks, TsCAeSubscriptionState state);
         #endregion
 
-		#region Filter Management
+        #region Filter Management
         /// <summary>
         /// Returns the current filters for the subscription.
         /// </summary>
@@ -68,7 +68,7 @@ namespace Technosoftware.DaAeHdaClient.Ae
         void SetFilters(TsCAeSubscriptionFilters filters);
         #endregion
 
-		#region Attribute Management
+        #region Attribute Management
         /// <summary>
         /// Returns the set of attributes to return with event notifications.
         /// </summary>      
@@ -84,7 +84,7 @@ namespace Technosoftware.DaAeHdaClient.Ae
         void SelectReturnedAttributes(int eventCategory, int[] attributeIDs);
         #endregion
 
-		#region Refresh
+        #region Refresh
         /// <summary>
         /// Force a refresh for all active conditions and inactive, unacknowledged conditions whose event notifications match the filter of the event subscription.
         /// </summary>
@@ -95,9 +95,9 @@ namespace Technosoftware.DaAeHdaClient.Ae
         /// </summary>
         void CancelRefresh();
         #endregion
-	}
+    }
 
-	#region Delegate Declarations
+    #region Delegate Declarations
     /// <summary>
     /// A delegate to receive data change updates from the server.
     /// </summary>

@@ -41,12 +41,12 @@ namespace Technosoftware.DaAeHdaClient.Com
         /// The id assigned to the connection by the COM server.
         /// </summary>
 		private int cookie_;
-        
+
         /// <summary>
         /// The number of times Advise() has been called without a matching Unadvise(). 
         /// </summary>
-		private int refs_;
-        
+        private int refs_;
+
         /// <summary>
         /// Initializes the object by finding the specified connection point.
         /// </summary>

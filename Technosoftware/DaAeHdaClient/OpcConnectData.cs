@@ -81,7 +81,7 @@ namespace Technosoftware.DaAeHdaClient
             }
             else
             {
-				return new WebProxy();
+                return new WebProxy();
             }
         }
 

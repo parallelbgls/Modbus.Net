@@ -22,9 +22,9 @@
 
 #region Using Directives
 using System;
-using System.Xml;
-using System.Runtime.Serialization;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
+using System.Xml;
 #endregion
 
 namespace Technosoftware.DaAeHdaClient

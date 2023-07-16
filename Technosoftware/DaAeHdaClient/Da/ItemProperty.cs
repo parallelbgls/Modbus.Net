@@ -26,75 +26,75 @@ using System;
 
 namespace Technosoftware.DaAeHdaClient.Da
 {
-	/// <summary>
-	/// Contains a description of a single item property.
-	/// </summary>
-	[Serializable]
-	public class TsCDaItemProperty : ICloneable, IOpcResult
-	{
-		#region Fields
+    /// <summary>
+    /// Contains a description of a single item property.
+    /// </summary>
+    [Serializable]
+    public class TsCDaItemProperty : ICloneable, IOpcResult
+    {
+        #region Fields
         private OpcResult result_ = OpcResult.S_OK;
         #endregion
 
-		#region Properties
+        #region Properties
 
-		/// <summary>
-		/// The property identifier.
-		/// </summary>
-		public TsDaPropertyID ID { get; set; }
+        /// <summary>
+        /// The property identifier.
+        /// </summary>
+        public TsDaPropertyID ID { get; set; }
 
-		/// <summary>
-		/// A short description of the property.
-		/// </summary>
-		public string Description { get; set; }
+        /// <summary>
+        /// A short description of the property.
+        /// </summary>
+        public string Description { get; set; }
 
-		/// <summary>
-		/// The data type of the property.
-		/// </summary>
-		public Type DataType { get; set; }
+        /// <summary>
+        /// The data type of the property.
+        /// </summary>
+        public Type DataType { get; set; }
 
-		/// <summary>
-		/// The value of the property.
-		/// </summary>
-		public object Value { get; set; }
+        /// <summary>
+        /// The value of the property.
+        /// </summary>
+        public object Value { get; set; }
 
-		/// <summary>
-		/// The primary identifier for the property if it is directly accessible as an item.
-		/// </summary>
-		public string ItemName { get; set; }
+        /// <summary>
+        /// The primary identifier for the property if it is directly accessible as an item.
+        /// </summary>
+        public string ItemName { get; set; }
 
-		/// <summary>
-		/// The secondary identifier for the property if it is directly accessible as an item.
-		/// </summary>
-		public string ItemPath { get; set; }
+        /// <summary>
+        /// The secondary identifier for the property if it is directly accessible as an item.
+        /// </summary>
+        public string ItemPath { get; set; }
         #endregion
 
-		#region IOpcResult Members
+        #region IOpcResult Members
         /// <summary>
-		/// The <see cref="OpcResult" /> object with the result of an operation on an property.
-		/// </summary>
-		public OpcResult Result
-		{
-			get => result_;
+        /// The <see cref="OpcResult" /> object with the result of an operation on an property.
+        /// </summary>
+        public OpcResult Result
+        {
+            get => result_;
             set => result_ = value;
         }
 
-		/// <summary>
-		/// Vendor specific diagnostic information (not the localized error text).
-		/// </summary>
-		public string DiagnosticInfo { get; set; }
+        /// <summary>
+        /// Vendor specific diagnostic information (not the localized error text).
+        /// </summary>
+        public string DiagnosticInfo { get; set; }
         #endregion
 
-		#region ICloneable Members
+        #region ICloneable Members
         /// <summary>
-		/// Creates a deep copy of the object.
-		/// </summary>
-		public virtual object Clone()
-		{
-			var clone = (TsCDaItemProperty)MemberwiseClone();
-			clone.Value = OpcConvert.Clone(Value);
-			return clone;
-		}
+        /// Creates a deep copy of the object.
+        /// </summary>
+        public virtual object Clone()
+        {
+            var clone = (TsCDaItemProperty)MemberwiseClone();
+            clone.Value = OpcConvert.Clone(Value);
+            return clone;
+        }
         #endregion
-	}
+    }
 }

@@ -22,9 +22,9 @@
 
 #region Using Directives
 using System;
-using System.Xml;
 using System.Collections;
 using System.Text;
+using System.Xml;
 #endregion
 
 namespace Technosoftware.DaAeHdaClient
@@ -161,7 +161,7 @@ namespace Technosoftware.DaAeHdaClient
             // convert scalar value to an array type.
             if (!type.IsArray && newType.IsArray)
             {
-                var array = new ArrayList(1) {ChangeType(source, newType.GetElementType())};
+                var array = new ArrayList(1) { ChangeType(source, newType.GetElementType()) };
                 return array.ToArray(newType.GetElementType() ?? throw new InvalidOperationException());
             }
 

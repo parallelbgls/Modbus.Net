@@ -313,13 +313,13 @@ namespace Modbus.Net
             }
             foreach (var assembly in AssemblyHelper.GetAllLibraryAssemblies())
             {
-                var valueHelper = assembly.GetType("Modbus.Net."+endian.ToString() + "ValueHelper")?.GetProperty("Instance")?.GetValue(null, null) as ValueHelper;
+                var valueHelper = assembly.GetType("Modbus.Net." + endian.ToString() + "ValueHelper")?.GetProperty("Instance")?.GetValue(null, null) as ValueHelper;
                 if (valueHelper != null)
                 {
                     EndianInstanceCache[endian.ToString()] = valueHelper;
                     return valueHelper;
                 }
-                
+
             }
             throw new NotImplementedException("ValueHelper " + endian.ToString() + " doesn't exist.");
         }

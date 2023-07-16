@@ -26,40 +26,40 @@ using System;
 
 namespace Technosoftware.DaAeHdaClient.Ae
 {
-	/// <summary>
-	/// The types of event filters that the server could support.
-	/// </summary>
-	[Flags]
-	public enum TsCAeFilterType
-	{
-		/// <summary>
-		/// The server supports filtering by event type.
-		/// </summary>
-		Event = 0x0001,
+    /// <summary>
+    /// The types of event filters that the server could support.
+    /// </summary>
+    [Flags]
+    public enum TsCAeFilterType
+    {
+        /// <summary>
+        /// The server supports filtering by event type.
+        /// </summary>
+        Event = 0x0001,
 
-		/// <summary>
-		/// The server supports filtering by event categories.
-		/// </summary>
-		Category = 0x0002,
+        /// <summary>
+        /// The server supports filtering by event categories.
+        /// </summary>
+        Category = 0x0002,
 
-		/// <summary>
-		/// The server supports filtering by severity levels.
-		/// </summary>
-		Severity = 0x0004,
+        /// <summary>
+        /// The server supports filtering by severity levels.
+        /// </summary>
+        Severity = 0x0004,
 
-		/// <summary>
-		/// The server supports filtering by process area.
-		/// </summary>
-		Area = 0x0008,
+        /// <summary>
+        /// The server supports filtering by process area.
+        /// </summary>
+        Area = 0x0008,
 
-		/// <summary>
-		/// The server supports filtering by event sources.
-		/// </summary>
-		Source = 0x0010,
+        /// <summary>
+        /// The server supports filtering by event sources.
+        /// </summary>
+        Source = 0x0010,
 
-		/// <summary>
-		/// All filters supported by the server.
-		/// </summary>
-		All = 0xFFFF
-	}
+        /// <summary>
+        /// All filters supported by the server.
+        /// </summary>
+        All = 0xFFFF
+    }
 }

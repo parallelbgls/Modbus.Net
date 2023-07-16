@@ -22,12 +22,11 @@
 
 #region Using Directives
 using System;
-using System.Net;
 using System.Globalization;
+using System.Net;
 using System.Runtime.InteropServices;
-
-using Technosoftware.DaAeHdaClient.Da;
 using Technosoftware.DaAeHdaClient.Com.Utilities;
+using Technosoftware.DaAeHdaClient.Da;
 #endregion
 
 #pragma warning disable 0618
@@ -598,10 +597,10 @@ namespace Technosoftware.DaAeHdaClient.Com
                     clsctx,
                     ref coserverInfo,
                     1,
-                    results);   
+                    results);
             }
             finally
-            {              
+            {
                 if (hIID.IsAllocated) hIID.Free();
 
                 serverInfo.Deallocate();
@@ -859,7 +858,8 @@ namespace Technosoftware.DaAeHdaClient.Com
         /// <summary>
 		/// This flag suppresses the conversion to local time done during marshalling.
 		/// </summary>
-		public static bool PreserveUtc {
+		public static bool PreserveUtc
+        {
             get { lock (typeof(Interop)) { return DaAeHdaClient.ApplicationInstance.TimeAsUtc; } }
             set { lock (typeof(Interop)) { DaAeHdaClient.ApplicationInstance.TimeAsUtc = value; } }
         }
@@ -1387,22 +1387,22 @@ namespace Technosoftware.DaAeHdaClient.Com
                 case Ae.Result.E_NOINFO: return new OpcResult(OpcResult.Ae.E_NOINFO, input);
 
                 default:
-                {
-                    // check for RPC error.
-                    if ((input & 0x7FFF0000) == 0x00010000)
                     {
-                        return new OpcResult(OpcResult.E_NETWORK_ERROR, input);
-                    }
+                        // check for RPC error.
+                        if ((input & 0x7FFF0000) == 0x00010000)
+                        {
+                            return new OpcResult(OpcResult.E_NETWORK_ERROR, input);
+                        }
 
-                    // chekc for success code.
-                    if (input >= 0)
-                    {
-                        return new OpcResult(OpcResult.S_FALSE, input);
-                    }
+                        // chekc for success code.
+                        if (input >= 0)
+                        {
+                            return new OpcResult(OpcResult.S_FALSE, input);
+                        }
 
-                    // return generic error.
-                    return new OpcResult(OpcResult.E_FAIL, input);
-                }
+                        // return generic error.
+                        return new OpcResult(OpcResult.E_FAIL, input);
+                    }
             }
         }
 
@@ -1410,79 +1410,79 @@ namespace Technosoftware.DaAeHdaClient.Com
         /// Converts a result id to an HRESULT.
         /// </summary>
         internal static int GetResultID(OpcResult input)
-		{				
-			// data access.
-			if (input.Name != null && input.Name.Namespace == OpcNamespace.OPC_DATA_ACCESS)
-			{
-				if (input == OpcResult.S_OK)                          return Da.Result.S_OK;
-				if (input == OpcResult.E_FAIL)                        return Da.Result.E_FAIL;  
-				if (input == OpcResult.E_INVALIDARG)                  return Da.Result.E_INVALIDARG; 
-				if (input == OpcResult.Da.E_BADTYPE)                  return Da.Result.E_BADTYPE;  
-				if (input == OpcResult.Da.E_READONLY)                 return Da.Result.E_BADRIGHTS;  
-				if (input == OpcResult.Da.E_WRITEONLY)                return Da.Result.E_BADRIGHTS;  
-				if (input == OpcResult.Da.E_RANGE)                    return Da.Result.E_RANGE;  
-				if (input == OpcResult.E_OUTOFMEMORY)                 return Da.Result.E_OUTOFMEMORY;  
-				if (input == OpcResult.E_NOTSUPPORTED)                return Da.Result.E_NOINTERFACE;  
-				if (input == OpcResult.Da.E_INVALIDHANDLE)            return Da.Result.E_INVALIDHANDLE;  
-				if (input == OpcResult.Da.E_UNKNOWN_ITEM_NAME)        return Da.Result.E_UNKNOWNITEMID;  
-				if (input == OpcResult.Da.E_INVALID_ITEM_NAME)        return Da.Result.E_INVALIDITEMID;  
-				if (input == OpcResult.Da.E_INVALID_ITEM_PATH)        return Da.Result.E_INVALIDITEMID; 
-				if (input == OpcResult.Da.E_UNKNOWN_ITEM_PATH)        return Da.Result.E_UNKNOWNPATH;  
-				if (input == OpcResult.Da.E_INVALID_FILTER)           return Da.Result.E_INVALIDFILTER;  
-				if (input == OpcResult.Da.S_UNSUPPORTEDRATE)          return Da.Result.S_UNSUPPORTEDRATE; 
-				if (input == OpcResult.Da.S_CLAMP)                    return Da.Result.S_CLAMP;  
-				if (input == OpcResult.Da.E_INVALID_PID)              return Da.Result.E_INVALID_PID;  
-				if (input == OpcResult.Da.E_NO_ITEM_DEADBAND)         return Da.Result.E_DEADBANDNOTSUPPORTED;  
-				if (input == OpcResult.Da.E_NO_ITEM_BUFFERING)        return Da.Result.E_NOBUFFERING;
-				if (input == OpcResult.Da.E_NO_WRITEQT)               return Da.Result.E_NOTSUPPORTED;
-				if (input == OpcResult.Da.E_INVALIDCONTINUATIONPOINT) return Da.Result.E_INVALIDCONTINUATIONPOINT;
-				if (input == OpcResult.Da.S_DATAQUEUEOVERFLOW)        return Da.Result.S_DATAQUEUEOVERFLOW;
-			}
+        {
+            // data access.
+            if (input.Name != null && input.Name.Namespace == OpcNamespace.OPC_DATA_ACCESS)
+            {
+                if (input == OpcResult.S_OK) return Da.Result.S_OK;
+                if (input == OpcResult.E_FAIL) return Da.Result.E_FAIL;
+                if (input == OpcResult.E_INVALIDARG) return Da.Result.E_INVALIDARG;
+                if (input == OpcResult.Da.E_BADTYPE) return Da.Result.E_BADTYPE;
+                if (input == OpcResult.Da.E_READONLY) return Da.Result.E_BADRIGHTS;
+                if (input == OpcResult.Da.E_WRITEONLY) return Da.Result.E_BADRIGHTS;
+                if (input == OpcResult.Da.E_RANGE) return Da.Result.E_RANGE;
+                if (input == OpcResult.E_OUTOFMEMORY) return Da.Result.E_OUTOFMEMORY;
+                if (input == OpcResult.E_NOTSUPPORTED) return Da.Result.E_NOINTERFACE;
+                if (input == OpcResult.Da.E_INVALIDHANDLE) return Da.Result.E_INVALIDHANDLE;
+                if (input == OpcResult.Da.E_UNKNOWN_ITEM_NAME) return Da.Result.E_UNKNOWNITEMID;
+                if (input == OpcResult.Da.E_INVALID_ITEM_NAME) return Da.Result.E_INVALIDITEMID;
+                if (input == OpcResult.Da.E_INVALID_ITEM_PATH) return Da.Result.E_INVALIDITEMID;
+                if (input == OpcResult.Da.E_UNKNOWN_ITEM_PATH) return Da.Result.E_UNKNOWNPATH;
+                if (input == OpcResult.Da.E_INVALID_FILTER) return Da.Result.E_INVALIDFILTER;
+                if (input == OpcResult.Da.S_UNSUPPORTEDRATE) return Da.Result.S_UNSUPPORTEDRATE;
+                if (input == OpcResult.Da.S_CLAMP) return Da.Result.S_CLAMP;
+                if (input == OpcResult.Da.E_INVALID_PID) return Da.Result.E_INVALID_PID;
+                if (input == OpcResult.Da.E_NO_ITEM_DEADBAND) return Da.Result.E_DEADBANDNOTSUPPORTED;
+                if (input == OpcResult.Da.E_NO_ITEM_BUFFERING) return Da.Result.E_NOBUFFERING;
+                if (input == OpcResult.Da.E_NO_WRITEQT) return Da.Result.E_NOTSUPPORTED;
+                if (input == OpcResult.Da.E_INVALIDCONTINUATIONPOINT) return Da.Result.E_INVALIDCONTINUATIONPOINT;
+                if (input == OpcResult.Da.S_DATAQUEUEOVERFLOW) return Da.Result.S_DATAQUEUEOVERFLOW;
+            }
 
-			// complex data.
-			else if (input.Name != null && input.Name.Namespace == OpcNamespace.OPC_COMPLEX_DATA)
-			{
-				if (input == OpcResult.Cpx.E_TYPE_CHANGED)            return Cpx.Result.E_TYPE_CHANGED;
-				if (input == OpcResult.Cpx.E_FILTER_DUPLICATE)        return Cpx.Result.E_FILTER_DUPLICATE;
-				if (input == OpcResult.Cpx.E_FILTER_INVALID)          return Cpx.Result.E_FILTER_INVALID;
-				if (input == OpcResult.Cpx.E_FILTER_ERROR)            return Cpx.Result.E_FILTER_ERROR;
-				if (input == OpcResult.Cpx.S_FILTER_NO_DATA)          return Cpx.Result.S_FILTER_NO_DATA;
-			}
-							
-			// historical data access.
-			else if (input.Name != null && input.Name.Namespace == OpcNamespace.OPC_HISTORICAL_DATA_ACCESS)
-			{
-				if (input == OpcResult.Hda.E_MAXEXCEEDED)             return Hda.Result.E_MAXEXCEEDED;
-				if (input == OpcResult.Hda.S_NODATA)                  return Hda.Result.S_NODATA;
-				if (input == OpcResult.Hda.S_MOREDATA)                return Hda.Result.S_MOREDATA;
-				if (input == OpcResult.Hda.E_INVALIDAGGREGATE)        return Hda.Result.E_INVALIDAGGREGATE;
-				if (input == OpcResult.Hda.S_CURRENTVALUE)            return Hda.Result.S_CURRENTVALUE;
-				if (input == OpcResult.Hda.S_EXTRADATA)               return Hda.Result.S_EXTRADATA;
-				if (input == OpcResult.Hda.E_UNKNOWNATTRID)           return Hda.Result.E_UNKNOWNATTRID;
-				if (input == OpcResult.Hda.E_NOT_AVAIL)               return Hda.Result.E_NOT_AVAIL;
-				if (input == OpcResult.Hda.E_INVALIDDATATYPE)         return Hda.Result.E_INVALIDDATATYPE;
-				if (input == OpcResult.Hda.E_DATAEXISTS)              return Hda.Result.E_DATAEXISTS;
-				if (input == OpcResult.Hda.E_INVALIDATTRID)           return Hda.Result.E_INVALIDATTRID;
-				if (input == OpcResult.Hda.E_NODATAEXISTS)            return Hda.Result.E_NODATAEXISTS;
-				if (input == OpcResult.Hda.S_INSERTED)                return Hda.Result.S_INSERTED;
-				if (input == OpcResult.Hda.S_REPLACED)                return Hda.Result.S_REPLACED;
-			}
+            // complex data.
+            else if (input.Name != null && input.Name.Namespace == OpcNamespace.OPC_COMPLEX_DATA)
+            {
+                if (input == OpcResult.Cpx.E_TYPE_CHANGED) return Cpx.Result.E_TYPE_CHANGED;
+                if (input == OpcResult.Cpx.E_FILTER_DUPLICATE) return Cpx.Result.E_FILTER_DUPLICATE;
+                if (input == OpcResult.Cpx.E_FILTER_INVALID) return Cpx.Result.E_FILTER_INVALID;
+                if (input == OpcResult.Cpx.E_FILTER_ERROR) return Cpx.Result.E_FILTER_ERROR;
+                if (input == OpcResult.Cpx.S_FILTER_NO_DATA) return Cpx.Result.S_FILTER_NO_DATA;
+            }
 
-			// check for custom code.
-			else if (input.Code == -1)
-			{
-				// default success code.
-				if (input.Succeeded())
-				{
-					return Da.Result.S_FALSE;
-				}
+            // historical data access.
+            else if (input.Name != null && input.Name.Namespace == OpcNamespace.OPC_HISTORICAL_DATA_ACCESS)
+            {
+                if (input == OpcResult.Hda.E_MAXEXCEEDED) return Hda.Result.E_MAXEXCEEDED;
+                if (input == OpcResult.Hda.S_NODATA) return Hda.Result.S_NODATA;
+                if (input == OpcResult.Hda.S_MOREDATA) return Hda.Result.S_MOREDATA;
+                if (input == OpcResult.Hda.E_INVALIDAGGREGATE) return Hda.Result.E_INVALIDAGGREGATE;
+                if (input == OpcResult.Hda.S_CURRENTVALUE) return Hda.Result.S_CURRENTVALUE;
+                if (input == OpcResult.Hda.S_EXTRADATA) return Hda.Result.S_EXTRADATA;
+                if (input == OpcResult.Hda.E_UNKNOWNATTRID) return Hda.Result.E_UNKNOWNATTRID;
+                if (input == OpcResult.Hda.E_NOT_AVAIL) return Hda.Result.E_NOT_AVAIL;
+                if (input == OpcResult.Hda.E_INVALIDDATATYPE) return Hda.Result.E_INVALIDDATATYPE;
+                if (input == OpcResult.Hda.E_DATAEXISTS) return Hda.Result.E_DATAEXISTS;
+                if (input == OpcResult.Hda.E_INVALIDATTRID) return Hda.Result.E_INVALIDATTRID;
+                if (input == OpcResult.Hda.E_NODATAEXISTS) return Hda.Result.E_NODATAEXISTS;
+                if (input == OpcResult.Hda.S_INSERTED) return Hda.Result.S_INSERTED;
+                if (input == OpcResult.Hda.S_REPLACED) return Hda.Result.S_REPLACED;
+            }
 
-				// default error code.
-				return Da.Result.E_FAIL;
-			}
+            // check for custom code.
+            else if (input.Code == -1)
+            {
+                // default success code.
+                if (input.Succeeded())
+                {
+                    return Da.Result.S_FALSE;
+                }
 
-			// return custom code.
-			return input.Code;
+                // default error code.
+                return Da.Result.E_FAIL;
+            }
+
+            // return custom code.
+            return input.Code;
         }
 
         /// <summary>

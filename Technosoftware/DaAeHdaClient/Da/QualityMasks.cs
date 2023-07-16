@@ -25,16 +25,16 @@
 
 namespace Technosoftware.DaAeHdaClient.Da
 {
-	/// <summary>
-	/// Defines bit masks for the quality.
-	/// </summary>
-	public enum TsDaQualityMasks : int
-	{
-		/// <summary>Quality related bits</summary>
-		QualityMask = +0x00FC,
-		/// <summary>Limit related bits</summary>
-		LimitMask = +0x0003,
-		/// <summary>Vendor specific bits</summary>
-		VendorMask = -0x00FD
-	}
+    /// <summary>
+    /// Defines bit masks for the quality.
+    /// </summary>
+    public enum TsDaQualityMasks : int
+    {
+        /// <summary>Quality related bits</summary>
+        QualityMask = +0x00FC,
+        /// <summary>Limit related bits</summary>
+        LimitMask = +0x0003,
+        /// <summary>Vendor specific bits</summary>
+        VendorMask = -0x00FD
+    }
 }

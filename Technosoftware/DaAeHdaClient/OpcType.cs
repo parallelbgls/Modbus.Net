@@ -34,81 +34,81 @@ namespace Technosoftware.DaAeHdaClient
     public class OpcType
     {
         /// <remarks/>
-        public static Type SBYTE          = typeof(sbyte);
+        public static Type SBYTE = typeof(sbyte);
         /// <remarks/>
-        public static Type BYTE           = typeof(byte);
+        public static Type BYTE = typeof(byte);
         /// <remarks/>
-        public static Type SHORT          = typeof(short);
+        public static Type SHORT = typeof(short);
         /// <remarks/>
-        public static Type USHORT         = typeof(ushort);
+        public static Type USHORT = typeof(ushort);
         /// <remarks/>
-        public static Type INT            = typeof(int);
+        public static Type INT = typeof(int);
         /// <remarks/>
-        public static Type UINT           = typeof(uint);
+        public static Type UINT = typeof(uint);
         /// <remarks/>
-        public static Type LONG           = typeof(long);
+        public static Type LONG = typeof(long);
         /// <remarks/>
-        public static Type ULONG          = typeof(ulong);
+        public static Type ULONG = typeof(ulong);
         /// <remarks/>
-        public static Type FLOAT          = typeof(float);
+        public static Type FLOAT = typeof(float);
         /// <remarks/>
-        public static Type DOUBLE         = typeof(double);
+        public static Type DOUBLE = typeof(double);
         /// <remarks/>
-        public static Type DECIMAL        = typeof(decimal);
+        public static Type DECIMAL = typeof(decimal);
         /// <remarks/>
-        public static Type BOOLEAN        = typeof(bool);
+        public static Type BOOLEAN = typeof(bool);
         /// <remarks/>
-        public static Type DATETIME       = typeof(DateTime);
+        public static Type DATETIME = typeof(DateTime);
         /// <remarks/>
-        public static Type DURATION       = typeof(TimeSpan);
+        public static Type DURATION = typeof(TimeSpan);
         /// <remarks/>
-        public static Type STRING         = typeof(string);
+        public static Type STRING = typeof(string);
         /// <remarks/>
-        public static Type ANY_TYPE       = typeof(object);
+        public static Type ANY_TYPE = typeof(object);
         /// <remarks/>
-        public static Type BINARY         = typeof(byte[]);
+        public static Type BINARY = typeof(byte[]);
         /// <remarks/>
-        public static Type ARRAY_SHORT    = typeof(short[]);
+        public static Type ARRAY_SHORT = typeof(short[]);
         /// <remarks/>
-        public static Type ARRAY_USHORT   = typeof(ushort[]);
+        public static Type ARRAY_USHORT = typeof(ushort[]);
         /// <remarks/>
-        public static Type ARRAY_INT      = typeof(int[]);
+        public static Type ARRAY_INT = typeof(int[]);
         /// <remarks/>
-        public static Type ARRAY_UINT     = typeof(uint[]);
+        public static Type ARRAY_UINT = typeof(uint[]);
         /// <remarks/>
-        public static Type ARRAY_LONG     = typeof(long[]);
+        public static Type ARRAY_LONG = typeof(long[]);
         /// <remarks/>
-        public static Type ARRAY_ULONG    = typeof(ulong[]);
+        public static Type ARRAY_ULONG = typeof(ulong[]);
         /// <remarks/>
-        public static Type ARRAY_FLOAT    = typeof(float[]);
+        public static Type ARRAY_FLOAT = typeof(float[]);
         /// <remarks/>
-        public static Type ARRAY_DOUBLE   = typeof(double[]);
+        public static Type ARRAY_DOUBLE = typeof(double[]);
         /// <remarks/>
-        public static Type ARRAY_DECIMAL  = typeof(decimal[]);
+        public static Type ARRAY_DECIMAL = typeof(decimal[]);
         /// <remarks/>
-        public static Type ARRAY_BOOLEAN  = typeof(bool[]);
+        public static Type ARRAY_BOOLEAN = typeof(bool[]);
         /// <remarks/>
         public static Type ARRAY_DATETIME = typeof(DateTime[]);
         /// <remarks/>
-        public static Type ARRAY_STRING   = typeof(string[]);
+        public static Type ARRAY_STRING = typeof(string[]);
         /// <remarks/>
         public static Type ARRAY_ANY_TYPE = typeof(object[]);
         /// <remarks/>
-        public static Type ILLEGAL_TYPE   = typeof(OpcType);
-                                                           
+        public static Type ILLEGAL_TYPE = typeof(OpcType);
+
 
         /// <summary>
         /// Returns an array of all well-known types.
         /// </summary>
-		public static Type[] Enumerate()
-		{
-			var values = new ArrayList();
+        public static Type[] Enumerate()
+        {
+            var values = new ArrayList();
 
-			var fields = typeof(OpcType).GetFields(BindingFlags.Static | BindingFlags.Public);
+            var fields = typeof(OpcType).GetFields(BindingFlags.Static | BindingFlags.Public);
 
-			Array.ForEach(fields, field => values.Add(field.GetValue(typeof(Type))));
+            Array.ForEach(fields, field => values.Add(field.GetValue(typeof(Type))));
 
-			return (Type[])values.ToArray(typeof(Type));
-		}
+            return (Type[])values.ToArray(typeof(Type));
+        }
     }
 }

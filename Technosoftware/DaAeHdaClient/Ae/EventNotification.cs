@@ -206,8 +206,8 @@ namespace Technosoftware.DaAeHdaClient.Ae
 		/// The quality associated with the condition state.
 		/// </summary>
 		public TsCDaQuality Quality
-		{
-			get => daQuality_;
+        {
+            get => daQuality_;
             set => daQuality_ = value;
         }
 

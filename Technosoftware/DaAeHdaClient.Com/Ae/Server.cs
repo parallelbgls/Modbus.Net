@@ -24,10 +24,9 @@
 using System;
 using System.Collections;
 using System.Runtime.InteropServices;
-
 using Technosoftware.DaAeHdaClient.Ae;
-using Technosoftware.OpcRcw.Comn;
 using Technosoftware.OpcRcw.Ae;
+using Technosoftware.OpcRcw.Comn;
 #endregion
 
 #pragma warning disable 0618
@@ -44,7 +43,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
         /// <summary>
         /// Initializes the object with the specified OpcUrl and COM server.
         /// </summary>
-        internal Server(OpcUrl url, object server)  : base(url, server)
+        internal Server(OpcUrl url, object server) : base(url, server)
         {
             m_supportsAE11 = true;
 
@@ -177,41 +176,41 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
             {
                 // verify state and arguments.
                 if (server_ == null) throw new NotConnectedException();
-                if (state == null)    throw new ArgumentNullException(nameof(state));
+                if (state == null) throw new ArgumentNullException(nameof(state));
 
                 // initialize arguments.
-                object unknown    = null;
-                var   riid       = typeof(IOPCEventSubscriptionMgt).GUID;
-                var    bufferTime = 0;
-                var    maxSize    = 0;
+                object unknown = null;
+                var riid = typeof(IOPCEventSubscriptionMgt).GUID;
+                var bufferTime = 0;
+                var maxSize = 0;
 
                 // invoke COM method.
                 try
                 {
                     ((IOPCEventServer)server_).CreateEventSubscription(
-                        (state.Active)?1:0,
+                        (state.Active) ? 1 : 0,
                         state.BufferTime,
                         state.MaxSize,
                         ++m_handles,
                         ref riid,
                         out unknown,
                         out bufferTime,
-                        out maxSize);                       
+                        out maxSize);
                 }
                 catch (Exception e)
                 {
                     throw Technosoftware.DaAeHdaClient.Com.Interop.CreateException("IOPCEventServer.CreateEventSubscription", e);
-                }       
+                }
 
                 // save actual values.
                 state.BufferTime = bufferTime;
-                state.MaxSize    = maxSize;
+                state.MaxSize = maxSize;
 
                 var subscription = new Subscription(state, unknown);
 
                 // set keep alive.
                 subscription.ModifyState((int)TsCAeStateMask.KeepAlive, state);
-                
+
                 // save subscription.
                 m_subscriptions.Add(m_handles, subscription);
 
@@ -245,8 +244,8 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                 catch (Exception e)
                 {
                     throw Technosoftware.DaAeHdaClient.Com.Interop.CreateException("IOPCEventServer.QueryAvailableFilters", e);
-                }       
-                
+                }
+
                 // return results.
                 return filters;
             }
@@ -270,23 +269,23 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                 // initialize arguments.
                 var count = 0;
 
-                var ppdwEventCategories    = IntPtr.Zero;
+                var ppdwEventCategories = IntPtr.Zero;
                 var ppszEventCategoryDescs = IntPtr.Zero;
 
                 // invoke COM method.
                 try
                 {
                     ((IOPCEventServer)server_).QueryEventCategories(
-                        eventType, 
+                        eventType,
                         out count,
-                        out ppdwEventCategories, 
+                        out ppdwEventCategories,
                         out ppszEventCategoryDescs);
                 }
                 catch (Exception e)
                 {
                     throw Technosoftware.DaAeHdaClient.Com.Interop.CreateException("IOPCEventServer.QueryEventCategories", e);
-                }       
-                
+                }
+
                 // check for empty list.
                 if (count == 0)
                 {
@@ -294,7 +293,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                 }
 
                 // unmarshal arguments.
-                var    ids   = Technosoftware.DaAeHdaClient.Com.Interop.GetInt32s(ref ppdwEventCategories, count, true);
+                var ids = Technosoftware.DaAeHdaClient.Com.Interop.GetInt32s(ref ppdwEventCategories, count, true);
                 var names = Technosoftware.DaAeHdaClient.Com.Interop.GetUnicodeStrings(ref ppszEventCategoryDescs, count, true);
 
                 // build results.
@@ -304,7 +303,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                 {
                     categories[ii] = new TsCAeCategory();
 
-                    categories[ii].ID   = ids[ii];
+                    categories[ii].ID = ids[ii];
                     categories[ii].Name = names[ii];
                 }
 
@@ -336,15 +335,15 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                 try
                 {
                     ((IOPCEventServer)server_).QueryConditionNames(
-                        eventCategory, 
+                        eventCategory,
                         out count,
                         out ppszConditionNames);
                 }
                 catch (Exception e)
                 {
                     throw Technosoftware.DaAeHdaClient.Com.Interop.CreateException("IOPCEventServer.QueryConditionNames", e);
-                }       
-                
+                }
+
                 // check for empty list.
                 if (count == 0)
                 {
@@ -382,21 +381,21 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                 try
                 {
                     ((IOPCEventServer)server_).QuerySubConditionNames(
-                        conditionName, 
+                        conditionName,
                         out count,
                         out ppszSubConditionNames);
                 }
                 catch (Exception e)
                 {
                     throw Technosoftware.DaAeHdaClient.Com.Interop.CreateException("IOPCEventServer.QuerySubConditionNames", e);
-                }       
+                }
 
                 // check for empty list.
                 if (count == 0)
                 {
                     return new string[0];
                 }
-                
+
                 // unmarshal arguments.
                 var names = Technosoftware.DaAeHdaClient.Com.Interop.GetUnicodeStrings(ref ppszSubConditionNames, count, true);
 
@@ -428,15 +427,15 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                 try
                 {
                     ((IOPCEventServer)server_).QuerySourceConditions(
-                        sourceName, 
+                        sourceName,
                         out count,
                         out ppszConditionNames);
                 }
                 catch (Exception e)
                 {
                     throw Technosoftware.DaAeHdaClient.Com.Interop.CreateException("IOPCEventServer.QuerySourceConditions", e);
-                }       
-                    
+                }
+
                 // check for empty list.
                 if (count == 0)
                 {
@@ -476,7 +475,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                 try
                 {
                     ((IOPCEventServer)server_).QueryEventAttributes(
-                        eventCategory, 
+                        eventCategory,
                         out count,
                         out ppdwAttrIDs,
                         out ppszAttrDescs,
@@ -485,8 +484,8 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                 catch (Exception e)
                 {
                     throw Technosoftware.DaAeHdaClient.Com.Interop.CreateException("IOPCEventServer.QueryEventAttributes", e);
-                }       
-                
+                }
+
                 // check for empty list.
                 if (count == 0)
                 {
@@ -494,9 +493,9 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                 }
 
                 // unmarshal arguments.
-                var    ids   = Technosoftware.DaAeHdaClient.Com.Interop.GetInt32s(ref ppdwAttrIDs, count, true);
+                var ids = Technosoftware.DaAeHdaClient.Com.Interop.GetInt32s(ref ppdwAttrIDs, count, true);
                 var names = Technosoftware.DaAeHdaClient.Com.Interop.GetUnicodeStrings(ref ppszAttrDescs, count, true);
-                var  types = Technosoftware.DaAeHdaClient.Com.Interop.GetInt16s(ref ppvtAttrTypes, count, true);
+                var types = Technosoftware.DaAeHdaClient.Com.Interop.GetInt16s(ref ppvtAttrTypes, count, true);
 
                 // build results.
                 var attributes = new TsCAeAttribute[count];
@@ -505,8 +504,8 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                 {
                     attributes[ii] = new TsCAeAttribute();
 
-                    attributes[ii].ID       = ids[ii];
-                    attributes[ii].Name     = names[ii];
+                    attributes[ii].ID = ids[ii];
+                    attributes[ii].Name = names[ii];
                     attributes[ii].DataType = Technosoftware.DaAeHdaClient.Com.Interop.GetType((VarEnum)types[ii]);
                 }
 
@@ -529,12 +528,12 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
         /// <returns>A list of item urls for each specified attribute.</returns>
         public TsCAeItemUrl[] TranslateToItemIDs(
             string sourceName,
-            int    eventCategory,
+            int eventCategory,
             string conditionName,
             string subConditionName,
-            int[]  attributeIDs)
+            int[] attributeIDs)
         {
-                lock (this)
+            lock (this)
             {
                 // verify state and arguments.
                 if (server_ == null) throw new NotConnectedException();
@@ -543,19 +542,19 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                 var ppszAttrItemIDs = IntPtr.Zero;
                 var ppszNodeNames = IntPtr.Zero;
                 var ppCLSIDs = IntPtr.Zero;
-                    
-                var count = (attributeIDs != null)?attributeIDs.Length:0;
+
+                var count = (attributeIDs != null) ? attributeIDs.Length : 0;
 
                 // call server.
                 try
                 {
                     ((IOPCEventServer)server_).TranslateToItemIDs(
-                        (sourceName != null)?sourceName:"",
+                        (sourceName != null) ? sourceName : "",
                         eventCategory,
-                        (conditionName != null)?conditionName:"",
-                        (subConditionName != null)?subConditionName:"",
+                        (conditionName != null) ? conditionName : "",
+                        (subConditionName != null) ? subConditionName : "",
                         count,
-                        (count > 0)?attributeIDs:new int[0],
+                        (count > 0) ? attributeIDs : new int[0],
                         out ppszAttrItemIDs,
                         out ppszNodeNames,
                         out ppCLSIDs);
@@ -563,15 +562,15 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                 catch (Exception e)
                 {
                     throw Technosoftware.DaAeHdaClient.Com.Interop.CreateException("IOPCEventServer.TranslateToItemIDs", e);
-                }       
-            
+                }
+
                 // unmarshal results.
-                var itemIDs   = Technosoftware.DaAeHdaClient.Com.Interop.GetUnicodeStrings(ref ppszAttrItemIDs, count, true);
+                var itemIDs = Technosoftware.DaAeHdaClient.Com.Interop.GetUnicodeStrings(ref ppszAttrItemIDs, count, true);
                 var nodeNames = Technosoftware.DaAeHdaClient.Com.Interop.GetUnicodeStrings(ref ppszNodeNames, count, true);
-                var   clsids    = Technosoftware.DaAeHdaClient.Com.Interop.GetGUIDs(ref ppCLSIDs, count, true);
-                    
+                var clsids = Technosoftware.DaAeHdaClient.Com.Interop.GetGUIDs(ref ppCLSIDs, count, true);
+
                 var itemUrls = new TsCAeItemUrl[count];
-            
+
                 // fill in item urls.
                 for (var ii = 0; ii < count; ii++)
                 {
@@ -579,9 +578,9 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
 
                     itemUrls[ii].ItemName = itemIDs[ii];
                     itemUrls[ii].ItemPath = null;
-                    itemUrls[ii].Url.Scheme   = OpcUrlScheme.DA;
+                    itemUrls[ii].Url.Scheme = OpcUrlScheme.DA;
                     itemUrls[ii].Url.HostName = nodeNames[ii];
-                    itemUrls[ii].Url.Path     = string.Format("{{{0}}}", clsids[ii]);
+                    itemUrls[ii].Url.Path = string.Format("{{{0}}}", clsids[ii]);
                 }
 
                 // return results.
@@ -602,7 +601,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
 		public TsCAeCondition GetConditionState(
             string sourceName,
             string conditionName,
-            int[]  attributeIDs)
+            int[] attributeIDs)
         {
             lock (this)
             {
@@ -616,20 +615,20 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                 try
                 {
                     ((IOPCEventServer)server_).GetConditionState(
-                        (sourceName != null)?sourceName:"",
-                        (conditionName != null)?conditionName:"",
-                        (attributeIDs != null)?attributeIDs.Length:0,
-                        (attributeIDs != null)?attributeIDs:new int[0],
+                        (sourceName != null) ? sourceName : "",
+                        (conditionName != null) ? conditionName : "",
+                        (attributeIDs != null) ? attributeIDs.Length : 0,
+                        (attributeIDs != null) ? attributeIDs : new int[0],
                         out ppConditionState);
                 }
                 catch (Exception e)
                 {
                     throw Technosoftware.DaAeHdaClient.Com.Interop.CreateException("IOPCEventServer.GetConditionState", e);
-                }       
-            
+                }
+
                 // unmarshal results.
-				var conditions = Interop.GetConditions(ref ppConditionState, 1, true);
-            
+                var conditions = Interop.GetConditions(ref ppConditionState, 1, true);
+
                 // fill in attribute ids.
                 for (var ii = 0; ii < conditions[0].Attributes.Count; ii++)
                 {
@@ -672,15 +671,15 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                     try
                     {
                         ((IOPCEventServer2)server_).EnableConditionByArea2(
-                            areas.Length, 
+                            areas.Length,
                             areas,
                             out ppErrors);
                     }
                     catch (Exception e)
                     {
                         throw Technosoftware.DaAeHdaClient.Com.Interop.CreateException("IOPCEventServer2.EnableConditionByArea2", e);
-                    }       
-                
+                    }
+
                     // unmarshal arguments.
                     errors = Technosoftware.DaAeHdaClient.Com.Interop.GetInt32s(ref ppErrors, areas.Length, true);
                 }
@@ -689,18 +688,18 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                     try
                     {
                         ((IOPCEventServer)server_).EnableConditionByArea(
-                            areas.Length, 
+                            areas.Length,
                             areas);
                     }
                     catch (Exception e)
                     {
                         throw Technosoftware.DaAeHdaClient.Com.Interop.CreateException("IOPCEventServer.EnableConditionByArea", e);
-                    }   
-    
+                    }
+
                     // create dummy error array (0 == S_OK).
                     errors = new int[areas.Length];
                 }
-                
+
                 // build results.
                 var results = new OpcResult[errors.Length];
 
@@ -713,7 +712,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                 return results;
             }
         }
-        
+
         //======================================================================
         // DisableConditionByArea
 
@@ -745,15 +744,15 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                     try
                     {
                         ((IOPCEventServer2)server_).DisableConditionByArea2(
-                            areas.Length, 
+                            areas.Length,
                             areas,
                             out ppErrors);
                     }
                     catch (Exception e)
                     {
                         throw Technosoftware.DaAeHdaClient.Com.Interop.CreateException("IOPCEventServer2.DisableConditionByArea2", e);
-                    }       
-                
+                    }
+
                     // unmarshal arguments.
                     errors = Technosoftware.DaAeHdaClient.Com.Interop.GetInt32s(ref ppErrors, areas.Length, true);
                 }
@@ -762,18 +761,18 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                     try
                     {
                         ((IOPCEventServer)server_).DisableConditionByArea(
-                            areas.Length, 
+                            areas.Length,
                             areas);
                     }
                     catch (Exception e)
                     {
                         throw Technosoftware.DaAeHdaClient.Com.Interop.CreateException("IOPCEventServer.DisableConditionByArea", e);
-                    }   
-    
+                    }
+
                     // create dummy error array (0 == S_OK).
                     errors = new int[areas.Length];
                 }
-                
+
                 // build results.
                 var results = new OpcResult[errors.Length];
 
@@ -818,15 +817,15 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                     try
                     {
                         ((IOPCEventServer2)server_).EnableConditionBySource2(
-                            sources.Length, 
+                            sources.Length,
                             sources,
                             out ppErrors);
                     }
                     catch (Exception e)
                     {
                         throw Technosoftware.DaAeHdaClient.Com.Interop.CreateException("IOPCEventServer2.EnableConditionBySource2", e);
-                    }       
-                
+                    }
+
                     // unmarshal arguments.
                     errors = Technosoftware.DaAeHdaClient.Com.Interop.GetInt32s(ref ppErrors, sources.Length, true);
                 }
@@ -835,18 +834,18 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                     try
                     {
                         ((IOPCEventServer)server_).EnableConditionBySource(
-                            sources.Length, 
+                            sources.Length,
                             sources);
                     }
                     catch (Exception e)
                     {
                         throw Technosoftware.DaAeHdaClient.Com.Interop.CreateException("IOPCEventServer.EnableConditionBySource", e);
-                    }   
-    
+                    }
+
                     // create dummy error array (0 == S_OK).
                     errors = new int[sources.Length];
                 }
-                
+
                 // build results.
                 var results = new OpcResult[errors.Length];
 
@@ -891,15 +890,15 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                     try
                     {
                         ((IOPCEventServer2)server_).DisableConditionBySource2(
-                            sources.Length, 
+                            sources.Length,
                             sources,
                             out ppErrors);
                     }
                     catch (Exception e)
                     {
                         throw Technosoftware.DaAeHdaClient.Com.Interop.CreateException("IOPCEventServer2.DisableConditionBySource2", e);
-                    }       
-                
+                    }
+
                     // unmarshal arguments.
                     errors = Technosoftware.DaAeHdaClient.Com.Interop.GetInt32s(ref ppErrors, sources.Length, true);
                 }
@@ -908,18 +907,18 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                     try
                     {
                         ((IOPCEventServer)server_).DisableConditionBySource(
-                            sources.Length, 
+                            sources.Length,
                             sources);
                     }
                     catch (Exception e)
                     {
                         throw Technosoftware.DaAeHdaClient.Com.Interop.CreateException("IOPCEventServer.DisableConditionBySource", e);
-                    }   
-    
+                    }
+
                     // create dummy error array (0 == S_OK).
                     errors = new int[sources.Length];
                 }
-                
+
                 // build results.
                 var results = new OpcResult[errors.Length];
 
@@ -962,23 +961,23 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                     {
                         failures[ii] = new TsCAeEnabledStateResult();
 
-                        failures[ii].Enabled            = false;
+                        failures[ii].Enabled = false;
                         failures[ii].EffectivelyEnabled = false;
-                        failures[ii].Result           = OpcResult.E_FAIL;
+                        failures[ii].Result = OpcResult.E_FAIL;
                     }
 
                     return failures;
                 }
 
                 // initialize arguments.
-                var pbEnabled            = IntPtr.Zero;
+                var pbEnabled = IntPtr.Zero;
                 var pbEffectivelyEnabled = IntPtr.Zero;
-                var ppErrors             = IntPtr.Zero;
+                var ppErrors = IntPtr.Zero;
 
                 try
                 {
                     ((IOPCEventServer2)server_).GetEnableStateByArea(
-                        areas.Length, 
+                        areas.Length,
                         areas,
                         out pbEnabled,
                         out pbEffectivelyEnabled,
@@ -987,14 +986,14 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                 catch (Exception e)
                 {
                     throw Technosoftware.DaAeHdaClient.Com.Interop.CreateException("IOPCEventServer2.GetEnableStateByArea", e);
-                }       
-                
-                // unmarshal arguments.
-                var enabled             = Technosoftware.DaAeHdaClient.Com.Interop.GetInt32s(ref pbEnabled, areas.Length, true);
-                var effectivelyEnabled  = Technosoftware.DaAeHdaClient.Com.Interop.GetInt32s(ref pbEffectivelyEnabled, areas.Length, true);
-                var errors              = Technosoftware.DaAeHdaClient.Com.Interop.GetInt32s(ref ppErrors, areas.Length, true);
+                }
 
-                
+                // unmarshal arguments.
+                var enabled = Technosoftware.DaAeHdaClient.Com.Interop.GetInt32s(ref pbEnabled, areas.Length, true);
+                var effectivelyEnabled = Technosoftware.DaAeHdaClient.Com.Interop.GetInt32s(ref pbEffectivelyEnabled, areas.Length, true);
+                var errors = Technosoftware.DaAeHdaClient.Com.Interop.GetInt32s(ref ppErrors, areas.Length, true);
+
+
                 // build results.
                 var results = new TsCAeEnabledStateResult[errors.Length];
 
@@ -1002,9 +1001,9 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                 {
                     results[ii] = new TsCAeEnabledStateResult();
 
-                    results[ii].Enabled            = enabled[ii] != 0;
+                    results[ii].Enabled = enabled[ii] != 0;
                     results[ii].EffectivelyEnabled = effectivelyEnabled[ii] != 0;
-                    results[ii].Result           = Interop.GetResultID(errors[ii]);
+                    results[ii].Result = Interop.GetResultID(errors[ii]);
                 }
 
                 // return results
@@ -1041,23 +1040,23 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                     {
                         failures[ii] = new TsCAeEnabledStateResult();
 
-                        failures[ii].Enabled            = false;
+                        failures[ii].Enabled = false;
                         failures[ii].EffectivelyEnabled = false;
-                        failures[ii].Result           = OpcResult.E_FAIL;
+                        failures[ii].Result = OpcResult.E_FAIL;
                     }
 
                     return failures;
                 }
 
                 // initialize arguments.
-                var pbEnabled            = IntPtr.Zero;
+                var pbEnabled = IntPtr.Zero;
                 var pbEffectivelyEnabled = IntPtr.Zero;
-                var ppErrors             = IntPtr.Zero;
+                var ppErrors = IntPtr.Zero;
 
                 try
                 {
                     ((IOPCEventServer2)server_).GetEnableStateBySource(
-                        sources.Length, 
+                        sources.Length,
                         sources,
                         out pbEnabled,
                         out pbEffectivelyEnabled,
@@ -1066,14 +1065,14 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                 catch (Exception e)
                 {
                     throw Technosoftware.DaAeHdaClient.Com.Interop.CreateException("IOPCEventServer2.GetEnableStateBySource", e);
-                }       
-                    
-                // unmarshal arguments.
-                var enabled             = Technosoftware.DaAeHdaClient.Com.Interop.GetInt32s(ref pbEnabled, sources.Length, true);
-                var effectivelyEnabled  = Technosoftware.DaAeHdaClient.Com.Interop.GetInt32s(ref pbEffectivelyEnabled, sources.Length, true);
-                var errors              = Technosoftware.DaAeHdaClient.Com.Interop.GetInt32s(ref ppErrors, sources.Length, true);
+                }
 
-                    
+                // unmarshal arguments.
+                var enabled = Technosoftware.DaAeHdaClient.Com.Interop.GetInt32s(ref pbEnabled, sources.Length, true);
+                var effectivelyEnabled = Technosoftware.DaAeHdaClient.Com.Interop.GetInt32s(ref pbEffectivelyEnabled, sources.Length, true);
+                var errors = Technosoftware.DaAeHdaClient.Com.Interop.GetInt32s(ref ppErrors, sources.Length, true);
+
+
                 // build results.
                 var results = new TsCAeEnabledStateResult[errors.Length];
 
@@ -1081,9 +1080,9 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                 {
                     results[ii] = new TsCAeEnabledStateResult();
 
-                    results[ii].Enabled            = enabled[ii] != 0;
+                    results[ii].Enabled = enabled[ii] != 0;
                     results[ii].EffectivelyEnabled = effectivelyEnabled[ii] != 0;
-                    results[ii].Result           = Interop.GetResultID(errors[ii]);
+                    results[ii].Result = Interop.GetResultID(errors[ii]);
                 }
 
                 // return results
@@ -1102,10 +1101,10 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
         /// <param name="conditions">The conditions being acknowledged.</param>
         /// <returns>A list of result id indictaing whether each condition was successfully acknowledged.</returns>
         public OpcResult[] AcknowledgeCondition(
-            string                 acknowledgerID,
-            string                 comment,
+            string acknowledgerID,
+            string comment,
             TsCAeEventAcknowledgement[] conditions)
-        {               
+        {
             lock (this)
             {
                 // verify state and arguments.
@@ -1120,17 +1119,17 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                 // initialize arguments.
                 var count = conditions.Length;
 
-                var             pszSource        = new string[count];
-                var             pszConditionName = new string[count];
+                var pszSource = new string[count];
+                var pszConditionName = new string[count];
                 var pftActiveTime = new OpcRcw.Ae.FILETIME[count];
-                var                pdwCookie        = new int[count];
+                var pdwCookie = new int[count];
 
-                for (var ii = 0; ii < count; ii ++)
+                for (var ii = 0; ii < count; ii++)
                 {
-                    pszSource[ii]        = conditions[ii].SourceName;
+                    pszSource[ii] = conditions[ii].SourceName;
                     pszConditionName[ii] = conditions[ii].ConditionName;
-                    pftActiveTime[ii]    = Interop.Convert(Com.Interop.GetFILETIME(conditions[ii].ActiveTime));
-                    pdwCookie[ii]        = conditions[ii].Cookie;
+                    pftActiveTime[ii] = Interop.Convert(Com.Interop.GetFILETIME(conditions[ii].ActiveTime));
+                    pdwCookie[ii] = conditions[ii].Cookie;
                 }
 
                 var ppErrors = IntPtr.Zero;
@@ -1151,11 +1150,11 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                 catch (Exception e)
                 {
                     throw Technosoftware.DaAeHdaClient.Com.Interop.CreateException("IOPCEventServer.AckCondition", e);
-                }       
-                
+                }
+
                 // unmarshal results.
                 var errors = Technosoftware.DaAeHdaClient.Com.Interop.GetInt32s(ref ppErrors, count, true);
-                
+
                 // build results.
                 var results = new OpcResult[count];
 
@@ -1180,9 +1179,9 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
         /// <param name="browseFilter">The expression used to filter the names of children returned.</param>
         /// <returns>The set of elements that meet the filter criteria.</returns>
         public TsCAeBrowseElement[] Browse(
-            string     areaID,
-            TsCAeBrowseType browseType, 
-            string     browseFilter)
+            string areaID,
+            TsCAeBrowseType browseType,
+            string browseFilter)
         {
             lock (this)
             {
@@ -1213,10 +1212,10 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
         /// <param name="position">The object used to continue the browse if the number nodes exceeds the maximum specified.</param>
         /// <returns>The set of elements that meet the filter criteria.</returns>
         public TsCAeBrowseElement[] Browse(
-            string              areaID,
-            TsCAeBrowseType          browseType, 
-            string              browseFilter, 
-            int                 maxElements,
+            string areaID,
+            TsCAeBrowseType browseType,
+            string browseFilter,
+            int maxElements,
             out IOpcBrowsePosition position)
         {
             position = null;
@@ -1239,7 +1238,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                 var elements = new ArrayList();
 
                 var result = FetchElements(browseType, maxElements, enumerator, elements);
-                
+
                 // dispose of enumerator if all done.
                 if (result != 0)
                 {
@@ -1256,7 +1255,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                 return (TsCAeBrowseElement[])elements.ToArray(typeof(TsCAeBrowseElement));
             }
         }
-        
+
         //======================================================================
         // BrowseNext
 
@@ -1282,12 +1281,12 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
 
                 // fetch enumerator from position object.
                 var enumerator = ((BrowsePosition)position).Enumerator;
-            
+
                 // fetch elements.
                 var elements = new ArrayList();
 
                 var result = FetchElements(((BrowsePosition)position).BrowseType, maxElements, enumerator, elements);
-                
+
                 // dispose of position object if all done.
                 if (result != 0)
                 {
@@ -1298,7 +1297,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                 // return results.
                 return (TsCAeBrowseElement[])elements.ToArray(typeof(TsCAeBrowseElement));
             }
-        }   
+        }
         #endregion
 
         #region Private Methods
@@ -1333,19 +1332,19 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
             // verify object.
             if (unknown == null)
             {
-            throw new OpcResultException(new OpcResult( (int)OpcResult.E_FAIL.Code, OpcResult.FuncCallType.SysFuncCall, null ),"The response from the server was invalid or incomplete");
+                throw new OpcResultException(new OpcResult((int)OpcResult.E_FAIL.Code, OpcResult.FuncCallType.SysFuncCall, null), "The response from the server was invalid or incomplete");
             }
 
             // save object.
             m_browser = unknown;
         }
-        
+
         /// <summary>
         /// Moves the browse position prior to executing a browse operation.
         /// </summary>
         private void ChangeBrowsePosition(string areaID)
         {
-            var targetID = (areaID != null)?areaID:"";
+            var targetID = (areaID != null) ? areaID : "";
 
             // invoke COM method.
             try
@@ -1357,9 +1356,9 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
             catch (Exception e)
             {
                 throw Technosoftware.DaAeHdaClient.Com.Interop.CreateException("IOPCEventAreaBrowser.ChangeBrowsePosition", e);
-            }       
+            }
         }
-        
+
         /// <summary>
         /// Creates an enumerator for the names at the current position.
         /// </summary>
@@ -1374,22 +1373,22 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
             {
                 ((IOPCEventAreaBrowser)m_browser).BrowseOPCAreas(
                     dwBrowseFilterType,
-                    (browseFilter != null)?browseFilter:"",
+                    (browseFilter != null) ? browseFilter : "",
                     out enumerator);
             }
             catch (Exception e)
             {
                 throw Technosoftware.DaAeHdaClient.Com.Interop.CreateException("IOPCEventAreaBrowser.BrowseOPCAreas", e);
-            }       
+            }
 
             // verify object.
             if (enumerator == null)
             {
-            throw new OpcResultException(new OpcResult( (int)OpcResult.E_FAIL.Code, OpcResult.FuncCallType.SysFuncCall, null ),"The response from the server was invalid or incomplete");
+                throw new OpcResultException(new OpcResult((int)OpcResult.E_FAIL.Code, OpcResult.FuncCallType.SysFuncCall, null), "The response from the server was invalid or incomplete");
             }
 
             // return result.
-		return (System.Runtime.InteropServices.ComTypes.IEnumString)enumerator;
+            return (System.Runtime.InteropServices.ComTypes.IEnumString)enumerator;
         }
 
         /// <summary>
@@ -1412,7 +1411,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                     throw Technosoftware.DaAeHdaClient.Com.Interop.CreateException("IOPCEventAreaBrowser.GetQualifiedAreaName", e);
                 }
             }
-                
+
             // fetch source qualified name.
             else
             {
@@ -1438,47 +1437,47 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
             var buffer = new string[1];
 
             // re-calculate buffer length.
-            var bufferLength = (maxElements > 0 && maxElements-elements.Count < buffer.Length)?maxElements-elements.Count:buffer.Length;
+            var bufferLength = (maxElements > 0 && maxElements - elements.Count < buffer.Length) ? maxElements - elements.Count : buffer.Length;
 
             // fetch first batch of names.
             var pFetched = Marshal.AllocCoTaskMem(sizeof(int));
-            
+
             try
             {
                 var result = enumerator.Next(bufferLength, buffer, pFetched);
 
-            while (result == 0)
-            {
+                while (result == 0)
+                {
                     var fetched = Marshal.ReadInt32(pFetched);
 
-                // create elements.
-				for (var ii = 0; ii < fetched; ii++)
-                {
-                    var element = new TsCAeBrowseElement();
+                    // create elements.
+                    for (var ii = 0; ii < fetched; ii++)
+                    {
+                        var element = new TsCAeBrowseElement();
 
-                    element.Name          = buffer[ii];
-                    element.QualifiedName = GetQualifiedName(buffer[ii], browseType);
-                    element.NodeType      = browseType;
-                
-                    elements.Add(element);
-                }
+                        element.Name = buffer[ii];
+                        element.QualifiedName = GetQualifiedName(buffer[ii], browseType);
+                        element.NodeType = browseType;
 
-                // check for halt.
-                if (maxElements > 0 && elements.Count >= maxElements)
-                {
-                    break;
-                }
+                        elements.Add(element);
+                    }
 
-                // re-calculate buffer length.
-                bufferLength = (maxElements > 0 && maxElements-elements.Count < buffer.Length)?maxElements-elements.Count:buffer.Length;
-                    
-                // fetch next block.
+                    // check for halt.
+                    if (maxElements > 0 && elements.Count >= maxElements)
+                    {
+                        break;
+                    }
+
+                    // re-calculate buffer length.
+                    bufferLength = (maxElements > 0 && maxElements - elements.Count < buffer.Length) ? maxElements - elements.Count : buffer.Length;
+
+                    // fetch next block.
                     result = enumerator.Next(bufferLength, buffer, pFetched);
-            }
+                }
 
-            // return final result.
-            return result;
-        }
+                // return final result.
+                return result;
+            }
             finally
             {
                 if (pFetched != IntPtr.Zero)
@@ -1486,7 +1485,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                     Marshal.FreeCoTaskMem(pFetched);
                 }
             }
-		}
+        }
         #endregion
 
         #region Private Members
@@ -1496,7 +1495,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
         private Hashtable m_subscriptions = new Hashtable();
         #endregion
     }
-    
+
     #region BrowsePosition Class
     /// <summary>
     /// Stores the state of a browse operation.
@@ -1509,14 +1508,14 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
         /// Saves the parameters for an incomplete browse information.
         /// </summary>
         public BrowsePosition(
-            string          areaID,
-            TsCAeBrowseType      browseType, 
-            string          browseFilter,
-			System.Runtime.InteropServices.ComTypes.IEnumString enumerator)
+            string areaID,
+            TsCAeBrowseType browseType,
+            string browseFilter,
+            System.Runtime.InteropServices.ComTypes.IEnumString enumerator)
         :
-            base (areaID, browseType, browseFilter)
+            base(areaID, browseType, browseFilter)
         {
-            m_enumerator   = enumerator;
+            m_enumerator = enumerator;
         }
         #endregion
 
@@ -1543,11 +1542,11 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                 // Release unmanaged resources.
                 // Set large fields to null.
 
-			    if (m_enumerator != null)
-			    {				
-				    Technosoftware.DaAeHdaClient.Com.Interop.ReleaseServer(m_enumerator);
-				    m_enumerator = null;
-			    }
+                if (m_enumerator != null)
+                {
+                    Technosoftware.DaAeHdaClient.Com.Interop.ReleaseServer(m_enumerator);
+                    m_enumerator = null;
+                }
 
                 // Call Dispose on your base class.
                 m_disposed = true;
@@ -1568,7 +1567,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
         #endregion
 
         #region Private Members
-		System.Runtime.InteropServices.ComTypes.IEnumString m_enumerator = null;
+        System.Runtime.InteropServices.ComTypes.IEnumString m_enumerator = null;
         #endregion
     }
     #endregion

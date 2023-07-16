@@ -26,24 +26,24 @@
 
 namespace Technosoftware.DaAeHdaClient.Cpx
 {
-	/// <summary>
-	/// Stores a value with an associated name and/or type.
-	/// </summary>
-	public class TsCCpxComplexValue
-	{
-		/// <summary>
-		/// The name of the value.
-		/// </summary>
-		public string Name;
+    /// <summary>
+    /// Stores a value with an associated name and/or type.
+    /// </summary>
+    public class TsCCpxComplexValue
+    {
+        /// <summary>
+        /// The name of the value.
+        /// </summary>
+        public string Name;
 
-		/// <summary>
-		/// The complex or simple data type of the value.
-		/// </summary>
-		public string Type;
+        /// <summary>
+        /// The complex or simple data type of the value.
+        /// </summary>
+        public string Type;
 
-		/// <summary>
-		/// The actual value.
-		/// </summary>
-		public object Value;
-	}
+        /// <summary>
+        /// The actual value.
+        /// </summary>
+        public object Value;
+    }
 }

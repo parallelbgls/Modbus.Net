@@ -42,10 +42,10 @@ namespace Technosoftware.DaAeHdaClient
 		/// </summary>
         public string VendorName { get; set; }
 
-		/// <summary>
-		/// <para>Namespace for types defined by this vendor.  This may or 
-		/// may not be the same as the VendorName. Null or empty if not used.</para> 
-		/// </summary>
+        /// <summary>
+        /// <para>Namespace for types defined by this vendor.  This may or 
+        /// may not be the same as the VendorName. Null or empty if not used.</para> 
+        /// </summary>
         public string VendorNamespace { get; set; }
 
         /// <summary>
@@ -53,19 +53,19 @@ namespace Technosoftware.DaAeHdaClient
         /// </summary>
         public string ServerName { get; set; }
 
-		/// <summary>
-		/// <para>Namespace for server-specific types. Null or empty if not used.</para> 
-		/// <para>This name is typically a concatentation of the VendorNamespace 
-		/// and the ServerName (separated by a '/' character) 
-		/// (e.g "MyVendorNamespace/MyServer").</para>
-		/// </summary>
+        /// <summary>
+        /// <para>Namespace for server-specific types. Null or empty if not used.</para> 
+        /// <para>This name is typically a concatentation of the VendorNamespace 
+        /// and the ServerName (separated by a '/' character) 
+        /// (e.g "MyVendorNamespace/MyServer").</para>
+        /// </summary>
         public string ServerNamespace { get; set; }
 
-		/// <summary>
-		/// <para>The HostName of the machine in which the server resides (runs).  The 
-		/// HostName is used as part of the object path in InstanceIds of the 
-		/// server's objects.</para> 
-		/// </summary>
+        /// <summary>
+        /// <para>The HostName of the machine in which the server resides (runs).  The 
+        /// HostName is used as part of the object path in InstanceIds of the 
+        /// server's objects.</para> 
+        /// </summary>
         public string HostName { get; set; }
 
         /// <summary>
@@ -81,5 +81,5 @@ namespace Technosoftware.DaAeHdaClient
 		/// accessed without a client context.
 		/// </summary>
         public OpcServerDetail ServerDetails { get; set; }
-	}
+    }
 }

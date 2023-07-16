@@ -23,10 +23,9 @@
 #region Using Directives
 using System;
 using System.Collections;
-
 using Technosoftware.DaAeHdaClient.Hda;
-using Technosoftware.OpcRcw.Hda;
 using Technosoftware.OpcRcw.Comn;
+using Technosoftware.OpcRcw.Hda;
 #endregion
 
 namespace Technosoftware.DaAeHdaClient.Com.Hda
@@ -34,8 +33,8 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
     /// <summary>
     /// An in-process wrapper an OPC HDA browser object.
     /// </summary>
-    internal class  Browser : ITsCHdaBrowser
-    {   
+    internal class Browser : ITsCHdaBrowser
+    {
         //======================================================================
         // Construction
 
@@ -73,7 +72,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
         /// <summary>
         /// This must be called explicitly by clients to ensure the COM server is released.
         /// </summary>
-        public virtual void Dispose() 
+        public virtual void Dispose()
         {
             lock (this)
             {
@@ -90,9 +89,9 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
         /// <summary>
         /// Returns the set of attribute filters used by the browser. 
         /// </summary>
-        public TsCHdaBrowseFilterCollection Filters 
-        { 
-            get 
+        public TsCHdaBrowseFilterCollection Filters
+        {
+            get
             {
                 lock (this)
                 {
@@ -103,7 +102,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
 
         //======================================================================
         // Browse
-        
+
         /// <summary>
         /// Browses the server's address space at the specified branch.
         /// </summary>
@@ -121,7 +120,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
 
             return elements;
         }
-        
+
         /// <summary>
         /// Begins a browsing the server's address space at the specified branch.
         /// </summary>
@@ -141,11 +140,11 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
 
             lock (this)
             {
-                var branchPath = (itemID != null && itemID.ItemName != null)?itemID.ItemName:"";
+                var branchPath = (itemID != null && itemID.ItemName != null) ? itemID.ItemName : "";
 
                 // move to the correct position in the server's address space.
                 try
-                {                   
+                {
                     m_browser.ChangeBrowsePosition(OPCHDA_BROWSEDIRECTION.OPCHDA_BROWSE_DIRECT, branchPath);
                 }
                 catch (Exception e)
@@ -171,7 +170,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
                 // browse for items
                 enumerator = GetEnumerator(false);
 
-                var items = FetchElements(enumerator, maxElements-elements.Count, false);
+                var items = FetchElements(enumerator, maxElements - elements.Count, false);
 
                 if (items != null)
                 {
@@ -233,13 +232,13 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
 
                     // release enumerator.
                     pos.Enumerator.Dispose();
-                    
+
                     pos.Enumerator = null;
                     pos.FetchingItems = true;
 
                     // move to the correct position in the server's address space.
                     try
-                    {                   
+                    {
                         m_browser.ChangeBrowsePosition(OPCHDA_BROWSEDIRECTION.OPCHDA_BROWSE_DIRECT, pos.BranchPath);
                     }
                     catch (Exception e)
@@ -252,7 +251,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
                 }
 
                 // fetch next set of items.
-                var items = FetchElements(pos.Enumerator, maxElements-elements.Count, false);
+                var items = FetchElements(pos.Enumerator, maxElements - elements.Count, false);
 
                 if (items != null)
                 {
@@ -282,7 +281,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
         {
             try
             {
-                var browseType = (isBranch)?OPCHDA_BROWSETYPE.OPCHDA_BRANCH:OPCHDA_BROWSETYPE.OPCHDA_LEAF;
+                var browseType = (isBranch) ? OPCHDA_BROWSETYPE.OPCHDA_BRANCH : OPCHDA_BROWSETYPE.OPCHDA_LEAF;
 
                 IEnumString pEnumerator = null;
                 m_browser.GetEnum(browseType, out pEnumerator);
@@ -303,13 +302,13 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
             var elements = new ArrayList();
 
             while (elements.Count < maxElements)
-            {           
+            {
                 // fetch next batch of element names.
                 var count = BLOCK_SIZE;
 
                 if (elements.Count + count > maxElements)
                 {
-                    count = maxElements - elements.Count; 
+                    count = maxElements - elements.Count;
                 }
                 var names = enumerator.Next(count);
 
@@ -321,18 +320,18 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
 
                 // create new element objects.
                 foreach (var name in names)
-                {           
+                {
                     var element = new TsCHdaBrowseElement();
 
-                    element.Name   = name;
+                    element.Name = name;
                     // lookup item id for element.
                     try
                     {
                         string itemID = null;
                         m_browser.GetItemID(name, out itemID);
-                        
-                        element.ItemName    = itemID;
-                        element.ItemPath    = null;
+
+                        element.ItemName = itemID;
+                        element.ItemPath = null;
                         element.HasChildren = isBranch;
                     }
                     catch
@@ -384,8 +383,8 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
         /// <param name="fetchingItems">Whether the enumerator is return branches or items.</param>
         internal BrowsePosition(string branchPath, EnumString enumerator, bool fetchingItems)
         {
-            m_branchPath    = branchPath;
-            m_enumerator    = enumerator;
+            m_branchPath = branchPath;
+            m_enumerator = enumerator;
             m_fetchingItems = fetchingItems;
         }
 

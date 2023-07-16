@@ -130,7 +130,7 @@ namespace Modbus.Net.Opc
                     {
                         Success = false,
                         Value = Encoding.ASCII.GetBytes("NoData")
-                    };             
+                    };
                 }
                 else
                 {

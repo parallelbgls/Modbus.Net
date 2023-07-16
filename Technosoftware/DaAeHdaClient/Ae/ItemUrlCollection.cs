@@ -25,36 +25,36 @@
 
 namespace Technosoftware.DaAeHdaClient.Ae
 {
-	/// <summary>
-	/// Contains a collection of item urls.
-	/// </summary>
-	internal class TsCAeItemUrlCollection : OpcReadOnlyCollection
-	{
-		#region Constructors, Destructor, Initialization
-		/// <summary>
-		/// Constructs an empty collection.
-		/// </summary>
-		public TsCAeItemUrlCollection() : base(new TsCAeItemUrl[0]) { }
+    /// <summary>
+    /// Contains a collection of item urls.
+    /// </summary>
+    internal class TsCAeItemUrlCollection : OpcReadOnlyCollection
+    {
+        #region Constructors, Destructor, Initialization
+        /// <summary>
+        /// Constructs an empty collection.
+        /// </summary>
+        public TsCAeItemUrlCollection() : base(new TsCAeItemUrl[0]) { }
 
-		/// <summary>
-		/// Constructs a collection from an array of item urls.
-		/// </summary>
-		public TsCAeItemUrlCollection(TsCAeItemUrl[] itemUrls) : base(itemUrls) { }
+        /// <summary>
+        /// Constructs a collection from an array of item urls.
+        /// </summary>
+        public TsCAeItemUrlCollection(TsCAeItemUrl[] itemUrls) : base(itemUrls) { }
         #endregion
 
-		#region Public Methods
+        #region Public Methods
         /// <summary>
-		/// An indexer for the collection.
-		/// </summary>
-		public new TsCAeItemUrl this[int index] => (TsCAeItemUrl)Array.GetValue(index);
+        /// An indexer for the collection.
+        /// </summary>
+        public new TsCAeItemUrl this[int index] => (TsCAeItemUrl)Array.GetValue(index);
 
         /// <summary>
 		/// Returns a copy of the collection as an array.
 		/// </summary>
 		public new TsCAeItemUrl[] ToArray()
-		{
-			return (TsCAeItemUrl[])OpcConvert.Clone(Array);
-		}
+        {
+            return (TsCAeItemUrl[])OpcConvert.Clone(Array);
+        }
         #endregion
-	}
+    }
 }

@@ -26,19 +26,19 @@
 
 namespace Technosoftware.DaAeHdaClient.Ae
 {
-	/// <summary>
-	/// The type of nodes to return during a browse.
-	/// </summary>
-	public enum TsCAeBrowseType
-	{
-		/// <summary>
-		/// Return only nodes that are process areas.
-		/// </summary>
-		Area,
+    /// <summary>
+    /// The type of nodes to return during a browse.
+    /// </summary>
+    public enum TsCAeBrowseType
+    {
+        /// <summary>
+        /// Return only nodes that are process areas.
+        /// </summary>
+        Area,
 
-		/// <summary>
-		/// Return only nodes that are event sources.
-		/// </summary>
-		Source
-	}
+        /// <summary>
+        /// Return only nodes that are event sources.
+        /// </summary>
+        Source
+    }
 }

@@ -27,22 +27,22 @@ using System.Runtime.Serialization;
 
 namespace Technosoftware.DaAeHdaClient.Cpx
 {
-	/// <summary>
-	/// Raised if the data in buffer is not consistent with the schema.
-	/// </summary>
-	[Serializable]
-	public class TsCCpxInvalidDataInBufferException : ApplicationException
-	{
-		private const string Default = "The data in the buffer cannot be read because it is not consistent with the schema.";
-		/// <remarks/>
-		public TsCCpxInvalidDataInBufferException() : base(Default) { }
-		/// <remarks/>
-		public TsCCpxInvalidDataInBufferException(string message) : base(Default + Environment.NewLine + message) { }
-		/// <remarks/>
-		public TsCCpxInvalidDataInBufferException(Exception e) : base(Default, e) { }
-		/// <remarks/>
-		public TsCCpxInvalidDataInBufferException(string message, Exception innerException) : base(Default + Environment.NewLine + message, innerException) { }
-		/// <remarks/>
-		protected TsCCpxInvalidDataInBufferException(SerializationInfo info, StreamingContext context) : base(info, context) { }
-	}
+    /// <summary>
+    /// Raised if the data in buffer is not consistent with the schema.
+    /// </summary>
+    [Serializable]
+    public class TsCCpxInvalidDataInBufferException : ApplicationException
+    {
+        private const string Default = "The data in the buffer cannot be read because it is not consistent with the schema.";
+        /// <remarks/>
+        public TsCCpxInvalidDataInBufferException() : base(Default) { }
+        /// <remarks/>
+        public TsCCpxInvalidDataInBufferException(string message) : base(Default + Environment.NewLine + message) { }
+        /// <remarks/>
+        public TsCCpxInvalidDataInBufferException(Exception e) : base(Default, e) { }
+        /// <remarks/>
+        public TsCCpxInvalidDataInBufferException(string message, Exception innerException) : base(Default + Environment.NewLine + message, innerException) { }
+        /// <remarks/>
+        protected TsCCpxInvalidDataInBufferException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+    }
 }

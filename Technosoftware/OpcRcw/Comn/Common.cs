@@ -11,8 +11,6 @@
 
 #region Using Directives
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Runtime.InteropServices;
 
 /* Unmerged change from project 'Technosoftware.OpcRcw (net472)'
@@ -29,7 +27,7 @@ using Technosoftware.OpcRcw;
 #pragma warning disable 1591
 
 namespace Technosoftware.OpcRcw.Comn
-{   
+{
     /// <exclude />
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
     public struct CONNECTDATA

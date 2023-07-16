@@ -22,8 +22,8 @@
 
 #region Using Directives
 using System;
-using System.Text;
 using System.Security.Cryptography;
+using System.Text;
 #endregion
 
 namespace Technosoftware.DaAeHdaClient
@@ -299,7 +299,7 @@ namespace Technosoftware.DaAeHdaClient
                 return null;
             }
         }
- 
+
         #endregion
 
         ///////////////////////////////////////////////////////////////////////

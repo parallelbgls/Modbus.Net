@@ -23,11 +23,9 @@
 #region Using Directives
 using System;
 using System.Runtime.InteropServices;
-
 using Technosoftware.DaAeHdaClient.Ae;
-using Technosoftware.OpcRcw.Ae;
-
 using Technosoftware.DaAeHdaClient.Utilities;
+using Technosoftware.OpcRcw.Ae;
 
 #endregion
 
@@ -333,7 +331,9 @@ namespace Technosoftware.DaAeHdaClient.Com.Ae
                 // build results.
                 var filters = new TsCAeSubscriptionFilters
                 {
-                    EventTypes = pdwEventType, LowSeverity = pdwLowSeverity, HighSeverity = pdwHighSeverity
+                    EventTypes = pdwEventType,
+                    LowSeverity = pdwLowSeverity,
+                    HighSeverity = pdwHighSeverity
                 };
 
 

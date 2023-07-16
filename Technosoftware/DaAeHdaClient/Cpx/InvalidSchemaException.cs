@@ -27,22 +27,22 @@ using System.Runtime.Serialization;
 
 namespace Technosoftware.DaAeHdaClient.Cpx
 {
-	/// <summary>
-	/// Raised if the schema contains errors or inconsistencies.
-	/// </summary>
-	[Serializable]
-	public class TsCCpxInvalidSchemaException : ApplicationException
-	{
-		private const string Default = "The schema cannot be used because it contains errors or inconsitencies.";
-		/// <remarks/>
-		public TsCCpxInvalidSchemaException() : base(Default) { }
-		/// <remarks/>
-		public TsCCpxInvalidSchemaException(string message) : base(Default + Environment.NewLine + message) { }
-		/// <remarks/>
-		public TsCCpxInvalidSchemaException(Exception e) : base(Default, e) { }
-		/// <remarks/>
-		public TsCCpxInvalidSchemaException(string message, Exception innerException) : base(Default + Environment.NewLine + message, innerException) { }
-		/// <remarks/>
-		protected TsCCpxInvalidSchemaException(SerializationInfo info, StreamingContext context) : base(info, context) { }
-	}
+    /// <summary>
+    /// Raised if the schema contains errors or inconsistencies.
+    /// </summary>
+    [Serializable]
+    public class TsCCpxInvalidSchemaException : ApplicationException
+    {
+        private const string Default = "The schema cannot be used because it contains errors or inconsitencies.";
+        /// <remarks/>
+        public TsCCpxInvalidSchemaException() : base(Default) { }
+        /// <remarks/>
+        public TsCCpxInvalidSchemaException(string message) : base(Default + Environment.NewLine + message) { }
+        /// <remarks/>
+        public TsCCpxInvalidSchemaException(Exception e) : base(Default, e) { }
+        /// <remarks/>
+        public TsCCpxInvalidSchemaException(string message, Exception innerException) : base(Default + Environment.NewLine + message, innerException) { }
+        /// <remarks/>
+        protected TsCCpxInvalidSchemaException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+    }
 }

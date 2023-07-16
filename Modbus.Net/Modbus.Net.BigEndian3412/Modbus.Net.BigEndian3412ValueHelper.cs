@@ -40,11 +40,11 @@ namespace Modbus.Net
         {
             Array.Reverse(data, pos, 4);
             byte temp;
-            temp = data[pos]; data[pos] = data[pos+2]; data[pos+2] = temp;
-            temp = data[pos+1]; data[pos+1] = data[pos+3]; data[pos+3] = temp;
+            temp = data[pos]; data[pos] = data[pos + 2]; data[pos + 2] = temp;
+            temp = data[pos + 1]; data[pos + 1] = data[pos + 3]; data[pos + 3] = temp;
             var t = BitConverter.ToSingle(data, pos);
-            temp = data[pos]; data[pos] = data[pos+2]; data[pos+2] = temp;
-            temp = data[pos+1]; data[pos+1] = data[pos+3]; data[pos+3] = temp;
+            temp = data[pos]; data[pos] = data[pos + 2]; data[pos + 2] = temp;
+            temp = data[pos + 1]; data[pos + 1] = data[pos + 3]; data[pos + 3] = temp;
             Array.Reverse(data, pos, 4);
             pos += 4;
             return t;

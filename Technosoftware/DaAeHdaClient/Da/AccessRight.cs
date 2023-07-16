@@ -25,21 +25,21 @@
 
 namespace Technosoftware.DaAeHdaClient.Da
 {
-	/// <summary>
-	///     <para>Defines possible item access rights.</para>
-	///     <para align="left">Indicates if this item is read only, write only or read/write.
-	///     This is NOT related to security but rather to the nature of the underlying
-	///     hardware.</para>
-	/// </summary>
-	public enum TsDaAccessRights
+    /// <summary>
+    ///     <para>Defines possible item access rights.</para>
+    ///     <para align="left">Indicates if this item is read only, write only or read/write.
+    ///     This is NOT related to security but rather to the nature of the underlying
+    ///     hardware.</para>
+    /// </summary>
+    public enum TsDaAccessRights
     {
-		/// <summary>The access rights for this item are server.</summary>
-		Unknown = 0x00,
-		/// <summary>The client can read the data item's value.</summary>
-		Readable = 0x01,
-		/// <summary>The client can change the data item's value.</summary>
-		Writable = 0x02,
-		/// <summary>The client can read and change the data item's value.</summary>
-		ReadWritable = 0x03
-	}
+        /// <summary>The access rights for this item are server.</summary>
+        Unknown = 0x00,
+        /// <summary>The client can read the data item's value.</summary>
+        Readable = 0x01,
+        /// <summary>The client can change the data item's value.</summary>
+        Writable = 0x02,
+        /// <summary>The client can read and change the data item's value.</summary>
+        ReadWritable = 0x03
+    }
 }

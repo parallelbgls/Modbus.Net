@@ -32,7 +32,7 @@ namespace Technosoftware.DaAeHdaClient.Com
     /// A wrapper for the COM IEnumString interface.
     /// </summary>
     internal class EnumString : IDisposable
-    {   
+    {
         /// <summary>
         /// A reference to the remote COM object.
         /// </summary>
@@ -45,7 +45,7 @@ namespace Technosoftware.DaAeHdaClient.Com
         {
             m_enumerator = (IEnumString)enumerator;
         }
-        
+
         /// <summary>
         /// Releases the remote COM object.
         /// </summary>
@@ -66,7 +66,7 @@ namespace Technosoftware.DaAeHdaClient.Com
             try
             {
                 // create buffer.
-                var buffer = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(IntPtr))*count);
+                var buffer = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(IntPtr)) * count);
 
                 try
                 {

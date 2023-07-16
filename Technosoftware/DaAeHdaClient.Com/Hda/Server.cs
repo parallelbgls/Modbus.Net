@@ -3175,8 +3175,8 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
             OPCHDA_TIME pEndTime)
         {
             // unmarshal actual times from input arguments.
-			var startTime = Technosoftware.DaAeHdaClient.Com.Interop.GetFILETIME(Interop.Convert(pStartTime.ftTime));
-			var endTime   = Technosoftware.DaAeHdaClient.Com.Interop.GetFILETIME(Interop.Convert(pEndTime.ftTime));
+            var startTime = Technosoftware.DaAeHdaClient.Com.Interop.GetFILETIME(Interop.Convert(pStartTime.ftTime));
+            var endTime = Technosoftware.DaAeHdaClient.Com.Interop.GetFILETIME(Interop.Convert(pEndTime.ftTime));
 
             foreach (var result in results)
             {
@@ -3466,7 +3466,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
         /// The synchronization object for subscription access
         /// </summary>
         private static volatile object lock_ = new object();
-        
+
         private bool disposed_ = false;
         #endregion
     }

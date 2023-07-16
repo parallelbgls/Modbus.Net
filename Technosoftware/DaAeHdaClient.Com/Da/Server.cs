@@ -22,16 +22,13 @@
 
 #region Using Directives
 using System;
-using System.Threading;
 using System.Collections;
 using System.Globalization;
 using System.Runtime.InteropServices;
-
-using Technosoftware.DaAeHdaClient.Da;
-using Technosoftware.DaAeHdaClient.Utilities;
-
-using Technosoftware.OpcRcw.Da;
+using System.Threading;
 using Technosoftware.DaAeHdaClient.Com.Utilities;
+using Technosoftware.DaAeHdaClient.Da;
+using Technosoftware.OpcRcw.Da;
 
 #endregion
 
@@ -100,7 +97,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Da
                             // release all groups.
                             foreach (Subscription subscription in subscriptions_.Values)
                             {
-                               var methodName = "IOPCServer.RemoveGroup";
+                                var methodName = "IOPCServer.RemoveGroup";
 
                                 // remove subscription from server.
                                 try
@@ -166,7 +163,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Da
 
                 // invoke COM method.
                 try
-                {                   
+                {
                     var server = BeginComCall<IOPCServer>(methodName, true);
 
                     (server).GetErrorString(
@@ -188,7 +185,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Da
                 }
                 finally
                 {
-                    EndComCall(methodName);                   
+                    EndComCall(methodName);
                 }
             }
         }
@@ -237,7 +234,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Da
 
                 // invoke COM method.
                 try
-                {                  
+                {
                     var server = BeginComCall<IOPCServer>(methodName, true);
                     (server).GetStatus(out pStatus);
 
@@ -292,10 +289,10 @@ namespace Technosoftware.DaAeHdaClient.Com.Da
                 var pQualities = IntPtr.Zero;
                 var pTimestamps = IntPtr.Zero;
                 var pErrors = IntPtr.Zero;
-                                
+
                 // invoke COM method.
                 try
-                {              
+                {
                     var server = BeginComCall<IOPCItemIO>(methodName, true);
                     server.Read(
                          count,
@@ -424,7 +421,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Da
 
                 // invoke COM method.
                 try
-                {                
+                {
                     var server = BeginComCall<IOPCItemIO>(methodName, true);
                     server.WriteVQT(
                         count,
@@ -500,7 +497,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Da
                 var revisedUpdateRate = 0;
 
                 var hDeadband = GCHandle.Alloc(result.Deadband, GCHandleType.Pinned);
-                              
+
                 // invoke COM method.
                 try
                 {
@@ -538,12 +535,12 @@ namespace Technosoftware.DaAeHdaClient.Com.Da
                 }
 
                 if (group == null) throw new OpcResultException(OpcResult.E_FAIL, "The subscription  was not created.");
-               
+
                 methodName = "IOPCGroupStateMgt2.SetKeepAlive";
 
                 // set the keep alive rate if requested.
                 try
-                {                 
+                {
                     var keepAlive = 0;
                     var comObject = BeginComCall<IOPCGroupStateMgt2>(group, methodName, true);
                     comObject.SetKeepAlive(result.KeepAlive, out keepAlive);
@@ -562,9 +559,9 @@ namespace Technosoftware.DaAeHdaClient.Com.Da
                 }
                 finally
                 {
-                    EndComCall(methodName);                   
+                    EndComCall(methodName);
                 }
-              
+
                 // save server handle.
                 result.ServerHandle = serverHandle;
 
@@ -619,7 +616,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Da
 
                 // invoke COM method.
                 try
-                {                 
+                {
                     var server = BeginComCall<IOPCServer>(methodName, true);
                     server.RemoveGroup((int)state.ServerHandle, 0);
 
@@ -635,7 +632,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Da
                 }
                 finally
                 {
-                    EndComCall(methodName);                   
+                    EndComCall(methodName);
                 }
             }
         }
@@ -670,7 +667,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Da
 
                 // invoke COM method.
                 try
-                {                    
+                {
                     var server = BeginComCall<IOPCBrowse>(methodName, true);
                     server.Browse(
                              (itemId != null && itemId.ItemName != null) ? itemId.ItemName : "",
@@ -699,7 +696,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Da
                 }
                 finally
                 {
-                    EndComCall(methodName);                    
+                    EndComCall(methodName);
                 }
 
                 // unmarshal results.
@@ -760,7 +757,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Da
 
                 // invoke COM method.
                 try
-                {                   
+                {
                     var server = BeginComCall<IOPCBrowse>(methodName, true);
                     server.Browse(
                         (itemID != null && itemID.ItemName != null) ? itemID.ItemName : "",
@@ -789,7 +786,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Da
                 }
                 finally
                 {
-                    EndComCall(methodName);                    
+                    EndComCall(methodName);
                 }
 
                 // unmarshal results.
@@ -842,7 +839,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Da
 
                 // invoke COM method.
                 try
-                {                   
+                {
                     var server = BeginComCall<IOPCBrowse>(methodName, true);
                     server.GetProperties(
                           itemIds.Length,
@@ -863,8 +860,8 @@ namespace Technosoftware.DaAeHdaClient.Com.Da
                     throw Technosoftware.DaAeHdaClient.Com.Interop.CreateException(methodName, e);
                 }
                 finally
-                {                   
-                    EndComCall(methodName);                    
+                {
+                    EndComCall(methodName);
                 }
 
                 // unmarshal results.

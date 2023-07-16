@@ -24,8 +24,8 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Resources;
 using System.Reflection;
+using System.Resources;
 using System.Runtime.Serialization;
 #endregion
 

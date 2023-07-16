@@ -136,7 +136,7 @@ namespace Modbus.Net
             else if (length == 0) return null;
             else
             {
-                duplicatedMessages = new List<(byte[],bool)>();
+                duplicatedMessages = new List<(byte[], bool)>();
                 var skipLength = 0;
                 while (receiveMessageCopy.Length >= length)
                 {
@@ -160,7 +160,7 @@ namespace Modbus.Net
                     if (length == 0) return null;
                 }
                 if (skipLength > 0)
-                {                   
+                {
                     lock (WaitingMessages)
                     {
                         var def = GetMessageFromWaitingList(null);
@@ -175,7 +175,7 @@ namespace Modbus.Net
                             }
                             def.ReceiveMutex.Set();
                         }
-                    }                  
+                    }
                     return null;
                 }
             }

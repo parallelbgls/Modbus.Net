@@ -1,8 +1,6 @@
 ﻿using Quartz;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -41,7 +39,7 @@ namespace Modbus.Net
             if (sj == null)
             {
                 var chainRoot = context.JobDetail.Key;
-                var chainParent = ChainLinks.FirstOrDefault(p => p.Value == context.JobDetail.Key).Key;               
+                var chainParent = ChainLinks.FirstOrDefault(p => p.Value == context.JobDetail.Key).Key;
                 while (chainParent != null)
                 {
                     chainRoot = chainParent;

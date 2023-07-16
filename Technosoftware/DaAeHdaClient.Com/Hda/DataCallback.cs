@@ -30,26 +30,26 @@ using Technosoftware.OpcRcw.Hda;
 #endregion
 
 namespace Technosoftware.DaAeHdaClient.Com.Hda
-{   
+{
     /// <summary>
     ///  A class that implements the HDA data callback interface.
     /// </summary>
-	internal class  DataCallback : IOPCHDA_DataCallback
-    {   
+    internal class DataCallback : IOPCHDA_DataCallback
+    {
         /// <summary>
         /// Initializes the object with the containing subscription object.
         /// </summary>
-        public DataCallback() {}
+        public DataCallback() { }
 
         /// <summary>
         /// Fired when an exception occurs during callback processing.
         /// </summary>
         public event TsCHdaCallbackExceptionEventHandler CallbackExceptionEvent
         {
-            add    {lock (this) { _callbackExceptionEvent += value; }}
-            remove {lock (this) { _callbackExceptionEvent -= value; }}
+            add { lock (this) { _callbackExceptionEvent += value; } }
+            remove { lock (this) { _callbackExceptionEvent -= value; } }
         }
-    
+
         /// <summary>
         /// Creates a new request object.
         /// </summary>
@@ -61,8 +61,8 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
                 var request = new Request(requestHandle, callback, ++m_nextID);
 
                 // no items yet - callback may return before async call returns.
-                m_requests[request.RequestID] = request;    
-        
+                m_requests[request.RequestID] = request;
+
                 // return requests.
                 return request;
             }
@@ -103,11 +103,11 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
         /// Called when new data arrives for a subscription.
         /// </summary>
         public void OnDataChange(
-            int           dwTransactionID, 
-            int           hrStatus,
-            int           dwNumItems, 
+            int dwTransactionID,
+            int hrStatus,
+            int dwNumItems,
             OPCHDA_ITEM[] pItemValues,
-            int[]         phrErrors)
+            int[] phrErrors)
         {
             try
             {
@@ -130,7 +130,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
 
                         results[ii].ServerHandle = results[ii].ClientHandle;
                         results[ii].ClientHandle = null;
-                        results[ii].Result     = Utilities.Interop.GetResultId(phrErrors[ii]);
+                        results[ii].Result = Utilities.Interop.GetResultId(phrErrors[ii]);
                     }
 
                     // invoke callback - remove request if unexpected error occured.
@@ -150,11 +150,11 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
         /// Called when an asynchronous read request completes.
         /// </summary>
         public void OnReadComplete(
-            int           dwTransactionID, 
-            int           hrStatus,
-            int           dwNumItems, 
+            int dwTransactionID,
+            int hrStatus,
+            int dwNumItems,
             OPCHDA_ITEM[] pItemValues,
-            int[]         phrErrors)
+            int[] phrErrors)
         {
             try
             {
@@ -176,7 +176,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
                         results[ii] = Interop.GetItemValueCollection(pItemValues[ii], false);
 
                         results[ii].ServerHandle = pItemValues[ii].hClient;
-                        results[ii].Result     = Utilities.Interop.GetResultId(phrErrors[ii]);
+                        results[ii].Result = Utilities.Interop.GetResultId(phrErrors[ii]);
                     }
 
                     // invoke callback - remove request if all results arrived.
@@ -196,11 +196,11 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
         /// Called when an asynchronous read modified request completes.
         /// </summary>
         public void OnReadModifiedComplete(
-            int                   dwTransactionID, 
-            int                   hrStatus,
-            int                   dwNumItems, 
+            int dwTransactionID,
+            int hrStatus,
+            int dwNumItems,
             OPCHDA_MODIFIEDITEM[] pItemValues,
-            int[]                 phrErrors)
+            int[] phrErrors)
         {
             try
             {
@@ -222,7 +222,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
                         results[ii] = Interop.GetModifiedValueCollection(pItemValues[ii], false);
 
                         results[ii].ServerHandle = pItemValues[ii].hClient;
-                        results[ii].Result     = Utilities.Interop.GetResultId(phrErrors[ii]);
+                        results[ii].Result = Utilities.Interop.GetResultId(phrErrors[ii]);
                     }
 
                     // invoke callback - remove request if all results arrived.
@@ -242,12 +242,12 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
         /// Called when an asynchronous read attributes request completes.
         /// </summary>
         public void OnReadAttributeComplete(
-            int                dwTransactionID, 
-            int                hrStatus,
-            int                hClient, 
-            int                dwNumItems, 
+            int dwTransactionID,
+            int hrStatus,
+            int hClient,
+            int dwNumItems,
             OPCHDA_ATTRIBUTE[] pAttributeValues,
-            int[]              phrErrors)
+            int[] phrErrors)
         {
             try
             {
@@ -273,7 +273,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
                         results[ii] = Interop.GetAttributeValueCollection(pAttributeValues[ii], false);
 
                         results[ii].Result = Utilities.Interop.GetResultId(phrErrors[ii]);
-                    
+
                         item.Add(results[ii]);
                     }
 
@@ -294,11 +294,11 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
         /// Called when an asynchronous read annotations request completes.
         /// </summary>
         public void OnReadAnnotations(
-            int                 dwTransactionID, 
-            int                 hrStatus,
-            int                 dwNumItems, 
+            int dwTransactionID,
+            int hrStatus,
+            int dwNumItems,
             OPCHDA_ANNOTATION[] pAnnotationValues,
-            int[]               phrErrors)
+            int[] phrErrors)
         {
             try
             {
@@ -320,7 +320,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
                         results[ii] = Interop.GetAnnotationValueCollection(pAnnotationValues[ii], false);
 
                         results[ii].ServerHandle = pAnnotationValues[ii].hClient;
-                        results[ii].Result     = Utilities.Interop.GetResultId(phrErrors[ii]);
+                        results[ii].Result = Utilities.Interop.GetResultId(phrErrors[ii]);
                     }
 
                     // invoke callback - remove request if all results arrived.
@@ -340,10 +340,10 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
         /// Called when an asynchronous insert annotations request completes.
         /// </summary>
         public void OnInsertAnnotations(
-            int   dwTransactionID, 
-            int   hrStatus,
-            int   dwCount, 
-            int[] phClients, 
+            int dwTransactionID,
+            int hrStatus,
+            int dwCount,
+            int[] phClients,
             int[] phrErrors)
         {
 
@@ -376,7 +376,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
                             {
                                 itemResults.ServerHandle = currentHandle;
                                 results.Add(itemResults);
-                                
+
                                 currentHandle = phClients[ii];
                                 itemResults = new TsCHdaResultCollection();
                             }
@@ -407,11 +407,11 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
         /// Called when a batch of data from playback request arrives.
         /// </summary>
         public void OnPlayback(
-            int    dwTransactionID, 
-            int    hrStatus,
-            int    dwNumItems, 
+            int dwTransactionID,
+            int hrStatus,
+            int dwNumItems,
             IntPtr ppItemValues,
-            int[]  phrErrors)
+            int[] phrErrors)
         {
             try
             {
@@ -436,16 +436,16 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
                     {
                         // get pointer to item.
                         var pItem = (IntPtr)pItems[ii];
-            
+
                         // unmarshal item as an array of length 1.
                         var item = Interop.GetItemValueCollections(ref pItem, 1, false);
 
                         if (item != null && item.Length == 1)
                         {
-                            results[ii]              = item[0];
+                            results[ii] = item[0];
                             results[ii].ServerHandle = results[ii].ClientHandle;
                             results[ii].ClientHandle = null;
-                            results[ii].Result     = Utilities.Interop.GetResultId(phrErrors[ii]);
+                            results[ii].Result = Utilities.Interop.GetResultId(phrErrors[ii]);
                         }
                     }
 
@@ -466,10 +466,10 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
         /// Called when an asynchronous update request completes.
         /// </summary>
         public void OnUpdateComplete(
-            int   dwTransactionID, 
-            int   hrStatus,
-            int   dwCount, 
-            int[] phClients, 
+            int dwTransactionID,
+            int hrStatus,
+            int dwCount,
+            int[] phClients,
             int[] phrErrors)
         {
             try
@@ -501,7 +501,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
                             {
                                 itemResults.ServerHandle = currentHandle;
                                 results.Add(itemResults);
-                                
+
                                 currentHandle = phClients[ii];
                                 itemResults = new TsCHdaResultCollection();
                             }
@@ -583,9 +583,9 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
         #endregion
 
         #region Private Members
-		private int m_nextID;
+        private int m_nextID;
         private Hashtable m_requests = new Hashtable();
-		private TsCHdaCallbackExceptionEventHandler _callbackExceptionEvent;
+        private TsCHdaCallbackExceptionEventHandler _callbackExceptionEvent;
         #endregion
     }
 }

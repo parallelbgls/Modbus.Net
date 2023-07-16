@@ -32,33 +32,33 @@ namespace Technosoftware.DaAeHdaClient.Da
     [Serializable]
     public class TsCDaBrowsePosition : IOpcBrowsePosition
     {
-		#region Fields
+        #region Fields
         private TsCDaBrowseFilters browseFilters_;
-		private OpcItem itemId_;
+        private OpcItem itemId_;
         #endregion
 
-		#region Constructors, Destructor, Initialization
+        #region Constructors, Destructor, Initialization
         /// <summary>
-		/// Saves the parameters for an incomplete browse information.
-		/// </summary>
-		public TsCDaBrowsePosition(OpcItem itemId, TsCDaBrowseFilters filters)
-		{
-			if (filters == null) throw new ArgumentNullException(nameof(filters));
+        /// Saves the parameters for an incomplete browse information.
+        /// </summary>
+        public TsCDaBrowsePosition(OpcItem itemId, TsCDaBrowseFilters filters)
+        {
+            if (filters == null) throw new ArgumentNullException(nameof(filters));
 
-			itemId_ = (OpcItem)itemId?.Clone();
-			browseFilters_ = (TsCDaBrowseFilters)filters.Clone();
-		}
+            itemId_ = (OpcItem)itemId?.Clone();
+            browseFilters_ = (TsCDaBrowseFilters)filters.Clone();
+        }
 
-		/// <summary>
-		/// Releases unmanaged resources held by the object.
-		/// </summary>
-		public virtual void Dispose()
-		{
-			// does nothing.
-		}
+        /// <summary>
+        /// Releases unmanaged resources held by the object.
+        /// </summary>
+        public virtual void Dispose()
+        {
+            // does nothing.
+        }
         #endregion
 
-		#region Properties
+        #region Properties
         /// <summary>
         /// The item identifier of the branch being browsed.
         /// </summary>
@@ -73,21 +73,21 @@ namespace Technosoftware.DaAeHdaClient.Da
         /// The maximum number of elements that may be returned in a single browse.
         /// </summary>
         // ReSharper disable once UnusedMember.Global
-        public int MaxElementsReturned 
+        public int MaxElementsReturned
         {
             get => browseFilters_.MaxElementsReturned;
             set => browseFilters_.MaxElementsReturned = value;
         }
         #endregion
 
-		#region ICloneable Members
+        #region ICloneable Members
         /// <summary>
         /// Creates a deep copy of the object.
         /// </summary>
-        public virtual object Clone() 
-        { 
+        public virtual object Clone()
+        {
             return (TsCDaBrowsePosition)MemberwiseClone();
         }
         #endregion
-	}
+    }
 }

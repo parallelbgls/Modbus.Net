@@ -58,10 +58,10 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
         /// Initializes the object with all required information.
         /// </summary>
         public Request(object requestHandle, Delegate callback, int requestID)
-        {           
-            m_requestHandle = requestHandle; 
-            m_callback      = callback; 
-            m_requestID     = requestID; 
+        {
+            m_requestHandle = requestHandle;
+            m_callback = callback;
+            m_requestID = requestID;
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
             lock (this)
             {
                 // save the server assigned id.
-                m_cancelID = cancelID; 
+                m_cancelID = cancelID;
 
                 // create a table of items indexed by the handle returned by the server in a callback.
                 m_items = new Hashtable();
@@ -140,25 +140,25 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
                 {
                     return InvokeCallback((TsCHdaReadValuesCompleteEventHandler)m_callback, results);
                 }
-                
+
                 // invoke read attributes completed callback.
                 if (typeof(TsCHdaReadAttributesCompleteEventHandler).IsInstanceOfType(m_callback))
                 {
                     return InvokeCallback((TsCHdaReadAttributesCompleteEventHandler)m_callback, results);
                 }
-                
+
                 // invoke read annotations completed callback.
                 if (typeof(TsCHdaReadAnnotationsCompleteEventHandler).IsInstanceOfType(m_callback))
                 {
                     return InvokeCallback((TsCHdaReadAnnotationsCompleteEventHandler)m_callback, results);
                 }
-                
+
                 // invoke update completed callback.
                 if (typeof(TsCHdaUpdateCompleteEventHandler).IsInstanceOfType(m_callback))
                 {
                     return InvokeCallback((TsCHdaUpdateCompleteEventHandler)m_callback, results);
                 }
-                
+
                 // callback not supported.
                 return true;
             }
@@ -227,11 +227,11 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
             {
                 callback(this, values);
             }
-            catch 
+            catch
             {
                 // ignore exceptions in the callbacks.
             }
-            
+
             // request never completes.
             return false;
         }
@@ -256,7 +256,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
             {
                 callback(this, values);
             }
-            catch 
+            catch
             {
                 // ignore exceptions in the callbacks.
             }
@@ -272,7 +272,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
 
             // request is complete.
             return true;
-        }   
+        }
 
         /// <summary>
         /// Invokes callback for a read attributes request.
@@ -294,7 +294,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
             {
                 callback(this, values);
             }
-            catch 
+            catch
             {
                 // ignore exceptions in the callbacks.
             }
@@ -302,7 +302,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
             // request always completes
             return true;
         }
-        
+
         /// <summary>
         /// Invokes callback for a read annotations request.
         /// </summary>
@@ -323,7 +323,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
             {
                 callback(this, values);
             }
-            catch 
+            catch
             {
                 // ignore exceptions in the callbacks.
             }
@@ -352,7 +352,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
             {
                 callback(this, values);
             }
-            catch 
+            catch
             {
                 // ignore exceptions in the callbacks.
             }
@@ -372,7 +372,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
                 if (typeof(ITsCHdaActualTime).IsInstanceOfType(result))
                 {
                     ((ITsCHdaActualTime)result).StartTime = StartTime;
-                    ((ITsCHdaActualTime)result).EndTime   = EndTime;
+                    ((ITsCHdaActualTime)result).EndTime = EndTime;
                 }
 
                 // add item identifier to value collection.
@@ -380,8 +380,8 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
 
                 if (itemID != null)
                 {
-                    result.ItemName     = itemID.ItemName;
-                    result.ItemPath     = itemID.ItemPath;
+                    result.ItemName = itemID.ItemName;
+                    result.ItemPath = itemID.ItemPath;
                     result.ServerHandle = itemID.ServerHandle;
                     result.ClientHandle = itemID.ClientHandle;
                 }
@@ -390,9 +390,9 @@ namespace Technosoftware.DaAeHdaClient.Com.Hda
         #endregion
 
         #region Private Members
-        private object m_requestHandle = null; 
-        private Delegate m_callback = null; 
-        private int m_requestID = 0; 
+        private object m_requestHandle = null;
+        private Delegate m_callback = null;
+        private int m_requestID = 0;
         private int m_cancelID = 0;
         private DateTime m_startTime = DateTime.MinValue;
         private DateTime m_endTime = DateTime.MinValue;

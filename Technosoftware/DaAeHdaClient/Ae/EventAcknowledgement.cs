@@ -26,68 +26,68 @@ using System;
 
 namespace Technosoftware.DaAeHdaClient.Ae
 {
-	/// <summary>
-	/// Specifies the information required to acknowledge an event.
-	/// </summary>
-	[Serializable]
-	public class TsCAeEventAcknowledgement : ICloneable
-	{
-		#region Fields
+    /// <summary>
+    /// Specifies the information required to acknowledge an event.
+    /// </summary>
+    [Serializable]
+    public class TsCAeEventAcknowledgement : ICloneable
+    {
+        #region Fields
         private DateTime activeTime_ = DateTime.MinValue;
         #endregion
 
-		#region Properties
+        #region Properties
         /// <summary>
-		/// The name of the source that generated the event.
-		/// </summary>
-		public string SourceName { get; set; }
+        /// The name of the source that generated the event.
+        /// </summary>
+        public string SourceName { get; set; }
 
-		/// <summary>
-		/// The name of the condition that is being acknowledged.
-		/// </summary>
-		public string ConditionName { get; set; }
+        /// <summary>
+        /// The name of the condition that is being acknowledged.
+        /// </summary>
+        public string ConditionName { get; set; }
 
-		/// <summary>
-		/// The time that the condition or sub-condition became active.
-		/// The <see cref="ApplicationInstance.TimeAsUtc">ApplicationInstance.TimeAsUtc</see> property defines
-		/// the time format (UTC or local   time).
-		/// </summary>
-		public DateTime ActiveTime
-		{
-			get => activeTime_;
+        /// <summary>
+        /// The time that the condition or sub-condition became active.
+        /// The <see cref="ApplicationInstance.TimeAsUtc">ApplicationInstance.TimeAsUtc</see> property defines
+        /// the time format (UTC or local   time).
+        /// </summary>
+        public DateTime ActiveTime
+        {
+            get => activeTime_;
             set => activeTime_ = value;
         }
 
-		/// <summary>
-		/// The cookie for the condition passed to client during the event notification.
-		/// </summary>
-		public int Cookie { get; set; }
-
-		/// <summary>
-		/// Constructs an acknowledgment with its default values.
-		/// </summary>
-		public TsCAeEventAcknowledgement() { }
-
-		/// <summary>
-		/// Constructs an acknowledgment from an event notification.
-		/// </summary>
-		public TsCAeEventAcknowledgement(TsCAeEventNotification notification)
-		{
-			SourceName = notification.SourceID;
-			ConditionName = notification.ConditionName;
-			activeTime_ = notification.ActiveTime;
-			Cookie = notification.Cookie;
-		}
-        #endregion
-
-		#region ICloneable Members
         /// <summary>
-		/// Creates a deep copy of the object.
-		/// </summary>
-		public virtual object Clone()
-		{
-			return MemberwiseClone();
-		}
+        /// The cookie for the condition passed to client during the event notification.
+        /// </summary>
+        public int Cookie { get; set; }
+
+        /// <summary>
+        /// Constructs an acknowledgment with its default values.
+        /// </summary>
+        public TsCAeEventAcknowledgement() { }
+
+        /// <summary>
+        /// Constructs an acknowledgment from an event notification.
+        /// </summary>
+        public TsCAeEventAcknowledgement(TsCAeEventNotification notification)
+        {
+            SourceName = notification.SourceID;
+            ConditionName = notification.ConditionName;
+            activeTime_ = notification.ActiveTime;
+            Cookie = notification.Cookie;
+        }
         #endregion
-	}
+
+        #region ICloneable Members
+        /// <summary>
+        /// Creates a deep copy of the object.
+        /// </summary>
+        public virtual object Clone()
+        {
+            return MemberwiseClone();
+        }
+        #endregion
+    }
 }

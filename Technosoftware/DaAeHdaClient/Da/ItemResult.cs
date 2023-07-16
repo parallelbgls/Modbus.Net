@@ -26,79 +26,79 @@ using System;
 
 namespace Technosoftware.DaAeHdaClient.Da
 {
-	/// <summary>
-	/// The results of an operation on a uniquely identifiable item.
-	/// </summary>
-	[Serializable]
-	public class TsCDaItemResult : TsCDaItem, IOpcResult
-	{
-		#region Fields
-		private OpcResult result_ = OpcResult.S_OK;
-		#endregion
-
-		#region Constructors, Destructor, Initialization
-        /// <summary>
-		/// Initializes the object with default values.
-		/// </summary>
-		public TsCDaItemResult() { }
-
-		/// <summary>
-		/// Initializes the object with an ItemIdentifier object.
-		/// </summary>
-		public TsCDaItemResult(OpcItem item) : base(item) { }
-
-		/// <summary>
-		/// Initializes the object with an ItemIdentifier object and Result.
-		/// </summary>
-		public TsCDaItemResult(OpcItem item, OpcResult resultId)
-			: base(item)
-		{
-			Result = resultId;
-		}
-
-		/// <summary>
-		/// Initializes the object with an Item object.
-		/// </summary>
-		public TsCDaItemResult(TsCDaItem item) : base(item) { }
-
-		/// <summary>
-		/// Initializes the object with an Item object and Result.
-		/// </summary>
-		public TsCDaItemResult(TsCDaItem item, OpcResult resultId)
-			: base(item)
-		{
-			Result = resultId;
-		}
-
-		/// <summary>
-		/// Initializes object with the specified ItemResult object.
-		/// </summary>
-		public TsCDaItemResult(TsCDaItemResult item)
-			: base(item)
-		{
-			if (item != null)
-			{
-				Result = item.Result;
-				DiagnosticInfo = item.DiagnosticInfo;
-			}
-		}
+    /// <summary>
+    /// The results of an operation on a uniquely identifiable item.
+    /// </summary>
+    [Serializable]
+    public class TsCDaItemResult : TsCDaItem, IOpcResult
+    {
+        #region Fields
+        private OpcResult result_ = OpcResult.S_OK;
         #endregion
 
-		#region IOpcResult Members
+        #region Constructors, Destructor, Initialization
+        /// <summary>
+        /// Initializes the object with default values.
+        /// </summary>
+        public TsCDaItemResult() { }
 
-		/// <summary>
-		/// The error id for the result of an operation on an property.
-		/// </summary>
-		public OpcResult Result
-		{
-			get => result_;
+        /// <summary>
+        /// Initializes the object with an ItemIdentifier object.
+        /// </summary>
+        public TsCDaItemResult(OpcItem item) : base(item) { }
+
+        /// <summary>
+        /// Initializes the object with an ItemIdentifier object and Result.
+        /// </summary>
+        public TsCDaItemResult(OpcItem item, OpcResult resultId)
+            : base(item)
+        {
+            Result = resultId;
+        }
+
+        /// <summary>
+        /// Initializes the object with an Item object.
+        /// </summary>
+        public TsCDaItemResult(TsCDaItem item) : base(item) { }
+
+        /// <summary>
+        /// Initializes the object with an Item object and Result.
+        /// </summary>
+        public TsCDaItemResult(TsCDaItem item, OpcResult resultId)
+            : base(item)
+        {
+            Result = resultId;
+        }
+
+        /// <summary>
+        /// Initializes object with the specified ItemResult object.
+        /// </summary>
+        public TsCDaItemResult(TsCDaItemResult item)
+            : base(item)
+        {
+            if (item != null)
+            {
+                Result = item.Result;
+                DiagnosticInfo = item.DiagnosticInfo;
+            }
+        }
+        #endregion
+
+        #region IOpcResult Members
+
+        /// <summary>
+        /// The error id for the result of an operation on an property.
+        /// </summary>
+        public OpcResult Result
+        {
+            get => result_;
             set => result_ = value;
         }
 
-		/// <summary>
-		/// Vendor specific diagnostic information (not the localized error text).
-		/// </summary>
-		public string DiagnosticInfo { get; set; }
+        /// <summary>
+        /// Vendor specific diagnostic information (not the localized error text).
+        /// </summary>
+        public string DiagnosticInfo { get; set; }
         #endregion
-	}
+    }
 }

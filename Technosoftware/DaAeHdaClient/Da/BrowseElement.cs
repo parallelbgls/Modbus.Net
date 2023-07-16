@@ -26,62 +26,62 @@ using System;
 
 namespace Technosoftware.DaAeHdaClient.Da
 {
-	/// <summary>
-	/// Contains a description of an element in the server address space.
-	/// </summary>
-	[Serializable]
-	public class TsCDaBrowseElement : ICloneable
-	{
-		#region Fields
+    /// <summary>
+    /// Contains a description of an element in the server address space.
+    /// </summary>
+    [Serializable]
+    public class TsCDaBrowseElement : ICloneable
+    {
+        #region Fields
         private TsCDaItemProperty[] itemProperties_ = new TsCDaItemProperty[0];
         #endregion
 
-		#region Properties
+        #region Properties
         /// <summary>
-		/// A descriptive name for element that is unique within a branch.
-		/// </summary>
-		public string Name { get; set; }
+        /// A descriptive name for element that is unique within a branch.
+        /// </summary>
+        public string Name { get; set; }
 
-		/// <summary>
-		/// The primary identifier for the element within the server namespace.
-		/// </summary>
-		public string ItemName { get; set; }
+        /// <summary>
+        /// The primary identifier for the element within the server namespace.
+        /// </summary>
+        public string ItemName { get; set; }
 
-		/// <summary>
-		/// An secondary identifier for the element within the server namespace.
-		/// </summary>
-		public string ItemPath { get; set; }
+        /// <summary>
+        /// An secondary identifier for the element within the server namespace.
+        /// </summary>
+        public string ItemPath { get; set; }
 
-		/// <summary>
-		/// Whether the element refers to an item with data that can be accessed.
-		/// </summary>
-		public bool IsItem { get; set; }
+        /// <summary>
+        /// Whether the element refers to an item with data that can be accessed.
+        /// </summary>
+        public bool IsItem { get; set; }
 
-		/// <summary>
-		/// Whether the element has children.
-		/// </summary>
-		public bool HasChildren { get; set; }
+        /// <summary>
+        /// Whether the element has children.
+        /// </summary>
+        public bool HasChildren { get; set; }
 
-		/// <summary>
-		/// The set of properties for the element.
-		/// </summary>
-		public TsCDaItemProperty[] Properties
-		{
-			get => itemProperties_;
+        /// <summary>
+        /// The set of properties for the element.
+        /// </summary>
+        public TsCDaItemProperty[] Properties
+        {
+            get => itemProperties_;
             set => itemProperties_ = value;
         }
-		#endregion
-
-		#region ICloneable Members
-        /// <summary>
-		/// Creates a deep copy of the object.
-		/// </summary>
-		public virtual object Clone()
-		{
-			var clone = (TsCDaBrowseElement)MemberwiseClone();
-			clone.itemProperties_ = (TsCDaItemProperty[])OpcConvert.Clone(itemProperties_);
-			return clone;
-		}
         #endregion
-	};
+
+        #region ICloneable Members
+        /// <summary>
+        /// Creates a deep copy of the object.
+        /// </summary>
+        public virtual object Clone()
+        {
+            var clone = (TsCDaBrowseElement)MemberwiseClone();
+            clone.itemProperties_ = (TsCDaItemProperty[])OpcConvert.Clone(itemProperties_);
+            return clone;
+        }
+        #endregion
+    };
 }

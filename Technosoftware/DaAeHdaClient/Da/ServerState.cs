@@ -25,44 +25,44 @@
 
 namespace Technosoftware.DaAeHdaClient.Da
 {
-	/// <summary>
-	/// The set of possible server states.
-	/// </summary>
-	public enum TsCDaServerState
-	{
-		/// <summary>
-		/// The server state is not known.
-		/// </summary>
-		Unknown,
+    /// <summary>
+    /// The set of possible server states.
+    /// </summary>
+    public enum TsCDaServerState
+    {
+        /// <summary>
+        /// The server state is not known.
+        /// </summary>
+        Unknown,
 
-		/// <summary>
-		/// The server is running normally.
-		/// </summary>
-		Running,
+        /// <summary>
+        /// The server is running normally.
+        /// </summary>
+        Running,
 
-		/// <summary>
-		/// The server is not functioning due to a fatal error.
-		/// </summary>
-		Failed,
+        /// <summary>
+        /// The server is not functioning due to a fatal error.
+        /// </summary>
+        Failed,
 
-		/// <summary>
-		/// The server cannot load its configuration information.
-		/// </summary>
-		NoConfig,
+        /// <summary>
+        /// The server cannot load its configuration information.
+        /// </summary>
+        NoConfig,
 
-		/// <summary>
-		/// The server has halted all communication with the underlying hardware.
-		/// </summary>
-		Suspended,
+        /// <summary>
+        /// The server has halted all communication with the underlying hardware.
+        /// </summary>
+        Suspended,
 
-		/// <summary>
-		/// The server is disconnected from the underlying hardware.
-		/// </summary>
-		Test,
+        /// <summary>
+        /// The server is disconnected from the underlying hardware.
+        /// </summary>
+        Test,
 
-		/// <summary>
-		/// The server cannot communicate with the underlying hardware.
-		/// </summary>
-		CommFault
-	}
+        /// <summary>
+        /// The server cannot communicate with the underlying hardware.
+        /// </summary>
+        CommFault
+    }
 }

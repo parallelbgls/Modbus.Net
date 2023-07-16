@@ -29,179 +29,179 @@ using Technosoftware.DaAeHdaClient.Da;
 
 namespace Technosoftware.DaAeHdaClient.Cpx
 {
-	/// <summary>
-	/// A class that caches properties of complex data items.
-	/// </summary>
-	public class TsCCpxComplexTypeCache
-	{
+    /// <summary>
+    /// A class that caches properties of complex data items.
+    /// </summary>
+    public class TsCCpxComplexTypeCache
+    {
 
-		///////////////////////////////////////////////////////////////////////
-		#region Fields
+        ///////////////////////////////////////////////////////////////////////
+        #region Fields
 
-		/// <summary>
-		/// The active server for the application.
-		/// </summary>
-		private static TsCDaServer _server;
+        /// <summary>
+        /// The active server for the application.
+        /// </summary>
+        private static TsCDaServer _server;
 
-		/// <summary>
-		/// A cache of item properties fetched from the active server.
-		/// </summary>
-		private static Hashtable _items = new Hashtable();
+        /// <summary>
+        /// A cache of item properties fetched from the active server.
+        /// </summary>
+        private static Hashtable _items = new Hashtable();
 
-		/// <summary>
-		/// A cache of type dictionaries fetched from the active server.
-		/// </summary>
-		private static Hashtable _dictionaries = new Hashtable();
+        /// <summary>
+        /// A cache of type dictionaries fetched from the active server.
+        /// </summary>
+        private static Hashtable _dictionaries = new Hashtable();
 
-		/// <summary>
-		/// A cache of type descriptions fetched from the active server.
-		/// </summary>
-		private static Hashtable _descriptions = new Hashtable();
+        /// <summary>
+        /// A cache of type descriptions fetched from the active server.
+        /// </summary>
+        private static Hashtable _descriptions = new Hashtable();
 
-		#endregion
+        #endregion
 
-		///////////////////////////////////////////////////////////////////////
-		#region Constructors, Destructor, Initialization
-		
-		/// <summary>
-		/// Initializes the complex type cache with defaults.
-		/// </summary>
-		public TsCCpxComplexTypeCache() { }
+        ///////////////////////////////////////////////////////////////////////
+        #region Constructors, Destructor, Initialization
 
-		#endregion
+        /// <summary>
+        /// Initializes the complex type cache with defaults.
+        /// </summary>
+        public TsCCpxComplexTypeCache() { }
 
-		///////////////////////////////////////////////////////////////////////
-		#region Properties
+        #endregion
 
-		/// <summary>
-		/// Get or sets the server to use for the cache.
-		/// </summary>
-		public static TsCDaServer Server
-		{
-			get
-			{
-				lock (typeof(TsCCpxComplexTypeCache))
-				{
-					return _server;
-				}
-			}
+        ///////////////////////////////////////////////////////////////////////
+        #region Properties
 
-			set
-			{
-				lock (typeof(TsCCpxComplexTypeCache))
-				{
-					_server = value;
-					_items.Clear();
-					_dictionaries.Clear();
-					_descriptions.Clear();
-				}
-			}
-		}
+        /// <summary>
+        /// Get or sets the server to use for the cache.
+        /// </summary>
+        public static TsCDaServer Server
+        {
+            get
+            {
+                lock (typeof(TsCCpxComplexTypeCache))
+                {
+                    return _server;
+                }
+            }
 
-		#endregion
+            set
+            {
+                lock (typeof(TsCCpxComplexTypeCache))
+                {
+                    _server = value;
+                    _items.Clear();
+                    _dictionaries.Clear();
+                    _descriptions.Clear();
+                }
+            }
+        }
 
-		///////////////////////////////////////////////////////////////////////
-		#region Public Methods
+        #endregion
 
-		/// <summary>
-		/// Returns the complex item for the specified item id.
-		/// </summary>
-		/// <param name="itemID">The item id.</param>
-		public static TsCCpxComplexItem GetComplexItem(OpcItem itemID)
-		{
-			if (itemID == null) return null;
+        ///////////////////////////////////////////////////////////////////////
+        #region Public Methods
 
-			lock (typeof(TsCCpxComplexTypeCache))
-			{
-				var item = new TsCCpxComplexItem(itemID);
+        /// <summary>
+        /// Returns the complex item for the specified item id.
+        /// </summary>
+        /// <param name="itemID">The item id.</param>
+        public static TsCCpxComplexItem GetComplexItem(OpcItem itemID)
+        {
+            if (itemID == null) return null;
 
-				try
-				{
-					item.Update(_server);
-				}
-				catch
-				{
-					// item is not a valid complex data item.
-					item = null;
-				}
+            lock (typeof(TsCCpxComplexTypeCache))
+            {
+                var item = new TsCCpxComplexItem(itemID);
 
-				_items[itemID.Key] = item;
-				return item;
-			}
-		}
+                try
+                {
+                    item.Update(_server);
+                }
+                catch
+                {
+                    // item is not a valid complex data item.
+                    item = null;
+                }
 
-		/// <summary>
-		/// Returns the complex item for the specified item browse element.
-		/// </summary>
-		/// <param name="element">The item browse element.</param>
-		public static TsCCpxComplexItem GetComplexItem(TsCDaBrowseElement element)
-		{
-			if (element == null) return null;
+                _items[itemID.Key] = item;
+                return item;
+            }
+        }
 
-			lock (typeof(TsCCpxComplexTypeCache))
-			{
-				return GetComplexItem(new OpcItem(element.ItemPath, element.ItemName));
-			}
-		}
+        /// <summary>
+        /// Returns the complex item for the specified item browse element.
+        /// </summary>
+        /// <param name="element">The item browse element.</param>
+        public static TsCCpxComplexItem GetComplexItem(TsCDaBrowseElement element)
+        {
+            if (element == null) return null;
 
-		/// <summary>
-		/// Fetches the type dictionary for the item.
-		/// </summary>
-		/// <param name="itemID">The item id.</param>
-		public static string GetTypeDictionary(OpcItem itemID)
-		{
-			if (itemID == null) return null;
+            lock (typeof(TsCCpxComplexTypeCache))
+            {
+                return GetComplexItem(new OpcItem(element.ItemPath, element.ItemName));
+            }
+        }
 
-			lock (typeof(TsCCpxComplexTypeCache))
-			{
-				var dictionary = (string)_dictionaries[itemID.Key];
+        /// <summary>
+        /// Fetches the type dictionary for the item.
+        /// </summary>
+        /// <param name="itemID">The item id.</param>
+        public static string GetTypeDictionary(OpcItem itemID)
+        {
+            if (itemID == null) return null;
 
-				if (dictionary != null)
-				{
-					return dictionary;
-				}
+            lock (typeof(TsCCpxComplexTypeCache))
+            {
+                var dictionary = (string)_dictionaries[itemID.Key];
 
-				var item = GetComplexItem(itemID);
+                if (dictionary != null)
+                {
+                    return dictionary;
+                }
 
-				if (item != null)
-				{
-					dictionary = item.GetTypeDictionary(_server);
-				}
+                var item = GetComplexItem(itemID);
 
-				return dictionary;
-			}
-		}
+                if (item != null)
+                {
+                    dictionary = item.GetTypeDictionary(_server);
+                }
 
-		/// <summary>
-		/// Fetches the type description for the item.
-		/// </summary>
-		/// <param name="itemID">The item id.</param>
-		public static string GetTypeDescription(OpcItem itemID)
-		{
-			if (itemID == null) return null;
+                return dictionary;
+            }
+        }
 
-			lock (typeof(TsCCpxComplexTypeCache))
-			{
-				string description = null;
+        /// <summary>
+        /// Fetches the type description for the item.
+        /// </summary>
+        /// <param name="itemID">The item id.</param>
+        public static string GetTypeDescription(OpcItem itemID)
+        {
+            if (itemID == null) return null;
 
-				var item = GetComplexItem(itemID);
+            lock (typeof(TsCCpxComplexTypeCache))
+            {
+                string description = null;
 
-				if (item != null)
-				{
-					description = (string)_descriptions[item.TypeItemID.Key];
+                var item = GetComplexItem(itemID);
 
-					if (description != null)
-					{
-						return description;
-					}
+                if (item != null)
+                {
+                    description = (string)_descriptions[item.TypeItemID.Key];
 
-					_descriptions[item.TypeItemID.Key] = description = item.GetTypeDescription(_server);
-				}
+                    if (description != null)
+                    {
+                        return description;
+                    }
 
-				return description;
-			}
-		}
+                    _descriptions[item.TypeItemID.Key] = description = item.GetTypeDescription(_server);
+                }
 
-		#endregion
-	}
+                return description;
+            }
+        }
+
+        #endregion
+    }
 }

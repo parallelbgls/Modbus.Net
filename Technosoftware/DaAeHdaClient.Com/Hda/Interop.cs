@@ -32,410 +32,410 @@ using Technosoftware.DaAeHdaClient.Hda;
 
 namespace Technosoftware.DaAeHdaClient.Com.Hda
 {
-	/// <summary>
+    /// <summary>
     /// Contains state information for a single asynchronous Technosoftware.DaAeHdaClient.Com.Hda.Interop.
-	/// </summary>
-	internal class Interop
-	{
-		/// <summary>
-		/// Converts a standard FILETIME to an OpcRcw.Da.FILETIME structure.
-		/// </summary>
-		internal static OpcRcw.Hda.OPCHDA_FILETIME Convert(FILETIME input)
-		{
-			var output = new OpcRcw.Hda.OPCHDA_FILETIME();
-			output.dwLowDateTime   = input.dwLowDateTime;
-			output.dwHighDateTime  = input.dwHighDateTime;
-			return output;
-		}
+    /// </summary>
+    internal class Interop
+    {
+        /// <summary>
+        /// Converts a standard FILETIME to an OpcRcw.Da.FILETIME structure.
+        /// </summary>
+        internal static OpcRcw.Hda.OPCHDA_FILETIME Convert(FILETIME input)
+        {
+            var output = new OpcRcw.Hda.OPCHDA_FILETIME();
+            output.dwLowDateTime = input.dwLowDateTime;
+            output.dwHighDateTime = input.dwHighDateTime;
+            return output;
+        }
 
-		/// <summary>
-		/// Converts an OpcRcw.Da.FILETIME to a standard FILETIME structure.
-		/// </summary>
-		internal static FILETIME Convert(OpcRcw.Hda.OPCHDA_FILETIME input)
-		{
-			var output       = new FILETIME();
-			output.dwLowDateTime  = input.dwLowDateTime;
-			output.dwHighDateTime = input.dwHighDateTime;
-			return output;
-		}
+        /// <summary>
+        /// Converts an OpcRcw.Da.FILETIME to a standard FILETIME structure.
+        /// </summary>
+        internal static FILETIME Convert(OpcRcw.Hda.OPCHDA_FILETIME input)
+        {
+            var output = new FILETIME();
+            output.dwLowDateTime = input.dwLowDateTime;
+            output.dwHighDateTime = input.dwHighDateTime;
+            return output;
+        }
 
-		/// <summary>
-		/// Converts a decimal value to a OpcRcw.Hda.OPCHDA_TIME structure.
-		/// </summary>
-		internal static OpcRcw.Hda.OPCHDA_FILETIME GetFILETIME(decimal input)
-		{
-			var output = new OpcRcw.Hda.OPCHDA_FILETIME();	
+        /// <summary>
+        /// Converts a decimal value to a OpcRcw.Hda.OPCHDA_TIME structure.
+        /// </summary>
+        internal static OpcRcw.Hda.OPCHDA_FILETIME GetFILETIME(decimal input)
+        {
+            var output = new OpcRcw.Hda.OPCHDA_FILETIME();
 
-			output.dwHighDateTime = (int)((((ulong)(input*10000000)) & 0xFFFFFFFF00000000)>>32);
-			output.dwLowDateTime  = (int)((((ulong)(input*10000000)) & 0x00000000FFFFFFFF));
+            output.dwHighDateTime = (int)((((ulong)(input * 10000000)) & 0xFFFFFFFF00000000) >> 32);
+            output.dwLowDateTime = (int)((((ulong)(input * 10000000)) & 0x00000000FFFFFFFF));
 
-			return output;
-		}
+            return output;
+        }
 
-		/// <summary>
-		/// Returns an array of FILETIMEs.
-		/// </summary>
-		internal static OpcRcw.Hda.OPCHDA_FILETIME[] GetFILETIMEs(DateTime[] input)
-		{
+        /// <summary>
+        /// Returns an array of FILETIMEs.
+        /// </summary>
+        internal static OpcRcw.Hda.OPCHDA_FILETIME[] GetFILETIMEs(DateTime[] input)
+        {
             OpcRcw.Hda.OPCHDA_FILETIME[] output = null;
 
-			if (input != null)
-			{
-				output = new OpcRcw.Hda.OPCHDA_FILETIME[input.Length];
+            if (input != null)
+            {
+                output = new OpcRcw.Hda.OPCHDA_FILETIME[input.Length];
 
-				for (var ii = 0; ii < input.Length; ii++)
-				{
-					output[ii] = Convert(Technosoftware.DaAeHdaClient.Com.Interop.GetFILETIME(input[ii]));
-				}
-			}
+                for (var ii = 0; ii < input.Length; ii++)
+                {
+                    output[ii] = Convert(Technosoftware.DaAeHdaClient.Com.Interop.GetFILETIME(input[ii]));
+                }
+            }
 
-			return output;
-		}
+            return output;
+        }
 
-		/// <summary>
-		/// Converts a Technosoftware.DaAeHdaClient.Time object to a Technosoftware.DaAeHdaClient.Com.Hda.OPCHDA_TIME structure.
-		/// </summary>
-		internal static OpcRcw.Hda.OPCHDA_TIME GetTime(TsCHdaTime input)
-		{
-			var output = new OpcRcw.Hda.OPCHDA_TIME();
+        /// <summary>
+        /// Converts a Technosoftware.DaAeHdaClient.Time object to a Technosoftware.DaAeHdaClient.Com.Hda.OPCHDA_TIME structure.
+        /// </summary>
+        internal static OpcRcw.Hda.OPCHDA_TIME GetTime(TsCHdaTime input)
+        {
+            var output = new OpcRcw.Hda.OPCHDA_TIME();
 
-			if (input != null)
-			{
-				output.ftTime  = Convert(Technosoftware.DaAeHdaClient.Com.Interop.GetFILETIME(input.AbsoluteTime));
-				output.szTime  = (input.IsRelative)?input.ToString():"";
-				output.bString = (input.IsRelative)?1:0;
-			}
+            if (input != null)
+            {
+                output.ftTime = Convert(Technosoftware.DaAeHdaClient.Com.Interop.GetFILETIME(input.AbsoluteTime));
+                output.szTime = (input.IsRelative) ? input.ToString() : "";
+                output.bString = (input.IsRelative) ? 1 : 0;
+            }
 
-			// create a null value for a time structure.
-			else
-			{
-				output.ftTime  = Convert(Technosoftware.DaAeHdaClient.Com.Interop.GetFILETIME(DateTime.MinValue));
-				output.szTime = "";
-				output.bString = 1;
-			}
+            // create a null value for a time structure.
+            else
+            {
+                output.ftTime = Convert(Technosoftware.DaAeHdaClient.Com.Interop.GetFILETIME(DateTime.MinValue));
+                output.szTime = "";
+                output.bString = 1;
+            }
 
-			return output;
-		}
+            return output;
+        }
 
-		/// <summary>
-		/// Unmarshals and deallocates an array of OPCHDA_ITEM structures.
-		/// </summary>
-		internal static TsCHdaItemValueCollection[] GetItemValueCollections(ref IntPtr pInput, int count, bool deallocate)
-		{
-			TsCHdaItemValueCollection[] output = null;
+        /// <summary>
+        /// Unmarshals and deallocates an array of OPCHDA_ITEM structures.
+        /// </summary>
+        internal static TsCHdaItemValueCollection[] GetItemValueCollections(ref IntPtr pInput, int count, bool deallocate)
+        {
+            TsCHdaItemValueCollection[] output = null;
 
-			if (pInput != IntPtr.Zero && count > 0)
-			{
-				output = new TsCHdaItemValueCollection[count];
+            if (pInput != IntPtr.Zero && count > 0)
+            {
+                output = new TsCHdaItemValueCollection[count];
 
-				var pos = pInput;
+                var pos = pInput;
 
-				for (var ii = 0; ii < count; ii++)
-				{
-					output[ii] = GetItemValueCollection(pos, deallocate);
+                for (var ii = 0; ii < count; ii++)
+                {
+                    output[ii] = GetItemValueCollection(pos, deallocate);
                     pos = (IntPtr)(pos.ToInt64() + Marshal.SizeOf(typeof(OpcRcw.Hda.OPCHDA_ITEM)));
-				}
+                }
 
-				if (deallocate)
-				{
-					Marshal.FreeCoTaskMem(pInput);
-					pInput = IntPtr.Zero;
-				}
-			}
+                if (deallocate)
+                {
+                    Marshal.FreeCoTaskMem(pInput);
+                    pInput = IntPtr.Zero;
+                }
+            }
 
-			return output;
-		}
+            return output;
+        }
 
-		/// <summary>
-		/// Unmarshals and deallocates an OPCHDA_ITEM structure.
-		/// </summary>
-		internal static TsCHdaItemValueCollection GetItemValueCollection(IntPtr pInput, bool deallocate)
-		{
-			TsCHdaItemValueCollection output = null;
+        /// <summary>
+        /// Unmarshals and deallocates an OPCHDA_ITEM structure.
+        /// </summary>
+        internal static TsCHdaItemValueCollection GetItemValueCollection(IntPtr pInput, bool deallocate)
+        {
+            TsCHdaItemValueCollection output = null;
 
-			if (pInput != IntPtr.Zero)
-			{
-				var item = Marshal.PtrToStructure(pInput, typeof(OpcRcw.Hda.OPCHDA_ITEM));
+            if (pInput != IntPtr.Zero)
+            {
+                var item = Marshal.PtrToStructure(pInput, typeof(OpcRcw.Hda.OPCHDA_ITEM));
 
-				output = GetItemValueCollection((OpcRcw.Hda.OPCHDA_ITEM)item, deallocate);
+                output = GetItemValueCollection((OpcRcw.Hda.OPCHDA_ITEM)item, deallocate);
 
-				if (deallocate)
-				{
-					Marshal.DestroyStructure(pInput, typeof(OpcRcw.Hda.OPCHDA_ITEM));
-				}
-			}
+                if (deallocate)
+                {
+                    Marshal.DestroyStructure(pInput, typeof(OpcRcw.Hda.OPCHDA_ITEM));
+                }
+            }
 
-			return output;
-		}
+            return output;
+        }
 
-		/// <summary>
-		/// Unmarshals and deallocates an OPCHDA_ITEM structure.
-		/// </summary>
-		internal static TsCHdaItemValueCollection GetItemValueCollection(OpcRcw.Hda.OPCHDA_ITEM input, bool deallocate)
-		{
-			var output = new TsCHdaItemValueCollection();
+        /// <summary>
+        /// Unmarshals and deallocates an OPCHDA_ITEM structure.
+        /// </summary>
+        internal static TsCHdaItemValueCollection GetItemValueCollection(OpcRcw.Hda.OPCHDA_ITEM input, bool deallocate)
+        {
+            var output = new TsCHdaItemValueCollection();
 
-			output.ClientHandle = input.hClient;
-			output.Aggregate = input.haAggregate;
+            output.ClientHandle = input.hClient;
+            output.Aggregate = input.haAggregate;
 
             var values = Com.Interop.GetVARIANTs(ref input.pvDataValues, input.dwCount, deallocate);
-			var timestamps = Utilities.Interop.GetDateTimes(ref input.pftTimeStamps, input.dwCount, deallocate);
-			var qualities = Utilities.Interop.GetInt32s(ref input.pdwQualities, input.dwCount, deallocate);
+            var timestamps = Utilities.Interop.GetDateTimes(ref input.pftTimeStamps, input.dwCount, deallocate);
+            var qualities = Utilities.Interop.GetInt32s(ref input.pdwQualities, input.dwCount, deallocate);
 
-			for (var ii = 0; ii < input.dwCount; ii++)
-			{
-				var value = new TsCHdaItemValue();
+            for (var ii = 0; ii < input.dwCount; ii++)
+            {
+                var value = new TsCHdaItemValue();
 
-				value.Value = values[ii];
-				value.Timestamp = timestamps[ii];
+                value.Value = values[ii];
+                value.Timestamp = timestamps[ii];
                 value.Quality = new TsCDaQuality((short)(qualities[ii] & 0x0000FFFF));
                 value.HistorianQuality = (TsCHdaQuality)((int)(qualities[ii] & 0xFFFF0000));
 
-				output.Add(value);
-			}
+                output.Add(value);
+            }
 
-			return output;
-		}
+            return output;
+        }
 
-		/// <summary>
-		/// Unmarshals and deallocates an array of OPCHDA_MODIFIEDITEM structures.
-		/// </summary>
-		internal static TsCHdaModifiedValueCollection[] GetModifiedValueCollections(ref IntPtr pInput, int count, bool deallocate)
-		{
-			TsCHdaModifiedValueCollection[] output = null;
+        /// <summary>
+        /// Unmarshals and deallocates an array of OPCHDA_MODIFIEDITEM structures.
+        /// </summary>
+        internal static TsCHdaModifiedValueCollection[] GetModifiedValueCollections(ref IntPtr pInput, int count, bool deallocate)
+        {
+            TsCHdaModifiedValueCollection[] output = null;
 
-			if (pInput != IntPtr.Zero && count > 0)
-			{
-				output = new TsCHdaModifiedValueCollection[count];
+            if (pInput != IntPtr.Zero && count > 0)
+            {
+                output = new TsCHdaModifiedValueCollection[count];
 
-				var pos = pInput;
+                var pos = pInput;
 
-				for (var ii = 0; ii < count; ii++)
-				{
-					output[ii] = GetModifiedValueCollection(pos, deallocate);
+                for (var ii = 0; ii < count; ii++)
+                {
+                    output[ii] = GetModifiedValueCollection(pos, deallocate);
                     pos = (IntPtr)(pos.ToInt64() + Marshal.SizeOf(typeof(OpcRcw.Hda.OPCHDA_MODIFIEDITEM)));
-				}
+                }
 
-				if (deallocate)
-				{
-					Marshal.FreeCoTaskMem(pInput);
-					pInput = IntPtr.Zero;
-				}
-			}
+                if (deallocate)
+                {
+                    Marshal.FreeCoTaskMem(pInput);
+                    pInput = IntPtr.Zero;
+                }
+            }
 
-			return output;
-		}
+            return output;
+        }
 
-		/// <summary>
-		/// Unmarshals and deallocates an OPCHDA_MODIFIEDITEM structure.
-		/// </summary>
-		internal static TsCHdaModifiedValueCollection GetModifiedValueCollection(IntPtr pInput, bool deallocate)
-		{
-			TsCHdaModifiedValueCollection output = null;
+        /// <summary>
+        /// Unmarshals and deallocates an OPCHDA_MODIFIEDITEM structure.
+        /// </summary>
+        internal static TsCHdaModifiedValueCollection GetModifiedValueCollection(IntPtr pInput, bool deallocate)
+        {
+            TsCHdaModifiedValueCollection output = null;
 
-			if (pInput != IntPtr.Zero)
-			{
-				var item = Marshal.PtrToStructure(pInput, typeof(OpcRcw.Hda.OPCHDA_MODIFIEDITEM));
+            if (pInput != IntPtr.Zero)
+            {
+                var item = Marshal.PtrToStructure(pInput, typeof(OpcRcw.Hda.OPCHDA_MODIFIEDITEM));
 
-				output = GetModifiedValueCollection((OpcRcw.Hda.OPCHDA_MODIFIEDITEM)item, deallocate);
+                output = GetModifiedValueCollection((OpcRcw.Hda.OPCHDA_MODIFIEDITEM)item, deallocate);
 
-				if (deallocate)
-				{
-					Marshal.DestroyStructure(pInput, typeof(OpcRcw.Hda.OPCHDA_MODIFIEDITEM));
-				}
-			}
+                if (deallocate)
+                {
+                    Marshal.DestroyStructure(pInput, typeof(OpcRcw.Hda.OPCHDA_MODIFIEDITEM));
+                }
+            }
 
-			return output;
-		}
+            return output;
+        }
 
-		/// <summary>
-		/// Unmarshals and deallocates an OPCHDA_MODIFIEDITEM structure.
-		/// </summary>
-		internal static TsCHdaModifiedValueCollection GetModifiedValueCollection(OpcRcw.Hda.OPCHDA_MODIFIEDITEM input, bool deallocate)
-		{
-			var output = new TsCHdaModifiedValueCollection();
+        /// <summary>
+        /// Unmarshals and deallocates an OPCHDA_MODIFIEDITEM structure.
+        /// </summary>
+        internal static TsCHdaModifiedValueCollection GetModifiedValueCollection(OpcRcw.Hda.OPCHDA_MODIFIEDITEM input, bool deallocate)
+        {
+            var output = new TsCHdaModifiedValueCollection();
 
-			output.ClientHandle = input.hClient;
+            output.ClientHandle = input.hClient;
 
             var values = Com.Interop.GetVARIANTs(ref input.pvDataValues, input.dwCount, deallocate);
-			var timestamps = Utilities.Interop.GetDateTimes(ref input.pftTimeStamps, input.dwCount, deallocate);
-			var qualities = Utilities.Interop.GetInt32s(ref input.pdwQualities, input.dwCount, deallocate);
-			var modificationTimes = Utilities.Interop.GetDateTimes(ref input.pftModificationTime, input.dwCount, deallocate);
-			var editTypes = Utilities.Interop.GetInt32s(ref input.pEditType, input.dwCount, deallocate);
-			var users = Utilities.Interop.GetUnicodeStrings(ref input.szUser, input.dwCount, deallocate);
+            var timestamps = Utilities.Interop.GetDateTimes(ref input.pftTimeStamps, input.dwCount, deallocate);
+            var qualities = Utilities.Interop.GetInt32s(ref input.pdwQualities, input.dwCount, deallocate);
+            var modificationTimes = Utilities.Interop.GetDateTimes(ref input.pftModificationTime, input.dwCount, deallocate);
+            var editTypes = Utilities.Interop.GetInt32s(ref input.pEditType, input.dwCount, deallocate);
+            var users = Utilities.Interop.GetUnicodeStrings(ref input.szUser, input.dwCount, deallocate);
 
-			for (var ii = 0; ii < input.dwCount; ii++)
-			{
-				var value = new TsCHdaModifiedValue();
+            for (var ii = 0; ii < input.dwCount; ii++)
+            {
+                var value = new TsCHdaModifiedValue();
 
-				value.Value = values[ii];
-				value.Timestamp = timestamps[ii];
+                value.Value = values[ii];
+                value.Timestamp = timestamps[ii];
                 value.Quality = new TsCDaQuality((short)(qualities[ii] & 0x0000FFFF));
                 value.HistorianQuality = (TsCHdaQuality)((int)(qualities[ii] & 0xFFFF0000));
-				value.ModificationTime = modificationTimes[ii];
-				value.EditType = (TsCHdaEditType)editTypes[ii];
-				value.User = users[ii];
+                value.ModificationTime = modificationTimes[ii];
+                value.EditType = (TsCHdaEditType)editTypes[ii];
+                value.User = users[ii];
 
-				output.Add(value);
-			}
+                output.Add(value);
+            }
 
-			return output;
-		}
+            return output;
+        }
 
-		/// <summary>
-		/// Unmarshals and deallocates an array of OPCHDA_ATTRIBUTE structures.
-		/// </summary>
-		internal static TsCHdaAttributeValueCollection[] GetAttributeValueCollections(ref IntPtr pInput, int count, bool deallocate)
-		{
-			TsCHdaAttributeValueCollection[] output = null;
+        /// <summary>
+        /// Unmarshals and deallocates an array of OPCHDA_ATTRIBUTE structures.
+        /// </summary>
+        internal static TsCHdaAttributeValueCollection[] GetAttributeValueCollections(ref IntPtr pInput, int count, bool deallocate)
+        {
+            TsCHdaAttributeValueCollection[] output = null;
 
-			if (pInput != IntPtr.Zero && count > 0)
-			{
-				output = new TsCHdaAttributeValueCollection[count];
+            if (pInput != IntPtr.Zero && count > 0)
+            {
+                output = new TsCHdaAttributeValueCollection[count];
 
-				var pos = pInput;
+                var pos = pInput;
 
-				for (var ii = 0; ii < count; ii++)
-				{
-					output[ii] = GetAttributeValueCollection(pos, deallocate);
+                for (var ii = 0; ii < count; ii++)
+                {
+                    output[ii] = GetAttributeValueCollection(pos, deallocate);
                     pos = (IntPtr)(pos.ToInt64() + Marshal.SizeOf(typeof(OpcRcw.Hda.OPCHDA_ATTRIBUTE)));
-				}
+                }
 
-				if (deallocate)
-				{
-					Marshal.FreeCoTaskMem(pInput);
-					pInput = IntPtr.Zero;
-				}
-			}
+                if (deallocate)
+                {
+                    Marshal.FreeCoTaskMem(pInput);
+                    pInput = IntPtr.Zero;
+                }
+            }
 
-			return output;
-		}
+            return output;
+        }
 
-		/// <summary>
-		/// Unmarshals and deallocates an OPCHDA_ATTRIBUTE structure.
-		/// </summary>
-		internal static TsCHdaAttributeValueCollection GetAttributeValueCollection(IntPtr pInput, bool deallocate)
-		{
-			TsCHdaAttributeValueCollection output = null;
+        /// <summary>
+        /// Unmarshals and deallocates an OPCHDA_ATTRIBUTE structure.
+        /// </summary>
+        internal static TsCHdaAttributeValueCollection GetAttributeValueCollection(IntPtr pInput, bool deallocate)
+        {
+            TsCHdaAttributeValueCollection output = null;
 
-			if (pInput != IntPtr.Zero)
-			{
-				var item = Marshal.PtrToStructure(pInput, typeof(OpcRcw.Hda.OPCHDA_ATTRIBUTE));
+            if (pInput != IntPtr.Zero)
+            {
+                var item = Marshal.PtrToStructure(pInput, typeof(OpcRcw.Hda.OPCHDA_ATTRIBUTE));
 
-				output = GetAttributeValueCollection((OpcRcw.Hda.OPCHDA_ATTRIBUTE)item, deallocate);
+                output = GetAttributeValueCollection((OpcRcw.Hda.OPCHDA_ATTRIBUTE)item, deallocate);
 
-				if (deallocate)
-				{
-					Marshal.DestroyStructure(pInput, typeof(OpcRcw.Hda.OPCHDA_ATTRIBUTE));
-				}
-			}
+                if (deallocate)
+                {
+                    Marshal.DestroyStructure(pInput, typeof(OpcRcw.Hda.OPCHDA_ATTRIBUTE));
+                }
+            }
 
-			return output;
-		}
+            return output;
+        }
 
-		/// <summary>
-		/// Unmarshals and deallocates an OPCHDA_ATTRIBUTE structure.
-		/// </summary>
-		internal static TsCHdaAttributeValueCollection GetAttributeValueCollection(OpcRcw.Hda.OPCHDA_ATTRIBUTE input, bool deallocate)
-		{
-			var output = new TsCHdaAttributeValueCollection();
+        /// <summary>
+        /// Unmarshals and deallocates an OPCHDA_ATTRIBUTE structure.
+        /// </summary>
+        internal static TsCHdaAttributeValueCollection GetAttributeValueCollection(OpcRcw.Hda.OPCHDA_ATTRIBUTE input, bool deallocate)
+        {
+            var output = new TsCHdaAttributeValueCollection();
 
-			output.AttributeID = input.dwAttributeID;
+            output.AttributeID = input.dwAttributeID;
 
             var values = Com.Interop.GetVARIANTs(ref input.vAttributeValues, input.dwNumValues, deallocate);
-			var timestamps = Utilities.Interop.GetDateTimes(ref input.ftTimeStamps, input.dwNumValues, deallocate);
+            var timestamps = Utilities.Interop.GetDateTimes(ref input.ftTimeStamps, input.dwNumValues, deallocate);
 
-			for (var ii = 0; ii < input.dwNumValues; ii++)
-			{
-				var value = new TsCHdaAttributeValue();
+            for (var ii = 0; ii < input.dwNumValues; ii++)
+            {
+                var value = new TsCHdaAttributeValue();
 
-				value.Value = values[ii];
-				value.Timestamp = timestamps[ii];
+                value.Value = values[ii];
+                value.Timestamp = timestamps[ii];
 
-				output.Add(value);
-			}
+                output.Add(value);
+            }
 
-			return output;
-		}
+            return output;
+        }
 
-		/// <summary>
-		/// Unmarshals and deallocates an array of OPCHDA_ANNOTATION structures.
-		/// </summary>
-		internal static TsCHdaAnnotationValueCollection[] GetAnnotationValueCollections(ref IntPtr pInput, int count, bool deallocate)
-		{
-			TsCHdaAnnotationValueCollection[] output = null;
+        /// <summary>
+        /// Unmarshals and deallocates an array of OPCHDA_ANNOTATION structures.
+        /// </summary>
+        internal static TsCHdaAnnotationValueCollection[] GetAnnotationValueCollections(ref IntPtr pInput, int count, bool deallocate)
+        {
+            TsCHdaAnnotationValueCollection[] output = null;
 
-			if (pInput != IntPtr.Zero && count > 0)
-			{
-				output = new TsCHdaAnnotationValueCollection[count];
+            if (pInput != IntPtr.Zero && count > 0)
+            {
+                output = new TsCHdaAnnotationValueCollection[count];
 
-				var pos = pInput;
+                var pos = pInput;
 
-				for (var ii = 0; ii < count; ii++)
-				{
-					output[ii] = GetAnnotationValueCollection(pos, deallocate);
+                for (var ii = 0; ii < count; ii++)
+                {
+                    output[ii] = GetAnnotationValueCollection(pos, deallocate);
                     pos = (IntPtr)(pos.ToInt64() + Marshal.SizeOf(typeof(OpcRcw.Hda.OPCHDA_ANNOTATION)));
-				}
+                }
 
-				if (deallocate)
-				{
-					Marshal.FreeCoTaskMem(pInput);
-					pInput = IntPtr.Zero;
-				}
-			}
+                if (deallocate)
+                {
+                    Marshal.FreeCoTaskMem(pInput);
+                    pInput = IntPtr.Zero;
+                }
+            }
 
-			return output;
-		}
+            return output;
+        }
 
-		/// <summary>
-		/// Unmarshals and deallocates an OPCHDA_ANNOTATION structure.
-		/// </summary>
-		internal static TsCHdaAnnotationValueCollection GetAnnotationValueCollection(IntPtr pInput, bool deallocate)
-		{
-			TsCHdaAnnotationValueCollection output = null;
+        /// <summary>
+        /// Unmarshals and deallocates an OPCHDA_ANNOTATION structure.
+        /// </summary>
+        internal static TsCHdaAnnotationValueCollection GetAnnotationValueCollection(IntPtr pInput, bool deallocate)
+        {
+            TsCHdaAnnotationValueCollection output = null;
 
-			if (pInput != IntPtr.Zero)
-			{
-				var item = Marshal.PtrToStructure(pInput, typeof(OpcRcw.Hda.OPCHDA_ANNOTATION));
+            if (pInput != IntPtr.Zero)
+            {
+                var item = Marshal.PtrToStructure(pInput, typeof(OpcRcw.Hda.OPCHDA_ANNOTATION));
 
-				output = GetAnnotationValueCollection((OpcRcw.Hda.OPCHDA_ANNOTATION)item, deallocate);
+                output = GetAnnotationValueCollection((OpcRcw.Hda.OPCHDA_ANNOTATION)item, deallocate);
 
-				if (deallocate)
-				{
-					Marshal.DestroyStructure(pInput, typeof(OpcRcw.Hda.OPCHDA_ANNOTATION));
-				}
-			}
+                if (deallocate)
+                {
+                    Marshal.DestroyStructure(pInput, typeof(OpcRcw.Hda.OPCHDA_ANNOTATION));
+                }
+            }
 
-			return output;
-		}
+            return output;
+        }
 
-		/// <summary>
-		/// Unmarshals and deallocates an OPCHDA_ANNOTATION structure.
-		/// </summary>
-		internal static TsCHdaAnnotationValueCollection GetAnnotationValueCollection(OpcRcw.Hda.OPCHDA_ANNOTATION input, bool deallocate)
-		{
-			var output = new TsCHdaAnnotationValueCollection();
+        /// <summary>
+        /// Unmarshals and deallocates an OPCHDA_ANNOTATION structure.
+        /// </summary>
+        internal static TsCHdaAnnotationValueCollection GetAnnotationValueCollection(OpcRcw.Hda.OPCHDA_ANNOTATION input, bool deallocate)
+        {
+            var output = new TsCHdaAnnotationValueCollection();
 
-			output.ClientHandle = input.hClient;
+            output.ClientHandle = input.hClient;
 
-			var timestamps = Utilities.Interop.GetDateTimes(ref input.ftTimeStamps, input.dwNumValues, deallocate);
-			var annotations = Utilities.Interop.GetUnicodeStrings(ref input.szAnnotation, input.dwNumValues, deallocate);
-			var creationTimes = Utilities.Interop.GetDateTimes(ref input.ftAnnotationTime, input.dwNumValues, deallocate);
-			var users = Utilities.Interop.GetUnicodeStrings(ref input.szUser, input.dwNumValues, deallocate);
+            var timestamps = Utilities.Interop.GetDateTimes(ref input.ftTimeStamps, input.dwNumValues, deallocate);
+            var annotations = Utilities.Interop.GetUnicodeStrings(ref input.szAnnotation, input.dwNumValues, deallocate);
+            var creationTimes = Utilities.Interop.GetDateTimes(ref input.ftAnnotationTime, input.dwNumValues, deallocate);
+            var users = Utilities.Interop.GetUnicodeStrings(ref input.szUser, input.dwNumValues, deallocate);
 
-			for (var ii = 0; ii < input.dwNumValues; ii++)
-			{
-				var value = new TsCHdaAnnotationValue();
+            for (var ii = 0; ii < input.dwNumValues; ii++)
+            {
+                var value = new TsCHdaAnnotationValue();
 
-				value.Timestamp = timestamps[ii];
-				value.Annotation = annotations[ii];
-				value.CreationTime = creationTimes[ii];
-				value.User = users[ii];
+                value.Timestamp = timestamps[ii];
+                value.Annotation = annotations[ii];
+                value.CreationTime = creationTimes[ii];
+                value.User = users[ii];
 
-				output.Add(value);
-			}
+                output.Add(value);
+            }
 
-			return output;
-		}
-	}
+            return output;
+        }
+    }
 }

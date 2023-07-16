@@ -27,16 +27,16 @@ using System;
 
 namespace Technosoftware.DaAeHdaClient
 {
-	/// <summary>
-	/// This interface is used to discover OPC servers on the network.
-	/// </summary>
-	public interface IOpcDiscovery : IDisposable
-	{
-		/// <summary>
-		/// Returns a list of host names which could contain OPC servers.
-		/// </summary>
-		/// <returns>A array of strings that are valid network host names.</returns>
-		string[] EnumerateHosts();
+    /// <summary>
+    /// This interface is used to discover OPC servers on the network.
+    /// </summary>
+    public interface IOpcDiscovery : IDisposable
+    {
+        /// <summary>
+        /// Returns a list of host names which could contain OPC servers.
+        /// </summary>
+        /// <returns>A array of strings that are valid network host names.</returns>
+        string[] EnumerateHosts();
 
         /// <summary>
         /// Returns a list of servers that support an OPC specification.
@@ -53,5 +53,5 @@ namespace Technosoftware.DaAeHdaClient
         /// <param name="connectData">Any necessary user authentication or protocol configuration information.</param>
         /// <returns>An array of unconnected OPC server objects.</returns>
         OpcServer[] GetAvailableServers(OpcSpecification specification, string host, OpcConnectData connectData);
-	}
+    }
 }

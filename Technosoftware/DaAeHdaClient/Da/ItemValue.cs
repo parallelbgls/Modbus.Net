@@ -27,27 +27,27 @@ using System;
 namespace Technosoftware.DaAeHdaClient.Da
 {
 
-	/// <summary>
-	/// Contains the value for a single item.
-	/// </summary>
-	[Serializable]
-	public class TsCDaItemValue : OpcItem
-	{
-		#region Fields
+    /// <summary>
+    /// Contains the value for a single item.
+    /// </summary>
+    [Serializable]
+    public class TsCDaItemValue : OpcItem
+    {
+        #region Fields
         private TsCDaQuality daQuality_ = TsCDaQuality.Bad;
-		private DateTime timestamp_ = DateTime.MinValue;
+        private DateTime timestamp_ = DateTime.MinValue;
         #endregion
 
-		#region Constructors, Destructor, Initialization
+        #region Constructors, Destructor, Initialization
         /// <summary>
-		/// Initializes the object with default values.
-		/// </summary>
-		public TsCDaItemValue() { }
+        /// Initializes the object with default values.
+        /// </summary>
+        public TsCDaItemValue() { }
 
-		/// <summary>
-		/// Initializes the object with and ItemIdentifier object.
-		/// </summary>
-		public TsCDaItemValue(OpcItem item)
+        /// <summary>
+        /// Initializes the object with and ItemIdentifier object.
+        /// </summary>
+        public TsCDaItemValue(OpcItem item)
         {
             if (item == null)
             {
@@ -59,19 +59,19 @@ namespace Technosoftware.DaAeHdaClient.Da
             ServerHandle = item.ServerHandle;
         }
 
-		/// <summary>
-		/// Initializes the object with the specified item name.
-		/// </summary>
-		public TsCDaItemValue(string itemName)
-			: base(itemName)
-		{
-		}
+        /// <summary>
+        /// Initializes the object with the specified item name.
+        /// </summary>
+        public TsCDaItemValue(string itemName)
+            : base(itemName)
+        {
+        }
 
-		/// <summary>
-		/// Initializes object with the specified ItemValue object.
-		/// </summary>
-		public TsCDaItemValue(TsCDaItemValue item)
-			: base(item)
+        /// <summary>
+        /// Initializes object with the specified ItemValue object.
+        /// </summary>
+        public TsCDaItemValue(TsCDaItemValue item)
+            : base(item)
         {
             if (item == null)
             {
@@ -85,53 +85,53 @@ namespace Technosoftware.DaAeHdaClient.Da
         }
         #endregion
 
-		#region Properties
+        #region Properties
         /// <summary>
-		/// The item value.
-		/// </summary>
-		public object Value { get; set; }
+        /// The item value.
+        /// </summary>
+        public object Value { get; set; }
 
-		/// <summary>
-		/// The quality of the item value.
-		/// </summary>
-		public TsCDaQuality Quality
-		{
-			get => daQuality_;
+        /// <summary>
+        /// The quality of the item value.
+        /// </summary>
+        public TsCDaQuality Quality
+        {
+            get => daQuality_;
             set => daQuality_ = value;
         }
 
-		/// <summary>
-		/// Whether the quality is specified.
-		/// </summary>
-		public bool QualitySpecified { get; set; }
+        /// <summary>
+        /// Whether the quality is specified.
+        /// </summary>
+        public bool QualitySpecified { get; set; }
 
-		/// <summary>
-		/// The timestamp for the item value.
-		/// The <see cref="ApplicationInstance.TimeAsUtc">ApplicationInstance.TimeAsUtc</see> property defines
-		/// the time format (UTC or local time).
-		/// </summary>
-		public DateTime Timestamp
-		{
-			get => timestamp_;
+        /// <summary>
+        /// The timestamp for the item value.
+        /// The <see cref="ApplicationInstance.TimeAsUtc">ApplicationInstance.TimeAsUtc</see> property defines
+        /// the time format (UTC or local time).
+        /// </summary>
+        public DateTime Timestamp
+        {
+            get => timestamp_;
             set => timestamp_ = value;
         }
 
-		/// <summary>
-		/// Whether the timestamp is specified.
-		/// </summary>
-		public bool TimestampSpecified { get; set; }
+        /// <summary>
+        /// Whether the timestamp is specified.
+        /// </summary>
+        public bool TimestampSpecified { get; set; }
         #endregion
 
-		#region ICloneable Members
+        #region ICloneable Members
         /// <summary>
-		/// Creates a deep copy of the object.
-		/// </summary>
-		public override object Clone()
-		{
-			var clone = (TsCDaItemValue)MemberwiseClone();
-			clone.Value = OpcConvert.Clone(Value);
-			return clone;
-		}
+        /// Creates a deep copy of the object.
+        /// </summary>
+        public override object Clone()
+        {
+            var clone = (TsCDaItemValue)MemberwiseClone();
+            clone.Value = OpcConvert.Clone(Value);
+            return clone;
+        }
         #endregion
-	}
+    }
 }

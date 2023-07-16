@@ -23,12 +23,11 @@
 #region Using Directives
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Net;
 using System.Globalization;
+using System.Net;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security;
-
 using Technosoftware.DaAeHdaClient.Utilities;
 #endregion
 
@@ -264,11 +263,11 @@ namespace Technosoftware.DaAeHdaClient.Com
         [DllImport("ole32.dll")]
         private static extern int CoQueryProxyBlanket(
             [MarshalAs(UnmanagedType.IUnknown)]
-			object pProxy,
+            object pProxy,
             ref uint pAuthnSvc,
             ref uint pAuthzSvc,
             [MarshalAs(UnmanagedType.LPWStr)]
-			ref string pServerPrincName,
+            ref string pServerPrincName,
             ref uint pAuthnLevel,
             ref uint pImpLevel,
             ref IntPtr pAuthInfo,
@@ -277,7 +276,7 @@ namespace Technosoftware.DaAeHdaClient.Com
         [DllImport("ole32.dll")]
         private static extern int CoSetProxyBlanket(
             [MarshalAs(UnmanagedType.IUnknown)]
-			object pProxy,
+            object pProxy,
             uint pAuthnSvc,
             uint pAuthzSvc,
             IntPtr pServerPrincName,
@@ -347,13 +346,13 @@ namespace Technosoftware.DaAeHdaClient.Com
         private static extern int CoCreateInstanceEx(
             ref Guid clsid,
             [MarshalAs(UnmanagedType.IUnknown)]
-			object punkOuter,
+            object punkOuter,
             uint dwClsCtx,
             [In]
-			ref COSERVERINFO pServerInfo,
+            ref COSERVERINFO pServerInfo,
             uint dwCount,
             [In, Out]
-			MULTI_QI[] pResults);
+            MULTI_QI[] pResults);
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
         private struct LICINFO
@@ -372,15 +371,15 @@ namespace Technosoftware.DaAeHdaClient.Com
         {
             void CreateInstance(
                 [MarshalAs(UnmanagedType.IUnknown)]
-				object punkOuter,
-                [MarshalAs(UnmanagedType.LPStruct)] 
-				Guid riid,
+                object punkOuter,
+                [MarshalAs(UnmanagedType.LPStruct)]
+                Guid riid,
                 [MarshalAs(UnmanagedType.Interface)]
-				[Out] out object ppvObject);
+                [Out] out object ppvObject);
 
             void LockServer(
                 [MarshalAs(UnmanagedType.Bool)]
-				bool fLock);
+                bool fLock);
         }
 
         [ComImport]
@@ -390,15 +389,15 @@ namespace Technosoftware.DaAeHdaClient.Com
         {
             void CreateInstance(
                 [MarshalAs(UnmanagedType.IUnknown)]
-				object punkOuter,
-                [MarshalAs(UnmanagedType.LPStruct)] 
-				Guid riid,
+                object punkOuter,
+                [MarshalAs(UnmanagedType.LPStruct)]
+                Guid riid,
                 [MarshalAs(UnmanagedType.Interface)]
-				[Out] out object ppvObject);
+                [Out] out object ppvObject);
 
             void LockServer(
                 [MarshalAs(UnmanagedType.Bool)]
-				bool fLock);
+                bool fLock);
 
             void GetLicInfo(
                 [In, Out] ref LICINFO pLicInfo);
@@ -406,31 +405,31 @@ namespace Technosoftware.DaAeHdaClient.Com
             void RequestLicKey(
                 int dwReserved,
                 [MarshalAs(UnmanagedType.BStr)]
-				string pbstrKey);
+                string pbstrKey);
 
             void CreateInstanceLic(
                 [MarshalAs(UnmanagedType.IUnknown)]
-				object punkOuter,
+                object punkOuter,
                 [MarshalAs(UnmanagedType.IUnknown)]
-				object punkReserved,
-                [MarshalAs(UnmanagedType.LPStruct)]  
-				Guid riid,
+                object punkReserved,
+                [MarshalAs(UnmanagedType.LPStruct)]
+                Guid riid,
                 [MarshalAs(UnmanagedType.BStr)]
-				string bstrKey,
+                string bstrKey,
                 [MarshalAs(UnmanagedType.IUnknown)]
-				[Out] out object ppvObject);
+                [Out] out object ppvObject);
         }
 
         [DllImport("ole32.dll")]
         private static extern int CoGetClassObject(
-            [MarshalAs(UnmanagedType.LPStruct)] 
-			Guid clsid,
+            [MarshalAs(UnmanagedType.LPStruct)]
+            Guid clsid,
             uint dwClsContext,
             [In] ref COSERVERINFO pServerInfo,
-            [MarshalAs(UnmanagedType.LPStruct)] 
-			Guid riid,
+            [MarshalAs(UnmanagedType.LPStruct)]
+            Guid riid,
             [MarshalAs(UnmanagedType.IUnknown)]
-			[Out] out object ppv);
+            [Out] out object ppv);
 
         internal const int LOGON32_PROVIDER_DEFAULT = 0;
         internal const int LOGON32_LOGON_INTERACTIVE = 2;

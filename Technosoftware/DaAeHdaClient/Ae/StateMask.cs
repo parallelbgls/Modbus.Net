@@ -26,45 +26,45 @@ using System;
 
 namespace Technosoftware.DaAeHdaClient.Ae
 {
-	/// <summary>
-	/// Defines masks to be used when modifying the subscription or item state.
-	/// </summary>
-	[Flags]
-	public enum TsCAeStateMask
-	{
-		/// <summary>
-		/// A name assigned to subscription.
-		/// </summary>
-		Name = 0x0001,
+    /// <summary>
+    /// Defines masks to be used when modifying the subscription or item state.
+    /// </summary>
+    [Flags]
+    public enum TsCAeStateMask
+    {
+        /// <summary>
+        /// A name assigned to subscription.
+        /// </summary>
+        Name = 0x0001,
 
-		/// <summary>
-		/// The client assigned handle for the item or subscription.
-		/// </summary>
-		ClientHandle = 0x0002,
+        /// <summary>
+        /// The client assigned handle for the item or subscription.
+        /// </summary>
+        ClientHandle = 0x0002,
 
-		/// <summary>
-		/// Whether the subscription is active.
-		/// </summary>
-		Active = 0x0004,
+        /// <summary>
+        /// Whether the subscription is active.
+        /// </summary>
+        Active = 0x0004,
 
-		/// <summary>
-		/// The maximum rate at which the server send event notifications.
-		/// </summary>
-		BufferTime = 0x0008,
+        /// <summary>
+        /// The maximum rate at which the server send event notifications.
+        /// </summary>
+        BufferTime = 0x0008,
 
-		/// <summary>
-		/// The requested maximum number of events that will be sent in a single callback.
-		/// </summary>
-		MaxSize = 0x0010,
+        /// <summary>
+        /// The requested maximum number of events that will be sent in a single callback.
+        /// </summary>
+        MaxSize = 0x0010,
 
-		/// <summary>
-		/// The maximum period between updates sent to the client.
-		/// </summary>
-		KeepAlive = 0x0020,
+        /// <summary>
+        /// The maximum period between updates sent to the client.
+        /// </summary>
+        KeepAlive = 0x0020,
 
-		/// <summary>
-		/// All fields are valid.
-		/// </summary>
-		All = 0xFFFF
-	}
+        /// <summary>
+        /// All fields are valid.
+        /// </summary>
+        All = 0xFFFF
+    }
 }

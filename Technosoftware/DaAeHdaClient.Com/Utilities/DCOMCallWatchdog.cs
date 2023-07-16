@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Technosoftware.DaAeHdaClient.Utilities;
@@ -47,7 +44,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Utilities
         private static Task watchdogTask_;
         private static DCOMWatchdogResult lastWatchdogResult_ = DCOMWatchdogResult.None;
         private static DateTime setStart_;
-        
+
         #endregion
 
         #region Properties
@@ -97,7 +94,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Utilities
         /// </summary>
         public static TimeSpan Timeout
         {
-            get => timeout_;            
+            get => timeout_;
             set
             {
                 Enable(value);
@@ -124,7 +121,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Utilities
         /// <param name="timeout">The maximum time to wait for a DCOM call to succeed before it is cancelled. Note that DCOM will typically timeout
         /// between 1-2 minutes, depending on the OS</param>
         public static void Enable(TimeSpan timeout)
-        {          
+        {
             if (timeout == TimeSpan.Zero)
             {
                 timeout = TimeSpan.FromSeconds(DEFAULT_TIMEOUT_SECONDS);
@@ -159,7 +156,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Utilities
                 }
             }
         }
-        
+
         /// <summary>
         /// Sets the watchdog timer active on the current thread. If Reset is not called within the timeout period, any current thread DCOM call will be cancelled. The
         /// calling thread must be the originator of the DCOM call and must be an STA thread.
@@ -200,7 +197,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Utilities
                         {
                             setStart_ = DateTime.UtcNow;
                             watchDogThreadID_ = threadId;
-                           
+
                             Utils.Trace(Utils.TraceMasks.Information, $"COM call cancellation on thread [{watchDogThreadID_}] was set with timeout [{timeout_.TotalSeconds} seconds]");
                         }
                         else
@@ -289,7 +286,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Utilities
             {
                 return false;
             }
-        }   
+        }
 
         /// <summary>
         /// Allows for manual cancellation of the current DCOM call
@@ -341,7 +338,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Utilities
         /// then cancels the current DCOM call automatically if Reset is not called within the timeout period.
         /// </summary>
         private static void WatchdogTask()
-        {            
+        {
             while (IsEnabled)
             {
                 try
@@ -353,7 +350,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Utilities
                             Utils.Trace(Utils.TraceMasks.Information, $"Sync call watchdog for thread [{watchDogThreadID_}] timed out - cancelling current call...");
 
                             Cancel(DCOMWatchdogResult.TimedOut);
-                        }                        
+                        }
                     }
                 }
                 catch (Exception e)
@@ -367,7 +364,7 @@ namespace Technosoftware.DaAeHdaClient.Com.Utilities
             }
         }
 
-        
+
         private static TimeSpan TimeElapsed(DateTime startTime)
         {
             var now = DateTime.UtcNow;
@@ -386,5 +383,5 @@ namespace Technosoftware.DaAeHdaClient.Com.Utilities
 
         #endregion
 
-    }       
+    }
 }

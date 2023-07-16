@@ -26,30 +26,30 @@ using System;
 
 namespace Technosoftware.DaAeHdaClient
 {
-	/// <summary>
-	/// Detailed information about the server.
-	/// Set to null if the ServerDescription is being accessed without a client context.
-	/// </summary>
+    /// <summary>
+    /// Detailed information about the server.
+    /// Set to null if the ServerDescription is being accessed without a client context.
+    /// </summary>
     public class OpcServerDetail
-	{
-		/// <summary>
-		/// The time the server was last started.
-		/// </summary>
-		public DateTime StartTime;
+    {
+        /// <summary>
+        /// The time the server was last started.
+        /// </summary>
+        public DateTime StartTime;
 
-		/// <summary>
-		/// The build number of the server.
-		/// </summary>
-		public string BuildNumber;
+        /// <summary>
+        /// The build number of the server.
+        /// </summary>
+        public string BuildNumber;
 
-		/// <summary>
-		/// The version of the server.
-		/// </summary>
-		public string Version;
+        /// <summary>
+        /// The version of the server.
+        /// </summary>
+        public string Version;
 
-		/// <summary>
-		/// Vendor-specific information about the server.
-		/// </summary>
-		public string VendorInfo;
-	}
+        /// <summary>
+        /// Vendor-specific information about the server.
+        /// </summary>
+        public string VendorInfo;
+    }
 }

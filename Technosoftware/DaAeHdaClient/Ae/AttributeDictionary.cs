@@ -26,23 +26,23 @@ using System;
 
 namespace Technosoftware.DaAeHdaClient.Ae
 {
-	/// <summary>
-	/// Contains multiple lists of the attributes indexed by category.
-	/// </summary>
-	[Serializable]
-	public sealed class TsCAeAttributeDictionary : OpcWriteableDictionary
-	{
-		#region Constructors, Destructor, Initialization
+    /// <summary>
+    /// Contains multiple lists of the attributes indexed by category.
+    /// </summary>
+    [Serializable]
+    public sealed class TsCAeAttributeDictionary : OpcWriteableDictionary
+    {
+        #region Constructors, Destructor, Initialization
         /// <summary>
-		/// Constructs an empty dictionary.
-		/// </summary>
-		public TsCAeAttributeDictionary() : base(null, typeof(int), typeof(TsCAeAttributeCollection)) { }
+        /// Constructs an empty dictionary.
+        /// </summary>
+        public TsCAeAttributeDictionary() : base(null, typeof(int), typeof(TsCAeAttributeCollection)) { }
 
-		/// <summary>
-		/// Constructs an dictionary from a set of category ids.
-		/// </summary>
-		public TsCAeAttributeDictionary(int[] categoryIds)
-			: base(null, typeof(int), typeof(TsCAeAttributeCollection))
+        /// <summary>
+        /// Constructs an dictionary from a set of category ids.
+        /// </summary>
+        public TsCAeAttributeDictionary(int[] categoryIds)
+            : base(null, typeof(int), typeof(TsCAeAttributeCollection))
         {
             foreach (var categoryId in categoryIds)
             {
@@ -51,41 +51,41 @@ namespace Technosoftware.DaAeHdaClient.Ae
         }
         #endregion
 
-		#region Public Methods
+        #region Public Methods
         /// <summary>
-		/// Gets or sets the attribute collection for the specified category. 
-		/// </summary>
-		public TsCAeAttributeCollection this[int categoryId]
-		{
-			get => (TsCAeAttributeCollection)base[categoryId];
+        /// Gets or sets the attribute collection for the specified category. 
+        /// </summary>
+        public TsCAeAttributeCollection this[int categoryId]
+        {
+            get => (TsCAeAttributeCollection)base[categoryId];
 
             set
-			{
-				if (value != null)
-				{
-					base[categoryId] = value;
-				}
-				else
-				{
-					base[categoryId] = new TsCAeAttributeCollection();
-				}
-			}
-		}
+            {
+                if (value != null)
+                {
+                    base[categoryId] = value;
+                }
+                else
+                {
+                    base[categoryId] = new TsCAeAttributeCollection();
+                }
+            }
+        }
 
-		/// <summary>
-		/// Adds an element with the provided key and value to the IDictionary.
-		/// </summary>
-		public void Add(int key, int[] value)
-		{
-			if (value != null)
-			{
-				base.Add(key, new TsCAeAttributeCollection(value));
-			}
-			else
-			{
-				base.Add(key, new TsCAeAttributeCollection());
-			}
-		}
+        /// <summary>
+        /// Adds an element with the provided key and value to the IDictionary.
+        /// </summary>
+        public void Add(int key, int[] value)
+        {
+            if (value != null)
+            {
+                base.Add(key, new TsCAeAttributeCollection(value));
+            }
+            else
+            {
+                base.Add(key, new TsCAeAttributeCollection());
+            }
+        }
         #endregion
-	}
+    }
 }

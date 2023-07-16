@@ -1,5 +1,4 @@
 ﻿using Quartz.Logging;
-using System.Configuration;
 
 namespace MachineJob
 {

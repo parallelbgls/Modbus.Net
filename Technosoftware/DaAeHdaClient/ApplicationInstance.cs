@@ -21,7 +21,6 @@
 #endregion Copyright (c) 2011-2023 Technosoftware GmbH. All rights reserved
 
 #region Using Directives
-using System;
 using Technosoftware.DaAeHdaClient.Utilities;
 #endregion
 

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Modbus.Net
+﻿namespace Modbus.Net
 {
 #if NET462
 #pragma warning disable 1591

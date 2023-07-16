@@ -25,56 +25,56 @@
 
 namespace Technosoftware.DaAeHdaClient.Ae
 {
-	/// <summary>
-	/// The current state of a process area or an event source.
-	/// </summary>
-	public class TsCAeEnabledStateResult : IOpcResult
-	{
-		#region Fields
+    /// <summary>
+    /// The current state of a process area or an event source.
+    /// </summary>
+    public class TsCAeEnabledStateResult : IOpcResult
+    {
+        #region Fields
         private string qualifiedName_;
         #endregion
 
-		#region Constructors, Destructor, Initialization
+        #region Constructors, Destructor, Initialization
         /// <summary>
-		/// Initializes the object with default values.
-		/// </summary>
-		public TsCAeEnabledStateResult() { }
+        /// Initializes the object with default values.
+        /// </summary>
+        public TsCAeEnabledStateResult() { }
 
-		/// <summary>
-		/// Initializes the object with an qualified name.
-		/// </summary>
-		public TsCAeEnabledStateResult(string qualifiedName)
-		{
-			qualifiedName_ = qualifiedName;
-		}
+        /// <summary>
+        /// Initializes the object with an qualified name.
+        /// </summary>
+        public TsCAeEnabledStateResult(string qualifiedName)
+        {
+            qualifiedName_ = qualifiedName;
+        }
 
-		/// <summary>
-		/// Initializes the object with an qualified name and Result.
-		/// </summary>
-		public TsCAeEnabledStateResult(string qualifiedName, OpcResult result)
-		{
-			qualifiedName_ = qualifiedName;
-			Result = result;
-		}
+        /// <summary>
+        /// Initializes the object with an qualified name and Result.
+        /// </summary>
+        public TsCAeEnabledStateResult(string qualifiedName, OpcResult result)
+        {
+            qualifiedName_ = qualifiedName;
+            Result = result;
+        }
         #endregion
 
-		#region Properties
+        #region Properties
         /// <summary>
-		/// Whether if the area or source is enabled.
-		/// </summary>
-		public bool Enabled { get; set; }
+        /// Whether if the area or source is enabled.
+        /// </summary>
+        public bool Enabled { get; set; }
 
-		/// <summary>
-		/// Whether the area or source is enabled and all areas within the hierarchy of its containing areas are enabled. 
-		/// </summary>
-		public bool EffectivelyEnabled { get; set; }
+        /// <summary>
+        /// Whether the area or source is enabled and all areas within the hierarchy of its containing areas are enabled. 
+        /// </summary>
+        public bool EffectivelyEnabled { get; set; }
         #endregion
 
-		#region IOpcResult Members
+        #region IOpcResult Members
         /// <summary>
-		/// The error id for the result of an operation on an item.
-		/// </summary>
-		public OpcResult Result { get; set; } = OpcResult.S_OK;
+        /// The error id for the result of an operation on an item.
+        /// </summary>
+        public OpcResult Result { get; set; } = OpcResult.S_OK;
 
         /// <summary>
 		/// Vendor specific diagnostic information (not the localized error text).
@@ -82,14 +82,14 @@ namespace Technosoftware.DaAeHdaClient.Ae
 		public string DiagnosticInfo { get; set; }
         #endregion
 
-		#region ICloneable Members
+        #region ICloneable Members
         /// <summary>
-		/// Creates a deep copy of the object.
-		/// </summary>
-		public virtual object Clone()
-		{
-			return MemberwiseClone();
-		}
+        /// Creates a deep copy of the object.
+        /// </summary>
+        public virtual object Clone()
+        {
+            return MemberwiseClone();
+        }
         #endregion
-	}
+    }
 }

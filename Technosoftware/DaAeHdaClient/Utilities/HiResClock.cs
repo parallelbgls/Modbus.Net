@@ -50,7 +50,7 @@ namespace Technosoftware.DaAeHdaClient.Utilities
                     return DateTime.UtcNow;
                 }
 
-                var ticks = (counter - s_Default.m_baseline)*s_Default.m_ratio;
+                var ticks = (counter - s_Default.m_baseline) * s_Default.m_ratio;
 
                 return new DateTime((long)ticks + s_Default.m_offset);
             }
@@ -83,7 +83,7 @@ namespace Technosoftware.DaAeHdaClient.Utilities
                 m_baseline = m_offset;
             }
 
-            m_ratio = ((decimal)TimeSpan.TicksPerSecond)/m_frequency;
+            m_ratio = ((decimal)TimeSpan.TicksPerSecond) / m_frequency;
         }
 
         /// <summary>
