@@ -16,7 +16,9 @@ IHost host = Host.CreateDefaultBuilder(args).UseWindowsService()
 
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(configuration)
+            .Enrich.FromLogContext()
             .WriteTo.Console()
+            .WriteTo.File("Log\\log..txt", Serilog.Events.LogEventLevel.Error, shared: true, rollingInterval: RollingInterval.Day)
             .CreateLogger();
 
         var loggerFactory = new LoggerFactory().AddSerilog(Log.Logger);
