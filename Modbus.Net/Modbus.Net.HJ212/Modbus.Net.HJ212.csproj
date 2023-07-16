@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net6.0</TargetFrameworks>
+    <LangVersion>10.0</LangVersion>
+    <AssemblyName>Modbus.Net.HJ212</AssemblyName>
+    <RootNamespace>Modbus.Net.HJ212</RootNamespace>
+    <PackageId>Modbus.Net.HJ212</PackageId>
+    <Version>1.4.2</Version>
+    <Authors>Chris L.(Luo Sheng)</Authors>
+    <Company>Hangzhou Delian Science Technology Co.,Ltd.</Company>
+    <Product>Modbus.Net.HJ212</Product>
+    <Description>Modbus.Net Modbus Implementation</Description>
+    <Copyright>Copyright 2023 Hangzhou Delian Science Technology Co.,Ltd.</Copyright>
+    <PackageProjectUrl>https://github.com/parallelbgls/Modbus.Net/tree/master/Modbus.Net/Modbus.Net.HJ212</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/parallelbgls/Modbus.Net</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>hardware communicate protocol modbus Delian</PackageTags>
+    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <IncludeSymbols>True</IncludeSymbols>
+    <IncludeSource>True</IncludeSource>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\Modbus.Net.HJ212.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Modbus.Net\Modbus.Net.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath=""/>
+  </ItemGroup>
+</Project>
