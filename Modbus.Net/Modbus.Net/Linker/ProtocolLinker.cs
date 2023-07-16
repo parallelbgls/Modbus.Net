@@ -41,7 +41,7 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="content">扩展前的基本协议内容</param>
         /// <returns>扩展后的协议内容</returns>
-        public override byte[] BytesExtend(byte[] content)
+        public virtual byte[] BytesExtend(byte[] content)
         {
             //自动查找相应的协议放缩类，命令规则为——当前的实际类名（注意是继承后的）+"BytesExtend"。
             var bytesExtend =
@@ -56,7 +56,7 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="content">缩减前的完整协议内容</param>
         /// <returns>缩减后的协议内容</returns>
-        public override byte[] BytesDecact(byte[] content)
+        public virtual byte[] BytesDecact(byte[] content)
         {
             //自动查找相应的协议放缩类，命令规则为——当前的实际类名（注意是继承后的）+"BytesExtend"。
             var bytesExtend =
@@ -127,31 +127,10 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="content">发送协议的内容</param>
         /// <returns>接收协议的内容</returns>
-        public virtual TParamOut SendReceive(TParamIn content)
-        {
-            return AsyncHelper.RunSync(() => SendReceiveAsync(content));
-        }
-
-        /// <summary>
-        ///     发送并接收数据
-        /// </summary>
-        /// <param name="content">发送协议的内容</param>
-        /// <returns>接收协议的内容</returns>
         public virtual async Task<TParamOut> SendReceiveAsync(TParamIn content)
         {
-            var extBytes = BytesExtend(content);
-            var receiveBytes = await SendReceiveWithoutExtAndDecAsync(extBytes);
-            return BytesDecact(receiveBytes);
-        }
-
-        /// <summary>
-        ///     发送并接收数据，不进行协议扩展和收缩，用于特殊协议
-        /// </summary>
-        /// <param name="content">发送协议的内容</param>
-        /// <returns>接收协议的内容</returns>
-        public virtual TParamOut SendReceiveWithoutExtAndDec(TParamIn content)
-        {
-            return AsyncHelper.RunSync(() => SendReceiveWithoutExtAndDecAsync(content));
+            var receiveBytes = await SendReceiveWithoutExtAndDecAsync(content);
+            return receiveBytes;
         }
 
         /// <summary>
@@ -179,26 +158,6 @@ namespace Modbus.Net
             if (content != null) return true;
             Disconnect();
             return false;
-        }
-
-        /// <summary>
-        ///     协议内容扩展，发送时根据需要扩展
-        /// </summary>
-        /// <param name="content">扩展前的基本协议内容</param>
-        /// <returns>扩展后的协议内容</returns>
-        public virtual TParamIn BytesExtend(TParamIn content)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        ///     协议内容缩减，接收时根据需要缩减
-        /// </summary>
-        /// <param name="content">缩减前的完整协议内容</param>
-        /// <returns>缩减后的协议内容</returns>
-        public virtual TParamOut BytesDecact(TParamOut content)
-        {
-            throw new NotImplementedException();
         }
     }
 }

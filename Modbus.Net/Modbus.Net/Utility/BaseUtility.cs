@@ -4,27 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-/// <summary>
-///     端格式
-/// </summary>
-public enum Endian
-{
-    /// <summary>
-    ///     小端
-    /// </summary>
-    LittleEndianLsb,
-
-    /// <summary>
-    ///     大端-小端位
-    /// </summary>
-    BigEndianLsb,
-
-    /// <summary>
-    ///     大端-大端位
-    /// </summary>
-    BigEndianMsb
-}
-
 namespace Modbus.Net
 {
     /// <summary>
@@ -72,30 +51,7 @@ namespace Modbus.Net
         /// <param name="startAddress">开始地址</param>
         /// <param name="getByteCount">获取字节数个数</param>
         /// <returns>接收到的byte数据</returns>
-        public virtual ReturnStruct<byte[]> GetDatas(string startAddress, int getByteCount)
-        {
-            return AsyncHelper.RunSync(() => GetDatasAsync(startAddress, getByteCount));
-        }
-
-        /// <summary>
-        ///     获取数据
-        /// </summary>
-        /// <param name="startAddress">开始地址</param>
-        /// <param name="getByteCount">获取字节数个数</param>
-        /// <returns>接收到的byte数据</returns>
         public abstract Task<ReturnStruct<byte[]>> GetDatasAsync(string startAddress, int getByteCount);
-
-        /// <summary>
-        ///     获取数据
-        /// </summary>
-        /// <param name="startAddress">开始地址</param>
-        /// <param name="getTypeAndCount">获取类型和个数</param>
-        /// <returns>接收到的对应的类型和数据</returns>
-        public virtual ReturnStruct<object[]> GetDatas(string startAddress,
-            KeyValuePair<Type, int> getTypeAndCount)
-        {
-            return AsyncHelper.RunSync(() => GetDatasAsync(startAddress, getTypeAndCount));
-        }
 
         /// <summary>
         ///     获取数据
@@ -109,7 +65,7 @@ namespace Modbus.Net
             try
             {
                 var typeName = getTypeAndCount.Key.FullName;
-                var bCount = BigEndianValueHelper.Instance.ByteLength[typeName];
+                var bCount = ValueHelper.ByteLength[typeName];
                 var getReturnValue = await GetDatasAsync(startAddress,
                     (int)Math.Ceiling(bCount * getTypeAndCount.Value));
                 var getBytes = getReturnValue;
@@ -142,19 +98,6 @@ namespace Modbus.Net
                     ErrorMsg = "Unknown Error"
                 };
             }
-        }
-
-        /// <summary>
-        ///     获取数据
-        /// </summary>
-        /// <typeparam name="T">需要接收的类型</typeparam>
-        /// <param name="startAddress">开始地址</param>
-        /// <param name="getByteCount">获取字节数个数</param>
-        /// <returns>接收到的对应的类型和数据</returns>
-        public virtual ReturnStruct<T[]> GetDatas<T>(string startAddress,
-            int getByteCount)
-        {
-            return AsyncHelper.RunSync(() => GetDatasAsync<T>(startAddress, getByteCount));
         }
 
         /// <summary>
@@ -207,19 +150,6 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="startAddress">开始地址</param>
         /// <param name="getTypeAndCountList">获取类型和个数的队列</param>
-        /// <returns>获取数据的对象数组，请强制转换成相应类型</returns>
-        public virtual ReturnStruct<object[]> GetDatas(string startAddress,
-            IEnumerable<KeyValuePair<Type, int>> getTypeAndCountList)
-        {
-            return
-                AsyncHelper.RunSync(() => GetDatasAsync(startAddress, getTypeAndCountList));
-        }
-
-        /// <summary>
-        ///     获取数据
-        /// </summary>
-        /// <param name="startAddress">开始地址</param>
-        /// <param name="getTypeAndCountList">获取类型和个数的队列</param>
         public virtual async Task<ReturnStruct<object[]>> GetDatasAsync(string startAddress,
             IEnumerable<KeyValuePair<Type, int>> getTypeAndCountList)
         {
@@ -230,7 +160,7 @@ namespace Modbus.Net
                 var bAllCount = (
                     from getTypeAndCount in translateTypeAndCount
                     let typeName = getTypeAndCount.Key.FullName
-                    let bCount = BigEndianValueHelper.Instance.ByteLength[typeName]
+                    let bCount = ValueHelper.ByteLength[typeName]
                     select (int)Math.Ceiling(bCount * getTypeAndCount.Value)).Sum();
                 var getReturnValue = await GetDatasAsync(startAddress, bAllCount);
                 var getBytes = getReturnValue;
@@ -263,17 +193,6 @@ namespace Modbus.Net
                     ErrorMsg = "Unknown Error"
                 };
             }
-        }
-
-        /// <summary>
-        ///     设置数据
-        /// </summary>
-        /// <param name="startAddress">开始地址</param>
-        /// <param name="setContents">设置数据</param>
-        /// <returns>是否设置成功</returns>
-        public virtual ReturnStruct<bool> SetDatas(string startAddress, object[] setContents)
-        {
-            return AsyncHelper.RunSync(() => SetDatasAsync(startAddress, setContents));
         }
 
         /// <summary>

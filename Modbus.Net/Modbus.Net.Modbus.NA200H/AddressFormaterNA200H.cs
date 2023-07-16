@@ -3,7 +3,7 @@
     /// <summary>
     ///     南大奥拓NA200H专用AddressFormater
     /// </summary>
-    public class AddressFormaterNA200H : AddressFormater
+    public class AddressFormaterNA200H : AddressFormater<int, int>
     {
         /// <summary>
         ///     格式化地址

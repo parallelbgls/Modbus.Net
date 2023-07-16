@@ -22,6 +22,11 @@ namespace Modbus.Net
         protected Task SendingThread { get; set; }
 
         /// <summary>
+        ///     消息维护线程是否在运行
+        /// </summary>
+        public virtual bool IsSending => SendingThread.Status.Equals(TaskStatus.Running);
+
+        /// <summary>
         ///     包切分位置函数
         /// </summary>
         protected Func<byte[], int> LengthCalc { get; }
@@ -92,15 +97,16 @@ namespace Modbus.Net
         /// <param name="def">需要添加的信息信息</param>
         protected virtual bool AddMessageToList(MessageWaitingDef def)
         {
+            var ans = false;
             lock (WaitingMessages)
             {
                 if (WaitingMessages.FirstOrDefault(p => p.Key == def.Key) == null || def.Key == null)
                 {
                     WaitingMessages.Add(def);
-                    return true;
+                    ans = true;
                 }
-                return false;
             }
+            return ans;
         }
 
         /// <summary>
@@ -116,45 +122,89 @@ namespace Modbus.Net
             var ans = new List<(byte[], bool)>();
             byte[] receiveMessageCopy = new byte[receiveMessage.Length];
             Array.Copy(receiveMessage, receiveMessageCopy, receiveMessage.Length);
-            var length = LengthCalc?.Invoke(receiveMessageCopy);
-            List<byte[]> duplicatedMessages;
+            int? length = -1;
+            try
+            {
+                length = LengthCalc?.Invoke(receiveMessageCopy);
+            }
+            catch
+            {
+                //ignore
+            }
+            List<(byte[], bool)> duplicatedMessages;
             if (length == null || length == -1) return ans;
-            if (length == 0) return null;
+            else if (length == 0) return null;
             else
             {
-                duplicatedMessages = new List<byte[]>();
+                duplicatedMessages = new List<(byte[], bool)>();
+                var skipLength = 0;
                 while (receiveMessageCopy.Length >= length)
                 {
                     var duplicateMessage = receiveMessageCopy.Take(length.Value).ToArray();
                     if (CheckRightFunc != null && CheckRightFunc(duplicateMessage) == false)
                     {
-                        receiveMessageCopy = receiveMessageCopy.TakeLast(receiveMessage.Length - 1).ToArray();
+                        receiveMessageCopy = receiveMessageCopy.TakeLast(receiveMessageCopy.Length - 1).ToArray();
+                        skipLength++;
                         continue;
                     }
-                    duplicatedMessages.Add(duplicateMessage);
-                    receiveMessageCopy = receiveMessageCopy.TakeLast(receiveMessage.Length - length.Value).ToArray();
+                    if (skipLength > 0)
+                    {
+                        duplicatedMessages.Add((new byte[skipLength], false));
+                    }
+                    skipLength = 0;
+                    duplicatedMessages.Add((duplicateMessage, true));
+                    receiveMessageCopy = receiveMessageCopy.TakeLast(receiveMessageCopy.Length - length.Value).ToArray();
                     if (receiveMessageCopy.Length == 0) break;
                     length = LengthCalc?.Invoke(receiveMessageCopy);
                     if (length == -1) break;
                     if (length == 0) return null;
                 }
+                if (skipLength > 0)
+                {
+                    lock (WaitingMessages)
+                    {
+                        var def = GetMessageFromWaitingList(null);
+                        if (def != null)
+                        {
+                            lock (WaitingMessages)
+                            {
+                                if (WaitingMessages.IndexOf(def) >= 0)
+                                {
+                                    WaitingMessages.Remove(def);
+                                }
+                            }
+                            def.ReceiveMutex.Set();
+                        }
+                    }
+                    return null;
+                }
             }
             foreach (var message in duplicatedMessages)
             {
-                var def = GetMessageFromWaitingList(message);
-                if (def != null)
+                if (!message.Item2)
                 {
-                    def.ReceiveMessage = receiveMessage;
-                    lock (WaitingMessages)
-                    {
-                        WaitingMessages.Remove(def);
-                    }
-                    def.ReceiveMutex.Set();
-                    ans.Add((message, true));
+                    ans.Add((message.Item1, true));
                 }
                 else
                 {
-                    ans.Add((message, false));
+                    var def = GetMessageFromWaitingList(message.Item1);
+                    if (def != null)
+                    {
+                        def.ReceiveMessage = message.Item1;
+                        lock (WaitingMessages)
+                        {
+                            if (WaitingMessages.IndexOf(def) >= 0)
+                            {
+                                WaitingMessages.Remove(def);
+                            }
+                        }
+                        def.ReceiveMutex.Set();
+                        ans.Add((message.Item1, true));
+                    }
+                    else
+                    {
+                        ans.Add((message.Item1, false));
+                    }
                 }
             }
             return ans;
@@ -172,7 +222,10 @@ namespace Modbus.Net
         {
             lock (WaitingMessages)
             {
-                WaitingMessages.Remove(def);
+                if (WaitingMessages.IndexOf(def) >= 0)
+                {
+                    WaitingMessages.Remove(def);
+                }
             }
         }
     }

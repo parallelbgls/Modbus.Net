@@ -20,9 +20,10 @@ namespace Modbus.Net
             var ans = 0;
             foreach (var position in packageCountPositions)
             {
-                if (position >= receiveMessage.Length) return -1;
+                if (position > receiveMessage.Length - 1) return -1;
                 ans = ans * 256 + receiveMessage[position];
             }
+            if (ans + otherCount > receiveMessage.Length) return -1;
             return ans + otherCount;
         }
 

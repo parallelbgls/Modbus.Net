@@ -37,7 +37,7 @@ namespace Modbus.Net
         /// <returns></returns>
         public static async Task<MachineGetJobScheduler<TMachineMethod, TMachineKey, TReturnUnit>> CreateScheduler(string triggerKey, int count = 0, int intervalSecond = 1)
         {
-            return await CreateScheduler(triggerKey, count, (double)intervalSecond);
+            return await CreateSchedulerMillisecond(triggerKey, count, intervalSecond * 1000);
         }
 
         /// <summary>
@@ -49,28 +49,38 @@ namespace Modbus.Net
         /// <returns></returns>
         public static async Task<MachineGetJobScheduler<TMachineMethod, TMachineKey, TReturnUnit>> CreateSchedulerMillisecond(string triggerKey, int count = 0, int intervalMilliSecond = 1000)
         {
-            return await CreateScheduler(triggerKey, count, intervalMilliSecond / 1000.0);
-        }
-
-        private static async Task<MachineGetJobScheduler<TMachineMethod, TMachineKey, TReturnUnit>> CreateScheduler(string triggerKey, int count = 0, double interval = 1)
-        {
             IScheduler scheduler = await StdSchedulerFactory.GetDefaultScheduler();
 
             ITrigger trigger;
-            if (count >= 0)
+            if (intervalMilliSecond <= 0)
+            {
                 trigger = TriggerBuilder.Create()
                     .WithIdentity(triggerKey, "Modbus.Net.DataQuery.Group." + triggerKey)
                     .StartNow()
-                    .WithSimpleSchedule(b => b.WithInterval(TimeSpan.FromSeconds(interval)).WithRepeatCount(count))
+                    .Build();
+            }
+            else if (count >= 0)
+                trigger = TriggerBuilder.Create()
+                    .WithIdentity(triggerKey, "Modbus.Net.DataQuery.Group." + triggerKey)
+                    .StartNow()
+                    .WithSimpleSchedule(b => b.WithInterval(TimeSpan.FromMilliseconds(intervalMilliSecond)).WithRepeatCount(count))
                     .Build();
             else
                 trigger = TriggerBuilder.Create()
                     .WithIdentity(triggerKey, "Modbus.Net.DataQuery.Group." + triggerKey)
                     .StartNow()
-                    .WithSimpleSchedule(b => b.WithInterval(TimeSpan.FromSeconds(interval)).RepeatForever())
+                    .WithSimpleSchedule(b => b.WithInterval(TimeSpan.FromMilliseconds(intervalMilliSecond)).RepeatForever())
                     .Build();
 
-            var listener = new JobChainingJobListenerWithDataMap("Modbus.Net.DataQuery.Chain." + triggerKey, new string[2] { "Value", "SetValue" });
+            IJobListener listener;
+            if (intervalMilliSecond <= 0)
+            {
+                listener = new JobChainingJobLIstenerWithDataMapRepeated("Modbus.Net.DataQuery.Chain." + triggerKey, new string[2] { "Value", "SetValue" }, count);
+            }
+            else
+            {
+                listener = new JobChainingJobListenerWithDataMap("Modbus.Net.DataQuery.Chain." + triggerKey, new string[2] { "Value", "SetValue" });
+            }
             scheduler.ListenerManager.AddJobListener(listener, GroupMatcher<JobKey>.GroupEquals("Modbus.Net.DataQuery.Group." + triggerKey));
 
             if (await scheduler.GetTrigger(new TriggerKey(triggerKey)) != null)
@@ -344,9 +354,9 @@ namespace Modbus.Net
         ///     执行任务
         /// </summary>
         /// <returns></returns>
-        public async Task Run()
+        public Task Run()
         {
-            await _scheduler.Start();
+            return _scheduler.Start();
         }
     }
 

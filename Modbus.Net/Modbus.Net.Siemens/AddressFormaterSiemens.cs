@@ -3,7 +3,7 @@
     /// <summary>
     ///     Siemens地址格式化（Modbus.Net专用格式）
     /// </summary>
-    public class AddressFormaterSiemens : AddressFormater
+    public class AddressFormaterSiemens : AddressFormater<int, int>
     {
         /// <summary>
         ///     编码地址
@@ -32,7 +32,7 @@
     /// <summary>
     ///     Siemens地址格式化（Siemens格式）
     /// </summary>
-    public class AddressFormaterSimenseStandard : AddressFormater
+    public class AddressFormaterSimenseStandard : AddressFormater<int, int>
     {
         /// <summary>
         ///     编码地址

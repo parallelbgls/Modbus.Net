@@ -1,5 +1,4 @@
-﻿using FastEnumUtility;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -62,12 +61,23 @@ namespace Modbus.Net
                             }
                         case "addressMap":
                             {
-                                paramsSet.Add(AddressReader.ReadAddresses(dic["addressMap"]));
-                                break;
+                                var machineTypeTemp = Assembly.Load("Modbus.Net." + dic["protocol"]).GetType("Modbus.Net." + dic["protocol"] + "." + dic["protocol"] + "Machine`2");
+                                var addressTypes = machineTypeTemp.GetProperty("GetAddresses").PropertyType.GenericTypeArguments[0].GenericTypeArguments;
+                                if (addressTypes[1] == typeof(int) && addressTypes[2] == typeof(int))
+                                {
+                                    paramsSet.Add(AddressReader<string, int, int>.ReadAddresses(dic["addressMap"]));
+                                    break;
+                                }
+                                else if (addressTypes[1] == typeof(string) && addressTypes[2] == typeof(string))
+                                {
+                                    paramsSet.Add(AddressReader<string, string, string>.ReadAddresses(dic["addressMap"]));
+                                    break;
+                                }
+                                throw new NotSupportedException("AddressUnit type not supported for AddressReader");
                             }
                         case "endian":
                             {
-                                paramsSet.Add(FastEnum.Parse<Endian>(dic["endian"]));
+                                paramsSet.Add(Endian.Parse(dic["endian"]));
                                 break;
                             }
                         default:
@@ -105,7 +115,7 @@ namespace Modbus.Net
         }
     }
 
-    class AddressReader
+    internal class AddressReader<TUnitKey, TAddressKey, TSubAddressKey> where TUnitKey : IEquatable<TUnitKey> where TAddressKey : IEquatable<TAddressKey> where TSubAddressKey : IEquatable<TSubAddressKey>
     {
         private static readonly IConfigurationRoot configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
@@ -114,14 +124,14 @@ namespace Modbus.Net
             .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true, reloadOnChange: true)
             .Build();
 
-        public static IEnumerable<AddressUnit<string>> ReadAddresses(string addressMapName)
+        public static IEnumerable<AddressUnit<TUnitKey, TAddressKey, TSubAddressKey>> ReadAddresses(string addressMapName)
         {
-            var ans = new List<AddressUnit<string>>();
+            var ans = new List<AddressUnit<TUnitKey, TAddressKey, TSubAddressKey>>();
             var addressesRoot = configuration.GetSection("Modbus.Net").GetSection("AddressMap").GetSection(addressMapName).GetChildren();
             foreach (var address in addressesRoot)
             {
 
-                var addressNew = address.Get<AddressUnit<string>>();
+                var addressNew = address.Get<AddressUnit<TUnitKey, TAddressKey, TSubAddressKey>>();
                 addressNew.DataType = "System." + address["DataType"] != null ? Type.GetType("System." + address["DataType"]) : throw new ArgumentNullException("DataType is null");
                 if (addressNew.DataType == null) throw new ArgumentNullException(string.Format("DataType define error {0} {1} {2}", addressMapName, addressNew.Id, address["DataType"]));
                 ans.Add(addressNew);

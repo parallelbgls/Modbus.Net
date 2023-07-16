@@ -30,7 +30,7 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="timeoutTime">发送超时时间</param>
         /// <param name="isFullDuplex">是否为全双工</param>
-        protected BaseConnector(int timeoutTime = 10000, bool isFullDuplex = true)
+        protected BaseConnector(int timeoutTime = 10000, bool isFullDuplex = false)
         {
             IsFullDuplex = isFullDuplex;
             if (timeoutTime < -1) timeoutTime = -1;
@@ -49,12 +49,17 @@ namespace Modbus.Net
         ///     发送内部
         /// </summary>
         /// <param name="message">发送的信息</param>
+        /// <param name="repeat">是否为重发消息</param>
         /// <returns>发送信息的定义</returns>
-        protected async Task<MessageWaitingDef> SendMsgInner(byte[] message)
+        protected async Task<MessageWaitingDef> SendMsgInner(byte[] message, bool repeat = false)
         {
             IDisposable asyncLock = null;
             try
             {
+                if (!Controller.IsSending)
+                {
+                    Controller.SendStart();
+                }
                 var messageSendingdef = Controller.AddMessage(message);
                 if (messageSendingdef != null)
                 {
@@ -69,6 +74,11 @@ namespace Modbus.Net
                         success = messageSendingdef.ReceiveMutex.WaitOne(TimeoutTime);
                         if (success)
                         {
+                            if (!repeat && messageSendingdef.ReceiveMessage == null)
+                            {
+                                asyncLock?.Dispose();
+                                return await SendMsgInner(message, true);
+                            }
                             return messageSendingdef;
                         }
                     }

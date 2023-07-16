@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net462</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <LangVersion>10.0</LangVersion>
     <AssemblyName>Modbus.Net.Opc</AssemblyName>
     <RootNamespace>Modbus.Net.Opc</RootNamespace>
     <PackageId>Modbus.Net.Opc</PackageId>
-    <Version>1.4.1</Version>
+    <Version>1.4.2</Version>
     <Authors>Chris L.(Luo Sheng)</Authors>
     <Company>Hangzhou Delian Science Technology Co.,Ltd.</Company>
     <Product>Modbus.Net.Opc</Product>
@@ -20,25 +20,18 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <IncludeSymbols>True</IncludeSymbols>
     <IncludeSource>True</IncludeSource>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <Platforms>AnyCPU;x86</Platforms>
+    <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\Modbus.Net.Opc.xml</DocumentationFile>
   </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
-    <DocumentationFile>bin\Debug\Modbus.Net.Opc.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="H.Opc" Version="0.9.3" />
-  </ItemGroup>
   
   <ItemGroup>
+    <ProjectReference Include="..\..\h-opc\h-opc\h-opc.csproj" />
     <ProjectReference Include="..\Modbus.Net\Modbus.Net.csproj" />
   </ItemGroup>
 

@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>Technosoftware.DaAeHdaClient</AssemblyName>
+    <TargetFrameworks>net6.0</TargetFrameworks>
+    <LangVersion>9.0</LangVersion>
+    <PackageId>Technosoftware.DaAeHdaSolution.DaAeHdaClient</PackageId>
+    <Description>OPC DA/AE/HDA Client Solution .NET</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OpcRcw\Technosoftware.OpcRcw.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -288,7 +288,8 @@ But after ":", property should match constructor except protocol, which refer to
 
 The main target of Modbus.Net is building a high extensable hardware communication protocol, so we allow everyone to extend the protocol.
 
-To extend Modbus.Net, first of all ValueHelper.cs in Modbus.Net is a really powerful tool that you can use to modify values in byte array.There are two ValueHelpers: ValueHelper(Little Endian) and BigEndianValueHelper(Big Endian). Remember using the correct one.
+To extend Modbus.Net, first of all ValueHelper.cs in Modbus.Net is a really powerful tool that you can use to modify values in byte array.There are three ValueHelpers: LittleEndianLsbValueHelper(Little Endian), BigEndianLsbValueHelper(Big Endian) and BigEndianMsbValueHelper(Big Endian with bit reverse). Remember using the correct one.<br>
+If you want to write a new one, just write in namespace "Modbus.Net" in assmenly start with "Modbus.Net." and Modbus.Net will automatically load it.
 
 In this tutorial I will use Modbus.Net.Modbus to tell you how to implement your own protocol.
 
@@ -314,9 +315,9 @@ public class ReadDataModbusProtocol : ProtocolUnit
 
     public override IOutputStruct Unformat(byte[] messageBytes, ref int pos)
     {
-        byte slaveAddress = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
-        byte functionCode = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
-        byte dataCount = BigEndianValueHelper.Instance.GetByte(messageBytes, ref pos);
+        byte slaveAddress = BigEndianLsbValueHelper.Instance.GetByte(messageBytes, ref pos);
+        byte functionCode = BigEndianLsbValueHelper.Instance.GetByte(messageBytes, ref pos);
+        byte dataCount = BigEndianLsbValueHelper.Instance.GetByte(messageBytes, ref pos);
         byte[] dataValue = new byte[dataCount];
         Array.Copy(messageBytes, 3, dataValue, 0, dataCount);
         return new ReadDataModbusOutputStruct(slaveAddress, functionCode, dataCount, dataValue);
@@ -368,8 +369,8 @@ public class ModbusTcpProtocolLinkerBytesExtend : ProtocolLinkerBytesExtend
         byte[] newFormat = new byte[6 + content.Length];
         int tag = 0;
         ushort leng = (ushort)content.Length;
-        Array.Copy(BigEndianValueHelper.Instance.GetBytes(tag), 0, newFormat, 0, 4);
-        Array.Copy(BigEndianValueHelper.Instance.GetBytes(leng), 0, newFormat, 4, 2);
+        Array.Copy(BigEndianLsbValueHelper.Instance.GetBytes(tag), 0, newFormat, 0, 4);
+        Array.Copy(BigEndianLsbValueHelper.Instance.GetBytes(leng), 0, newFormat, 4, 2);
         Array.Copy(content, 0, newFormat, 6, content.Length);
         return newFormat;
     }

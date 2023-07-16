@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net462</TargetFrameworks>
+    <TargetFrameworks>net6.0</TargetFrameworks>
     <LangVersion>10.0</LangVersion>
     <AssemblyName>Modbus.Net</AssemblyName>
     <RootNamespace>Modbus.Net</RootNamespace>
     <PackageId>Modbus.Net</PackageId>
-    <Version>1.4.1</Version>
+    <Version>1.4.2</Version>
     <Product>Modbus.Net</Product>
     <Authors>Chris L.(Luo Sheng)</Authors>
     <Company>Hangzhou Delian Science Technology Co.,Ltd.</Company>
@@ -37,7 +37,6 @@
 
   <ItemGroup>
     <PackageReference Include="DotNetty.Handlers" Version="0.7.5" />
-    <PackageReference Include="FastEnum" Version="1.8.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
     <PackageReference Include="Nito.AsyncEx" Version="5.1.2" />

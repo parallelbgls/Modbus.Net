@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Modbus.Net.Opc
 {
@@ -19,7 +20,6 @@ namespace Modbus.Net.Opc
         /// <param name="host">Opc UA 服务地址</param>
         protected OpcUaConnector(string host) : base(host)
         {
-            Client = new MyUaClient(new Uri(ConnectionToken));
         }
 
         /// <summary>
@@ -35,6 +35,13 @@ namespace Modbus.Net.Opc
                 _instances.Add(host, connector);
             }
             return _instances[host];
+        }
+
+        /// <inheritdoc />
+        public override Task<bool> ConnectAsync()
+        {
+            if (Client == null) Client = new MyUaClient(new Uri(ConnectionToken));
+            return base.ConnectAsync();
         }
     }
 }

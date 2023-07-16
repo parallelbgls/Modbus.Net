@@ -1,13 +1,14 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Modbus.Net.Modbus;
 using Modbus.Net.Siemens;
+using AddressUnit = Modbus.Net.AddressUnit<int, int, int>;
 
 namespace Modbus.Net.Tests
 {
     [TestClass]
     public class BaseTest
     {
-        private List<AddressUnit<int>>? _addressUnits;
+        private List<AddressUnit>? _addressUnits;
 
         private BaseMachine<int, int>? _baseMachine;
 
@@ -16,9 +17,9 @@ namespace Modbus.Net.Tests
         [TestInitialize]
         public void Init()
         {
-            _addressUnits = new List<AddressUnit<int>>
+            _addressUnits = new List<AddressUnit>
             {
-                new AddressUnit<int>
+                new AddressUnit
                 {
                     Id = 1,
                     Area = "3X",
@@ -26,7 +27,7 @@ namespace Modbus.Net.Tests
                     SubAddress = 0,
                     DataType = typeof(bool)
                 },
-                new AddressUnit<int>
+                new AddressUnit
                 {
                     Id = 2,
                     Area = "3X",
@@ -34,7 +35,7 @@ namespace Modbus.Net.Tests
                     SubAddress = 1,
                     DataType = typeof(bool)
                 },
-                new AddressUnit<int>
+                new AddressUnit
                 {
                     Id = 3,
                     Area = "3X",
@@ -42,7 +43,7 @@ namespace Modbus.Net.Tests
                     SubAddress = 2,
                     DataType = typeof(bool)
                 },
-                new AddressUnit<int>
+                new AddressUnit
                 {
                     Id = 4,
                     Area = "3X",
@@ -50,7 +51,7 @@ namespace Modbus.Net.Tests
                     SubAddress = 0,
                     DataType = typeof(byte)
                 },
-                new AddressUnit<int>
+                new AddressUnit
                 {
                     Id = 5,
                     Area = "3X",
@@ -58,7 +59,7 @@ namespace Modbus.Net.Tests
                     SubAddress = 8,
                     DataType = typeof(byte)
                 },
-                new AddressUnit<int>
+                new AddressUnit
                 {
                     Id = 6,
                     Area = "3X",
@@ -66,7 +67,7 @@ namespace Modbus.Net.Tests
                     SubAddress = 0,
                     DataType = typeof(ushort)
                 },
-                new AddressUnit<int>
+                new AddressUnit
                 {
                     Id = 7,
                     Area = "3X",
@@ -74,7 +75,7 @@ namespace Modbus.Net.Tests
                     SubAddress = 0,
                     DataType = typeof(ushort)
                 },
-                new AddressUnit<int>
+                new AddressUnit
                 {
                     Id = 8,
                     Area = "3X",
@@ -82,7 +83,7 @@ namespace Modbus.Net.Tests
                     SubAddress = 0,
                     DataType = typeof(ushort)
                 },
-                new AddressUnit<int>
+                new AddressUnit
                 {
                     Id = 9,
                     Area = "3X",
@@ -90,7 +91,7 @@ namespace Modbus.Net.Tests
                     SubAddress = 0,
                     DataType = typeof(ushort)
                 },
-                new AddressUnit<int>
+                new AddressUnit
                 {
                     Id = 10,
                     Area = "3X",
@@ -98,7 +99,7 @@ namespace Modbus.Net.Tests
                     SubAddress = 0,
                     DataType = typeof(ushort)
                 },
-                new AddressUnit<int>
+                new AddressUnit
                 {
                     Id = 11,
                     Area = "3X",
@@ -106,7 +107,7 @@ namespace Modbus.Net.Tests
                     SubAddress = 0,
                     DataType = typeof(ushort)
                 },
-                new AddressUnit<int>
+                new AddressUnit
                 {
                     Id = 12,
                     Area = "4X",
@@ -114,7 +115,7 @@ namespace Modbus.Net.Tests
                     SubAddress = 0,
                     DataType = typeof(uint)
                 },
-                new AddressUnit<int>
+                new AddressUnit
                 {
                     Id = 13,
                     Area = "4X",
@@ -195,7 +196,7 @@ namespace Modbus.Net.Tests
         [TestMethod]
         public void AddressCombinerSingleTest()
         {
-            var addressCombiner = new AddressCombinerSingle<int>();
+            var addressCombiner = new AddressCombinerSingle<int, int, int>();
             var combinedAddresses = addressCombiner.Combine(_addressUnits!).ToArray();
             Assert.AreEqual(combinedAddresses[0].Area, "3X");
             Assert.AreEqual(combinedAddresses[0].Address, 1);

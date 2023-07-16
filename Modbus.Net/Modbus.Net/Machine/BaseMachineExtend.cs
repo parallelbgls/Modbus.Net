@@ -35,14 +35,14 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="addressUnit"></param>
         /// <returns></returns>
-        public static AddressUnit MapAddressUnitTUnitKeyToAddressUnit<TUnitKey>(this AddressUnit<TUnitKey> addressUnit) where TUnitKey : IEquatable<TUnitKey>
+        public static AddressUnit<string, string, string> MapAddressUnitTUnitKeyToAddressUnit<TUnitKey, TAddressKey, TSubAddressKey>(this AddressUnit<TUnitKey, TAddressKey, TSubAddressKey> addressUnit) where TUnitKey : IEquatable<TUnitKey> where TAddressKey : IEquatable<TAddressKey> where TSubAddressKey : IEquatable<TSubAddressKey>
         {
-            return new AddressUnit()
+            return new AddressUnit<string, string, string>()
             {
                 Id = addressUnit.Id.ToString(),
                 Area = addressUnit.Area,
-                Address = addressUnit.Address,
-                SubAddress = addressUnit.SubAddress,
+                Address = addressUnit.Address?.ToString(),
+                SubAddress = addressUnit.SubAddress?.ToString(),
                 DataType = addressUnit.DataType,
                 Zoom = addressUnit.Zoom,
                 DecimalPos = addressUnit.DecimalPos,

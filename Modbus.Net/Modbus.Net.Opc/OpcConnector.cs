@@ -96,13 +96,36 @@ namespace Modbus.Net.Opc
                     if (tag != null)
                     {
                         var result = await Client.ReadAsync<object>(tag);
-                        logger.LogInformation($"Opc Machine {ConnectionToken} Read Opc tag {tag} for value {result.Value}");
+                        object resultTrans;
+                        if (result.Value?.ToString() == "False")
+                        {
+                            resultTrans = (byte)0;
+                        }
+                        else if (result.Value?.ToString() == "True")
+                        {
+                            resultTrans = (byte)1;
+                        }
+                        else if (result.Value != null)
+                        {
+                            resultTrans = result.Value;
+                        }
+                        else
+                        {
+                            logger.LogError($"Opc Machine {ConnectionToken} Read Opc tag {tag} for value null");
+                            return new OpcParamOut
+                            {
+                                Success = false,
+                                Value = Encoding.ASCII.GetBytes("NoData")
+                            };
+                        }
+                        logger.LogInformation($"Opc Machine {ConnectionToken} Read Opc tag {tag} for value {result.Value} {result.Value.GetType().FullName}");
                         return new OpcParamOut
                         {
                             Success = true,
-                            Value = BigEndianValueHelper.Instance.GetBytes(result.Value, result.Value.GetType())
+                            Value = BigEndianLsbValueHelper.Instance.GetBytes(resultTrans, resultTrans.GetType())
                         };
                     }
+                    logger.LogError($"Opc Machine {ConnectionToken} Read Opc tag null");
                     return new OpcParamOut
                     {
                         Success = false,
@@ -143,6 +166,7 @@ namespace Modbus.Net.Opc
             catch (Exception e)
             {
                 logger.LogError(e, "Opc client {ConnectionToken} read exception", ConnectionToken);
+                Disconnect();
                 return new OpcParamOut
                 {
                     Success = false,

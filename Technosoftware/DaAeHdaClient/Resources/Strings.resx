@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            <xsd:complexType>
+                <xsd:choice maxOccurs="unbounded">
+                    <xsd:element name="data">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" />
+                            <xsd:attribute name="type" type="xsd:string" />
+                            <xsd:attribute name="mimetype" type="xsd:string" />
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="resheader">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="required" />
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:choice>
+            </xsd:complexType>
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="ResMimeType">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="Version">
+        <value>1.0.0.0</value>
+    </resheader>
+    <resheader name="Reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="Writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="serverState.running">
+        <value>The server is running normally.</value>
+    </data>
+    <data name="serverState.failed">
+        <value>A fatal error has occurred within the server.</value>
+    </data>
+    <data name="serverState.noConfig">
+        <value>The server is running but has no configuration information loaded.</value>
+    </data>
+    <data name="serverState.suspended">
+        <value>The server has been temporarily is not getting or sending data.</value>
+    </data>
+    <data name="serverState.test">
+        <value>The server is running in test mode.</value>
+    </data>
+    <data name="serverState.commFault">
+        <value>The server is running properly but is having difficulty accessing data from its data sources.</value>
+    </data>
+    <data name="E_FAIL">
+        <value>Unspecified error.</value>
+    </data>
+    <data name="E_OUTOFMEMORY">
+        <value>Ran out of memory.</value>
+    </data>
+    <data name="E_SERVERSTATE">
+        <value>The operation could not complete due to an abnormal server state.</value>
+    </data>
+    <data name="E_TIMEDOUT">
+        <value>The operation took too long to complete (determined by server).</value>
+    </data>
+    <data name="E_BUSY">
+        <value>The server is currenly processing another polled refresh for one or more of the subscriptions.</value>
+    </data>
+    <data name="E_NOSUBSCRIPTION">
+        <value>No subscription handles were specified in the request.</value>
+    </data>
+    <data name="E_INVALIDHOLDTIME">
+        <value>The hold time is too long (determined by server).</value>
+    </data>
+    <data name="E_INVALIDCONTINUATIONPOINT">
+        <value>The continuation point is not valid.</value>
+    </data>
+    <data name="E_INVALIDFILTER">
+        <value>The filter string is not valid.</value>
+    </data>
+    <data name="E_UNKNOWN_ITEM_NAME">
+        <value>The item name is no longer available in the server address space.</value>
+    </data>
+    <data name="E_INVALID_ITEM_NAME">
+        <value>The item name does not conform the server’s syntax.</value>
+    </data>
+    <data name="E_UNKNOWN_ITEM_PATH">
+        <value>The item path is no longer available in the server address space.</value>
+    </data>
+    <data name="E_INVALID_ITEM_PATH">
+        <value>The item path does not conform the server’s syntax.</value>
+    </data>
+    <data name="E_UNKNOWNITEMNAME">
+        <value>The item name is no longer available in the server address space.</value>
+    </data>
+    <data name="E_INVALIDITEMNAME">
+        <value>The item name does not conform the server’s syntax.</value>
+    </data>
+    <data name="E_UNKNOWNITEMPATH">
+        <value>The item path is no longer available in the server address space.</value>
+    </data>
+    <data name="E_INVALIDITEMPATH">
+        <value>The item path does not conform the server’s syntax.</value>
+    </data>
+    <data name="E_BADTYPE">
+        <value>The server cannot convert the data between the requested data type and the canonical data type.</value>
+    </data>
+    <data name="E_RANGE">
+        <value>The value was out of range.</value>
+    </data>
+    <data name="E_READONLY">
+        <value>The value is read only and may not be written to.</value>
+    </data>
+    <data name="E_WRITEONLY">
+        <value>The value is write only and may not be read from or returned as part of a write response.</value>
+    </data>
+    <data name="E_NOTSUPPORTED">
+        <value>The server does not support writing to the quality and/or timestamp.</value>
+    </data>
+    <data name="E_INVALID_PID">
+        <value>The property id is not valid for the item.</value>
+    </data>
+    <data name="E_INVALIDPID">
+        <value>The property id is not valid for the item.</value>
+    </data>
+    <data name="S_CLAMP">
+        <value>The value written was accepted but the output was clamped.</value>
+    </data>
+    <data name="S_UNSUPPORTEDRATE">
+        <value>The server does not support the requested rate but will use the closest available rate.</value>
+    </data>
+    <data name="S_DATAQUEUEOVERFLOW">
+        <value>Not every detected change has been returned since the server's buffer reached its limit and had to purge out the oldest data.</value>
+    </data>
+    <data name="CONNECT_E_NOCONNECTION">
+        <value>The remote server is not currently connected</value>
+    </data>
+</root>

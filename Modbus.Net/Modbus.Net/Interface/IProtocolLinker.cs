@@ -36,21 +36,7 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="content">发送协议的内容</param>
         /// <returns>接收协议的内容</returns>
-        TParamOut SendReceive(TParamIn content);
-
-        /// <summary>
-        ///     发送并接收数据
-        /// </summary>
-        /// <param name="content">发送协议的内容</param>
-        /// <returns>接收协议的内容</returns>
         Task<TParamOut> SendReceiveAsync(TParamIn content);
-
-        /// <summary>
-        ///     发送并接收数据，不进行协议扩展和收缩，用于特殊协议
-        /// </summary>
-        /// <param name="content">发送协议的内容</param>
-        /// <returns>接收协议的内容</returns>
-        TParamOut SendReceiveWithoutExtAndDec(TParamIn content);
 
         /// <summary>
         ///     发送并接收数据，不进行协议扩展和收缩，用于特殊协议
@@ -65,19 +51,5 @@ namespace Modbus.Net
         /// <param name="content">接收协议的内容</param>
         /// <returns>协议是否是正确的</returns>
         bool? CheckRight(TParamOut content);
-
-        /// <summary>
-        ///     协议内容扩展，发送时根据需要扩展
-        /// </summary>
-        /// <param name="content">扩展前的基本协议内容</param>
-        /// <returns>扩展后的协议内容</returns>
-        TParamIn BytesExtend(TParamIn content);
-
-        /// <summary>
-        ///     协议内容缩减，接收时根据需要缩减
-        /// </summary>
-        /// <param name="content">缩减前的完整协议内容</param>
-        /// <returns>缩减后的协议内容</returns>
-        TParamOut BytesDecact(TParamOut content);
     }
 }

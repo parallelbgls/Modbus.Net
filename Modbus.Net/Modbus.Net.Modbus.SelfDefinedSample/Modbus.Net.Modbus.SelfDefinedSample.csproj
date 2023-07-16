@@ -1,18 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net462</TargetFrameworks>
+    <TargetFrameworks>net6.0</TargetFrameworks>
     <LangVersion>10.0</LangVersion>
     <AssemblyName>Modbus.Net.Modbus.SelfDefinedSample</AssemblyName>
     <RootNamespace>Modbus.Net.Modbus.SelfDefinedSample</RootNamespace>
     <PackageId>Modbus.Net.Modbus.SelfDefinedSample</PackageId>
-    <Version>1.4.1</Version>
+    <Version>1.4.2</Version>
     <Authors>Chris L.(Luo Sheng)</Authors>
     <Company>Hangzhou Delian Science Technology Co.,Ltd.</Company>
     <Product>Modbus.Net.Modbus</Product>
     <Description>Modbus.Net Modbus Implementation</Description>
     <Copyright>Copyright 2023 Hangzhou Delian Science Technology Co.,Ltd.</Copyright>
-    <PackageProjectUrl>https://github.com/parallelbgls/Modbus.Net/tree/master/Modbus.Net/Modbus.Net.Modbus.NA200H</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/parallelbgls/Modbus.Net/tree/master/Modbus.Net/Modbus.Net.Modbus.SelfDefinedSample</PackageProjectUrl>
     <RepositoryUrl>https://github.com/parallelbgls/Modbus.Net</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>hardware communicate protocol modbus Delian</PackageTags>

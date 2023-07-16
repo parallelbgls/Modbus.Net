@@ -67,9 +67,9 @@ namespace Modbus.Net.Modbus
                 var transaction = (ushort)(_sendCount % 65536 + 1);
                 var tag = (ushort)0;
                 var leng = (ushort)content.Length;
-                Array.Copy(BigEndianValueHelper.Instance.GetBytes(transaction), 0, newFormat, 0, 2);
-                Array.Copy(BigEndianValueHelper.Instance.GetBytes(tag), 0, newFormat, 2, 2);
-                Array.Copy(BigEndianValueHelper.Instance.GetBytes(leng), 0, newFormat, 4, 2);
+                Array.Copy(BigEndianLsbValueHelper.Instance.GetBytes(transaction), 0, newFormat, 0, 2);
+                Array.Copy(BigEndianLsbValueHelper.Instance.GetBytes(tag), 0, newFormat, 2, 2);
+                Array.Copy(BigEndianLsbValueHelper.Instance.GetBytes(leng), 0, newFormat, 4, 2);
                 Array.Copy(content, 0, newFormat, 6, content.Length);
                 _sendCount++;
             }

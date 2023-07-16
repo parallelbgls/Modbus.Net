@@ -31,3 +31,4 @@ Thanks
 * Quartz - Job Scheduler
 * Serilog - Logging
 * DotNetty - Network Transporting
+* h-opc & Technosoftware.DaAeHdaSolution & OPCFoundation.NetStandard - OPC Trasporting

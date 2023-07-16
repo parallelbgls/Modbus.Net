@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Modbus.Net;
 using Modbus.Net.Modbus;
 using System.Diagnostics;
+using AddressUnit = Modbus.Net.AddressUnit<string, int, int>;
 using MachineJobSchedulerCreator = Modbus.Net.MachineJobSchedulerCreator<Modbus.Net.IMachineMethodDatas, string, double>;
 using ModbusMachine = Modbus.Net.Modbus.ModbusMachine<string, string>;
 
@@ -55,7 +56,7 @@ namespace AnyType.Controllers
                              Value = 0,
                              Type = unitValue.DataType.Name
                          };
-            var machine = new ModbusMachine("1", ModbusType.Tcp, "10.10.18.251:502", addressUnits, true, 2, 0);
+            var machine = new ModbusMachine("1", ModbusType.Tcp, "10.10.18.251:502", addressUnits, true, 2, 0, Endian.BigEndianLsb);
             //启动任务
             await MachineJobSchedulerCreator.CreateScheduler("Trigger1", -1, 1).Result.From(machine.Id, machine, MachineDataType.CommunicationTag).Result.Query("Query1",
                 returnValues =>

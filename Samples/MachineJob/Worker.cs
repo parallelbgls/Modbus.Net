@@ -61,10 +61,16 @@ namespace MachineJob.Service
             //}
 
             //4. 使用MultipleMachinesJobScheduler
+            //return Task.Run(() => MultipleMachinesJobScheduler.RunScheduler(machines, async (machine, scheduler) =>
+            //{
+            //    /await scheduler.From(machine.Id + ".From", machine, MachineDataType.Name).Result.Query(machine.Id + ".ConsoleQuery", QueryConsole).Result.To(machine.Id + ".To", machine).Result.Deal(machine.Id + ".Deal", OnSuccess, OnFailure).Result.Run();
+            //}, -1, 10));
+
+            //5. 不设置固定时间，连续触发Job
             return Task.Run(() => MultipleMachinesJobScheduler.RunScheduler(machines, async (machine, scheduler) =>
             {
                 await scheduler.From(machine.Id + ".From", machine, MachineDataType.Name).Result.Query(machine.Id + ".ConsoleQuery", QueryConsole).Result.To(machine.Id + ".To", machine).Result.Deal(machine.Id + ".Deal", OnSuccess, OnFailure).Result.Run();
-            }, -1, 10));
+            }, -1, 0));
         }
 
         public override Task StopAsync(CancellationToken cancellationToken)
@@ -94,11 +100,12 @@ namespace MachineJob.Service
                     _logger.LogInformation(dataReturnDef.MachineId + " " + value.Key + " " + value.Value.DeviceValue);
                 }
 
+                /*
                 try
                 {
                     using (var context = new DatabaseWriteContext())
                     {
-                        context.DatabaseWrites.Add(new DatabaseWriteEntity
+                        context.DatabaseWrites?.Add(new DatabaseWriteEntity
                         {
                             Value1 = values["Test1"].DeviceValue,
                             Value2 = values["Test2"].DeviceValue,
@@ -119,7 +126,7 @@ namespace MachineJob.Service
                 {
                     //ignore
                 }
-
+                */
                 Random r = new Random();
                 foreach (var value in values)
                 {

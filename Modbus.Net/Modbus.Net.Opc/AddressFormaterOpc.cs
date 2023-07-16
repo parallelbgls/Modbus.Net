@@ -6,16 +6,16 @@ namespace Modbus.Net.Opc
     /// <summary>
     ///     Opc地址编码器
     /// </summary>
-    public class AddressFormaterOpc<TMachineKey, TUnitKey> : AddressFormater where TMachineKey : IEquatable<TMachineKey>
-        where TUnitKey : IEquatable<TUnitKey>
+    public class AddressFormaterOpc<TMachineKey, TUnitKey, TAddressKey, TSubAddressKey> : AddressFormater<TAddressKey, TSubAddressKey> where TMachineKey : IEquatable<TMachineKey>
+        where TUnitKey : IEquatable<TUnitKey> where TAddressKey : IEquatable<TAddressKey> where TSubAddressKey : IEquatable<TSubAddressKey>
     {
         /// <summary>
         ///     协议构造器
         /// </summary>
         /// <param name="tagGeter">如何通过BaseMachine和AddressUnit构造Opc的标签</param>
         /// <param name="machine">调用这个编码器的设备</param>
-        public AddressFormaterOpc(Func<BaseMachine<TMachineKey, TUnitKey>, AddressUnit<TUnitKey>, string[]> tagGeter,
-            BaseMachine<TMachineKey, TUnitKey> machine)
+        public AddressFormaterOpc(Func<BaseMachine<TMachineKey, TUnitKey, TAddressKey, TSubAddressKey>, AddressUnit<TUnitKey, TAddressKey, TSubAddressKey>, string> tagGeter,
+            BaseMachine<TMachineKey, TUnitKey, TAddressKey, TSubAddressKey> machine)
         {
             Machine = machine;
             TagGeter = tagGeter;
@@ -24,13 +24,13 @@ namespace Modbus.Net.Opc
         /// <summary>
         ///     设备
         /// </summary>
-        public BaseMachine<TMachineKey, TUnitKey> Machine { get; set; }
+        public BaseMachine<TMachineKey, TUnitKey, TAddressKey, TSubAddressKey> Machine { get; set; }
 
         /// <summary>
         ///     标签构造器
         ///     (设备,地址)->不具备分隔符的标签数组
         /// </summary>
-        protected Func<BaseMachine<TMachineKey, TUnitKey>, AddressUnit<TUnitKey>, string[]> TagGeter { get; set; }
+        protected Func<BaseMachine<TMachineKey, TUnitKey, TAddressKey, TSubAddressKey>, AddressUnit<TUnitKey, TAddressKey, TSubAddressKey>, string> TagGeter { get; set; }
 
         /// <summary>
         ///     编码地址
@@ -38,15 +38,12 @@ namespace Modbus.Net.Opc
         /// <param name="area">地址所在的数据区域</param>
         /// <param name="address">地址</param>
         /// <returns>编码后的地址</returns>
-        public override string FormatAddress(string area, int address)
+        public override string FormatAddress(string area, TAddressKey address)
         {
-            var findAddress = Machine?.GetAddresses.FirstOrDefault(p => p.Area == area && p.Address == address);
+            var findAddress = Machine?.GetAddresses.FirstOrDefault(p => p.Area == area && p.Address.Equals(address));
             if (findAddress == null) return null;
-            var strings = TagGeter(Machine, findAddress);
-            var ans = "";
-            for (var i = 0; i < strings.Length; i++)
-                ans += strings[i].Trim().Replace(" ", "") + '\r';
-            ans = ans.Substring(0, ans.Length - 1);
+            var ans = TagGeter(Machine, findAddress);
+            ans = ans.Trim().Replace(" ", "");
             return ans;
         }
 
@@ -57,7 +54,7 @@ namespace Modbus.Net.Opc
         /// <param name="address">地址</param>
         /// <param name="subAddress">子地址（忽略）</param>
         /// <returns>编码后的地址</returns>
-        public override string FormatAddress(string area, int address, int subAddress)
+        public override string FormatAddress(string area, TAddressKey address, TSubAddressKey subAddress)
         {
             return FormatAddress(area, address);
         }

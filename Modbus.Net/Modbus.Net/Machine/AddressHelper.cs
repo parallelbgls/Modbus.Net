@@ -80,7 +80,7 @@ namespace Modbus.Net
             double byteLength)
         {
             return protocolAddress +
-                   BigEndianValueHelper.Instance.ByteLength[nextPositionBetweenType.FullName] / byteLength;
+                   ValueHelper.ByteLength[nextPositionBetweenType.FullName] / byteLength;
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace Modbus.Net
         public static double GetAbstractCoordinateNextPosition(double abstractAddress, Type nextPositionBetweenType)
         {
             return abstractAddress +
-                   BigEndianValueHelper.Instance.ByteLength[nextPositionBetweenType.FullName];
+                   ValueHelper.ByteLength[nextPositionBetweenType.FullName];
         }
     }
 }

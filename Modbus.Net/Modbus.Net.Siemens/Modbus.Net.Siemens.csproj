@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net462</TargetFrameworks>
+    <TargetFrameworks>net6.0</TargetFrameworks>
     <LangVersion>10.0</LangVersion>
     <AssemblyName>Modbus.Net.Siemens</AssemblyName>
     <RootNamespace>Modbus.Net.Siemens</RootNamespace>
     <PackageId>Modbus.Net.Siemens</PackageId>
-    <Version>1.4.1</Version>
+    <Version>1.4.2</Version>
     <Authors>Chris L.(Luo Sheng)</Authors>
     <Company>Hangzhou Delian Science Technology Co.,Ltd.</Company>
     <Description>Modbus.Net Siemens Profinet Implementation</Description>

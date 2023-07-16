@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MachineJob
 {
@@ -15,7 +15,7 @@ namespace MachineJob
 
         private static readonly string connectionString = configuration.GetConnectionString("DatabaseWriteConnectionString")!;
 
-        public DbSet<DatabaseWriteEntity> DatabaseWrites { get; set; }
+        public DbSet<DatabaseWriteEntity>? DatabaseWrites { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -23,6 +23,7 @@ namespace MachineJob
         }
     }
 
+    [Table(name: "databasewrites")]
     public class DatabaseWriteEntity
     {
         [Key]

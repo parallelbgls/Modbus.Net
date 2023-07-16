@@ -18,8 +18,6 @@ namespace Modbus.Net
 
         private int _waitingListMaxCount;
 
-        private readonly Semaphore _taskCycleSema;
-
         /// <summary>
         ///     间隔时间
         /// </summary>
@@ -29,35 +27,28 @@ namespace Modbus.Net
         ///     构造器
         /// </summary>
         /// <param name="acquireTime">间隔时间</param>
-        /// <param name="activateSema">是否开启信号量</param>
         /// <param name="lengthCalc">包切分长度函数</param>
         /// <param name="checkRightFunc">包校验函数</param>
         /// <param name="waitingListMaxCount">包等待队列长度</param>
-        public FifoController(int acquireTime, bool activateSema = true, Func<byte[], int> lengthCalc = null, Func<byte[], bool?> checkRightFunc = null, int? waitingListMaxCount = null)
+        public FifoController(int acquireTime, Func<byte[], int> lengthCalc = null, Func<byte[], bool?> checkRightFunc = null, int? waitingListMaxCount = null)
             : base(lengthCalc, checkRightFunc)
         {
             _waitingListMaxCount = int.Parse(waitingListMaxCount != null ? waitingListMaxCount.ToString() : null ?? ConfigurationReader.GetValueDirect("Controller", "WaitingListCount"));
-            if (activateSema)
-            {
-                _taskCycleSema = new Semaphore(0, _waitingListMaxCount);
-            }
             AcquireTime = acquireTime;
         }
 
         /// <inheritdoc />
         protected override void SendingMessageControlInner()
         {
-            try
+            while (!_taskCancel)
             {
-                _taskCycleSema?.WaitOne();
-                while (!_taskCancel)
+                if (AcquireTime > 0)
                 {
-                    if (AcquireTime > 0)
-                    {
-                        Thread.Sleep(AcquireTime);
-                    }
-                    bool sendSuccess = false;
-                    lock (WaitingMessages)
+                    Thread.Sleep(AcquireTime);
+                }
+                lock (WaitingMessages)
+                {
+                    try
                     {
                         if (_currentSendingPos == null)
                         {
@@ -65,7 +56,6 @@ namespace Modbus.Net
                             {
                                 _currentSendingPos = WaitingMessages.First();
                                 _currentSendingPos.SendMutex.Set();
-                                sendSuccess = true;
                             }
                         }
                         else
@@ -73,32 +63,27 @@ namespace Modbus.Net
                             if (WaitingMessages.Count <= 0)
                             {
                                 _currentSendingPos = null;
-                                _taskCycleSema?.Close();
-                                sendSuccess = true;
                             }
-                            else if (WaitingMessages.Count > WaitingMessages.IndexOf(_currentSendingPos) + 1)
+                            else if (WaitingMessages.IndexOf(_currentSendingPos) == -1)
                             {
-                                _currentSendingPos = WaitingMessages[WaitingMessages.IndexOf(_currentSendingPos) + 1];
+                                _currentSendingPos = WaitingMessages.First();
                                 _currentSendingPos.SendMutex.Set();
-                                sendSuccess = true;
                             }
                         }
                     }
-                    if (sendSuccess)
+                    catch (ObjectDisposedException e)
                     {
-                        _taskCycleSema?.WaitOne();
+                        logger.LogError(e, "Controller _currentSendingPos disposed");
+                        _currentSendingPos = null;
+                    }
+                    catch (Exception e)
+                    {
+                        logger.LogError(e, "Controller throws exception");
+                        _taskCancel = true;
                     }
                 }
             }
-            catch (ObjectDisposedException)
-            {
-                //ignore
-            }
-            catch (Exception e)
-            {
-                logger.LogError(e, "Controller throws exception");
-            }
-
+            Clear();
         }
 
         /// <inheritdoc />
@@ -138,11 +123,11 @@ namespace Modbus.Net
             {
                 return false;
             }
-            var success = base.AddMessageToList(def);
-            if (success)
+            if (_taskCancel)
             {
-                _taskCycleSema?.Release();
+                return false;
             }
+            var success = base.AddMessageToList(def);
             return success;
         }
     }

@@ -171,7 +171,7 @@
         /// <returns>结构化的输出数据</returns>
         public override IOutputStruct Unformat(OpcParamOut messageBytes, ref int pos)
         {
-            var ansByte = BigEndianValueHelper.Instance.GetByte(messageBytes.Value, ref pos);
+            var ansByte = BigEndianLsbValueHelper.Instance.GetByte(messageBytes.Value, ref pos);
             var ans = ansByte != 0;
             return new WriteRequestOpcOutputStruct(ans);
         }
