@@ -13,7 +13,7 @@ namespace MachineJob.Service
             _logger = logger;
         }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
             //1. 直接Coding
             //List<AddressUnit> _addresses = new List<AddressUnit>
@@ -67,12 +67,10 @@ namespace MachineJob.Service
             //}, -1, 10));
 
             //5. 不设置固定时间，连续触发Job
-            foreach (var machine in machines)
+            return Task.Run(() => MultipleMachinesJobScheduler.RunScheduler(machines, async (machine, scheduler) =>
             {
-                var scheduler = await MachineJobSchedulerCreator<IMachineMethodDatas, string, double>.CreateScheduler(machine.Id, -1, 0);
-                var job = scheduler.From(machine.Id + ".From", machine, MachineDataType.Name).Result.Query(machine.Id + ".ConsoleQuery", QueryConsole).Result.To(machine.Id + ".To", machine).Result.Deal(machine.Id + ".Deal", OnSuccess, OnFailure).Result;
-                await job.Run();
-            }
+                await scheduler.From(machine.Id + ".From", machine, MachineDataType.Name).Result.Query(machine.Id + ".ConsoleQuery", QueryConsole).Result.To(machine.Id + ".To", machine).Result.Deal(machine.Id + ".Deal", OnSuccess, OnFailure).Result.Run();
+            }, -1, 0));
         }
 
         public override Task StopAsync(CancellationToken cancellationToken)
@@ -107,7 +105,7 @@ namespace MachineJob.Service
                 {
                     using (var context = new DatabaseWriteContext())
                     {
-                        context.DatabaseWrites.Add(new DatabaseWriteEntity
+                        context.DatabaseWrites?.Add(new DatabaseWriteEntity
                         {
                             Value1 = values["Test1"].DeviceValue,
                             Value2 = values["Test2"].DeviceValue,

@@ -28,7 +28,10 @@ namespace Modbus.Net
             {
                 Task.Factory.StartNew(async () =>
                 {
-                    Thread.Sleep((int)(intervalSecond * 1000.0 / _machineCount * index));
+                    if (intervalSecond > 0)
+                    {
+                        Thread.Sleep((int)(intervalSecond * 1000.0 / _machineCount * index));
+                    }
                     var getJobScheduler = await MachineJobSchedulerCreator<TMachineMethod, TMachineKey, TReturnUnit>.CreateScheduler("Trigger" + index, count, intervalSecond);
                     await machineJobTemplate(machine, getJobScheduler);
                 });
