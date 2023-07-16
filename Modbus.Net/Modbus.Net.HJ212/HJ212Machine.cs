@@ -38,6 +38,11 @@ namespace Modbus.Net.HJ212
             MN = mn;
         }
 
+        public override Task<ReturnStruct<Dictionary<string, ReturnUnit<double>>>> GetDatasAsync(MachineDataType getDataType)
+        {
+            throw new NotImplementedException();
+        }
+
         public override async Task<ReturnStruct<bool>> SetDatasAsync(MachineDataType setDataType, Dictionary<string, double> values)
         {
             try
