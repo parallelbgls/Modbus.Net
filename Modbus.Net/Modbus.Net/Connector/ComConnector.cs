@@ -289,7 +289,6 @@ namespace Modbus.Net
                     SerialPort.Dispose();
                     logger.LogInformation("Com interface {Com} Disposed", _com);
                     Controller.SendStop();
-                    Controllers.Remove(_com);
                     Connectors[_com] = null;
                     Connectors.Remove(_com);
                     ReceiveMsgThreadStop();
