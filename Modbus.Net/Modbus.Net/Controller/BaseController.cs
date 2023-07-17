@@ -24,7 +24,7 @@ namespace Modbus.Net
         /// <summary>
         ///     消息维护线程是否在运行
         /// </summary>
-        public virtual bool IsSending => SendingThread.Status.Equals(TaskStatus.Running);
+        public virtual bool? IsSending => SendingThread?.Status.Equals(TaskStatus.Running);
 
         /// <summary>
         ///     包切分位置函数
@@ -76,7 +76,7 @@ namespace Modbus.Net
         /// <inheritdoc />
         public virtual void SendStart()
         {
-            if (!IsSending)
+            if (IsSending != true)
             {
                 SendingThread = Task.Run(() => SendingMessageControlInner());
             }

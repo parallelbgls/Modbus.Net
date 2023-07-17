@@ -11,7 +11,7 @@ namespace Modbus.Net
         /// <summary>
         ///     消息维护线程是否在运行
         /// </summary>
-        public override bool IsSending => true;
+        public override bool? IsSending => true;
 
         /// <inheritdoc />
         public MatchDirectlySendController(ICollection<(int, int)>[] keyMatches,
