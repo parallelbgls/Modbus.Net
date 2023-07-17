@@ -76,7 +76,7 @@ namespace Modbus.Net
         /// <inheritdoc />
         public virtual void SendStart()
         {
-            if (SendingThread == null)
+            if (!IsSending)
             {
                 SendingThread = Task.Run(() => SendingMessageControlInner());
             }
