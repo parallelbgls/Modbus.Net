@@ -18,7 +18,7 @@
             isFullDuplex = bool.Parse(isFullDuplex != null ? isFullDuplex.ToString() : null ?? ConfigurationReader.GetValue("TCP:" + ip + ":" + port, "FullDuplex"));
             //初始化连接对象
             BaseConnector = new TcpConnector(ip, port, connectionTimeout.Value, isFullDuplex.Value);
-            this.AddController(ip, port, BaseConnector);
+            this.AddController(new object[2] { ip, port }, BaseConnector);
         }
     }
 }

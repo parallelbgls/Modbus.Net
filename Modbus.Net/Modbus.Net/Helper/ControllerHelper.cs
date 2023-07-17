@@ -12,11 +12,10 @@ namespace Modbus.Net
         ///     添加一个Controller
         /// </summary>
         /// <param name="protocolLinker">ProtocolLinker实例</param>
-        /// <param name="param1">第一参数</param>
-        /// <param name="param2">第二参数</param>
+        /// <param name="constructorParams">参数</param>
         /// <param name="connector">Connector实例</param>
         /// <exception cref="NotImplementedException">如果没有发现控制器，报错</exception>
-        public static void AddController(this IProtocolLinker<byte[], byte[]> protocolLinker, string param1, int param2, IConnector<byte[], byte[]> connector)
+        public static void AddController(this IProtocolLinker<byte[], byte[]> protocolLinker, object[] constructorParams, IConnector<byte[], byte[]> connector)
         {
             IController controller = null;
             var assemblies = AssemblyHelper.GetAllLibraryAssemblies();
@@ -26,7 +25,7 @@ namespace Modbus.Net
                 var controllerType = assembly.GetType(assembly.GetName().Name + "." + controllerName);
                 if (controllerType != null)
                 {
-                    controller = assembly.CreateInstance(controllerType.FullName, true, BindingFlags.Default, null, new object[2] { param1, param2 }, null, null) as IController;
+                    controller = assembly.CreateInstance(controllerType.FullName, true, BindingFlags.Default, null, constructorParams, null, null) as IController;
                     break;
                 }
             }
