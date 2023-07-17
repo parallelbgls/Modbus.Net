@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Modbus.Net.Modbus
+﻿namespace Modbus.Net.Modbus
 {
     /// <summary>
     ///     Modbus/Tcp协议连接器
@@ -23,13 +21,6 @@ namespace Modbus.Net.Modbus
         /// <param name="port">端口</param>
         public ModbusTcpProtocolLinker(string ip, int port) : base(ip, port)
         {
-            ((IConnectorWithController<byte[], byte[]>)BaseConnector).AddController(new ModbusTcpMatchDirectlySendController(
-                new ICollection<(int, int)>[] { new List<(int, int)> { (0, 0), (1, 1) } },
-                lengthCalc: DuplicateWithCount.GetDuplcateFunc(new List<int> { 4, 5 }, 6),
-                waitingListMaxCount: ConfigurationReader.GetValue("TCP:" + ip + ":" + port, "WaitingListCount") != null ?
-                  int.Parse(ConfigurationReader.GetValue("TCP:" + ip + ":" + port, "WaitingListCount")) :
-                  null
-            ));
         }
 
         /// <summary>

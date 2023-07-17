@@ -13,10 +13,10 @@ namespace Modbus.Net.HJ212
         /// <summary>
         ///     构造函数
         /// </summary>
-        public HJ212Protocol(string connectionToken)
+        public HJ212Protocol(string ip)
             : base(0, 0, Endian.BigEndianLsb)
         {
-            ProtocolLinker = new HJ212ProtocolLinker(connectionToken);
+            ProtocolLinker = new HJ212ProtocolLinker(ip, int.Parse(ConfigurationReader.GetValueDirect("TCP:" + ip, "HJ212Port") ?? ConfigurationReader.GetValueDirect("TCP:Modbus", "HJ212Port") ?? "443"));
         }
 
         /// <summary>

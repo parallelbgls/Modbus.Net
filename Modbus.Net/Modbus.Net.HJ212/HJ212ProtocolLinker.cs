@@ -3,12 +3,10 @@
     /// <summary>
     ///     HJ212协议连接器
     /// </summary>
-    public class HJ212ProtocolLinker : ProtocolLinker
+    public class HJ212ProtocolLinker : TcpProtocolLinker
     {
-        public HJ212ProtocolLinker(string connectionToken)
+        public HJ212ProtocolLinker(string ip, int port) : base(ip, port)
         {
-            BaseConnector = new TcpConnector(connectionToken, 443);
-            ((IConnectorWithController<byte[], byte[]>)BaseConnector).AddController(new FifoController(1000));
         }
 
         /// <summary>

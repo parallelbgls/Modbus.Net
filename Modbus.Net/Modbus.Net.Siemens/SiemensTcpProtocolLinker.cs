@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Modbus.Net.Siemens
 {
@@ -25,13 +24,6 @@ namespace Modbus.Net.Siemens
         public SiemensTcpProtocolLinker(string ip, int port)
             : base(ip, port)
         {
-            ((IConnectorWithController<byte[], byte[]>)BaseConnector).AddController(new MatchDirectlySendController(
-                new ICollection<(int, int)>[] { new List<(int, int)> { (11, 11), (12, 12) } },
-                lengthCalc: DuplicateWithCount.GetDuplcateFunc(new List<int> { 2, 3 }, 0),
-                waitingListMaxCount: ConfigurationReader.GetValue("TCP:" + ip + ":" + port, "WaitingListCount") != null ?
-                  int.Parse(ConfigurationReader.GetValue("TCP:" + ip + ":" + port, "WaitingListCount")) :
-                  null
-             ));
         }
 
         /// <summary>

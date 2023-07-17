@@ -27,5 +27,8 @@
     <ProjectReference Include="..\..\Modbus.Net\Modbus.Net.OPC\Modbus.Net.Opc.csproj" />
     <ProjectReference Include="..\..\Modbus.Net\Modbus.Net.Siemens\Modbus.Net.Siemens.csproj" />
     <ProjectReference Include="..\..\Modbus.Net\Modbus.Net\Modbus.Net.csproj" />
+    <ProjectReference Include="..\MachineJob.CodeGenerator\MachineJob.CodeGenerator.csproj" 
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
   </ItemGroup>
 </Project>

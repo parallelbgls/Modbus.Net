@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO.Ports;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,22 +22,6 @@ namespace Modbus.Net.Siemens
                   : null
                   )
         {
-            ((IConnectorWithController<byte[], byte[]>)BaseConnector).AddController(new FifoController(
-                int.Parse(ConfigurationReader.GetValue("COM:" + com + ":" + slaveAddress, "FetchSleepTime")),
-                lengthCalc: content =>
-                {
-                    if (content[0] == 0x10)
-                        return 6;
-                    else if (content[0] == 0xE5)
-                        return 1;
-                    else
-                        return DuplicateWithCount.GetDuplcateFunc(new List<int> { 1 }, 6)(content);
-                },
-                checkRightFunc: ContentCheck.FcsCheckRight,
-                waitingListMaxCount: ConfigurationReader.GetValue("COM:" + com + ":" + slaveAddress, "WaitingListCount") != null ?
-                  int.Parse(ConfigurationReader.GetValue("COM:" + com + ":" + slaveAddress, "WaitingListCount")) :
-                  null
-             ));
         }
 
         /// <summary>

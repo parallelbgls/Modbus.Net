@@ -45,7 +45,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Technosoftware.DaAeHdaClien
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Technosoftware.DaAeHdaClient.Com", "..\Technosoftware\DaAeHdaClient.Com\Technosoftware.DaAeHdaClient.Com.csproj", "{ACAF0A16-FC51-4369-BFA8-484FF20707D7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modbus.Net.HJ212", "Modbus.Net.HJ212\Modbus.Net.HJ212.csproj", "{057644EF-1407-4C2B-808A-AEF0F2979EA8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Modbus.Net.HJ212", "Modbus.Net.HJ212\Modbus.Net.HJ212.csproj", "{057644EF-1407-4C2B-808A-AEF0F2979EA8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Modbus.Net.CodeGenerator", "Modbus.Net.CodeGenerator\Modbus.Net.CodeGenerator.csproj", "{D3210531-BA79-49B2-9F99-09FD0E1627B6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MachineJob.CodeGenerator", "..\Samples\MachineJob.CodeGenerator\MachineJob.CodeGenerator.csproj", "{7337BC9A-ED07-463D-8FCD-A82896CEC6BE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -191,6 +195,22 @@ Global
 		{057644EF-1407-4C2B-808A-AEF0F2979EA8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{057644EF-1407-4C2B-808A-AEF0F2979EA8}.Release|x64.ActiveCfg = Release|Any CPU
 		{057644EF-1407-4C2B-808A-AEF0F2979EA8}.Release|x64.Build.0 = Release|Any CPU
+		{D3210531-BA79-49B2-9F99-09FD0E1627B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3210531-BA79-49B2-9F99-09FD0E1627B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3210531-BA79-49B2-9F99-09FD0E1627B6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D3210531-BA79-49B2-9F99-09FD0E1627B6}.Debug|x64.Build.0 = Debug|Any CPU
+		{D3210531-BA79-49B2-9F99-09FD0E1627B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3210531-BA79-49B2-9F99-09FD0E1627B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3210531-BA79-49B2-9F99-09FD0E1627B6}.Release|x64.ActiveCfg = Release|Any CPU
+		{D3210531-BA79-49B2-9F99-09FD0E1627B6}.Release|x64.Build.0 = Release|Any CPU
+		{7337BC9A-ED07-463D-8FCD-A82896CEC6BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7337BC9A-ED07-463D-8FCD-A82896CEC6BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7337BC9A-ED07-463D-8FCD-A82896CEC6BE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7337BC9A-ED07-463D-8FCD-A82896CEC6BE}.Debug|x64.Build.0 = Debug|Any CPU
+		{7337BC9A-ED07-463D-8FCD-A82896CEC6BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7337BC9A-ED07-463D-8FCD-A82896CEC6BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7337BC9A-ED07-463D-8FCD-A82896CEC6BE}.Release|x64.ActiveCfg = Release|Any CPU
+		{7337BC9A-ED07-463D-8FCD-A82896CEC6BE}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -201,6 +221,7 @@ Global
 		{1857DA63-3335-428F-84D8-1FA4F8178643} = {3597B5C5-45B9-4ECB-92A3-D0FFBE47920A}
 		{AA3A42D2-0502-41D3-929A-BAB729DF07D6} = {3597B5C5-45B9-4ECB-92A3-D0FFBE47920A}
 		{414956B8-DBD4-414C-ABD3-565580739646} = {3597B5C5-45B9-4ECB-92A3-D0FFBE47920A}
+		{7337BC9A-ED07-463D-8FCD-A82896CEC6BE} = {3597B5C5-45B9-4ECB-92A3-D0FFBE47920A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AF00D64E-3C70-474A-8A81-E9E48017C4B5}

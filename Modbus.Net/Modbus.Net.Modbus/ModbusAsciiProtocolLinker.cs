@@ -15,22 +15,6 @@ namespace Modbus.Net.Modbus
         public ModbusAsciiProtocolLinker(string com, int slaveAddress)
             : base(com, slaveAddress)
         {
-            ((IConnectorWithController<byte[], byte[]>)BaseConnector).AddController(new FifoController(
-                int.Parse(ConfigurationReader.GetValue("COM:" + com + ":" + slaveAddress, "FetchSleepTime")),
-                lengthCalc: content =>
-                {
-                    if (content[0] != 0x3a) return 0;
-                    for (int i = 1; i < content.Length; i++)
-                    {
-                        if (content[i - 1] == 0x0D && content[i] == 0x0A) return i + 1;
-                    }
-                    return -1;
-                },
-                checkRightFunc: ContentCheck.LrcCheckRight,
-                waitingListMaxCount: ConfigurationReader.GetValue("COM:" + com + ":" + slaveAddress, "WaitingListCount") != null ?
-                  int.Parse(ConfigurationReader.GetValue("COM:" + com + ":" + slaveAddress, "WaitingListCount")) :
-                  null
-             ));
         }
 
         /// <summary>
