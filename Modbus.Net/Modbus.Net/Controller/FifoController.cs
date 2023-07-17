@@ -96,6 +96,7 @@ namespace Modbus.Net
         /// <inheritdoc />
         public override void SendStop()
         {
+            Clear();
             _taskCancel = true;
         }
 
