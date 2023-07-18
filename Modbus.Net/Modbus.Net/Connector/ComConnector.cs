@@ -82,10 +82,6 @@ namespace Modbus.Net
         ///     获取线程
         /// </summary>
         private Task _receiveThread;
-        /// <summary>
-        ///     获取线程关闭
-        /// </summary>
-        private bool _taskCancel = false;
 
         /// <summary>
         /// 缓冲的字节流
@@ -276,23 +272,23 @@ namespace Modbus.Net
                 // Release managed resources               
             }
             // Release unmanaged resources
-            if (SerialPort != null)
+            Linkers?.Remove((_slave, _com));
+            logger.LogInformation("Com connector {ConnectionToken} Removed", _com);
+            if (Linkers?.Count(p => p.Item2 == _com) == 0)
             {
-                Linkers.Remove((_slave, _com));
-                logger.LogInformation("Com connector {ConnectionToken} Removed", _com);
-                if (Linkers.Count(p => p.Item2 == _com) == 0)
+                if (SerialPort?.IsOpen == true)
                 {
-                    if (SerialPort.IsOpen)
-                    {
-                        SerialPort.Close();
-                    }
-                    SerialPort.Dispose();
-                    logger.LogInformation("Com interface {Com} Disposed", _com);
-                    Controller.SendStop();
+                    SerialPort?.Close();
+                }
+                SerialPort?.Dispose();
+                logger.LogInformation("Com interface {Com} Disposed", _com);
+                Controller?.SendStop();
+                if (Connectors.ContainsKey(_com))
+                {
                     Connectors[_com] = null;
                     Connectors.Remove(_com);
-                    ReceiveMsgThreadStop();
                 }
+                ReceiveMsgThreadStop();
             }
         }
 
@@ -365,7 +361,7 @@ namespace Modbus.Net
                     {
                         lock (SerialPort)
                         {
-                            _taskCancel = false;
+                            ReceiveMsgThreadStop();
                             SerialPort.Open();
                             ReceiveMsgThreadStart();
                             Controller.SendStart();
@@ -496,18 +492,35 @@ namespace Modbus.Net
         /// <inheritdoc />
         protected override void ReceiveMsgThreadStart()
         {
-            _receiveThread = Task.Run(ReceiveMessage);
+            if (_receiveThread == null)
+            {
+                _receiveThread = Task.Run(ReceiveMessage);
+            }
         }
 
         /// <inheritdoc />
         protected override void ReceiveMsgThreadStop()
         {
-            _taskCancel = true;
+            _receiveThread?.Dispose();
+            _receiveThread = null;
+            CacheClear();
+            Controller?.Clear();
+        }
+
+        private void CacheClear()
+        {
+            if (CacheBytes != null)
+            {
+                lock (CacheBytes)
+                {
+                    CacheBytes.Clear();
+                }
+            }
         }
 
         private async Task ReceiveMessage()
         {
-            while (!_taskCancel)
+            while (true)
             {
                 try
                 {
@@ -532,10 +545,7 @@ namespace Modbus.Net
                                     CacheBytes.Count);
                             logger.LogError(
                                 $"Com client {ConnectionToken} cached msg: {string.Concat(CacheBytes.Select(p => " " + p.ToString("X2")))}");
-                            lock (CacheBytes)
-                            {
-                                CacheBytes.Clear();
-                            }
+                            CacheClear();
                         }
                         else
                         {
@@ -569,6 +579,7 @@ namespace Modbus.Net
                 }
                 catch (Exception e)
                 {
+                    CacheClear();
                     logger.LogError(e, "Com client {ConnectionToken} read msg error", ConnectionToken);
                 }
             }

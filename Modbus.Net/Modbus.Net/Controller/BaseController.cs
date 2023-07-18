@@ -24,7 +24,7 @@ namespace Modbus.Net
         /// <summary>
         ///     消息维护线程是否在运行
         /// </summary>
-        public virtual bool? IsSending => SendingThread?.Status == TaskStatus.Running || SendingThread?.Status == TaskStatus.WaitingToRun || SendingThread?.Status == TaskStatus.Created;
+        public virtual bool IsSending => SendingThread != null;
 
         /// <summary>
         ///     包切分位置函数
@@ -73,7 +73,8 @@ namespace Modbus.Net
         /// <inheritdoc />
         public virtual void SendStop()
         {
-            SendingThread.Dispose();
+            Clear();
+            SendingThread?.Dispose();
             SendingThread = null;
             Clear();
         }
@@ -81,7 +82,7 @@ namespace Modbus.Net
         /// <inheritdoc />
         public virtual void SendStart()
         {
-            if (IsSending != true)
+            if (!IsSending)
             {
                 SendingThread = Task.Run(() => SendingMessageControlInner());
             }
@@ -90,9 +91,12 @@ namespace Modbus.Net
         /// <inheritdoc />
         public void Clear()
         {
-            lock (WaitingMessages)
+            if (WaitingMessages != null)
             {
-                WaitingMessages.Clear();
+                lock (WaitingMessages)
+                {
+                    WaitingMessages.Clear();
+                }
             }
         }
 
@@ -196,13 +200,7 @@ namespace Modbus.Net
                     if (def != null)
                     {
                         def.ReceiveMessage = message.Item1;
-                        lock (WaitingMessages)
-                        {
-                            if (WaitingMessages.IndexOf(def) >= 0)
-                            {
-                                WaitingMessages.Remove(def);
-                            }
-                        }
+                        ForceRemoveWaitingMessage(def);
                         def.ReceiveMutex.Set();
                         ans.Add((message.Item1, true));
                     }

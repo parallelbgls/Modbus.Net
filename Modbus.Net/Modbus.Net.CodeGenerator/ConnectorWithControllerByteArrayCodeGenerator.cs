@@ -112,7 +112,7 @@ namespace Modbus.Net
             IDisposable asyncLock = null;
             try
             {
-                if (Controller.IsSending != true)
+                if (!Controller.IsSending)
                 {
                     Controller.SendStart();
                 }

@@ -10,7 +10,7 @@ namespace Modbus.Net
         /// <summary>
         ///     消息维护线程是否在运行
         /// </summary>
-        bool? IsSending { get; }
+        bool IsSending { get; }
 
         /// <summary>
         ///     增加信息

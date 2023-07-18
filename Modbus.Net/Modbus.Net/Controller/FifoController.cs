@@ -14,8 +14,6 @@ namespace Modbus.Net
 
         private MessageWaitingDef _currentSendingPos;
 
-        private bool _taskCancel = false;
-
         private int _waitingListMaxCount;
 
         /// <summary>
@@ -40,7 +38,7 @@ namespace Modbus.Net
         /// <inheritdoc />
         protected override void SendingMessageControlInner()
         {
-            while (!_taskCancel)
+            while (true)
             {
                 if (AcquireTime > 0)
                 {
@@ -79,25 +77,10 @@ namespace Modbus.Net
                     catch (Exception e)
                     {
                         logger.LogError(e, "Controller throws exception");
-                        _taskCancel = true;
+                        SendStop();
                     }
                 }
             }
-            SendStop();
-        }
-
-        /// <inheritdoc />
-        public override void SendStart()
-        {
-            _taskCancel = false;
-            base.SendStart();
-        }
-
-        /// <inheritdoc />
-        public override void SendStop()
-        {
-            _taskCancel = true;
-            base.SendStop();
         }
 
         /// <inheritdoc />
@@ -124,7 +107,7 @@ namespace Modbus.Net
             {
                 return false;
             }
-            if (_taskCancel)
+            if (!IsSending)
             {
                 return false;
             }
