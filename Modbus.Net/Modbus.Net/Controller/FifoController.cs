@@ -83,7 +83,7 @@ namespace Modbus.Net
                     }
                 }
             }
-            Clear();
+            SendStop();
         }
 
         /// <inheritdoc />
@@ -96,8 +96,8 @@ namespace Modbus.Net
         /// <inheritdoc />
         public override void SendStop()
         {
-            Clear();
             _taskCancel = true;
+            base.SendStop();
         }
 
         /// <inheritdoc />
