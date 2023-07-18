@@ -36,7 +36,7 @@ namespace Modbus.Net
         }
 
         /// <inheritdoc />
-        protected override void SendingMessageControlInner()
+        protected override void SendingMessageControlInner(CancellationToken token)
         {
             while (true)
             {
@@ -79,6 +79,10 @@ namespace Modbus.Net
                         logger.LogError(e, "Controller throws exception");
                         SendStop();
                     }
+                }
+                if (token.IsCancellationRequested)
+                {
+                    token.ThrowIfCancellationRequested();
                 }
             }
         }

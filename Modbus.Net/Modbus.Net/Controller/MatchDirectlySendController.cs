@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace Modbus.Net
 {
@@ -32,7 +33,7 @@ namespace Modbus.Net
         }
 
         /// <inheritdoc />
-        protected override void SendingMessageControlInner()
+        protected override void SendingMessageControlInner(CancellationToken token)
         {
             //empty
         }

@@ -1,3 +1,4 @@
+using Quartz.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +26,8 @@ namespace Modbus.Net
         ///     消息维护线程是否在运行
         /// </summary>
         public virtual bool IsSending => SendingThread != null;
+
+        private CancellationTokenSource _sendingThreadCancel;
 
         /// <summary>
         ///     包切分位置函数
@@ -68,23 +71,43 @@ namespace Modbus.Net
         /// <summary>
         ///     发送消息的实际内部方法
         /// </summary>
-        protected abstract void SendingMessageControlInner();
+        protected abstract void SendingMessageControlInner(CancellationToken token);
 
         /// <inheritdoc />
         public virtual void SendStop()
         {
             Clear();
-            SendingThread?.Dispose();
-            SendingThread = null;
+            _sendingThreadCancel?.Cancel();
+            if (SendingThread != null)
+            {
+                while (!SendingThread.IsCanceled)
+                {
+                    Thread.Sleep(10);
+                }
+                SendingThread.Dispose();
+                SendingThread = null;
+            }
             Clear();
         }
 
         /// <inheritdoc />
-        public virtual void SendStart()
+        public virtual async void SendStart()
         {
             if (!IsSending)
             {
-                SendingThread = Task.Run(() => SendingMessageControlInner());
+                _sendingThreadCancel = new CancellationTokenSource();
+                SendingThread = Task.Run(() => SendingMessageControlInner(_sendingThreadCancel.Token), _sendingThreadCancel.Token);
+                try
+                {
+                    await SendingThread;
+                }
+                catch (OperationCanceledException)
+                { }
+                finally
+                {
+                    _sendingThreadCancel.Dispose();
+                    _sendingThreadCancel = null;                    
+                }               
             }
         }
 
