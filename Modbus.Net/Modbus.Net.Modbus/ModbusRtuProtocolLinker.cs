@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Modbus.Net.Modbus
+﻿namespace Modbus.Net.Modbus
 {
     /// <summary>
     ///     Modbus/Rtu协议连接器
@@ -15,21 +13,6 @@ namespace Modbus.Net.Modbus
         public ModbusRtuProtocolLinker(string com, int slaveAddress)
             : base(com, slaveAddress)
         {
-            ((IConnectorWithController<byte[], byte[]>)BaseConnector).AddController(new FifoController(
-                int.Parse(ConfigurationReader.GetValue("COM:" + com + ":" + slaveAddress, "FetchSleepTime")),
-                lengthCalc: content =>
-                {
-                    if (content[1] > 128) return 5;
-                    else if (content[1] == 5 || content[1] == 6 || content[1] == 8 || content[1] == 11 || content[1] == 15 || content[1] == 16) return 8;
-                    else if (content[1] == 7) return 5;
-                    else if (content[1] == 22) return 10;
-                    else return DuplicateWithCount.GetDuplcateFunc(new List<int> { 2 }, 5).Invoke(content);
-                },
-                checkRightFunc: ContentCheck.Crc16CheckRight,
-                waitingListMaxCount: ConfigurationReader.GetValue("COM:" + com + ":" + slaveAddress, "WaitingListCount") != null ?
-                  int.Parse(ConfigurationReader.GetValue("COM:" + com + ":" + slaveAddress, "WaitingListCount")) :
-                  null
-            ));
         }
 
         /// <summary>

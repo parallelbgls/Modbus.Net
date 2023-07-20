@@ -1,3 +1,4 @@
+using Quartz.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +25,9 @@ namespace Modbus.Net
         /// <summary>
         ///     消息维护线程是否在运行
         /// </summary>
-        public virtual bool IsSending => SendingThread.Status.Equals(TaskStatus.Running);
+        public virtual bool IsSending => SendingThread != null;
+
+        private CancellationTokenSource _sendingThreadCancel;
 
         /// <summary>
         ///     包切分位置函数
@@ -68,26 +71,55 @@ namespace Modbus.Net
         /// <summary>
         ///     发送消息的实际内部方法
         /// </summary>
-        protected abstract void SendingMessageControlInner();
+        protected abstract void SendingMessageControlInner(CancellationToken token);
 
         /// <inheritdoc />
-        public abstract void SendStop();
-
-        /// <inheritdoc />
-        public virtual void SendStart()
+        public virtual void SendStop()
         {
-            if (SendingThread == null)
+            Clear();
+            _sendingThreadCancel?.Cancel();
+            if (SendingThread != null)
             {
-                SendingThread = Task.Run(() => SendingMessageControlInner());
+                while (!SendingThread.IsCanceled)
+                {
+                    Thread.Sleep(10);
+                }
+                SendingThread.Dispose();
+                SendingThread = null;
+            }
+            Clear();
+        }
+
+        /// <inheritdoc />
+        public virtual async void SendStart()
+        {
+            if (!IsSending)
+            {
+                _sendingThreadCancel = new CancellationTokenSource();
+                SendingThread = Task.Run(() => SendingMessageControlInner(_sendingThreadCancel.Token), _sendingThreadCancel.Token);
+                try
+                {
+                    await SendingThread;
+                }
+                catch (OperationCanceledException)
+                { }
+                finally
+                {
+                    _sendingThreadCancel.Dispose();
+                    _sendingThreadCancel = null;                    
+                }               
             }
         }
 
         /// <inheritdoc />
         public void Clear()
         {
-            lock (WaitingMessages)
+            if (WaitingMessages != null)
             {
-                WaitingMessages.Clear();
+                lock (WaitingMessages)
+                {
+                    WaitingMessages.Clear();
+                }
             }
         }
 
@@ -191,13 +223,7 @@ namespace Modbus.Net
                     if (def != null)
                     {
                         def.ReceiveMessage = message.Item1;
-                        lock (WaitingMessages)
-                        {
-                            if (WaitingMessages.IndexOf(def) >= 0)
-                            {
-                                WaitingMessages.Remove(def);
-                            }
-                        }
+                        ForceRemoveWaitingMessage(def);
                         def.ReceiveMutex.Set();
                         ans.Add((message.Item1, true));
                     }

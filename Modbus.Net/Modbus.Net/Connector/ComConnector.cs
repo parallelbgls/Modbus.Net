@@ -82,10 +82,11 @@ namespace Modbus.Net
         ///     获取线程
         /// </summary>
         private Task _receiveThread;
+
         /// <summary>
-        ///     获取线程关闭
+        ///     终止获取线程
         /// </summary>
-        private bool _taskCancel = false;
+        private CancellationTokenSource _receiveThreadCancel;
 
         /// <summary>
         /// 缓冲的字节流
@@ -276,24 +277,23 @@ namespace Modbus.Net
                 // Release managed resources               
             }
             // Release unmanaged resources
-            if (SerialPort != null)
+            Controller?.SendStop();
+            ReceiveMsgThreadStop();           
+            Linkers?.Remove((_slave, _com));
+            logger.LogInformation("Com connector {ConnectionToken} Removed", _com);
+            if (Linkers?.Count(p => p.Item2 == _com) == 0)
             {
-                Linkers.Remove((_slave, _com));
-                logger.LogInformation("Com connector {ConnectionToken} Removed", _com);
-                if (Linkers.Count(p => p.Item2 == _com) == 0)
+                if (SerialPort?.IsOpen == true)
                 {
-                    if (SerialPort.IsOpen)
-                    {
-                        SerialPort.Close();
-                    }
-                    SerialPort.Dispose();
-                    logger.LogInformation("Com interface {Com} Disposed", _com);
-                    Controller.SendStop();
-                    Controllers.Remove(_com);
+                    SerialPort?.Close();
+                }
+                SerialPort?.Dispose();
+                logger.LogInformation("Com interface {Com} Disposed", _com);                
+                if (Connectors.ContainsKey(_com))
+                {
                     Connectors[_com] = null;
                     Connectors.Remove(_com);
-                    ReceiveMsgThreadStop();
-                }
+                }               
             }
         }
 
@@ -366,7 +366,7 @@ namespace Modbus.Net
                     {
                         lock (SerialPort)
                         {
-                            _taskCancel = false;
+                            ReceiveMsgThreadStop();
                             SerialPort.Open();
                             ReceiveMsgThreadStart();
                             Controller.SendStart();
@@ -484,7 +484,7 @@ namespace Modbus.Net
                     message.Length);
                 logger.LogDebug(
                     $"Com client {ConnectionToken} send msg: {String.Concat(message.Select(p => " " + p.ToString("X2")))}");
-                await Task.Run(() => SerialPort.Write(message, 0, message.Length));
+                await Task.Run(() => SerialPort?.Write(message, 0, message.Length));
             }
             catch (Exception err)
             {
@@ -495,20 +495,57 @@ namespace Modbus.Net
         }
 
         /// <inheritdoc />
-        protected override void ReceiveMsgThreadStart()
+        protected override async void ReceiveMsgThreadStart()
         {
-            _receiveThread = Task.Run(ReceiveMessage);
+            if (_receiveThread == null)
+            {
+                _receiveThreadCancel = new CancellationTokenSource();
+                _receiveThread = Task.Run(async ()=>await ReceiveMessage(_receiveThreadCancel.Token), _receiveThreadCancel.Token);
+                try
+                {
+                    await _receiveThread;
+                }
+                catch (OperationCanceledException)
+                { }
+                finally
+                {
+                    _receiveThreadCancel.Dispose();
+                    _receiveThreadCancel = null;
+                }
+            }
         }
 
         /// <inheritdoc />
         protected override void ReceiveMsgThreadStop()
         {
-            _taskCancel = true;
+            _receiveThreadCancel?.Cancel();
+            if (_receiveThread != null)
+            {
+                while (!_receiveThread.IsCanceled)
+                {
+                    Thread.Sleep(10);
+                }
+                _receiveThread.Dispose();
+                _receiveThread = null;
+            }
+            CacheClear();
+            Controller?.Clear();
         }
 
-        private async Task ReceiveMessage()
+        private void CacheClear()
         {
-            while (!_taskCancel)
+            if (CacheBytes != null)
+            {
+                lock (CacheBytes)
+                {
+                    CacheBytes.Clear();
+                }
+            }
+        }
+
+        private async Task ReceiveMessage(CancellationToken token)
+        {
+            while (true)
             {
                 try
                 {
@@ -533,10 +570,7 @@ namespace Modbus.Net
                                     CacheBytes.Count);
                             logger.LogError(
                                 $"Com client {ConnectionToken} cached msg: {string.Concat(CacheBytes.Select(p => " " + p.ToString("X2")))}");
-                            lock (CacheBytes)
-                            {
-                                CacheBytes.Clear();
-                            }
+                            CacheClear();
                         }
                         else
                         {
@@ -570,7 +604,12 @@ namespace Modbus.Net
                 }
                 catch (Exception e)
                 {
+                    CacheClear();
                     logger.LogError(e, "Com client {ConnectionToken} read msg error", ConnectionToken);
+                }
+                if (token.IsCancellationRequested)
+                {
+                    token.ThrowIfCancellationRequested();
                 }
             }
         }

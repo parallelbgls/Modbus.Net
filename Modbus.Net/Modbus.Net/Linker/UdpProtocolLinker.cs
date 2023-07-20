@@ -18,6 +18,7 @@
             isFullDuplex = bool.Parse(isFullDuplex != null ? isFullDuplex.ToString() : null ?? ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "FullDuplex"));
             //初始化连接对象
             BaseConnector = new UdpConnector(ip, port, connectionTimeout.Value, isFullDuplex.Value);
+            this.AddController(new object[2] { ip, port }, BaseConnector);
         }
     }
 }

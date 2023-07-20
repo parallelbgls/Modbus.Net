@@ -6,7 +6,7 @@
     <AssemblyName>Modbus.Net.BigEndian3412</AssemblyName>
     <RootNamespace>Modbus.Net.BigEndian3412</RootNamespace>
     <PackageId>Modbus.Net.BigEndian3412</PackageId>
-    <Version>1.4.2</Version>
+    <Version>1.4.3</Version>
     <Authors>Chris L.(Luo Sheng)</Authors>
     <Company>Hangzhou Delian Science Technology Co.,Ltd.</Company>
     <Product>Modbus.Net.Modbus</Product>
