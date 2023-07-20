@@ -6,7 +6,7 @@
     <AssemblyName>Modbus.Net.Opc</AssemblyName>
     <RootNamespace>Modbus.Net.Opc</RootNamespace>
     <PackageId>Modbus.Net.Opc</PackageId>
-    <Version>1.4.2</Version>
+    <Version>1.4.3</Version>
     <Authors>Chris L.(Luo Sheng)</Authors>
     <Company>Hangzhou Delian Science Technology Co.,Ltd.</Company>
     <Product>Modbus.Net.Opc</Product>

@@ -6,7 +6,7 @@
     <AssemblyName>Modbus.Net.HJ212</AssemblyName>
     <RootNamespace>Modbus.Net.HJ212</RootNamespace>
     <PackageId>Modbus.Net.HJ212</PackageId>
-    <Version>1.4.2</Version>
+    <Version>1.4.3</Version>
     <Authors>Chris L.(Luo Sheng)</Authors>
     <Company>Hangzhou Delian Science Technology Co.,Ltd.</Company>
     <Product>Modbus.Net.HJ212</Product>
