@@ -31,7 +31,15 @@ namespace Modbus.Net
             connectionTimeout = int.Parse(connectionTimeout != null ? connectionTimeout.ToString() : null ?? ConfigurationReader.GetValue("COM:" + com, "ConnectionTimeout"));
             isFullDuplex = bool.Parse(isFullDuplex != null ? isFullDuplex.ToString() : null ?? ConfigurationReader.GetValue("COM:" + com, "FullDuplex"));
             BaseConnector = new ComConnector(com + ":" + slaveAddress, baudRate.Value, parity.Value, stopBits.Value, dataBits.Value, handshake.Value, connectionTimeout.Value, isFullDuplex.Value);
-            this.AddController(new object[2] { com, slaveAddress }, BaseConnector);
+            var noResponse = bool.Parse(ConfigurationReader.GetValue("COM:" + com, "NoResponse") ?? ConfigurationReader.GetValue("Controller", "NoResponse"));
+            if (noResponse)
+            {
+                ((IConnectorWithController<byte[], byte[]>)BaseConnector).AddController(new NoResponseController(int.Parse(ConfigurationReader.GetValue("COM:" + com + ":" + slaveAddress, "FetchSleepTime"))));
+            }
+            else
+            {
+                this.AddController(new object[2] { com, slaveAddress }, BaseConnector);
+            }
         }
     }
 }

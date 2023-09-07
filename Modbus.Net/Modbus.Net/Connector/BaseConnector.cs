@@ -6,7 +6,7 @@ namespace Modbus.Net
     /// <inheritdoc />
     public abstract partial class BaseConnector : BaseConnector<byte[], byte[]>
     {
-        private static readonly ILogger<EventHandlerConnector> logger = LogProvider.CreateLogger<EventHandlerConnector>();
+        private static readonly ILogger<BaseConnector> logger = LogProvider.CreateLogger<BaseConnector>();
     }
 
     /// <summary>

@@ -93,7 +93,7 @@ namespace MachineJob.Service
         private Dictionary<string, double>? QueryConsole(DataReturnDef dataReturnDef)
         {
             var values = dataReturnDef.ReturnValues.Datas;
-            if (dataReturnDef.ReturnValues.IsSuccess)
+            if (dataReturnDef.ReturnValues.IsSuccess == true)
             {
                 foreach (var value in values)
                 {
@@ -134,6 +134,19 @@ namespace MachineJob.Service
                 }
 
                 return values.MapGetValuesToSetValues();
+            }
+            else if(dataReturnDef.ReturnValues.IsSuccess == null)
+            {
+                Random r = new Random();
+
+                Dictionary<string, double> ans = new Dictionary<string, double>();
+
+                for (int i = 0; i< 10; i++)
+                {
+                    ans["Test" + (i+1)] = r.Next(65536) - 32768;
+                }
+
+                return ans;
             }
             return null;
         }

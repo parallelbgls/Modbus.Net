@@ -185,7 +185,12 @@ namespace Modbus.Net
         public virtual async Task<T> SendReceiveAsync<T>(TProtocolUnit unit, IInputStruct content)
             where T : class, IOutputStruct
         {
-            return (await SendReceiveAsync(unit, content)).Unwrap<T>();
+            var ans = await SendReceiveAsync(unit, content);
+            if (ans.Success == null)
+            {
+                return null;
+            }
+            return ans.Unwrap<T>();
         }
 
         /// <summary>

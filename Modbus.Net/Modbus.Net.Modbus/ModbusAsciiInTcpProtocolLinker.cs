@@ -33,8 +33,7 @@ namespace Modbus.Net.Modbus
         /// <returns>校验是否正确</returns>
         public override bool? CheckRight(byte[] content)
         {
-            //ProtocolLinker不会返回null
-            if (base.CheckRight(content) != true) return false;
+            if (base.CheckRight(content) != true) return base.CheckRight(content);
             //Modbus协议错误
             var contentString = Encoding.ASCII.GetString(content);
             if (byte.Parse(contentString.Substring(3, 2)) > 127)

@@ -13,7 +13,7 @@
         /// <summary>
         ///     操作是否成功
         /// </summary>
-        public bool IsSuccess { get; set; }
+        public bool? IsSuccess { get; set; }
         /// <summary>
         ///     错误代码
         /// </summary>

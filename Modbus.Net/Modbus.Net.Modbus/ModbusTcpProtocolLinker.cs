@@ -30,8 +30,7 @@
         /// <returns>数据是否正确</returns>
         public override bool? CheckRight(byte[] content)
         {
-            //ProtocolLinker的CheckRight不会返回null
-            if (base.CheckRight(content) != true) return false;
+            if (base.CheckRight(content) != true) return base.CheckRight(content);
             //Modbus协议错误
             if (content[7] > 127)
                 throw new ModbusProtocolErrorException(content[2] > 0 ? content[2] : content[8]);

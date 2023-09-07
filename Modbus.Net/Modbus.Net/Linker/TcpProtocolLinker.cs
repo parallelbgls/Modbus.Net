@@ -18,7 +18,15 @@
             isFullDuplex = bool.Parse(isFullDuplex != null ? isFullDuplex.ToString() : null ?? ConfigurationReader.GetValue("TCP:" + ip + ":" + port, "FullDuplex"));
             //初始化连接对象
             BaseConnector = new TcpConnector(ip, port, connectionTimeout.Value, isFullDuplex.Value);
-            this.AddController(new object[2] { ip, port }, BaseConnector);
+            var noResponse = bool.Parse(ConfigurationReader.GetValue("TCP:" + ip + ":" + port, "NoResponse") ?? ConfigurationReader.GetValue("Controller", "NoResponse"));
+            if (noResponse)
+            {
+                ((IConnectorWithController<byte[], byte[]>)BaseConnector).AddController(new NoResponseController(int.Parse(ConfigurationReader.GetValue("TCP:" + ip + ":" + port, "FetchSleepTime"))));
+            }
+            else
+            {
+                this.AddController(new object[2] { ip, port }, BaseConnector);
+            }
         }
     }
 }

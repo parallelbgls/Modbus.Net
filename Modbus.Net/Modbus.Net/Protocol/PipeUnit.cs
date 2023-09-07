@@ -27,7 +27,7 @@ namespace Modbus.Net
         /// <param name="parameters">传递给输入结构的参数</param>
         /// <param name="success">上次的管道是否成功执行</param>
         protected PipeUnit(IProtocolLinker<byte[], byte[]> protocolLinker, ProtocolUnit<byte[], byte[]> protocolUnit, byte[] parameters,
-            bool success) : base(protocolLinker, protocolUnit, parameters, success)
+            bool? success) : base(protocolLinker, protocolUnit, parameters, success)
         {
         }
 
@@ -39,7 +39,7 @@ namespace Modbus.Net
         /// <returns>发送完成之后新的管道实例</returns>
         public async Task<PipeUnit> SendReceiveAsync(Endian endian, Func<byte[], object[]> inputStructCreator)
         {
-            if (Success)
+            if (Success == true)
             {
                 var content = inputStructCreator.Invoke(ReturnParams);
                 if (ProtocolLinker != null)
@@ -47,7 +47,7 @@ namespace Modbus.Net
                         await ProtocolLinker.SendReceiveAsync(ProtocolUnit<byte[], byte[]>.TranslateContent(endian, content)),
                         true);
             }
-            return new PipeUnit(ProtocolLinker, null, ReturnParams, false);
+            return new PipeUnit(ProtocolLinker, null, ReturnParams, Success);
         }
 
         /// <summary>
@@ -62,8 +62,18 @@ namespace Modbus.Net
         {
             var receiveContent = await SendReceiveAsyncParamOut(unit, inputStructCreator);
             if (receiveContent != null)
-                return new PipeUnit(ProtocolLinker, unit,
-                    receiveContent, true);
+            {
+                if (receiveContent.Length > 0)
+                {
+                    return new PipeUnit(ProtocolLinker, unit,
+                        receiveContent, true);
+                }
+                else
+                {
+                    return new PipeUnit(ProtocolLinker, unit,
+                        receiveContent, null);
+                }
+            }
             return new PipeUnit(ProtocolLinker, unit, ReturnParams,
                 false);
         }
@@ -106,7 +116,7 @@ namespace Modbus.Net
         /// <param name="protocolUnit">协议单元</param>
         /// <param name="parameters">输入参数</param>
         /// <param name="success">上一次管道结果是否成功</param>
-        protected PipeUnit(TProtocolLinker protocolLinker, TProtocolUnit protocolUnit, TParamOut parameters, bool success)
+        protected PipeUnit(TProtocolLinker protocolLinker, TProtocolUnit protocolUnit, TParamOut parameters, bool? success)
         {
             ProtocolLinker = protocolLinker;
             ProtocolUnit = protocolUnit;
@@ -132,7 +142,7 @@ namespace Modbus.Net
         /// <summary>
         ///     本次管道是否成功
         /// </summary>
-        public bool Success { get; }
+        public bool? Success { get; }
 
         /// <summary>
         ///     向设备发送数据，返回输出参数
@@ -143,7 +153,7 @@ namespace Modbus.Net
         protected async Task<TParamOut> SendReceiveAsyncParamOut(TProtocolUnit unit,
             Func<TParamOut, IInputStruct> inputStructCreator)
         {
-            if (Success)
+            if (Success == true)
             {
                 var content = inputStructCreator.Invoke(ReturnParams);
                 var formatContent = unit.Format(content);

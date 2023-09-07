@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,7 +17,17 @@ namespace Modbus.Net.HJ212
         public HJ212Protocol(string ip)
             : base(0, 0, Endian.BigEndianLsb)
         {
-            ProtocolLinker = new HJ212ProtocolLinker(ip, int.Parse(ConfigurationReader.GetValueDirect("TCP:" + ip, "HJ212Port") ?? ConfigurationReader.GetValueDirect("TCP:Modbus", "HJ212Port") ?? "443"));
+            var splitPos = ip.IndexOf(':');
+            if (splitPos > -1)
+            {
+                string realIp = ip.Substring(0, splitPos);
+                string port = ip.Substring(splitPos + 1);
+                ProtocolLinker = new HJ212ProtocolLinker(realIp, int.Parse(port));
+            }
+            else
+            {
+                ProtocolLinker = new HJ212ProtocolLinker(ip, int.Parse(ConfigurationReader.GetValueDirect("TCP:" + ip, "HJ212Port") ?? ConfigurationReader.GetValueDirect("TCP:Modbus", "HJ212Port") ?? "443"));
+            }  
         }
 
         /// <summary>
@@ -43,7 +54,7 @@ namespace Modbus.Net.HJ212
         public override byte[] Format(IInputStruct message)
         {
             var r_message = (WriteRequestHJ212InputStruct)message;
-            string formatMessage = "##0633";
+            string formatMessage = "";
             formatMessage += "QN=" + r_message.QN + ";";
             formatMessage += "ST=" + r_message.ST + ";";
             formatMessage += "CN=" + r_message.CN + ";";
@@ -61,7 +72,6 @@ namespace Modbus.Net.HJ212
                 formatMessage += ";";
             }
             formatMessage = formatMessage[..^1];
-            formatMessage += "&&";
             return Encoding.ASCII.GetBytes(formatMessage);
         }
 

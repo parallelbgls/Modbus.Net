@@ -98,9 +98,19 @@ namespace Modbus.Net
                                              ValueHelper.ByteLength[
                                                  communicateAddress.DataType.FullName]));
 
-
+                    //如果已知没有返回，终止
+                    if (datas.IsSuccess == null)
+                    {
+                        return new ReturnStruct<Dictionary<string, ReturnUnit<double>>>()
+                        {
+                            Datas = null,
+                            IsSuccess = null,
+                            ErrorCode = datas.ErrorCode,
+                            ErrorMsg = datas.ErrorMsg
+                        };
+                    }
                     //如果没有数据，终止
-                    if (datas.IsSuccess == false || datas.Datas == null)
+                    else if (datas.IsSuccess == false || datas.Datas == null)
                     {
                         return new ReturnStruct<Dictionary<string, ReturnUnit<double>>>()
                         {
@@ -336,6 +346,14 @@ namespace Modbus.Net
                     //如果设备本身能获取到数据但是没有数据
                     var datas = datasReturn;
 
+                    //没有返回，直接设0
+                    if (datas.IsSuccess == null)
+                    {
+                        datas.Datas = new byte[(int)
+                            Math.Ceiling(communicateAddress.GetCount *
+                                         ValueHelper.ByteLength[
+                                             communicateAddress.DataType.FullName])];
+                    }
                     //如果没有数据，终止
                     if (datas.IsSuccess == false || datas.Datas == null)
                     {

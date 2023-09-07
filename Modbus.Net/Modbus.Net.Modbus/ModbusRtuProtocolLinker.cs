@@ -22,8 +22,7 @@
         /// <returns>数据是否正确</returns>
         public override bool? CheckRight(byte[] content)
         {
-            //ProtocolLinker的CheckRight不会返回null
-            if (base.CheckRight(content) != true) return false;
+            if (base.CheckRight(content) != true) return base.CheckRight(content);
             //CRC校验失败
             if (!Crc16.GetInstance().CrcEfficacy(content))
                 throw new ModbusProtocolErrorException(501);

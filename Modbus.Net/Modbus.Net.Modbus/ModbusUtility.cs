@@ -264,7 +264,7 @@ namespace Modbus.Net.Modbus
                 return new ReturnStruct<byte[]>
                 {
                     Datas = outputStruct?.DataValue,
-                    IsSuccess = true,
+                    IsSuccess = outputStruct == null ? null : true,
                     ErrorCode = 0,
                     ErrorMsg = ""
                 };
@@ -325,7 +325,7 @@ namespace Modbus.Net.Modbus
                 return new ReturnStruct<byte>()
                 {
                     Datas = outputStruct.OutputData,
-                    IsSuccess = true,
+                    IsSuccess = outputStruct == null ? null : true,
                     ErrorCode = 0,
                     ErrorMsg = null
                 };
@@ -355,7 +355,7 @@ namespace Modbus.Net.Modbus
                 return new ReturnStruct<DiagnoticsData>()
                 {
                     Datas = new DiagnoticsData() { SubFunction = outputStruct.SubFunction, Data = outputStruct.Data },
-                    IsSuccess = true,
+                    IsSuccess = outputStruct == null ? null : true,
                     ErrorCode = 0,
                     ErrorMsg = null
                 };
@@ -385,7 +385,7 @@ namespace Modbus.Net.Modbus
                 return new ReturnStruct<CommEventCounterData>()
                 {
                     Datas = new CommEventCounterData() { EventCount = outputStruct.EventCount, Status = outputStruct.Status },
-                    IsSuccess = true,
+                    IsSuccess = outputStruct == null ? null : true,
                     ErrorCode = 0,
                     ErrorMsg = null
                 };
@@ -415,7 +415,7 @@ namespace Modbus.Net.Modbus
                 return new ReturnStruct<CommEventLogData>()
                 {
                     Datas = new CommEventLogData() { Status = outputStruct.Status, Events = outputStruct.Events },
-                    IsSuccess = true,
+                    IsSuccess = outputStruct == null ? null : true,
                     ErrorCode = 0,
                     ErrorMsg = null
                 };
@@ -445,7 +445,7 @@ namespace Modbus.Net.Modbus
                 return new ReturnStruct<SlaveIdData>()
                 {
                     Datas = new SlaveIdData() { SlaveId = outputStruct.SlaveId, IndicatorStatus = outputStruct.RunIndicatorStatus, AdditionalData = outputStruct.AdditionalData },
-                    IsSuccess = true,
+                    IsSuccess = outputStruct == null ? null : true,
                     ErrorCode = 0,
                     ErrorMsg = null
                 };
@@ -475,7 +475,7 @@ namespace Modbus.Net.Modbus
                 return new ReturnStruct<ReadFileRecordOutputDef[]>()
                 {
                     Datas = outputStruct.RecordDefs,
-                    IsSuccess = true,
+                    IsSuccess = outputStruct == null ? null : true,
                     ErrorCode = 0,
                     ErrorMsg = null
                 };
@@ -505,7 +505,7 @@ namespace Modbus.Net.Modbus
                 return new ReturnStruct<WriteFileRecordOutputDef[]>()
                 {
                     Datas = outputStruct.WriteRecords,
-                    IsSuccess = true,
+                    IsSuccess = outputStruct == null ? null : true,
                     ErrorCode = 0,
                     ErrorMsg = null
                 };
@@ -535,7 +535,7 @@ namespace Modbus.Net.Modbus
                 return new ReturnStruct<MaskRegisterData>()
                 {
                     Datas = new MaskRegisterData() { ReferenceAddress = outputStruct.ReferenceAddress, AndMask = outputStruct.AndMask, OrMask = outputStruct.OrMask },
-                    IsSuccess = true,
+                    IsSuccess = outputStruct == null ? null : true,
                     ErrorCode = 0,
                     ErrorMsg = null
                 };
@@ -565,7 +565,7 @@ namespace Modbus.Net.Modbus
                 return new ReturnStruct<ushort[]>()
                 {
                     Datas = outputStruct.ReadRegisterValues,
-                    IsSuccess = true,
+                    IsSuccess = outputStruct == null ? null : true,
                     ErrorCode = 0,
                     ErrorMsg = null
                 };
@@ -595,7 +595,7 @@ namespace Modbus.Net.Modbus
                 return new ReturnStruct<ushort[]>()
                 {
                     Datas = outputStruct.FIFOValueRegister,
-                    IsSuccess = true,
+                    IsSuccess = outputStruct == null ? null : true,
                     ErrorCode = 0,
                     ErrorMsg = null
                 };
