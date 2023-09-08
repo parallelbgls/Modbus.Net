@@ -23,14 +23,28 @@ namespace Modbus.Net.Modbus
         };
 
         /// <summary>
-        ///     Modbus Rtu协议长度计算
+        ///     Modbus Rtu接收协议长度计算
         /// </summary>
-        public static Func<byte[], int> ModbusRtuLengthCalc => content =>
+        public static Func<byte[], int> ModbusRtuResponseLengthCalc => (content) =>
         {
             if (content[1] > 128) return 5;
             else if (content[1] == 5 || content[1] == 6 || content[1] == 8 || content[1] == 11 || content[1] == 15 || content[1] == 16) return 8;
             else if (content[1] == 7) return 5;
             else if (content[1] == 22) return 10;
+            else return DuplicateWithCount.GetDuplcateFunc(new List<int> { 2 }, 5).Invoke(content);
+        };
+
+        /// <summary>
+        ///     Modbus Rtu发送协议长度计算
+        /// </summary>
+        public static Func<byte[], int> ModbusRtuRequestLengthCalc => (content) =>
+        {
+            if (content[1] == 1 || content[1] == 2 || content[1] == 3 || content[1] == 4 || content[1] == 5 || content[1] == 6 || content[1] == 8) return 8;
+            else if (content[1] == 7 || content[1] == 11 || content[1] == 12 || content[1] == 17) return 4;
+            else if (content[1] == 15 || content[1] == 16) { return DuplicateWithCount.GetDuplcateFunc(new List<int> { 6 }, 9).Invoke(content); }
+            else if (content[1] == 22) return 10;
+            else if (content[1] == 23) return 19;
+            else if (content[1] == 24) return 6;
             else return DuplicateWithCount.GetDuplcateFunc(new List<int> { 2 }, 5).Invoke(content);
         };
     }
@@ -97,7 +111,7 @@ namespace Modbus.Net.Modbus
     }
 
     /// <summary>
-    ///     Modbus Rtu协议控制器
+    ///     Modbus Rtu发送协议控制器
     /// </summary>
     public class ModbusRtuController : FifoController
     {
@@ -108,7 +122,7 @@ namespace Modbus.Net.Modbus
         /// <param name="slaveAddress">从站号</param>
         public ModbusRtuController(string com, int slaveAddress) : base(
                 int.Parse(ConfigurationReader.GetValue("COM:" + com + ":" + slaveAddress, "FetchSleepTime")),
-                lengthCalc: ModbusLengthCalc.ModbusRtuLengthCalc,
+                lengthCalc: ModbusLengthCalc.ModbusRtuResponseLengthCalc,
                 checkRightFunc: ContentCheck.Crc16CheckRight,
                 waitingListMaxCount: ConfigurationReader.GetValue("COM:" + com + ":" + slaveAddress, "WaitingListCount") != null ?
                   int.Parse(ConfigurationReader.GetValue("COM:" + com + ":" + slaveAddress, "WaitingListCount")) :
@@ -118,7 +132,28 @@ namespace Modbus.Net.Modbus
     }
 
     /// <summary>
-    ///     Modbus Rtu in Tcp协议控制器
+    ///     Modbus Rtu接收协议控制器
+    /// </summary>
+    public class ModbusRtuResponseController : FifoController
+    {
+        /// <summary>
+        ///     构造函数
+        /// </summary>
+        /// <param name="com">串口</param>
+        /// <param name="slaveAddress">从站号</param>
+        public ModbusRtuResponseController(string com, int slaveAddress) : base(
+                int.Parse(ConfigurationReader.GetValue("COM:" + com + ":" + slaveAddress, "FetchSleepTime")),
+                lengthCalc: ModbusLengthCalc.ModbusRtuRequestLengthCalc,
+                checkRightFunc: ContentCheck.Crc16CheckRight,
+                waitingListMaxCount: ConfigurationReader.GetValue("COM:" + com + ":" + slaveAddress, "WaitingListCount") != null ?
+                  int.Parse(ConfigurationReader.GetValue("COM:" + com + ":" + slaveAddress, "WaitingListCount")) :
+                  null
+            )
+        { }
+    }
+
+    /// <summary>
+    ///     Modbus Rtu in Tcp发送协议控制器
     /// </summary>
     public class ModbusRtuInTcpController : FifoController
     {
@@ -129,7 +164,7 @@ namespace Modbus.Net.Modbus
         /// <param name="port">端口号</param>
         public ModbusRtuInTcpController(string ip, int port) : base(
                 int.Parse(ConfigurationReader.GetValue("TCP:" + ip + ":" + port, "FetchSleepTime")),
-                lengthCalc: ModbusLengthCalc.ModbusRtuLengthCalc,
+                lengthCalc: ModbusLengthCalc.ModbusRtuResponseLengthCalc,
                 checkRightFunc: ContentCheck.Crc16CheckRight,
                 waitingListMaxCount: ConfigurationReader.GetValue("TCP:" + ip + ":" + port, "WaitingListCount") != null ?
                   int.Parse(ConfigurationReader.GetValue("TCP:" + ip + ":" + port, "WaitingListCount")) :
@@ -139,7 +174,28 @@ namespace Modbus.Net.Modbus
     }
 
     /// <summary>
-    ///     Modbus Rtu in Udp协议控制器
+    ///     Modbus Rtu in Tcp接收协议控制器
+    /// </summary>
+    public class ModbusRtuInTcpResponseController : FifoController
+    {
+        /// <summary>
+        ///     构造函数
+        /// </summary>
+        /// <param name="ip">ip地址</param>
+        /// <param name="port">端口号</param>
+        public ModbusRtuInTcpResponseController(string ip, int port) : base(
+                int.Parse(ConfigurationReader.GetValue("TCP:" + ip + ":" + port, "FetchSleepTime")),
+                lengthCalc: ModbusLengthCalc.ModbusRtuRequestLengthCalc,
+                checkRightFunc: ContentCheck.Crc16CheckRight,
+                waitingListMaxCount: ConfigurationReader.GetValue("TCP:" + ip + ":" + port, "WaitingListCount") != null ?
+                  int.Parse(ConfigurationReader.GetValue("TCP:" + ip + ":" + port, "WaitingListCount")) :
+                  null
+             )
+        { }
+    }
+
+    /// <summary>
+    ///     Modbus Rtu in Udp发送协议控制器
     /// </summary>
     public class ModbusRtuInUdpController : FifoController
     {
@@ -150,7 +206,28 @@ namespace Modbus.Net.Modbus
         /// <param name="port">端口号</param>
         public ModbusRtuInUdpController(string ip, int port) : base(
                 int.Parse(ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "FetchSleepTime")),
-                lengthCalc: ModbusLengthCalc.ModbusRtuLengthCalc,
+                lengthCalc: ModbusLengthCalc.ModbusRtuResponseLengthCalc,
+                checkRightFunc: ContentCheck.Crc16CheckRight,
+                waitingListMaxCount: ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "WaitingListCount") != null ?
+                  int.Parse(ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "WaitingListCount")) :
+                  null
+            )
+        { }
+    }
+
+    /// <summary>
+    ///     Modbus Rtu in Udp接收协议控制器
+    /// </summary>
+    public class ModbusRtuInUdpResponseController : FifoController
+    {
+        /// <summary>
+        ///     构造函数
+        /// </summary>
+        /// <param name="ip">ip地址</param>
+        /// <param name="port">端口号</param>
+        public ModbusRtuInUdpResponseController(string ip, int port) : base(
+                int.Parse(ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "FetchSleepTime")),
+                lengthCalc: ModbusLengthCalc.ModbusRtuRequestLengthCalc,
                 checkRightFunc: ContentCheck.Crc16CheckRight,
                 waitingListMaxCount: ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "WaitingListCount") != null ?
                   int.Parse(ConfigurationReader.GetValue("UDP:" + ip + ":" + port, "WaitingListCount")) :

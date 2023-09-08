@@ -22,11 +22,12 @@ namespace Modbus.Net
         /// <summary>
         ///     读取设备列表
         /// </summary>
+        /// <param name="machineSection">读取设备的块名</param>
         /// <returns>设备的列表</returns>
-        public static List<IMachine<string>> ReadMachines()
+        public static List<IMachine<string>> ReadMachines(string machineSection = "Machine")
         {
             var ans = new List<IMachine<string>>();
-            var root = configuration.GetSection("Modbus.Net").GetSection("Machine").GetChildren();
+            var root = configuration.GetSection("Modbus.Net").GetSection(machineSection).GetChildren();
             foreach (var machine in root)
             {
                 List<KeyValuePair<string, string>> kv = new List<KeyValuePair<string, string>>();

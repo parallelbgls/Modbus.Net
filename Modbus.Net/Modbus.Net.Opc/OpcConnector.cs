@@ -118,7 +118,7 @@ namespace Modbus.Net.Opc
                                 Value = Encoding.ASCII.GetBytes("NoData")
                             };
                         }
-                        logger.LogInformation($"Opc Machine {ConnectionToken} Read Opc tag {tag} for value {result.Value} {result.Value.GetType().FullName}");
+                        logger.LogDebug($"Opc Machine {ConnectionToken} Read Opc tag {tag} for value {result.Value} {result.Value.GetType().FullName} {result.Quality}");
                         return new OpcParamOut
                         {
                             Success = true,
@@ -142,11 +142,11 @@ namespace Modbus.Net.Opc
                         try
                         {
                             await Client.WriteAsync(tag, value);
-                            logger.LogInformation($"Opc Machine {ConnectionToken} Write Opc tag {tag} for value {value}");
+                            logger.LogDebug($"Opc Machine {ConnectionToken} Write Opc tag {tag} for value {value}");
                         }
                         catch (Exception e)
                         {
-                            logger.LogError(e, "Opc client {ConnectionToken} write exception", ConnectionToken);
+                            logger.LogError(e, $"Opc client {ConnectionToken} write exception");
                             return new OpcParamOut
                             {
                                 Success = false
@@ -165,7 +165,7 @@ namespace Modbus.Net.Opc
             }
             catch (Exception e)
             {
-                logger.LogError(e, "Opc client {ConnectionToken} read exception", ConnectionToken);
+                logger.LogError(e, $"Opc client {ConnectionToken} read exception");
                 Disconnect();
                 return new OpcParamOut
                 {
@@ -181,12 +181,12 @@ namespace Modbus.Net.Opc
             {
                 Client.Connect();
                 _connect = true;
-                logger.LogInformation("Opc client {ConnectionToken} connect success", ConnectionToken);
+                logger.LogInformation($"Opc client {ConnectionToken} connect success");
                 return true;
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Opc client {ConnectionToken} connected failed", ConnectionToken);
+                logger.LogError(ex, $"Opc client {ConnectionToken} connected failed");
                 _connect = false;
                 return false;
             }

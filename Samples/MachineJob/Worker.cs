@@ -97,7 +97,7 @@ namespace MachineJob.Service
             {
                 foreach (var value in values)
                 {
-                    _logger.LogInformation(dataReturnDef.MachineId + " " + value.Key + " " + value.Value.DeviceValue);
+                    _logger.LogDebug(dataReturnDef.MachineId + " " + value.Key + " " + value.Value.DeviceValue);
                 }
 
                 /*
@@ -148,7 +148,12 @@ namespace MachineJob.Service
 
                 return ans;
             }
-            return null;
+            else
+            {
+                _logger.LogError(dataReturnDef.MachineId + " Return Error.");
+                return null;
+            }
+            
         }
     }
 }
