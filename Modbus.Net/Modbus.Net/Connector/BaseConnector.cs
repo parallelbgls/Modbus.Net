@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Threading.Tasks;
 
 namespace Modbus.Net
@@ -15,17 +16,9 @@ namespace Modbus.Net
     public abstract class BaseConnector<TParamIn, TParamOut> : IConnectorWithController<TParamIn, TParamOut> where TParamIn : class
     {
         /// <summary>
-        ///     数据返回代理参数
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public delegate MessageReturnCallbackArgs<TParamIn> MessageReturnDelegate(object sender, MessageReturnArgs<TParamOut> args);
-
-        /// <summary>
         ///     数据返回代理
         /// </summary>
-        public event MessageReturnDelegate MessageReturn;
+        public Func<MessageReturnArgs<TParamOut>, MessageReturnCallbackArgs<TParamIn>> MessageReturn { get; set; }
 
         /// <inheritdoc />
         public void AddController(IController controller)
@@ -76,7 +69,7 @@ namespace Modbus.Net
         /// <returns></returns>
         protected TParamIn InvokeReturnMessage(TParamOut receiveMessage)
         {
-            return MessageReturn?.Invoke(this, new MessageReturnArgs<TParamOut> { ReturnMessage = receiveMessage })?.SendMessage;
+            return MessageReturn?.Invoke(new MessageReturnArgs<TParamOut> { ReturnMessage = receiveMessage })?.SendMessage;
         }
     }
 }

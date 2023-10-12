@@ -135,15 +135,15 @@ namespace MachineJob.Service
 
                 return values.MapGetValuesToSetValues();
             }
-            else if(dataReturnDef.ReturnValues.IsSuccess == null)
+            else if (dataReturnDef.ReturnValues.IsSuccess == null)
             {
                 Random r = new Random();
 
                 Dictionary<string, double> ans = new Dictionary<string, double>();
 
-                for (int i = 0; i< 10; i++)
+                for (int i = 0; i < 10; i++)
                 {
-                    ans["Test" + (i+1)] = r.Next(65536) - 32768;
+                    ans["Test" + (i + 1)] = r.Next(65536) - 32768;
                 }
 
                 return ans;
@@ -153,7 +153,7 @@ namespace MachineJob.Service
                 _logger.LogError(dataReturnDef.MachineId + " Return Error.");
                 return null;
             }
-            
+
         }
     }
 }

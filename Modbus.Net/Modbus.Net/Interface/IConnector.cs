@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 
 namespace Modbus.Net
@@ -5,8 +6,13 @@ namespace Modbus.Net
     /// <summary>
     ///     基础的协议连接接口
     /// </summary>
-    public interface IConnector<in TParamIn, TParamOut>
+    public interface IConnector<TParamIn, TParamOut>
     {
+        /// <summary>
+        ///     数据返回代理
+        /// </summary>
+        Func<MessageReturnArgs<TParamOut>, MessageReturnCallbackArgs<TParamIn>> MessageReturn { get; set; }
+
         /// <summary>
         ///     标识Connector的连接关键字
         /// </summary>

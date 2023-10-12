@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Quartz.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;

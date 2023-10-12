@@ -49,7 +49,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Modbus.Net.HJ212", "Modbus.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Modbus.Net.CodeGenerator", "Modbus.Net.CodeGenerator\Modbus.Net.CodeGenerator.csproj", "{D3210531-BA79-49B2-9F99-09FD0E1627B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MachineJob.CodeGenerator", "..\Samples\MachineJob.CodeGenerator\MachineJob.CodeGenerator.csproj", "{7337BC9A-ED07-463D-8FCD-A82896CEC6BE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MachineJob.CodeGenerator", "..\Samples\MachineJob.CodeGenerator\MachineJob.CodeGenerator.csproj", "{7337BC9A-ED07-463D-8FCD-A82896CEC6BE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModbusTcpToRtu", "..\Samples\ModbusTcpToRtu\ModbusTcpToRtu.csproj", "{9CA7E35C-B5BC-4743-8732-1D8912AA12D8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleModbusRtuServer", "..\Samples\SampleModbusRtuServer\SampleModbusRtuServer.csproj", "{CB85D4B3-EEA2-431F-A47F-1DE7FB0A4802}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -211,6 +215,22 @@ Global
 		{7337BC9A-ED07-463D-8FCD-A82896CEC6BE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7337BC9A-ED07-463D-8FCD-A82896CEC6BE}.Release|x64.ActiveCfg = Release|Any CPU
 		{7337BC9A-ED07-463D-8FCD-A82896CEC6BE}.Release|x64.Build.0 = Release|Any CPU
+		{9CA7E35C-B5BC-4743-8732-1D8912AA12D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CA7E35C-B5BC-4743-8732-1D8912AA12D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CA7E35C-B5BC-4743-8732-1D8912AA12D8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9CA7E35C-B5BC-4743-8732-1D8912AA12D8}.Debug|x64.Build.0 = Debug|Any CPU
+		{9CA7E35C-B5BC-4743-8732-1D8912AA12D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CA7E35C-B5BC-4743-8732-1D8912AA12D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CA7E35C-B5BC-4743-8732-1D8912AA12D8}.Release|x64.ActiveCfg = Release|Any CPU
+		{9CA7E35C-B5BC-4743-8732-1D8912AA12D8}.Release|x64.Build.0 = Release|Any CPU
+		{CB85D4B3-EEA2-431F-A47F-1DE7FB0A4802}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB85D4B3-EEA2-431F-A47F-1DE7FB0A4802}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB85D4B3-EEA2-431F-A47F-1DE7FB0A4802}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CB85D4B3-EEA2-431F-A47F-1DE7FB0A4802}.Debug|x64.Build.0 = Debug|Any CPU
+		{CB85D4B3-EEA2-431F-A47F-1DE7FB0A4802}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB85D4B3-EEA2-431F-A47F-1DE7FB0A4802}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB85D4B3-EEA2-431F-A47F-1DE7FB0A4802}.Release|x64.ActiveCfg = Release|Any CPU
+		{CB85D4B3-EEA2-431F-A47F-1DE7FB0A4802}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -222,6 +242,8 @@ Global
 		{AA3A42D2-0502-41D3-929A-BAB729DF07D6} = {3597B5C5-45B9-4ECB-92A3-D0FFBE47920A}
 		{414956B8-DBD4-414C-ABD3-565580739646} = {3597B5C5-45B9-4ECB-92A3-D0FFBE47920A}
 		{7337BC9A-ED07-463D-8FCD-A82896CEC6BE} = {3597B5C5-45B9-4ECB-92A3-D0FFBE47920A}
+		{9CA7E35C-B5BC-4743-8732-1D8912AA12D8} = {3597B5C5-45B9-4ECB-92A3-D0FFBE47920A}
+		{CB85D4B3-EEA2-431F-A47F-1DE7FB0A4802} = {3597B5C5-45B9-4ECB-92A3-D0FFBE47920A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AF00D64E-3C70-474A-8A81-E9E48017C4B5}

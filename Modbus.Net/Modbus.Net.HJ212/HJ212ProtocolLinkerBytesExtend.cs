@@ -25,7 +25,7 @@ namespace Modbus.Net.HJ212
             Array.Copy(lengthCalc, 0, newFormat, 0, 6);
             //Modbus/Rtu协议扩张，增加CRC校验
             var crc = new byte[2];
-            Crc16.GetInstance().GetCRC(content, ref crc);            
+            Crc16.GetInstance().GetCRC(content, ref crc);
             string crcString = BitConverter.ToString(crc).Replace("-", string.Empty);
             crcString = "&&" + crcString;
             var crcCalc = Encoding.ASCII.GetBytes(crcString);

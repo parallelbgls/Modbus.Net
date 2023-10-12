@@ -292,12 +292,13 @@ namespace Modbus.Net.Modbus
                 var outputStruct = await
                     Wrapper.SendReceiveAsync<WriteDataModbusOutputStruct>(Wrapper[typeof(WriteDataModbusProtocol)],
                         inputStruct);
+                var ans = outputStruct?.WriteCount * 2 == BigEndianLsbValueHelper.Instance.ObjectArrayToByteArray(setContents).Length;
                 return new ReturnStruct<bool>()
                 {
-                    Datas = outputStruct?.WriteCount == setContents.Length,
-                    IsSuccess = outputStruct?.WriteCount == setContents.Length,
-                    ErrorCode = outputStruct?.WriteCount == setContents.Length ? 0 : -2,
-                    ErrorMsg = outputStruct?.WriteCount == setContents.Length ? "" : "Data length mismatch"
+                    Datas = ans,
+                    IsSuccess = ans,
+                    ErrorCode = ans ? 0 : -2,
+                    ErrorMsg = ans ? "" : "Data length mismatch"
                 };
             }
             catch (ModbusProtocolErrorException e)

@@ -3,7 +3,7 @@
     /// <summary>
     ///     基础的协议连接接口
     /// </summary>
-    public interface IConnectorWithController<in TParamIn, TParamOut> : IConnector<TParamIn, TParamOut>
+    public interface IConnectorWithController<TParamIn, TParamOut> : IConnector<TParamIn, TParamOut>
     {
         /// <summary>
         ///     增加传输控制器

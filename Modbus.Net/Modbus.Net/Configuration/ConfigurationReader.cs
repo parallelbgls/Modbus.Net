@@ -41,6 +41,20 @@ namespace Modbus.Net
             return ans;
         }
 
+        public static ContentType? GetContent<ContentType>(string path, string key) where ContentType : class
+        {
+            var root = configuration.GetSection("Modbus.Net");
+            var firstColon = path.IndexOf(":");
+            while (firstColon != -1)
+            {
+                root = root?.GetSection(path.Substring(0, firstColon));
+                path = path.Substring(firstColon + 1);
+                firstColon = path.IndexOf(":");
+            }
+            root = root?.GetSection(path);
+            return root?.GetSection(key).Get<ContentType>();
+        }
+
         /// <summary>
         ///     根据路径，直接查找路径上是否有该元素
         /// </summary>

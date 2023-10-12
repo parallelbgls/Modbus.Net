@@ -278,7 +278,7 @@ namespace Modbus.Net
             }
             // Release unmanaged resources
             Controller?.SendStop();
-            ReceiveMsgThreadStop();           
+            ReceiveMsgThreadStop();
             Linkers?.Remove((_slave, _com));
             logger.LogInformation("Com connector {ConnectionToken} Removed", _com);
             if (Linkers?.Count(p => p.Item2 == _com) == 0)
@@ -288,12 +288,12 @@ namespace Modbus.Net
                     SerialPort?.Close();
                 }
                 SerialPort?.Dispose();
-                logger.LogInformation("Com interface {Com} Disposed", _com);                
+                logger.LogInformation("Com interface {Com} Disposed", _com);
                 if (Connectors.ContainsKey(_com))
                 {
                     Connectors[_com] = null;
                     Connectors.Remove(_com);
-                }               
+                }
             }
         }
 
@@ -500,7 +500,7 @@ namespace Modbus.Net
             if (_receiveThread == null)
             {
                 _receiveThreadCancel = new CancellationTokenSource();
-                _receiveThread = Task.Run(async ()=>await ReceiveMessage(_receiveThreadCancel.Token), _receiveThreadCancel.Token);
+                _receiveThread = Task.Run(async () => await ReceiveMessage(_receiveThreadCancel.Token), _receiveThreadCancel.Token);
                 try
                 {
                     await _receiveThread;

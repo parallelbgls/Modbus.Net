@@ -169,4 +169,9 @@ namespace Modbus.Net.Modbus
             return newContent.ToArray();
         }
     }
+
+    public class ModbusRtuProtocolReceiverBytesExtend : ModbusRtuProtocolLinkerBytesExtend
+    {
+
+    }
 }

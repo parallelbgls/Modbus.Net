@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -27,7 +26,7 @@ namespace Modbus.Net.HJ212
             else
             {
                 ProtocolLinker = new HJ212ProtocolLinker(ip, int.Parse(ConfigurationReader.GetValueDirect("TCP:" + ip, "HJ212Port") ?? ConfigurationReader.GetValueDirect("TCP:Modbus", "HJ212Port") ?? "443"));
-            }  
+            }
         }
 
         /// <summary>

@@ -1,4 +1,3 @@
-using Quartz.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -106,8 +105,8 @@ namespace Modbus.Net
                 finally
                 {
                     _sendingThreadCancel.Dispose();
-                    _sendingThreadCancel = null;                    
-                }               
+                    _sendingThreadCancel = null;
+                }
             }
         }
 
