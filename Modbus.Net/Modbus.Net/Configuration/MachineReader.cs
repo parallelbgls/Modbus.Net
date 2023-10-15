@@ -116,7 +116,7 @@ namespace Modbus.Net
         }
     }
 
-    internal class AddressReader<TUnitKey, TAddressKey, TSubAddressKey> where TUnitKey : IEquatable<TUnitKey> where TAddressKey : IEquatable<TAddressKey> where TSubAddressKey : IEquatable<TSubAddressKey>
+    public class AddressReader<TUnitKey, TAddressKey, TSubAddressKey> where TUnitKey : IEquatable<TUnitKey> where TAddressKey : IEquatable<TAddressKey> where TSubAddressKey : IEquatable<TSubAddressKey>
     {
         private static readonly IConfigurationRoot configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
