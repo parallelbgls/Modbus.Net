@@ -7,6 +7,16 @@
     <UserSecretsId>dotnet-ModbusTcpToRtu-b7b7d9ed-80ce-4790-86de-5c3cf21e0a2e</UserSecretsId>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="service.bat" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="service.bat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="7.0.1" />
