@@ -46,8 +46,12 @@ namespace Modbus.Net
                 var decBytes = BytesDecact(content);
                 var explainContent = DataExplain(decBytes);
                 var returnBytes = DataProcess(explainContent);
-                var extBytes = BytesExtend(returnBytes);
-                return extBytes;
+                if (returnBytes != null)
+                {
+                    var extBytes = BytesExtend(returnBytes);
+                    return extBytes;
+                }
+                return null;
             }
             else
             {

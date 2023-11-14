@@ -32,7 +32,7 @@ namespace Modbus.Net.Modbus
                     }
                     else if (receiveBytes.Length == 6)
                     {
-                        if (receiveBytes[1] == 1 || receiveBytes[1] == 2)
+                        if (receiveBytes[1] == 1 || receiveBytes[1] == 3)
                         {
                             writeContent = null;
                             return new ReceiveDataDef()

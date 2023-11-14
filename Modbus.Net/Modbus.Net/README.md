@@ -61,7 +61,7 @@ Manage several types of Protocol to a same calling interface.
 
 ### Machine
 
-Shows the Hardware PLC or other types of machine and implement a high level send and receive api.
+Shows the Hardware DCS or other types of machine and implement a high level send and receive api.
 
 ### Job
 
