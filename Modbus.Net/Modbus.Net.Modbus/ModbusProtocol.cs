@@ -146,17 +146,18 @@ namespace Modbus.Net.Modbus
         /// </summary>
         /// <param name="slaveAddress">从站地址</param>
         /// <param name="startAddress">开始地址</param>
-        /// <param name="getCount">读取个数</param>
+        /// <param name="getByteCount">读取字节个数</param>
+        /// <param name="getOriginalCount">读取原始个数</param>
         /// <param name="addressTranslator">地址翻译器</param>
-        public ReadDataModbusInputStruct(byte slaveAddress, string startAddress, ushort getCount,
-            AddressTranslator addressTranslator)
+        public ReadDataModbusInputStruct(byte slaveAddress, string startAddress, ushort getByteCount,
+            AddressTranslator addressTranslator, ushort getOriginalCount = 0)
         {
             SlaveAddress = slaveAddress;
             var translateAddress = addressTranslator.AddressTranslate(startAddress, true);
             FunctionCode = (byte)translateAddress.Area;
             StartAddress = (ushort)translateAddress.Address;
-            GetCount =
-                (ushort)Math.Ceiling(getCount / addressTranslator.GetAreaByteLength(translateAddress.AreaString));
+            GetCount = translateAddress.AreaString == "0X" || translateAddress.AreaString == "1X" ? getOriginalCount :
+                (ushort)Math.Ceiling(getByteCount / addressTranslator.GetAreaByteLength(translateAddress.AreaString));
         }
 
         /// <summary>
@@ -273,8 +274,9 @@ namespace Modbus.Net.Modbus
         /// <param name="writeValue">写入的数据</param>
         /// <param name="addressTranslator">地址翻译器</param>
         /// <param name="endian">端格式</param>
+        /// <param name="setOriginalCount">设置原始长度</param>
         public WriteDataModbusInputStruct(byte slaveAddress, string startAddress, object[] writeValue,
-            AddressTranslator addressTranslator, Endian endian)
+            AddressTranslator addressTranslator, Endian endian, ushort setOriginalCount = 0)
         {
             SlaveAddress = slaveAddress;
             var translateAddress = addressTranslator.AddressTranslate(startAddress, false);
@@ -282,7 +284,7 @@ namespace Modbus.Net.Modbus
             StartAddress = (ushort)translateAddress.Address;
             var writeByteValue = ValueHelper.GetInstance(endian).ObjectArrayToByteArray(writeValue);
             if (writeByteValue.Length % 2 == 1) writeByteValue = writeByteValue.ToList().Append<byte>(0).ToArray();
-            WriteCount =
+            WriteCount = translateAddress.AreaString == "0X" || translateAddress.AreaString == "1X" ? setOriginalCount :
                 (ushort)(writeByteValue.Length / addressTranslator.GetAreaByteLength(translateAddress.AreaString));
             WriteByteCount = (byte)writeByteValue.Length;
             WriteValue = writeByteValue;

@@ -84,7 +84,7 @@ namespace TripleAdd.Controllers
         public async Task<ActionResult> SetUtility(TripleAddViewModel model)
         {
             ushort add1 = model.Add1, add2 = model.Add2, add3 = model.Add3;
-            await utility!.SetDatasAsync("4X 1", new object[] { add1, add2, add3 });
+            await utility!.SetDatasAsync("4X 1", new object[] { add1, add2, add3 }, 3);
             return RedirectToAction("Utility");
         }
 

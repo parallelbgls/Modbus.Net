@@ -252,12 +252,12 @@ namespace Modbus.Net.Modbus
         }
 
         /// <inheritdoc />
-        public override async Task<ReturnStruct<byte[]>> GetDatasAsync(string startAddress, int getByteCount)
+        public override async Task<ReturnStruct<byte[]>> GetDatasAsync(string startAddress, int getByteCount, int getOriginalCount)
         {
             try
             {
                 var inputStruct = new ReadDataModbusInputStruct(SlaveAddress, startAddress,
-                    (ushort)getByteCount, AddressTranslator);
+                    (ushort)getByteCount, AddressTranslator, (ushort)getOriginalCount);
                 var outputStruct = await
                     Wrapper.SendReceiveAsync<ReadDataModbusOutputStruct>(Wrapper[typeof(ReadDataModbusProtocol)],
                         inputStruct);
@@ -283,12 +283,12 @@ namespace Modbus.Net.Modbus
         }
 
         /// <inheritdoc />
-        public override async Task<ReturnStruct<bool>> SetDatasAsync(string startAddress, object[] setContents)
+        public override async Task<ReturnStruct<bool>> SetDatasAsync(string startAddress, object[] setContents, int setOriginalCount)
         {
             try
             {
                 var inputStruct = new WriteDataModbusInputStruct(SlaveAddress, startAddress, setContents,
-                    AddressTranslator, Endian);
+                    AddressTranslator, Endian, (ushort)setOriginalCount);
                 var outputStruct = await
                     Wrapper.SendReceiveAsync<WriteDataModbusOutputStruct>(Wrapper[typeof(WriteDataModbusProtocol)],
                         inputStruct);

@@ -96,7 +96,8 @@ namespace Modbus.Net
                                 (int)
                                 Math.Ceiling(communicateAddress.GetCount *
                                              ValueHelper.ByteLength[
-                                                 communicateAddress.DataType.FullName]));
+                                                 communicateAddress.DataType.FullName]),
+                                communicateAddress.GetOriginalCount);
 
                     //如果已知没有返回，终止
                     if (datas.IsSuccess == null)
@@ -340,7 +341,8 @@ namespace Modbus.Net
                             (int)
                             Math.Ceiling(communicateAddress.GetCount *
                                          ValueHelper.ByteLength[
-                                             communicateAddress.DataType.FullName]));
+                                             communicateAddress.DataType.FullName]),
+                            communicateAddress.GetOriginalCount);
 
                     var valueHelper = ValueHelper.GetInstance(BaseUtility.Endian);
                     //如果设备本身能获取到数据但是没有数据
@@ -457,7 +459,7 @@ namespace Modbus.Net
                     await
                         BaseUtility.GetUtilityMethods<IUtilityMethodDatas>().SetDatasAsync(addressStart,
                             valueHelper.ByteArrayToObjectArray(datas.Datas,
-                                new KeyValuePair<Type, int>(communicateAddress.DataType, communicateAddress.GetCount)));
+                                new KeyValuePair<Type, int>(communicateAddress.DataType, communicateAddress.GetCount)), communicateAddress.GetOriginalCount);
                 }
                 //如果不保持连接，断开连接
                 if (!KeepConnect)
@@ -634,6 +636,9 @@ namespace Modbus.Net
                             BaseUtility.GetUtilityMethods<IUtilityMethodDatas>().GetDatasAsync(
                                 AddressFormater.FormatAddress(address.Area, address.Address,
                                     address.SubAddress),
+                                (int)
+                                Math.Ceiling(ValueHelper.ByteLength[
+                                                 address.DataType.FullName]),
                                 (int)
                                 Math.Ceiling(ValueHelper.ByteLength[
                                                  address.DataType.FullName]));
@@ -894,7 +899,7 @@ namespace Modbus.Net
                     //写入数据
                     await
                         BaseUtility.GetUtilityMethods<IUtilityMethodDatas>().SetDatasAsync(address,
-                            new object[] { data });
+                            new object[] { data } , 1);
                 }
                 //如果不保持连接，断开连接
                 if (!KeepConnect)
@@ -1023,6 +1028,11 @@ namespace Modbus.Net
         ///     获取个数
         /// </summary>
         public int GetCount { get; set; }
+
+        /// <summary>
+        ///     获取原始个数
+        /// </summary>
+        public int GetOriginalCount { get; set; }
 
         /// <summary>
         ///     数据类型

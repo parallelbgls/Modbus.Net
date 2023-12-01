@@ -26,9 +26,9 @@ namespace Modbus.Net.Tests
         {
             BaseMachine<int, int> baseMachine = new ModbusMachine<int, int>(1, ModbusType.Tcp, _machineIp, null, true, 2, 0, Endian.BigEndianLsb);
             await baseMachine.BaseUtility.ConnectAsync();
-            var success = await baseMachine.BaseUtility.GetUtilityMethods<IUtilityMethodDatas>().SetDatasAsync("4X 1", new object[] { (byte)11 });
+            var success = await baseMachine.BaseUtility.GetUtilityMethods<IUtilityMethodDatas>().SetDatasAsync("4X 1", new object[] { (byte)11 }, 1);
             Assert.AreEqual(success.IsSuccess, true);
-            var datas = await baseMachine.BaseUtility.GetUtilityMethods<IUtilityMethodDatas>().GetDatasAsync("4X 1", 1);
+            var datas = await baseMachine.BaseUtility.GetUtilityMethods<IUtilityMethodDatas>().GetDatasAsync("4X 1", 1, 1);
             Assert.AreEqual(datas.Datas[0], 11);
             baseMachine.Disconnect();
         }

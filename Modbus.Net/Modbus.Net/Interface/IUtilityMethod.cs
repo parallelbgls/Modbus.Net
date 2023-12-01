@@ -21,8 +21,9 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="startAddress">开始地址</param>
         /// <param name="getByteCount">获取字节数个数</param>
+        /// <param name="getOriginalCount">获取原始个数</param>
         /// <returns>接收到的byte数据</returns>
-        Task<ReturnStruct<byte[]>> GetDatasAsync(string startAddress, int getByteCount);
+        Task<ReturnStruct<byte[]>> GetDatasAsync(string startAddress, int getByteCount, int getOriginalCount);
 
         /// <summary>
         ///     获取数据
@@ -53,7 +54,8 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="startAddress">开始地址</param>
         /// <param name="setContents">设置数据</param>
+        /// <param name="setOriginalCount">设置原始长度</param>
         /// <returns>是否设置成功</returns>
-        Task<ReturnStruct<bool>> SetDatasAsync(string startAddress, object[] setContents);
+        Task<ReturnStruct<bool>> SetDatasAsync(string startAddress, object[] setContents, int setOriginalCount);
     }
 }

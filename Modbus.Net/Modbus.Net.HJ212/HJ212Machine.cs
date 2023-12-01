@@ -68,7 +68,7 @@ namespace Modbus.Net.HJ212
                 var sendValues = new List<Dictionary<string, string>>() { formatValues };
                 //写入数据
                 await
-                    BaseUtility.GetUtilityMethods<IUtilityMethodDatas>().SetDatasAsync("0", new object[] { ST, CN, PW, MN, sendValues, DateTime.Now });
+                    BaseUtility.GetUtilityMethods<IUtilityMethodDatas>().SetDatasAsync("0", new object[] { ST, CN, PW, MN, sendValues, DateTime.Now }, 0);
 
                 //如果不保持连接，断开连接
                 if (!KeepConnect)

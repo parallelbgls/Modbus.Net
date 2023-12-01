@@ -19,8 +19,6 @@ The real Modbus Implementation has been moved to [Modbus.Net.Modbus]( https://ww
 
 There is also [Modbus.Net.Siemens]( https://www.nuget.org/packages/Modbus.Net.Siemens) that can communicate with Siemens S7-200, S7-200 Smart, S7-300, S7-400, S7-1200 and S7-1500 using PPI or TCP/IP.
 
-[Modbus.Net.Opc]( https://www.nuget.org/packages/Modbus.Net.Opc) Implements OPC DA and OPC UA protocol.
-
 Supported Platforms
 -------------------
 * Visual Studio 2022
@@ -31,4 +29,3 @@ Thanks
 * Quartz - Job Scheduler
 * Serilog - Logging
 * DotNetty - Network Transporting
-* h-opc & Technosoftware.DaAeHdaSolution & OPCFoundation.NetStandard - OPC Trasporting

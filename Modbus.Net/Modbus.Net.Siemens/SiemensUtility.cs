@@ -237,8 +237,9 @@ namespace Modbus.Net.Siemens
         /// </summary>
         /// <param name="startAddress">开始地址</param>
         /// <param name="getByteCount">读取字节个数</param>
+        /// <param name="getOriginalCount">读取原始个数</param>
         /// <returns>从设备中读取的数据</returns>
-        public override async Task<ReturnStruct<byte[]>> GetDatasAsync(string startAddress, int getByteCount)
+        public override async Task<ReturnStruct<byte[]>> GetDatasAsync(string startAddress, int getByteCount, int getOriginalCount)
         {
             try
             {
@@ -291,8 +292,9 @@ namespace Modbus.Net.Siemens
         /// </summary>
         /// <param name="startAddress">开始地址</param>
         /// <param name="setContents">需要写入的数据</param>
+        /// <param name="setOriginalCount">写入数据的原始长度</param>
         /// <returns>写入是否成功</returns>
-        public override async Task<ReturnStruct<bool>> SetDatasAsync(string startAddress, object[] setContents)
+        public override async Task<ReturnStruct<bool>> SetDatasAsync(string startAddress, object[] setContents, int setOriginalCount)
         {
             try
             {

@@ -17,7 +17,7 @@ namespace Modbus.Net.HJ212
 
         public override Endian Endian => throw new NotImplementedException();
 
-        public override Task<ReturnStruct<byte[]>> GetDatasAsync(string startAddress, int getByteCount)
+        public override Task<ReturnStruct<byte[]>> GetDatasAsync(string startAddress, int getByteCount, int getOriginalCount)
         {
             throw new NotImplementedException();
         }
@@ -27,7 +27,7 @@ namespace Modbus.Net.HJ212
             throw new NotImplementedException();
         }
 
-        public override async Task<ReturnStruct<bool>> SetDatasAsync(string startAddress, object[] setContents)
+        public override async Task<ReturnStruct<bool>> SetDatasAsync(string startAddress, object[] setContents, int setOriginalCount)
         {
             try
             {

@@ -50,8 +50,9 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="startAddress">开始地址</param>
         /// <param name="getByteCount">获取字节数个数</param>
+        /// <param name="getOriginalCount">获取原始个数</param>
         /// <returns>接收到的byte数据</returns>
-        public abstract Task<ReturnStruct<byte[]>> GetDatasAsync(string startAddress, int getByteCount);
+        public abstract Task<ReturnStruct<byte[]>> GetDatasAsync(string startAddress, int getByteCount, int getOriginalCount);
 
         /// <summary>
         ///     获取数据
@@ -67,7 +68,7 @@ namespace Modbus.Net
                 var typeName = getTypeAndCount.Key.FullName;
                 var bCount = ValueHelper.ByteLength[typeName];
                 var getReturnValue = await GetDatasAsync(startAddress,
-                    (int)Math.Ceiling(bCount * getTypeAndCount.Value));
+                    (int)Math.Ceiling(bCount * getTypeAndCount.Value), getTypeAndCount.Value);
                 var getBytes = getReturnValue;
                 if (getBytes.IsSuccess == false || getBytes.Datas == null)
                 {
@@ -105,15 +106,15 @@ namespace Modbus.Net
         /// </summary>
         /// <typeparam name="T">需要接收的类型</typeparam>
         /// <param name="startAddress">开始地址</param>
-        /// <param name="getByteCount">获取字节数个数</param>
+        /// <param name="getCount">获取个数</param>
         /// <returns>接收到的对应的类型和数据</returns>
         public virtual async Task<ReturnStruct<T[]>> GetDatasAsync<T>(string startAddress,
-            int getByteCount)
+            int getCount)
         {
             try
             {
                 var getBytes = await GetDatasAsync(startAddress,
-                    new KeyValuePair<Type, int>(typeof(T), getByteCount));
+                    new KeyValuePair<Type, int>(typeof(T), getCount));
                 if (getBytes.IsSuccess == false || getBytes.Datas == null)
                 {
                     return new ReturnStruct<T[]>
@@ -162,7 +163,7 @@ namespace Modbus.Net
                     let typeName = getTypeAndCount.Key.FullName
                     let bCount = ValueHelper.ByteLength[typeName]
                     select (int)Math.Ceiling(bCount * getTypeAndCount.Value)).Sum();
-                var getReturnValue = await GetDatasAsync(startAddress, bAllCount);
+                var getReturnValue = await GetDatasAsync(startAddress, bAllCount, bAllCount);
                 var getBytes = getReturnValue;
                 if (getBytes.IsSuccess == false || getBytes.Datas == null)
                 {
@@ -200,8 +201,9 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="startAddress">开始地址</param>
         /// <param name="setContents">设置数据</param>
+        /// <param name="setOriginalCount">设置原始长度</param>
         /// <returns>是否设置成功</returns>
-        public abstract Task<ReturnStruct<bool>> SetDatasAsync(string startAddress, object[] setContents);
+        public abstract Task<ReturnStruct<bool>> SetDatasAsync(string startAddress, object[] setContents, int setOriginalCount);
 
         /// <summary>
         ///     协议是否遵循小端格式

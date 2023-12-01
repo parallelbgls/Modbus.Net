@@ -125,6 +125,7 @@ namespace Modbus.Net
                                             preNum - (int)Math.Floor(initNum),
                                             AddressTranslator.GetAreaByteLength(address.Area),
                                             ValueHelper.ByteLength[preType.FullName])),
+                                GetOriginalCount = groupedAddress.Count(),
                                 DataType = typeof(byte),
                                 OriginalAddresses = originalAddresses.ToList()
                             });
@@ -154,6 +155,7 @@ namespace Modbus.Net
                             AddressHelper.MapProtocolGetCountToAbstractByteCount(
                                 preNum - (int)Math.Floor(initNum), AddressTranslator.GetAreaByteLength(area),
                                 ValueHelper.ByteLength[preType.FullName])),
+                    GetOriginalCount = groupedAddress.Count(),
                     DataType = typeof(byte),
                     OriginalAddresses = originalAddresses.ToList()
                 });
@@ -200,6 +202,7 @@ namespace Modbus.Net
                             (int)
                             Math.Ceiling(newByteCount /
                                          ValueHelper.ByteLength[communicationUnit.DataType.FullName]),
+                        GetOriginalCount = newOriginalAddresses.Count,
                         OriginalAddresses = newOriginalAddresses
                     };
 
@@ -215,6 +218,7 @@ namespace Modbus.Net
                     (int)
                     Math.Ceiling(oldByteCount /
                                  ValueHelper.ByteLength[communicationUnit.DataType.FullName]);
+                communicationUnit.GetOriginalCount = oldOriginalAddresses.Count;
                 communicationUnit.OriginalAddresses = oldOriginalAddresses;
                 newAns.Add(communicationUnit);
             }
@@ -244,6 +248,7 @@ namespace Modbus.Net
                             SubAddress = address.SubAddress,
                             DataType = address.DataType,
                             GetCount = 1,
+                            GetOriginalCount = 1,
                             OriginalAddresses = new List<AddressUnit<TKey, TAddressKey, TSubAddressKey>> { address }
                         }).ToList();
         }
@@ -345,6 +350,7 @@ namespace Modbus.Net
                         orderedGap.GapNumber +
                         (int)
                         (nowAddress.GetCount * ValueHelper.ByteLength[nowAddress.DataType.FullName]),
+                    GetOriginalCount = preAddress.GetOriginalCount + nowAddress.GetOriginalCount + orderedGap.GapNumber,
                     DataType = typeof(byte),
                     OriginalAddresses = preAddress.OriginalAddresses.ToList().Union(nowAddress.OriginalAddresses)
                 };

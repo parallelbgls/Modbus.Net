@@ -127,10 +127,10 @@ namespace ModbusTcpToRtu
                 await writeUtility.ConnectAsync();
             foreach (var rwGroup in utilityReadWriteGroup)
             {
-                var datas = await readUtility.GetDatasAsync(rwGroup.ReadStart / 10000 + "X " + rwGroup.ReadStart % 10000, rwGroup.ReadCount * 2);
+                var datas = await readUtility.GetDatasAsync(rwGroup.ReadStart / 10000 + "X " + rwGroup.ReadStart % 10000, rwGroup.ReadCount * 2, rwGroup.ReadCount);
                 if (datas.IsSuccess == true)
                 {
-                    var ans = await writeUtility.SetDatasAsync(rwGroup.WriteStart / 10000 + "X " + rwGroup.WriteStart % 10000, ByteArrayToObjectArray(datas.Datas));
+                    var ans = await writeUtility.SetDatasAsync(rwGroup.WriteStart / 10000 + "X " + rwGroup.WriteStart % 10000, ByteArrayToObjectArray(datas.Datas), rwGroup.ReadCount);
                     if (ans.Datas)
                     {
                         Console.WriteLine("success");
