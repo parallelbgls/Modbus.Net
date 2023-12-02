@@ -49,5 +49,23 @@ namespace Modbus.Net
             pos += 4;
             return t;
         }
+
+        public override double GetDouble(byte[] data, ref int pos)
+        {
+            Array.Reverse(data, pos, 8);
+            byte temp;
+            temp = data[pos]; data[pos] = data[pos + 6]; data[pos + 6] = temp;
+            temp = data[pos + 1]; data[pos + 1] = data[pos + 7]; data[pos + 7] = temp;
+            temp = data[pos + 2]; data[pos + 2] = data[pos + 4]; data[pos + 4] = temp;
+            temp = data[pos + 3]; data[pos + 3] = data[pos + 5]; data[pos + 5] = temp;
+            var t = BitConverter.ToDouble(data, pos);
+            temp = data[pos]; data[pos] = data[pos + 6]; data[pos + 6] = temp;
+            temp = data[pos + 1]; data[pos + 1] = data[pos + 7]; data[pos + 7] = temp;
+            temp = data[pos + 2]; data[pos + 2] = data[pos + 4]; data[pos + 4] = temp;
+            temp = data[pos + 3]; data[pos + 3] = data[pos + 5]; data[pos + 5] = temp;
+            Array.Reverse(data, pos, 8);
+            pos += 8;
+            return t;
+        }
     }
 }
