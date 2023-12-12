@@ -166,35 +166,30 @@ namespace Modbus.Net
 
         public override int GetInt(byte[] data, ref int pos)
         {
-            Array.Reverse(data, pos, 4);
             byte temp;
             temp = data[pos]; data[pos] = data[pos + 2]; data[pos + 2] = temp;
             temp = data[pos + 1]; data[pos + 1] = data[pos + 3]; data[pos + 3] = temp;
             var t = BitConverter.ToInt32(data, pos);
             temp = data[pos]; data[pos] = data[pos + 2]; data[pos + 2] = temp;
             temp = data[pos + 1]; data[pos + 1] = data[pos + 3]; data[pos + 3] = temp;
-            Array.Reverse(data, pos, 4);
             pos += 4;
             return t;
         }
 
         public override uint GetUInt(byte[] data, ref int pos)
         {
-            Array.Reverse(data, pos, 4);
             byte temp;
             temp = data[pos]; data[pos] = data[pos + 2]; data[pos + 2] = temp;
             temp = data[pos + 1]; data[pos + 1] = data[pos + 3]; data[pos + 3] = temp;
             var t = BitConverter.ToUInt32(data, pos);
             temp = data[pos]; data[pos] = data[pos + 2]; data[pos + 2] = temp;
             temp = data[pos + 1]; data[pos + 1] = data[pos + 3]; data[pos + 3] = temp;
-            Array.Reverse(data, pos, 4);
             pos += 4;
             return t;
         }
 
         public override long GetLong(byte[] data, ref int pos)
         {
-            Array.Reverse(data, pos, 8);
             byte temp;
             temp = data[pos]; data[pos] = data[pos + 6]; data[pos + 6] = temp;
             temp = data[pos + 1]; data[pos + 1] = data[pos + 7]; data[pos + 7] = temp;
@@ -205,14 +200,12 @@ namespace Modbus.Net
             temp = data[pos + 1]; data[pos + 1] = data[pos + 7]; data[pos + 7] = temp;
             temp = data[pos + 2]; data[pos + 2] = data[pos + 4]; data[pos + 4] = temp;
             temp = data[pos + 3]; data[pos + 3] = data[pos + 5]; data[pos + 5] = temp;
-            Array.Reverse(data, pos, 8);
             pos += 8;
             return t;
         }
 
         public override ulong GetULong(byte[] data, ref int pos)
         {
-            Array.Reverse(data, pos, 8);
             byte temp;
             temp = data[pos]; data[pos] = data[pos + 6]; data[pos + 6] = temp;
             temp = data[pos + 1]; data[pos + 1] = data[pos + 7]; data[pos + 7] = temp;
@@ -223,28 +216,24 @@ namespace Modbus.Net
             temp = data[pos + 1]; data[pos + 1] = data[pos + 7]; data[pos + 7] = temp;
             temp = data[pos + 2]; data[pos + 2] = data[pos + 4]; data[pos + 4] = temp;
             temp = data[pos + 3]; data[pos + 3] = data[pos + 5]; data[pos + 5] = temp;
-            Array.Reverse(data, pos, 8);
             pos += 8;
             return t;
         }
 
         public override float GetFloat(byte[] data, ref int pos)
         {
-            Array.Reverse(data, pos, 4);
             byte temp;
             temp = data[pos]; data[pos] = data[pos + 2]; data[pos + 2] = temp;
             temp = data[pos + 1]; data[pos + 1] = data[pos + 3]; data[pos + 3] = temp;
             var t = BitConverter.ToSingle(data, pos);
             temp = data[pos]; data[pos] = data[pos + 2]; data[pos + 2] = temp;
             temp = data[pos + 1]; data[pos + 1] = data[pos + 3]; data[pos + 3] = temp;
-            Array.Reverse(data, pos, 4);
             pos += 4;
             return t;
         }
 
         public override double GetDouble(byte[] data, ref int pos)
         {
-            Array.Reverse(data, pos, 8);
             byte temp;
             temp = data[pos]; data[pos] = data[pos + 6]; data[pos + 6] = temp;
             temp = data[pos + 1]; data[pos + 1] = data[pos + 7]; data[pos + 7] = temp;
@@ -255,7 +244,6 @@ namespace Modbus.Net
             temp = data[pos + 1]; data[pos + 1] = data[pos + 7]; data[pos + 7] = temp;
             temp = data[pos + 2]; data[pos + 2] = data[pos + 4]; data[pos + 4] = temp;
             temp = data[pos + 3]; data[pos + 3] = data[pos + 5]; data[pos + 5] = temp;
-            Array.Reverse(data, pos, 8);
             pos += 8;
             return t;
         }
