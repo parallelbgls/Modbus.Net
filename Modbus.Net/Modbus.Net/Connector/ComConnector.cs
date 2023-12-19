@@ -212,7 +212,7 @@ namespace Modbus.Net
         /// <returns>串口实际读入数据个数 </returns>
         public int ReadComm(out byte[] readBuf, int bufRoom, int howTime, int byteTime)
         {
-            readBuf = new byte[1023];
+            readBuf = new byte[10230];
             Array.Clear(readBuf, 0, readBuf.Length);
 
             if (SerialPort.IsOpen == false)
