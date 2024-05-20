@@ -118,7 +118,8 @@ namespace Modbus.Net
                             pipeline.AddLast("handler", this);
                         }));
 
-                    Channel = await bootstrap.ConnectAsync(new IPEndPoint(IPAddress.Parse(_host), _port));
+                    var isIp = IPAddress.TryParse(_host, out _);
+                    Channel = await bootstrap.ConnectAsync(isIp ? new IPEndPoint(IPAddress.Parse(_host), _port) : new DnsEndPoint(_host, _port));
 
                     if (Channel.Open)
                     {

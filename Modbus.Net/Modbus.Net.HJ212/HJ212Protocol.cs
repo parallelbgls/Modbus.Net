@@ -59,8 +59,9 @@ namespace Modbus.Net.HJ212
             formatMessage += "CN=" + r_message.CN + ";";
             formatMessage += "PW=" + r_message.PW + ";";
             formatMessage += "MN=" + r_message.MN + ";";
+            formatMessage += "Flag=5;";
             formatMessage += "CP=&&";
-            formatMessage += "DateTime=" + r_message.Datetime.ToString("yyyyMMddHHmmss") + ";";
+            formatMessage += "DataTime=" + r_message.Datatime + ";";
             foreach (var record in r_message.CP)
             {
                 foreach (var data in record)
@@ -93,15 +94,16 @@ namespace Modbus.Net.HJ212
     {
         public WriteRequestHJ212InputStruct(string st, string cn, string pw, string mn, List<Dictionary<string, string>> cp, DateTime datetime)
         {
+            QN = datetime.ToString("yyyyMMddHHmmssffff");
             ST = st;
             CN = cn;
             PW = pw;
             MN = mn;
             CP = cp;
-            Datetime = datetime;
+            Datatime = datetime.ToString("yyyyMMddHHmmss");
         }
 
-        public string QN => "20170101000926706";
+        public string QN { get; }
 
         public string ST { get; }
 
@@ -113,7 +115,7 @@ namespace Modbus.Net.HJ212
 
         public List<Dictionary<string, string>> CP { get; }
 
-        public DateTime Datetime { get; }
+        public string Datatime { get; }
     }
 
     /// <summary>

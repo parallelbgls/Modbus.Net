@@ -180,7 +180,8 @@ namespace Modbus.Net
                 logger.LogDebug($"Udp client {ConnectionToken} send: {string.Concat(datagram.Select(p => " " + p.ToString("X2")))}");
                 IByteBuffer buffer = Unpooled.Buffer();
                 buffer.WriteBytes(datagram);
-                var packet = new DatagramPacket((IByteBuffer)buffer.Retain(), new IPEndPoint(IPAddress.Parse(_host), _port));
+                var isIp = IPAddress.TryParse(_host, out _);
+                var packet = new DatagramPacket((IByteBuffer)buffer.Retain(), isIp ? new IPEndPoint(IPAddress.Parse(_host), _port) : new DnsEndPoint(_host, _port));
                 await Channel.WriteAndFlushAsync(packet);
             }
             catch (Exception err)
