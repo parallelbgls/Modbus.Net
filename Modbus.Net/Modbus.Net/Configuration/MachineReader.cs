@@ -30,8 +30,8 @@ namespace Modbus.Net
             var root = configuration.GetSection("Modbus.Net").GetSection(machineSection).GetChildren();
             foreach (var machine in root)
             {
-                List<KeyValuePair<string, string>> kv = new List<KeyValuePair<string, string>>();
-                Dictionary<string, string> dic = new Dictionary<string, string>();
+                var kv = new List<KeyValuePair<string, string>>();
+                var dic = new Dictionary<string, string>();
                 foreach (var paramO in machine.GetChildren())
                 {
                     foreach (var param in paramO.GetChildren())
@@ -48,7 +48,10 @@ namespace Modbus.Net
                     {
                         case "protocol":
                             {
-                                paramsSet.Add(Enum.Parse(Assembly.Load("Modbus.Net." + dic["protocol"]).GetType("Modbus.Net." + dic["protocol"] + "." + dic["protocol"] + "Type"), dic["type"]));
+                                if (dic["type"] != null && dic["type"] != "")
+                                {
+                                    paramsSet.Add(Enum.Parse(Assembly.Load("Modbus.Net." + dic["protocol"]).GetType("Modbus.Net." + dic["protocol"] + "." + dic["protocol"] + "Type"), dic["type"]));
+                                }
                                 break;
                             }
                         case "type":
@@ -84,23 +87,7 @@ namespace Modbus.Net
                         default:
                             {
                                 string value = param.Value;
-                                bool boolValue;
-                                byte byteValue;
-                                if (!bool.TryParse(value, out boolValue))
-                                {
-                                    if (!byte.TryParse(value, out byteValue))
-                                    {
-                                        paramsSet.Add(value);
-                                    }
-                                    else
-                                    {
-                                        paramsSet.Add(byteValue);
-                                    }
-                                }
-                                else
-                                {
-                                    paramsSet.Add(boolValue);
-                                }
+                                paramsSet.Add(value);
                                 break;
                             }
                     }
@@ -109,7 +96,23 @@ namespace Modbus.Net
                 Type machineType = Assembly.Load("Modbus.Net." + dic["protocol"]).GetType("Modbus.Net." + dic["protocol"] + "." + dic["protocol"] + "Machine`2");
                 Type[] typeParams = new Type[] { typeof(string), typeof(string) };
                 Type constructedType = machineType.MakeGenericType(typeParams);
-                IMachine<string> machineInstance = Activator.CreateInstance(constructedType, paramsSet.ToArray()) as IMachine<string>;
+                var constructorParams = constructedType.GetConstructors().First(p => p.GetParameters().Count() == paramsSet.Count()).GetParameters();
+                var constructorParamsEnumerator = constructorParams.GetEnumerator();
+                var paramsSetFinal = new List<object>();
+                foreach(object paramSet in paramsSet)
+                {
+                    var moveNext = constructorParamsEnumerator.MoveNext();
+                    var constructor = constructorParamsEnumerator.Current as ParameterInfo;
+                    if (constructor.ParameterType != typeof(string) && paramSet.GetType() == typeof(string))
+                    {
+                        paramsSetFinal.Add(Convert.ChangeType(paramSet, constructor.ParameterType));
+                    }
+                    else
+                    {
+                        paramsSetFinal.Add(paramSet);
+                    }
+                }
+                IMachine<string> machineInstance = Activator.CreateInstance(constructedType, paramsSetFinal.ToArray()) as IMachine<string>;
                 ans.Add(machineInstance);
             }
             return ans;

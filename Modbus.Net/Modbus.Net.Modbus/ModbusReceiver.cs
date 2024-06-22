@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using AddressUnit = Modbus.Net.AddressUnit<string, int, int>;
 using DataReturnDef = Modbus.Net.DataReturnDef<string, double>;
 
@@ -73,40 +74,6 @@ namespace Modbus.Net.Modbus
                 List<AddressUnit> addressMap = AddressReader<string, int, int>.ReadAddresses(addressMapName).ToList();
                 if (values != null)
                 {
-                    try
-                    {                              
-                        for (int i = 0; i < addressMap.Count; i++)
-                        {
-                            var pos = (addressMap[i].Address - 1) * 2;
-                            var subpos = addressMap[i].SubAddress;
-                            string valueString = null;
-                            if (addressMap[i].Area == "4X")
-                            {
-                                valueString = endian.GetValue(threex, ref pos, ref subpos, addressMap[i].DataType).ToString();
-                            }
-                            else if (addressMap[i].Area == "0X")
-                            {
-                                valueString = zerox[addressMap[i].Address - 1].ToString();
-                            }
-                            if (valueString == "True") valueString = "1";
-                            if (valueString == "False") valueString = "0";
-                            var value = double.Parse(valueString);
-                            value = value * addressMap[i].Zoom;
-                            value = Math.Round(value, addressMap[i].DecimalPos);
-                            AddValueToValueDic(valueDic, returnDic, addressMap[i], value, dataType);
-                            if (ReturnValueDictionary != null)
-                            {
-                                var dataReturn = new DataReturnDef();
-                                dataReturn.MachineId = machineName;
-                                dataReturn.ReturnValues = new ReturnStruct<Dictionary<string, ReturnUnit<double>>>() { IsSuccess = true, Datas = returnDic };
-                                ReturnValueDictionary(dataReturn);
-                            }
-                        }                     
-                    }
-                    catch (Exception ex)
-                    {
-                        //_logger.LogError(ex, "Error");
-                    }
                     switch (receiveContent.FunctionCode)
                     {
                         case (byte)ModbusProtocolFunctionCode.WriteMultiRegister:
@@ -134,7 +101,7 @@ namespace Modbus.Net.Modbus
                                 List<bool> bitList = new List<bool>();
                                 for (int i = 0; i < receiveContent.WriteByteCount; i++)
                                 {
-                                    var bitArray = BigEndianLsbValueHelper.Instance.GetBits(receiveContent.WriteContent, ref pos);
+                                    var bitArray = endian.GetBits(receiveContent.WriteContent, ref pos);
                                     bitList.AddRange(bitArray.ToList());
                                 }
                                 Array.Copy(bitList.ToArray(), 0, zerox, receiveContent.StartAddress, bitList.Count);
@@ -148,6 +115,40 @@ namespace Modbus.Net.Modbus
                                 break;
                             }
                     }
+                    try
+                    {                              
+                        for (int i = 0; i < addressMap.Count; i++)
+                        {
+                            var pos = (addressMap[i].Address - 1) * 2;
+                            var subpos = addressMap[i].SubAddress;
+                            string valueString = null;
+                            if (addressMap[i].Area == "4X")
+                            {
+                                valueString = endian.GetValue(threex, ref pos, ref subpos, addressMap[i].DataType).ToString();
+                            }
+                            else if (addressMap[i].Area == "0X")
+                            {
+                                valueString = zerox[addressMap[i].Address - 1].ToString();
+                            }
+                            if (valueString == "True") valueString = "1";
+                            if (valueString == "False") valueString = "0";
+                            var value = double.Parse(valueString);
+                            value = value * addressMap[i].Zoom;
+                            value = Math.Round(value, addressMap[i].DecimalPos);
+                            AddValueToValueDic(valueDic, returnDic, addressMap[i], value, dataType);
+                        }
+                        if (ReturnValueDictionary != null)
+                        {
+                            var dataReturn = new DataReturnDef();
+                            dataReturn.MachineId = machineName;
+                            dataReturn.ReturnValues = new ReturnStruct<Dictionary<string, ReturnUnit<double>>>() { IsSuccess = true, Datas = returnDic };
+                            ReturnValueDictionary(dataReturn);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        //_logger.LogError(ex, "Error");
+                    }                   
                 }
                 else
                 {
@@ -189,6 +190,11 @@ namespace Modbus.Net.Modbus
                 if (returnBytes != null) return returnBytes;
                 else return null;
             };
+        }
+
+        public async Task<bool> ConnectAsync()
+        {
+            return await _receiver.ConnectAsync();
         }
     }
 }
