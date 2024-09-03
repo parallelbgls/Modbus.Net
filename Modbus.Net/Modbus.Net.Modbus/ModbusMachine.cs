@@ -20,10 +20,10 @@ namespace Modbus.Net.Modbus
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
         /// <param name="endian">端格式</param>
-        public ModbusMachine(TKey id, ModbusType connectionType, string connectionString,
+        public ModbusMachine(TKey id, string alias, ModbusType connectionType, string connectionString,
             IEnumerable<AddressUnit<TUnitKey, int, int>> getAddresses, bool keepConnect, byte slaveAddress, byte masterAddress,
             Endian endian)
-            : base(id, getAddresses, keepConnect, slaveAddress, masterAddress)
+            : base(id, alias, getAddresses, keepConnect, slaveAddress, masterAddress)
         {
             BaseUtility = new ModbusUtility(connectionType, connectionString, slaveAddress, masterAddress, endian);
             AddressFormater = new AddressFormaterModbus();
@@ -41,10 +41,10 @@ namespace Modbus.Net.Modbus
         /// <param name="slaveAddress">从站号</param>
         /// <param name="masterAddress">主站号</param>
         /// <param name="endian">端格式</param>
-        public ModbusMachine(TKey id, ModbusType connectionType, string connectionString,
+        public ModbusMachine(TKey id, string alias, ModbusType connectionType, string connectionString,
             IEnumerable<AddressUnit<TUnitKey, int, int>> getAddresses, byte slaveAddress, byte masterAddress,
             Endian endian)
-            : this(id, connectionType, connectionString, getAddresses, true, slaveAddress, masterAddress, endian)
+            : this(id, alias, connectionType, connectionString, getAddresses, true, slaveAddress, masterAddress, endian)
         {
         }
     }

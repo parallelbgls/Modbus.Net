@@ -16,9 +16,9 @@ namespace Modbus.Net.Tests
         [TestInitialize]
         public void Init()
         {
-            _modbusTcpMachine = new ModbusMachine<string, string>("1", ModbusType.Tcp, _machineIp, null, true, 1, 0, Endian.BigEndianLsb);
+            _modbusTcpMachine = new ModbusMachine<string, string>("1", "",ModbusType.Tcp, _machineIp, null, true, 1, 0, Endian.BigEndianLsb);
 
-            _modbusTcpMachine2 = new ModbusMachine<string, string>("2", ModbusType.Tcp, _machineIp, null, true, 1, 0, Endian.LittleEndianLsb);
+            _modbusTcpMachine2 = new ModbusMachine<string, string>("2", "", ModbusType.Tcp, _machineIp, null, true, 1, 0, Endian.LittleEndianLsb);
         }
 
         [TestMethod]

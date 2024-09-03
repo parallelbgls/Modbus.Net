@@ -13,7 +13,7 @@ namespace Modbus.Net.Tests
         [TestMethod]
         public void GetUtility()
         {
-            BaseMachine<int, int> baseMachine = new ModbusMachine<int, int>(1, ModbusType.Tcp, _machineIp, null, true, 2, 0, Endian.BigEndianLsb);
+            BaseMachine<int, int> baseMachine = new ModbusMachine<int, int>(1, "", ModbusType.Tcp, _machineIp, null, true, 2, 0, Endian.BigEndianLsb);
             var utility = baseMachine.GetUtilityMethods<IUtilityMethodDatas>();
             var methods = utility.GetType().GetRuntimeMethods();
             Assert.AreEqual(methods.FirstOrDefault(method => method.Name == "GetDatasAsync") != null, true);
@@ -24,7 +24,7 @@ namespace Modbus.Net.Tests
         [TestMethod]
         public async Task InvokeUtility()
         {
-            BaseMachine<int, int> baseMachine = new ModbusMachine<int, int>(1, ModbusType.Tcp, _machineIp, null, true, 2, 0, Endian.BigEndianLsb);
+            BaseMachine<int, int> baseMachine = new ModbusMachine<int, int>(1, "", ModbusType.Tcp, _machineIp, null, true, 2, 0, Endian.BigEndianLsb);
             await baseMachine.BaseUtility.ConnectAsync();
             var success = await baseMachine.BaseUtility.GetUtilityMethods<IUtilityMethodDatas>().SetDatasAsync("4X 1", new object[] { (byte)11 }, 1);
             Assert.AreEqual(success.IsSuccess, true);
@@ -36,7 +36,7 @@ namespace Modbus.Net.Tests
         [TestMethod]
         public async Task InvokeMachine()
         {
-            BaseMachine<int, int> baseMachine = new ModbusMachine<int, int>(1, ModbusType.Tcp, _machineIp, new List<AddressUnit>
+            BaseMachine<int, int> baseMachine = new ModbusMachine<int, int>(1, "",ModbusType.Tcp, _machineIp, new List<AddressUnit>
             {
                 new AddressUnit
                 {

@@ -27,8 +27,8 @@ namespace Modbus.Net.HJ212
         /// </summary>
         /// <param name="id">设备的ID号</param>
         /// <param name="connectionString">连接地址</param>
-        public HJ212Machine(TKey id, string connectionString, string st, string cn, string pw, string mn)
-            : base(id, null, true)
+        public HJ212Machine(TKey id, string alias, string connectionString, string st, string cn, string pw, string mn)
+            : base(id, alias, null, true)
         {
             BaseUtility = new HJ212Utility(connectionString);
             ST = st;

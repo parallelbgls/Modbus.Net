@@ -25,8 +25,8 @@ namespace Modbus.Net
         /// <param name="keepConnect">是否保持连接</param>
         /// <param name="slaveAddress">从站地址</param>
         /// <param name="masterAddress">主站地址</param>
-        protected BaseMachine(TKey id, IEnumerable<AddressUnit<TUnitKey, int, int>> getAddresses, bool keepConnect, byte slaveAddress,
-            byte masterAddress) : base(id, getAddresses, keepConnect)
+        protected BaseMachine(TKey id, string alias, IEnumerable<AddressUnit<TUnitKey, int, int>> getAddresses, bool keepConnect, byte slaveAddress,
+            byte masterAddress) : base(id, alias, getAddresses, keepConnect)
         {
             SlaveAddress = slaveAddress;
             MasterAddress = masterAddress;
@@ -510,8 +510,8 @@ namespace Modbus.Net
         /// </summary>
         /// <param name="id">设备的ID号</param>
         /// <param name="getAddresses">需要与设备通讯的地址</param>
-        protected BaseMachine(TKey id, IEnumerable<AddressUnit<TUnitKey, TAddressKey, TSubAddressKey>> getAddresses)
-            : this(id, getAddresses, false)
+        protected BaseMachine(TKey id, string alias, IEnumerable<AddressUnit<TUnitKey, TAddressKey, TSubAddressKey>> getAddresses)
+            : this(id, alias, getAddresses, false)
         {
         }
 
@@ -521,11 +521,22 @@ namespace Modbus.Net
         /// <param name="id">设备的ID号</param>
         /// <param name="getAddresses">需要与设备通讯的地址</param>
         /// <param name="keepConnect">是否保持连接</param>
-        protected BaseMachine(TKey id, IEnumerable<AddressUnit<TUnitKey, TAddressKey, TSubAddressKey>> getAddresses, bool keepConnect)
+        protected BaseMachine(TKey id, string alias, IEnumerable<AddressUnit<TUnitKey, TAddressKey, TSubAddressKey>> getAddresses, bool keepConnect)
         {
             Id = id;
             GetAddresses = getAddresses;
             KeepConnect = keepConnect;
+            if (alias.Contains(':'))
+            {
+                var aliasArray = alias.Split(':');
+                ProjectName = aliasArray[0];
+                MachineName = aliasArray[1];
+            }
+            else
+            {
+                ProjectName = "";
+                MachineName = alias;
+            }
         }
 
         private readonly int _maxErrorCount = 3;

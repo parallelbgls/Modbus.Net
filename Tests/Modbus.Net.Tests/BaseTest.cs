@@ -125,7 +125,7 @@ namespace Modbus.Net.Tests
                 },
             };
 
-            _baseMachine = new SiemensMachine<int, int>(2, SiemensType.Tcp, _machineIp, SiemensMachineModel.S7_1200, _addressUnits, true, 2, 0, 1, 0)
+            _baseMachine = new SiemensMachine<int, int>(2, "", SiemensType.Tcp, _machineIp, SiemensMachineModel.S7_1200, _addressUnits, true, 2, 0, 1, 0)
             {
                 ProjectName = "Project 1",
                 MachineName = "Test 2"
