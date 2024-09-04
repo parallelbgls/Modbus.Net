@@ -63,10 +63,10 @@ namespace Modbus.Net.Modbus
             var receiversDef = configuration.GetSection("Modbus.Net").GetSection("Receiver").GetChildren();
             foreach (var receiverDef in receiversDef)
             {
-                var _receiver = new ModbusRtuProtocolReceiver(receiverDef.GetValue<string>("d:connectionString"), receiverDef.GetValue<int>("g:slaveAddress"));
+                var _receiver = new ModbusRtuProtocolReceiver(receiverDef.GetValue<string>("e:connectionString"), receiverDef.GetValue<int>("h:slaveAddress"));
                 var machineName = receiverDef.GetValue<string>("a:id");
-                var addressMapName = receiverDef.GetValue<string>("e:addressMap");
-                var endian = ValueHelper.GetInstance(Endian.Parse(receiverDef.GetValue<string>("i:endian")));
+                var addressMapName = receiverDef.GetValue<string>("f:addressMap");
+                var endian = ValueHelper.GetInstance(Endian.Parse(receiverDef.GetValue<string>("j:endian")));
                 _receiver.DataProcess = receiveContent =>
                 {
                     var returnTime = DateTime.Now;
