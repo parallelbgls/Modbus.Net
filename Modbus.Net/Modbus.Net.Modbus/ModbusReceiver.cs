@@ -12,8 +12,7 @@ namespace Modbus.Net.Modbus
 {
     public class ModbusRtuDataReceiver
     {
-        private List<ModbusRtuProtocolReceiver> _receivers;
-
+        private Dictionary<ModbusRtuProtocolReceiver, DateTime> _receivers;
         private readonly IConfigurationRoot configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json")
@@ -60,13 +59,13 @@ namespace Modbus.Net.Modbus
 
         public ModbusRtuDataReceiver(MachineDataType dataType, int minimumElapse = 0)
         {
-            var previousTime = DateTime.MinValue;
-            _receivers = new List<ModbusRtuProtocolReceiver>();
+            _receivers = new Dictionary<ModbusRtuProtocolReceiver,DateTime>();
             var receiversDef = configuration.GetSection("Modbus.Net").GetSection("Receiver").GetChildren();
             foreach (var receiverDef in receiversDef)
             {
-                var _receiver = new ModbusRtuProtocolReceiver(receiverDef.GetValue<string>("e:connectionString"), receiverDef.GetValue<int>("h:slaveAddress"));
                 var machineName = receiverDef.GetValue<string>("a:id");
+                if (machineName == "EventData") minimumElapse = 0; //临时增加，后续删除
+                var _receiver = new ModbusRtuProtocolReceiver(receiverDef.GetValue<string>("e:connectionString"), receiverDef.GetValue<int>("h:slaveAddress"));                
                 var addressMapName = receiverDef.GetValue<string>("f:addressMap");
                 var endian = ValueHelper.GetInstance(Endian.Parse(receiverDef.GetValue<string>("j:endian")));
                 _receiver.DataProcess = receiveContent =>
@@ -143,7 +142,7 @@ namespace Modbus.Net.Modbus
                                 value = Math.Round(value, addressMap[i].DecimalPos);
                                 AddValueToValueDic(valueDic, returnDic, addressMap[i], value, dataType);
                             }
-                            if ((returnTime - previousTime).TotalSeconds + 0.5 >= minimumElapse)
+                            if ((returnTime - _receivers[_receiver]).TotalSeconds + 0.5 >= minimumElapse)
                             {
                                 if (ReturnValueDictionary != null)
                                 {
@@ -151,7 +150,7 @@ namespace Modbus.Net.Modbus
                                     dataReturn.MachineId = machineName;
                                     dataReturn.ReturnValues = new ReturnStruct<Dictionary<string, ReturnUnit<double>>>() { IsSuccess = true, Datas = returnDic };
                                     ReturnValueDictionary(dataReturn);
-                                    previousTime = returnTime;
+                                    _receivers[_receiver] = returnTime;
                                 }
                             }
                         }
@@ -200,17 +199,15 @@ namespace Modbus.Net.Modbus
                     if (returnBytes != null) return returnBytes;
                     else return null;
                 };
-                _receivers.Add(_receiver);
-            }
-            
-            
+                _receivers.Add(_receiver, DateTime.MinValue);
+            }            
         }
 
         public async Task<bool> ConnectAsync()
         {
             var result = await Task.FromResult(Parallel.ForEach(_receivers, async _receiver =>
             {
-                await _receiver.ConnectAsync();
+                await _receiver.Key.ConnectAsync();
             }));
             return result.IsCompleted;
         }
