@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 using AddressUnit = Modbus.Net.AddressUnit<string, int, int>;
 using DataReturnDef = Modbus.Net.DataReturnDef<string, double>;
@@ -57,8 +58,9 @@ namespace Modbus.Net.Modbus
             }
         }
 
-        public ModbusRtuDataReceiver(MachineDataType dataType)
+        public ModbusRtuDataReceiver(MachineDataType dataType, int minimumElapse = 0)
         {
+            var previousTime = DateTime.MinValue;
             _receivers = new List<ModbusRtuProtocolReceiver>();
             var receiversDef = configuration.GetSection("Modbus.Net").GetSection("Receiver").GetChildren();
             foreach (var receiverDef in receiversDef)
@@ -141,12 +143,16 @@ namespace Modbus.Net.Modbus
                                 value = Math.Round(value, addressMap[i].DecimalPos);
                                 AddValueToValueDic(valueDic, returnDic, addressMap[i], value, dataType);
                             }
-                            if (ReturnValueDictionary != null)
+                            if ((returnTime - previousTime).TotalSeconds + 0.5 >= minimumElapse)
                             {
-                                var dataReturn = new DataReturnDef();
-                                dataReturn.MachineId = machineName;
-                                dataReturn.ReturnValues = new ReturnStruct<Dictionary<string, ReturnUnit<double>>>() { IsSuccess = true, Datas = returnDic };
-                                ReturnValueDictionary(dataReturn);
+                                if (ReturnValueDictionary != null)
+                                {
+                                    var dataReturn = new DataReturnDef();
+                                    dataReturn.MachineId = machineName;
+                                    dataReturn.ReturnValues = new ReturnStruct<Dictionary<string, ReturnUnit<double>>>() { IsSuccess = true, Datas = returnDic };
+                                    ReturnValueDictionary(dataReturn);
+                                    previousTime = returnTime;
+                                }
                             }
                         }
                         catch (Exception ex)
