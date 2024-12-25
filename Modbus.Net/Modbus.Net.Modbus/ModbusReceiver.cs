@@ -64,7 +64,6 @@ namespace Modbus.Net.Modbus
             foreach (var receiverDef in receiversDef)
             {
                 var machineName = receiverDef.GetValue<string>("a:id");
-                if (machineName == "EventData") minimumElapse = 0; //临时增加，后续删除
                 var _receiver = new ModbusRtuProtocolReceiver(receiverDef.GetValue<string>("e:connectionString"), receiverDef.GetValue<int>("h:slaveAddress"));                
                 var addressMapName = receiverDef.GetValue<string>("f:addressMap");
                 var endian = ValueHelper.GetInstance(Endian.Parse(receiverDef.GetValue<string>("j:endian")));
@@ -142,7 +141,7 @@ namespace Modbus.Net.Modbus
                                 value = Math.Round(value, addressMap[i].DecimalPos);
                                 AddValueToValueDic(valueDic, returnDic, addressMap[i], value, dataType);
                             }
-                            if ((returnTime - _receivers[_receiver]).TotalSeconds + 0.5 >= minimumElapse)
+                            if (machineName == "EventData" || (returnTime - _receivers[_receiver]).TotalSeconds + 0.5 >= minimumElapse)
                             {
                                 if (ReturnValueDictionary != null)
                                 {
