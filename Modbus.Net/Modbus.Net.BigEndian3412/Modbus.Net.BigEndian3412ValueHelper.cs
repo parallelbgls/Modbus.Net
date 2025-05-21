@@ -28,9 +28,9 @@ namespace Modbus.Net
         /// <summary>
         ///     是否为大端
         /// </summary>
-        protected new bool LittleEndian => false;
+        public override bool LittleEndian => true;
 
-        protected new bool LittleEndianBit => false;
+        public override bool LittleEndianBit => false;
 
         /// <summary>
         ///     覆盖的获取实例的方法
@@ -154,9 +154,9 @@ namespace Modbus.Net
         /// <summary>
         ///     是否为大端
         /// </summary>
-        protected new bool LittleEndian => true;
+        public override bool LittleEndian => true;
 
-        protected new bool LittleEndianBit => false;
+        public override bool LittleEndianBit => true;
 
         /// <summary>
         ///     覆盖的获取实例的方法

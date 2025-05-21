@@ -149,6 +149,10 @@ namespace Modbus.Net
                         var localMainPos = (int)localPos;
                         //字节坐标的子地址位置
                         var localSubPos = (int)((localPos - localMainPos) * 8);
+                        if (ValueHelper.GetInstance(BaseUtility.Endian).LittleEndianBit == true && AddressTranslator.GetAreaByteLength(communicateAddress.Area) > 1 && ValueHelper.ByteLength[address.DataType.FullName] < AddressTranslator.GetAreaByteLength(communicateAddress.Area))
+                        {
+                            localMainPos =(int)(2 * ((int)(localMainPos / AddressTranslator.GetAreaByteLength(communicateAddress.Area)) * AddressTranslator.GetAreaByteLength(communicateAddress.Area)) + (AddressTranslator.GetAreaByteLength(communicateAddress.Area) - 1) - localMainPos); 
+                        }
 
                         //根据类型选择返回结果的键是通讯标识还是地址
                         string key;

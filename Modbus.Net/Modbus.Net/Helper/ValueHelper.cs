@@ -13,6 +13,16 @@ namespace Modbus.Net
     public abstract class ValueHelper
     {
         /// <summary>
+        /// 是否为小端格式
+        /// </summary>
+        public abstract bool LittleEndian { get; }
+
+        /// <summary>
+        /// 位是否为小端格式
+        /// </summary>
+        public abstract bool LittleEndianBit { get; }
+
+        /// <summary>
         ///     兼容数据类型对应的字节长度
         /// </summary>
         /// <summary>
@@ -347,12 +357,12 @@ namespace Modbus.Net
         /// <summary>
         ///     协议中的内容构造是否小端的，默认是小端构造协议。
         /// </summary>
-        public static bool LittleEndian => true;
+        public override bool LittleEndian => true;
 
         /// <summary>
         ///     协议中的比特位内容构造是否小端的，默认是小端构造协议。
         /// </summary>
-        public static bool LittleEndianBit => true;
+        public override bool LittleEndianBit => true;
 
         /// <summary>
         ///     将一个byte数字转换为一个byte元素的数组。
@@ -1228,7 +1238,7 @@ namespace Modbus.Net
         /// <summary>
         ///     是否为大端
         /// </summary>
-        protected new bool LittleEndian => false;
+        public override bool LittleEndian => false;
 
         /// <summary>
         ///     覆盖的获取实例的方法
@@ -1471,12 +1481,12 @@ namespace Modbus.Net
         /// <summary>
         ///     是否为小端
         /// </summary>
-        protected new bool LittleEndian => false;
+        public override bool LittleEndian => false;
 
         /// <summary>
         ///     是否为小端位
         /// </summary>
-        protected new bool LittleEndianBit => false;
+        public override bool LittleEndianBit => false;
 
         /// <summary>
         ///     覆盖的实例获取方法
