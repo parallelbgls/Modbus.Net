@@ -398,4 +398,59 @@ namespace Modbus.Net
                         addressUnits);
         }
     }
+
+    public class ReadAddressesDesc
+    { 
+        public string Area { get; set; }
+
+        public int Address { get; set; }
+
+        public int GetCount { get; set; }
+    }
+
+    /// <summary>
+    ///     固定读取地址的范围，无视所有其它规则
+    /// </summary>
+    public class AddressCombinerStatic<TKey> : AddressCombiner<TKey, int, int> where TKey : IEquatable<TKey>
+    {
+        protected IEnumerable<ReadAddressesDesc> ReadAddresses { get; set; }
+
+        protected AddressTranslator AddressTranslator { get; set; }
+
+        public AddressCombinerStatic(IEnumerable<ReadAddressesDesc> readAddresses, AddressTranslator addressTranslator)
+        {
+            AddressTranslator = addressTranslator;
+            ReadAddresses = readAddresses;
+        }
+
+        /// <summary>
+        ///     组合地址
+        /// </summary>
+        /// <param name="addresses">需要组合的地址</param>
+        /// <returns>组合后的地址</returns>
+        public override IEnumerable<CommunicationUnit<TKey, int, int>> Combine(IEnumerable<AddressUnit<TKey, int, int>> addresses)
+        {
+            List<CommunicationUnit<TKey, int, int>> communicationUnits = new List<CommunicationUnit<TKey, int, int>>();
+            foreach (var readAddress in ReadAddresses)
+            {
+                var originalAddresses = new List<AddressUnit<TKey, int, int>>();
+                foreach (var address in addresses)
+                {
+                    if (address.Area == readAddress.Area && address.Address >= readAddress.Address && address.Address < readAddress.Address + readAddress.GetCount)
+                    originalAddresses.Add(address);
+                }
+                communicationUnits.Add(new CommunicationUnit<TKey, int, int>
+                {
+                    Area = readAddress.Area,
+                    Address = readAddress.Address,
+                    GetCount = readAddress.GetCount * (int)
+                                    Math.Ceiling(AddressTranslator.GetAreaByteLength(readAddress.Area)),
+                    DataType = typeof(byte),
+                    GetOriginalCount = originalAddresses.Count,
+                    OriginalAddresses = originalAddresses.ToList()
+                });
+            }
+            return communicationUnits;
+        }
+    }
 }
