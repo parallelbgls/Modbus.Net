@@ -33,14 +33,14 @@ namespace Modbus.Net.HJ212
             {
                 var writeRequestHJ212InputStruct =
                     new WriteRequestHJ212InputStruct((string)setContents[0], (string)setContents[1], (string)setContents[2], (string)setContents[3], (List<Dictionary<string, string>>)setContents[4], (DateTime)setContents[5]);
-                var writeRequestOpcOutputStruct =
+                var writeRequestHJ212OutputStruct =
                     await
                         Wrapper.SendReceiveAsync<WriteRequestHJ212OutputStruct>(Wrapper[typeof(WriteRequestHJ212Protocol)],
                             writeRequestHJ212InputStruct);
                 return new ReturnStruct<bool>
                 {
-                    Datas = writeRequestOpcOutputStruct?.GetValue != null,
-                    IsSuccess = writeRequestOpcOutputStruct?.GetValue != null,
+                    Datas = writeRequestHJ212OutputStruct?.GetValue != null,
+                    IsSuccess = writeRequestHJ212OutputStruct?.GetValue != null,
                     ErrorCode = 0,
                     ErrorMsg = null,
                 };
